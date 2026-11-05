@@ -1596,8 +1596,18 @@ def build_figs():
 
 
 # ------------------------------------------------------------ the document
+def plain_math(t):
+    """把 $...$ 里的 LaTeX 写法转成 HTML 里直接能读的形式"""
+    for a, b in (("\\log", "log"), ("\\cdot", "×"), ("\\alpha", "α"), ("\\,", ""),
+                 ("^2", "²"), ("$", "")):
+        t = t.replace(a, b)
+    return t
+
+
 def build_doc(F):
     doc = d.Doc("12 · Graph: BFS / DFS / Topological Sort / Union-Find / Dijkstra")
+    for name in ("p", "main", "note"):
+        doc.__dict__[name] = (lambda f: lambda t: f(plain_math(t)))(getattr(doc, name))
     doc.main("主线: graph 遍历 = 从已知的点出发, 用 visited 保证每个点只处理一次 → O(V + E)。"
              "BFS 按层扩 = 无权最短路; 入度归零 = 拓扑序; Union-Find 回答\"连没连通\"; heap 贪心 = 带权最短路。")
     doc.main("概念链: Number of Islands (grid DFS) → Rotting Oranges (multi-source BFS) → "
