@@ -1,0 +1,87 @@
+<svg width="100%" viewBox="0 0 680 698" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif"><title>HitCounter trace, window = 300</title><desc>deque 里的时间戳每步的变化; 过期的从左边 popleft, 虚线扔到左边。</desc><defs><marker id="ar-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ar-r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">窗口 (now - 300, now] · q 左 = 最旧 · hit: 从右边 append · getHits: 从左边 popleft 过期的</text>
+<text x="40" y="38" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">过期规则: q[0] &lt;= cutoff, cutoff = now - 300</text>
+<text x="40" y="62" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">操作</text>
+<text x="250" y="62" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">q (这一步之后)</text>
+<text x="470" y="62" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">计算</text>
+<line x1="40" y1="72" x2="640" y2="72" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="40" y="100" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">hit(1)</text>
+<rect x="250" y="91" width="40" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="270.0" y="106.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">1</text>
+<text x="470" y="106" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">append(1) 到右边</text>
+<line x1="40" y1="150" x2="640" y2="150" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="40" y="174" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">hit(2)</text>
+<rect x="250" y="165" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="270.0" y="180.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">1</text>
+<rect x="296" y="165" width="40" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="316.0" y="180.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">2</text>
+<text x="470" y="180" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">append(2) 到右边</text>
+<line x1="40" y1="224" x2="640" y2="224" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="40" y="248" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">hit(3)</text>
+<rect x="250" y="239" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="270.0" y="254.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">1</text>
+<rect x="296" y="239" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="316.0" y="254.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">2</text>
+<rect x="342" y="239" width="40" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="362.0" y="254.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">3</text>
+<text x="470" y="254" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">append(3) 到右边</text>
+<line x1="40" y1="298" x2="640" y2="298" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="40" y="322" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">getHits(4)</text>
+<text x="40" y="342" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">-&gt; 3</text>
+<rect x="250" y="313" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="270.0" y="328.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">1</text>
+<rect x="296" y="313" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="316.0" y="328.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">2</text>
+<rect x="342" y="313" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="362.0" y="328.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">3</text>
+<text x="470" y="314" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">cutoff = 4 - 300 = -296</text>
+<text x="470" y="332" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">q[0] = 1 &gt; -296, 不用出队</text>
+<text x="470" y="350" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#0B0B0B">len(q) = 3</text>
+<line x1="40" y1="372" x2="640" y2="372" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="40" y="396" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">hit(300)</text>
+<rect x="250" y="387" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="270.0" y="402.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">1</text>
+<rect x="296" y="387" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="316.0" y="402.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">2</text>
+<rect x="342" y="387" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="362.0" y="402.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">3</text>
+<rect x="388" y="387" width="40" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="408.0" y="402.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">300</text>
+<text x="470" y="402" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">append(300) 到右边</text>
+<line x1="40" y1="446" x2="640" y2="446" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="40" y="470" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">getHits(301)</text>
+<text x="40" y="490" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">-&gt; 3</text>
+<rect x="140" y="461" width="34" height="30" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="157.0" y="476.0" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="500" fill="#712B13">1</text>
+<line x1="246" y1="476" x2="178" y2="476" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#ar-r)"/>
+<rect x="250" y="461" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="270.0" y="476.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">2</text>
+<rect x="296" y="461" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="316.0" y="476.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">3</text>
+<rect x="342" y="461" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="362.0" y="476.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">300</text>
+<text x="470" y="462" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">cutoff = 301 - 300 = 1</text>
+<text x="470" y="480" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#712B13">popleft: 1 &lt;= 1</text>
+<text x="470" y="498" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#0B0B0B">len(q) = 3</text>
+<line x1="40" y1="520" x2="640" y2="520" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="40" y="544" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">getHits(303)</text>
+<text x="40" y="564" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">-&gt; 1</text>
+<rect x="140" y="535" width="34" height="30" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="157.0" y="550.0" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="500" fill="#712B13">2</text>
+<rect x="180" y="535" width="34" height="30" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="197.0" y="550.0" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="500" fill="#712B13">3</text>
+<line x1="246" y1="550" x2="218" y2="550" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#ar-r)"/>
+<rect x="250" y="535" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="270.0" y="550.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">300</text>
+<text x="470" y="536" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">cutoff = 303 - 300 = 3</text>
+<text x="470" y="554" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#712B13">popleft: 2 &lt;= 3, 3 &lt;= 3</text>
+<text x="470" y="572" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#0B0B0B">len(q) = 1</text>
+<line x1="40" y1="594" x2="640" y2="594" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="40" y="606" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">最终: q = [300] · 1、2、3 都过期被 popleft · 300 仍在窗口里</text>
+<rect x="40" y="630" width="16" height="12" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="62" y="636" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">新 append</text>
+<rect x="137.04000000000002" y="630" width="16" height="12" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
+<text x="159.04000000000002" y="636" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">过期, popleft</text>
+<rect x="259.52000000000004" y="630" width="16" height="12" rx="3" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="281.52000000000004" y="636" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">窗口内</text>
+</svg>

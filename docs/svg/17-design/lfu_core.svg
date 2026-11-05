@@ -1,0 +1,49 @@
+<svg width="100%" viewBox="0 0 680 486" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif"><title>LFU Cache 的结构: LRU 按 freq 分层</title><desc>key -&gt; (val, freq), freq -&gt; OrderedDict(key), 以及 min_freq。</desc><defs><marker id="ar-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ar-r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">要求: get / put 都 O(1) · 踢 '访问次数最少' 的, 并列时踢 '最久没用' 的</text>
+<text x="40" y="38" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">= LRU 再加一层: 每个 freq 一个 LRU 桶 (OrderedDict), min_freq 指向最低的非空桶</text>
+<text x="40" y="66" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">put(e, 5) 之后的状态 (capacity = 4 已满, 踢了 c)</text>
+<text x="40" y="98" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">val / freq (两个 dict)</text>
+<rect x="40" y="110" width="180" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="130.0" y="126.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">a  val=1  freq=3</text>
+<rect x="40" y="150" width="180" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="130.0" y="166.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">b  val=2  freq=2</text>
+<rect x="40" y="190" width="180" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="130.0" y="206.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">d  val=4  freq=1</text>
+<rect x="40" y="230" width="180" height="32" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="130.0" y="246.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">e  val=5  freq=1</text>
+<text x="300" y="98" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">bucket: freq -&gt; OrderedDict (左 = 最久没用)</text>
+<text x="300" y="126" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">freq=1</text>
+<rect x="440" y="110" width="44" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="462.0" y="126.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">d</text>
+<rect x="492" y="110" width="44" height="32" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="514.0" y="126.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">e</text>
+<rect x="376" y="110" width="44" height="32" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="398.0" y="126.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#712B13">c</text>
+<line x1="436" y1="126" x2="424" y2="126" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#ar-r)"/>
+<text x="300" y="176" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">freq=2</text>
+<rect x="440" y="160" width="44" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="462.0" y="176.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">b</text>
+<text x="300" y="226" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">freq=3</text>
+<rect x="440" y="210" width="44" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="462.0" y="226.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">a</text>
+<rect x="437" y="107" width="50" height="38" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="300" y="270" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">min_freq = 1</text>
+<text x="300" y="290" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">-&gt; 桶 1 的最左边 (金圈) = 下一个被踢的</text>
+<text x="40" y="290" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">key 同时在 3 个地方: val · freq · bucket[freq]</text>
+<text x="40" y="308" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">每次 mutate 三处一起改 (同步)</text>
+<line x1="40" y1="322" x2="640" y2="322" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="40" y="342" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">get(k) / put 已有 key  -&gt;  _touch(k)</text>
+<text x="40" y="364" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#0B0B0B">1. f = freq[k] · del bucket[f][k]</text>
+<text x="40" y="382" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#0B0B0B">2. bucket[f] 空了, 且 f == min_freq -&gt; min_freq += 1  (k 马上去 f+1, 所以正好 +1)</text>
+<text x="40" y="400" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#0B0B0B">3. freq[k] = f + 1 · bucket[f + 1][k] = None  (接到右边 = 这一层最新)</text>
+<text x="40" y="422" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#712B13">put 新 key 且满了: bucket[min_freq].popitem(last=False) = c  (频率最低 + 最久没用)</text>
+<text x="40" y="440" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#0B0B0B">然后 val[e] = 5 · freq[e] = 1 · bucket[1][e] = None · min_freq = 1</text>
+<rect x="40" y="464" width="16" height="12" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="62" y="470" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">新进来</text>
+<rect x="114" y="464" width="16" height="12" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
+<text x="136" y="470" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">被踢出 (c: freq=1, 桶 1 最左)</text>
+<rect x="338.24" y="464" width="16" height="12" rx="3" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="360.24" y="470" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">下一个被踢</text>
+<rect x="436.24" y="464" width="16" height="12" rx="3" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="458.24" y="470" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">其他</text>
+</svg>
