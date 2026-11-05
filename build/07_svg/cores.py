@@ -115,7 +115,8 @@ def core_dt():
     bk, top = bucket_with(bx, bottom, w, cells, 28, 4)
     b.append(bk)
     b.append(text(bx + w / 2, bottom + 14, "底", 12, SUB, 400, "middle"))
-    b.append(text(bx + w / 2, 168, "栈 (T 递减: 75 ≥ 71 ≥ 69)", 12, SUB, 400, "middle"))
+    b.append(text(bx + w / 2, 164, "栈 (T 递减: 75 ≥ 71 ≥ 69)", 12, SUB, 400, "middle"))
+    b.append(cell(bx + 6, top - 30, w - 12, 24, NEW, "5·72"))   # incoming element waiting above the stack
     # right: while loop
     x = 230
     b.append(text(x, 176, "T = 72 来了: while T[栈顶] < 72", 14, INK, 500))

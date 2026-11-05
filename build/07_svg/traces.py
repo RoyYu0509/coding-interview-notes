@@ -3,7 +3,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from svglib import *
 
 OUT = "/home/user/coding-interview-notes/docs/svg/07-monotonic-stack/"
-LEG = [("new", "新 push / 当前输入"), ("old", "pop (虚线扔到左边)"), ("oth", "栈里其他"), ("ring", "栈顶")]
+LEG = [("new", "当前输入 / 待 push"), ("old", "pop (虚线扔到左边)"), ("oth", "栈里其他"), ("ring", "栈顶")]
 
 
 def write(fn, s):
@@ -33,7 +33,7 @@ def dt_rows(T):
                 nopop = "%d > %d, 不 pop" % (T[stack[-2]], t)
             else:
                 nopop = "栈空, 不 pop"
-        rows.append(dict(inp=["i = %d" % i, "T = %d" % t], pre=pre, pops=pops, keep=keep,
+        rows.append(dict(wait="%d·%d" % (i, t), inp=["i = %d" % i, "T = %d" % t], pre=pre, pops=pops, keep=keep,
                          push="%d·%d" % (i, t), post=post, nopop=nopop, calc=[]))
         print("DT i=%d t=%d pre=%s pops=%s post=%s ans=%s" % (i, t, pre, [p[1] for p in pops], post, ans))
     return rows, ans, stack
@@ -93,7 +93,7 @@ def nge_rows(nums):
             for k_ in range(len(pops)):
                 p_ = pops[k_]
                 pops[k_] = (p_[0], p_[1], p_[2], ["第 2 圈, 不 push", p_[3][0]])
-        rows.append(dict(inp=["i = %d" % i, "x = %d" % x] if i < n else
+        rows.append(dict(wait="%d·%d" % (i % n, x), inp=["i = %d" % i, "x = %d" % x] if i < n else
                          ["i = %d → %d" % (i, i % n), "x = %d" % x],
                          pre=pre, pops=pops, keep=keep, push=pushed, post=post, nopop=nopop, calc=calc))
         print("NGE i=%d x=%d pre=%s pops=%s post=%s ans=%s" % (i, x, pre, [p[1] for p in pops], post, ans))
@@ -140,7 +140,7 @@ def lrh_rows(heights):
         calc = []
         if not pops:
             nopop = ("栈空, 不 pop" if not keep else "栈顶 %s ≤ %d, 不 pop" % (keep[-1][1].split("·")[1], h))
-        rows.append(dict(inp=["i = %d" % i, "h = %d%s" % (h, " 哨兵" if i == len(H) - 1 else "")],
+        rows.append(dict(wait="%d·%d" % (i, h), inp=["i = %d" % i, "h = %d%s" % (h, " 哨兵" if i == len(H) - 1 else "")],
                          pre=pre, pops=pops, keep=keep, push="%d·%d" % (i, h), post=post, nopop=nopop, calc=calc))
         print("LRH i=%d h=%d pre=%s pops=%s post=%s best=%d" % (i, h, pre, [(p[1], p[3]) for p in pops], post, best))
     return rows, best
@@ -185,7 +185,7 @@ def rkd_rows(num, k):
                 nopop = "k = 0, 不能再删"
             else:
                 nopop = "%s ≤ %s, 不 pop" % (keep[-1][1], d)
-        rows.append(dict(inp=["d = %s" % d, "k = %d" % kin], pre=pre, pops=pops, keep=keep, push=d,
+        rows.append(dict(wait=d, inp=["d = %s" % d, "k = %d" % kin], pre=pre, pops=pops, keep=keep, push=d,
                          post=post, nopop=nopop, calc=[]))
         print("RKD d=%s kin=%d pre=%s pops=%s post=%s k=%d" % (d, kin, pre, [p[1] for p in pops], post, k))
     return rows, "".join(stack), k
@@ -241,7 +241,7 @@ def swm_rows(nums, k):
         nopop = None if pops else "队头没过期, 队尾更大"
         if not pops:
             nopop = "队头未过期, 队尾 > %d" % x if keep else "队列空"
-        rows.append(dict(inp=["i = %d" % i, "x = %d" % x], pre=pre, pops=pops, keep=keep,
+        rows.append(dict(wait="%d·%d" % (i, x), inp=["i = %d" % i, "x = %d" % x], pre=pre, pops=pops, keep=keep,
                          push="%d·%d" % (i, x), post=post, nopop=nopop, calc=calc))
         print("SWM i=%d x=%d pre=%s pops=%s post=%s ans=%s" % (i, x, pre, [p[1] for p in pops], post, ans))
     return rows, ans
@@ -258,7 +258,7 @@ def swm_svg():
                    "每一步: ① 队头过期就出队 ② 队尾 ≤ x 就出队 ③ push x ④ 窗口满了就输出 nums[队头]"],
                   ["当前输入", "出队 (扔到左边)", "出队后", "push 后", "窗口 / 答案"],
                   rows, [("ans = [3, 3, 5, 5, 6, 7]  (i = 2..7 各输出一个, 共 n − k + 1 = 6 个)", True)],
-                  [("new", "新 push / 当前输入"), ("old", "出队 (扔到左边)"), ("oth", "deque 里其他"), ("ring", "队头 = 窗口最大")],
+                  [("new", "当前输入 / 待 push"), ("old", "出队 (扔到左边)"), ("oth", "deque 里其他"), ("ring", "队头 = 窗口最大")],
                   ring_head=True)
     write("sliding_window_max_trace.svg", s)
 

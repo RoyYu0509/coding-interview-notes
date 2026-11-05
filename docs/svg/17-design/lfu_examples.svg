@@ -1,0 +1,6 @@
+<svg width="100%" viewBox="0 0 680 136" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>LFU Cache examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">和 LRU 一样有容量, 但满了要踢掉&lt;使用次数最少&gt;的; 次数一样时, 踢最久没用的。get / put 都要 O(1)</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  capacity = 2:  put(1) put(2) get(1) put(3)</text>
+<text x="40" y="82" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">get(1) 之后: key 1 用了 2 次, key 2 用了 1 次</text>
+<text x="40" y="100" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">put(3) 时满了, 踢掉次数最少的 2</text>
+<line x1="40" y1="124" x2="640" y2="124" stroke="#B4B2A9" stroke-dasharray="4 4"/></svg>

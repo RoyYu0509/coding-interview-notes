@@ -122,7 +122,7 @@ ol,ul{padding-left:24px}li{margin:4px 0}
 <p>为什么不会死循环: 因为 <code>lo ≤ mid < hi</code>, 两个分支都让范围严格变小。如果写成 <code>lo = mid</code>, 当 hi = lo + 1 时 mid = lo, 就永远不动了。</p>
 <p>Python 里 <code>bisect_left(a, x)</code> 就是 pred = <code>a[i] >= x</code> 的 first_true, <code>bisect_right(a, x)</code> 是 <code>a[i] > x</code>。</p>
 <details><summary>first_true 模板代码</summary>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">first_true</span>(lo, hi, pred):</span><span class="l">    <span class="s">&quot;&quot;</span>&quot;在 [lo, hi) 里找第一个 pred 为 <span class="k">True</span> 的位置, 都是 <span class="k">False</span> 就返回 hi。</span><span class="l">    前提: pred 在 [lo, hi) 上是 <span class="k">False</span>...<span class="k">False</span> <span class="k">True</span>...<span class="k">True</span> (单调)。<span class="s">&quot;&quot;</span>&quot;</span><span class="l">    <span class="k">while</span> lo &lt; hi:                 <span class="c"># invariant: &lt; lo 全是 False, &gt;= hi 全是 True</span></span><span class="l">        mid = (lo + hi) // 2       <span class="c"># lo &lt;= mid &lt; hi, 所以 mid 一定在区间里</span></span><span class="l">        <span class="k">if</span> <span class="f">pred</span>(mid):</span><span class="l">            <span class="c"># mid 是 True: 分界点在 mid 或 mid 左边, mid 留着</span></span><span class="l">            hi = mid</span><span class="l">        <span class="k">else</span>:</span><span class="l">            <span class="c"># mid 是 False: 分界点一定在 mid 右边, mid 丢掉</span></span><span class="l">            lo = mid + 1</span><span class="l">    <span class="r">return</span> lo                      <span class="c"># lo == hi: 就是分界点</span></span></div>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">first_true</span>(lo, hi, pred):</span><span class="l">    <span class="s">&quot;&quot;</span>&quot;在 [lo, hi) 里找第一个 pred 为 <span class="k">True</span> 的位置, 都是 <span class="k">False</span> 就返回 hi。</span><span class="l">    前提: pred 在 [lo, hi) 上是 <span class="k">False</span>...<span class="k">False</span> <span class="k">True</span>...<span class="k">True</span> (单调)。<span class="s">&quot;&quot;</span>&quot;</span><span class="l">    <span class="c"># invariant: &lt; lo 全是 False, &gt;= hi 全是 True</span></span><span class="l">    <span class="k">while</span> lo &lt; hi:</span><span class="l">        mid = (lo + hi) // 2       <span class="c"># lo &lt;= mid &lt; hi, 所以 mid 一定在区间里</span></span><span class="l">        <span class="k">if</span> <span class="f">pred</span>(mid):</span><span class="l">            <span class="c"># mid 是 True: 分界点在 mid 或 mid 左边, mid 留着</span></span><span class="l">            hi = mid</span><span class="l">        <span class="k">else</span>:</span><span class="l">            <span class="c"># mid 是 False: 分界点一定在 mid 右边, mid 丢掉</span></span><span class="l">            lo = mid + 1</span><span class="l">    <span class="r">return</span> lo                      <span class="c"># lo == hi: 就是分界点</span></span></div>
 </details>
 <p class="note"><b>记:</b>二分 = 找一个"前面全否、后面全是"的条件, 找第一个"是"。是: hi = mid; 否: lo = mid + 1; 返回 lo。</p>
 <h2>2. Find Minimum in Rotated Sorted Array</h2>
@@ -215,7 +215,7 @@ ol,ul{padding-left:24px}li{margin:4px 0}
 <h3>复杂度</h3>
 <p>Time <code>O(log n)</code>, Space <code>O(1)</code>。</p>
 <details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">find_min</span>(nums):</span><span class="l">    last = nums[-1]</span><span class="l">    <span class="c"># 左段 (旋转前较大的那段) 全 &gt; last, 右段全 &lt;= last: False...False True...True</span></span><span class="l">    i = <span class="f">first_true</span>(0, <span class="t">len</span>(nums), <span class="k">lambda</span> i: nums[i] &lt;= last)</span><span class="l">    <span class="r">return</span> nums[i]</span></div>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">find_min</span>(nums):</span><span class="l">    last = nums[-1]</span><span class="l">    <span class="c"># 左段 (旋转前较大的那段) 全 &gt; last, 右段全 &lt;= last: False...False True...</span></span><span class="l">    <span class="c"># True</span></span><span class="l">    i = <span class="f">first_true</span>(0, <span class="t">len</span>(nums), <span class="k">lambda</span> i: nums[i] &lt;= last)</span><span class="l">    <span class="r">return</span> nums[i]</span></div>
 </details>
 <p class="note"><b>记:</b>旋转数组: 拿最后一个数当尺子, nums[i] <= nums[-1] 就是可以二分的条件。</p>
 <h2>3. Search in Rotated Sorted Array</h2>
@@ -383,44 +383,45 @@ ol,ul{padding-left:24px}li{margin:4px 0}
 <h3>题目在问什么</h3>
 <p><code>piles[i]</code> 是第 i 堆香蕉的数量。Koko 每小时选一堆吃 k 根; 这一堆不够 k 根, 就吃完这一堆, 这一小时也就结束了 (不会去吃下一堆)。要在 <code>h</code> 小时内吃完所有香蕉, 求最小的整数速度 k。</p>
 <h3>看例子</h3>
-<figure><svg width="100%" viewBox="0 0 680 368" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Koko Eating Bananas examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">每小时选一堆吃 k 根; 这堆不够 k 根就吃完这堆, 这一小时也结束了。要在 h 小时内吃完所有堆, 求最小的 k</text>
-<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
-<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  piles = [3,6,7,11], h = 8  →  4</text>
-<rect x="40" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="57.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
-<text x="57.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
-<rect x="74" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="91.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">6</text>
-<text x="91.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
-<rect x="108" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="125.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">7</text>
-<text x="125.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
-<rect x="142" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="159.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">11</text>
-<text x="159.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
-<text x="40" y="150" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">k = 4: 每堆要的小时数 1 + 2 + 2 + 3 = 8 ≤ 8 ✓</text>
-<text x="40" y="168" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">k = 3: 1 + 2 + 3 + 4 = 10 &gt; 8 ✗   所以最小是 4</text>
-<line x1="40" y1="192" x2="640" y2="192" stroke="#B4B2A9" stroke-dasharray="4 4"/>
-<text x="40" y="212" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  piles = [30,11,23,4,20], h = 5  →  30</text>
-<rect x="40" y="238" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="57.0" y="254.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">30</text>
-<text x="57.0" y="280" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
-<rect x="74" y="238" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="91.0" y="254.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">11</text>
-<text x="91.0" y="280" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
-<rect x="108" y="238" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="125.0" y="254.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">23</text>
-<text x="125.0" y="280" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
-<rect x="142" y="238" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="159.0" y="254.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
-<text x="159.0" y="280" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
-<rect x="176" y="238" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="193.0" y="254.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">20</text>
-<text x="193.0" y="280" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
-<text x="40" y="300" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">只有 5 小时、5 堆, 每小时必须吃完一整堆 → k 至少是最大的那堆 30</text>
-<line x1="40" y1="324" x2="640" y2="324" stroke="#B4B2A9" stroke-dasharray="4 4"/>
-<rect x="33" y="339" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A"/>
-<text x="54" y="346" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">每堆香蕉数</text></svg>
+<figure><svg width="100%" viewBox="0 0 680 388" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Koko Eating Bananas examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">每小时选一堆吃 k 根; 这堆不够 k 根就吃完这堆, 这一小时也结束了。要在 h 小时内吃完所有堆, 求最小的 </text>
+<text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">k</text>
+<line x1="40" y1="62" x2="640" y2="62" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="82" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  piles = [3,6,7,11], h = 8  →  4</text>
+<rect x="40" y="108" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="57.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="108" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="91.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">6</text>
+<text x="91.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="108" y="108" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">7</text>
+<text x="125.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="142" y="108" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="159.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">11</text>
+<text x="159.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="40" y="170" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">k = 4: 每堆要的小时数 1 + 2 + 2 + 3 = 8 ≤ 8 ✓</text>
+<text x="40" y="188" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">k = 3: 1 + 2 + 3 + 4 = 10 &gt; 8 ✗   所以最小是 4</text>
+<line x1="40" y1="212" x2="640" y2="212" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="232" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  piles = [30,11,23,4,20], h = 5  →  30</text>
+<rect x="40" y="258" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="274.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">30</text>
+<text x="57.0" y="300" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="258" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="91.0" y="274.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">11</text>
+<text x="91.0" y="300" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="108" y="258" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.0" y="274.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">23</text>
+<text x="125.0" y="300" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="142" y="258" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="159.0" y="274.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<text x="159.0" y="300" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="176" y="258" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="193.0" y="274.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">20</text>
+<text x="193.0" y="300" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
+<text x="40" y="320" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">只有 5 小时、5 堆, 每小时必须吃完一整堆 → k 至少是最大的那堆 30</text>
+<line x1="40" y1="344" x2="640" y2="344" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="359" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="54" y="366" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">每堆香蕉数</text></svg>
 <figcaption>两个例子。</figcaption></figure>
 <p>一堆 p 根香蕉、速度 k, 要 <code>ceil(p / k)</code> 小时。总小时数就是每堆加起来。</p>
 <h3>Brute force</h3>
@@ -448,44 +449,45 @@ ol,ul{padding-left:24px}li{margin:4px 0}
 <h3>题目在问什么</h3>
 <p>包裹 <code>weights</code> 按顺序装船, 每天开一船, 一船最多装 cap 的重量。不能拆包裹, 也不能改顺序。要在 <code>days</code> 天内运完, 求最小的 cap。</p>
 <h3>看例子</h3>
-<figure><svg width="100%" viewBox="0 0 680 236" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Capacity To Ship Packages examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">包裹按顺序装船, 每天一船, 一船最多装 cap 重。不能拆包裹, 不能换顺序。要在 days 天内运完, 求最小的 cap</text>
-<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
-<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  weights = [1,2,3,4,5,6,7,8,9,10], days = 5  →  15</text>
-<rect x="40" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="57.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
-<text x="57.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
-<rect x="74" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="91.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
-<text x="91.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
-<rect x="108" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="125.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
-<text x="125.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
-<rect x="142" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="159.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
-<text x="159.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
-<rect x="176" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="193.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
-<text x="193.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
-<rect x="210" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="227.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">6</text>
-<text x="227.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">5</text>
-<rect x="244" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="261.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">7</text>
-<text x="261.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">6</text>
-<rect x="278" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="295.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">8</text>
-<text x="295.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">7</text>
-<rect x="312" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="329.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">9</text>
-<text x="329.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">8</text>
-<rect x="346" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="363.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">10</text>
-<text x="363.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">9</text>
-<text x="40" y="150" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">cap = 15: [1,2,3,4,5]=15 | [6,7]=13 | [8]=8 | [9]=9 | [10]=10 → 5 天 ✓</text>
-<text x="40" y="168" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">cap = 14: [1..4]=10 | [5,6]=11 | [7]=7 | [8]=8 | [9]=9 | [10]=10 → 6 天 ✗</text>
-<line x1="40" y1="192" x2="640" y2="192" stroke="#B4B2A9" stroke-dasharray="4 4"/>
-<rect x="33" y="207" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A"/>
-<text x="54" y="214" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">包裹重量</text></svg>
+<figure><svg width="100%" viewBox="0 0 680 256" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Capacity To Ship Packages examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">包裹按顺序装船, 每天一船, 一船最多装 cap 重。不能拆包裹, 不能换顺序。要在 days 天内运完, 求最小的 </text>
+<text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">cap</text>
+<line x1="40" y1="62" x2="640" y2="62" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="82" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  weights = [1,2,3,4,5,6,7,8,9,10], days = 5  →  15</text>
+<rect x="40" y="108" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="57.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="108" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="91.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="91.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="108" y="108" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="125.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="142" y="108" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="159.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<text x="159.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="176" y="108" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="193.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<text x="193.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="210" y="108" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="227.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">6</text>
+<text x="227.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">5</text>
+<rect x="244" y="108" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="261.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">7</text>
+<text x="261.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">6</text>
+<rect x="278" y="108" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="295.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">8</text>
+<text x="295.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">7</text>
+<rect x="312" y="108" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="329.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">9</text>
+<text x="329.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">8</text>
+<rect x="346" y="108" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="363.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">10</text>
+<text x="363.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">9</text>
+<text x="40" y="170" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">cap = 15: [1,2,3,4,5]=15 | [6,7]=13 | [8]=8 | [9]=9 | [10]=10 → 5 天 ✓</text>
+<text x="40" y="188" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">cap = 14: [1..4]=10 | [5,6]=11 | [7]=7 | [8]=8 | [9]=9 | [10]=10 → 6 天 ✗</text>
+<line x1="40" y1="212" x2="640" y2="212" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="227" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="54" y="234" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">包裹重量</text></svg>
 <figcaption>例子: cap = 15 刚好 5 天, cap = 14 要 6 天。</figcaption></figure>
 <h3>Brute force</h3>
 <p>从 cap = max(weights) 开始往上试, 每个 cap 模拟一遍装船 <code>O(n)</code>, 最多试到 sum(weights)。<code>O(n × sum)</code>。</p>

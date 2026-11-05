@@ -376,14 +376,14 @@ ol,ul{padding-left:24px}li{margin:4px 0}
 <p>为什么一定要 pop (撤销选择)? 因为整个过程只用一个 path list。从一个分支退回来, 必须把这个分支加进去的东西拿掉, 才能去试下一个分支。</p>
 <p>复杂度基本等于 decision tree 的节点数。所以优化的方向只有一个: <b>剪枝</b>, 尽早发现某个分支不可能有答案, 不往下走 (第 3、5、8 题)。</p>
 <details><summary>通用模板代码</summary>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">backtrack</span>(path, choices):</span><span class="l">    <span class="k">if</span> <span class="f">is_done</span>(path):                 <span class="c"># 1. 结束条件: path 已经是一个完整答案</span></span><span class="l">        res.<span class="f">append</span>(path[:])           <span class="c">#    必须 copy: path 还会继续被改</span></span><span class="l">        <span class="r">return</span></span><span class="l">    <span class="k">for</span> c <span class="k">in</span> choices:                 <span class="c"># 2. choices: 此刻还能选什么</span></span><span class="l">        <span class="k">if</span> <span class="k">not</span> <span class="f">valid</span>(path, c):        <span class="c">#    约束剪枝: 这个选择一定走不通, 不进去</span></span><span class="l">            <span class="k">continue</span></span><span class="l">        path.<span class="f">append</span>(c)                <span class="c"># 3. 做选择</span></span><span class="l">        <span class="f">backtrack</span>(path, <span class="f">next_choices</span>(path, c))   <span class="c"># 4. 递归: 树往下一层</span></span><span class="l">        path.<span class="f">pop</span>()                    <span class="c"># 5. 撤销选择: path 回到 &quot;做选择之前&quot;</span></span></div>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">backtrack</span>(path, choices):</span><span class="l">    <span class="k">if</span> <span class="f">is_done</span>(path):                 <span class="c"># 1. 结束条件: path 已经是一个完整答案</span></span><span class="l">        res.<span class="f">append</span>(path[:])           <span class="c">#    必须 copy: path 还会继续被改</span></span><span class="l">        <span class="r">return</span></span><span class="l">    <span class="k">for</span> c <span class="k">in</span> choices:                 <span class="c"># 2. choices: 此刻还能选什么</span></span><span class="l">        <span class="c">#    约束剪枝: 这个选择一定走不通, 不进去</span></span><span class="l">        <span class="k">if</span> <span class="k">not</span> <span class="f">valid</span>(path, c):</span><span class="l">            <span class="k">continue</span></span><span class="l">        path.<span class="f">append</span>(c)                <span class="c"># 3. 做选择</span></span><span class="l">        <span class="f">backtrack</span>(path, <span class="f">next_choices</span>(path, c))   <span class="c"># 4. 递归: 树往下一层</span></span><span class="l">        path.<span class="f">pop</span>()                    <span class="c"># 5. 撤销选择: path 回到 &quot;做选择之前&quot;</span></span></div>
 </details>
 <p class="note"><b>记:</b>backtracking = decision tree 上的 DFS。做选择 → 递归 → 撤销选择。记录答案时复制 path。</p>
 <h2>2. Permutations</h2>
 <h3>题目在问什么</h3>
 <p>给一个数组, 里面的数互不相同。返回<b>所有的排列</b>: 每个数恰好用一次, 顺序不同就算不同的排列。</p>
 <h3>看例子</h3>
-<figure><svg width="100%" viewBox="0 0 680 170" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Permutations examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">数组里的数互不相同。返回所有排列 (每个数都用一次, 顺序不同就算不同)</text>
+<figure><svg width="100%" viewBox="0 0 680 188" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Permutations examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">数组里的数互不相同。返回所有排列 (每个数都用一次, 顺序不同就算不同)</text>
 <line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
 <text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  nums = [1,2,3]  →  6 个排列</text>
 <rect x="40" y="88" width="76" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
@@ -398,8 +398,9 @@ ol,ul{padding-left:24px}li{margin:4px 0}
 <text x="382.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[3,1,2]</text>
 <rect x="420" y="88" width="76" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
 <text x="458.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[3,2,1]</text>
-<text x="40" y="134" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">第一个位置 3 种选法, 第二个 2 种, 第三个 1 种: 3 × 2 × 1 = 6。和子集不同, [1,2] 和 [2,1] 是两个排列</text>
-<line x1="40" y1="158" x2="640" y2="158" stroke="#B4B2A9" stroke-dasharray="4 4"/></svg>
+<text x="40" y="134" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">第一个位置 3 种选法, 第二个 2 种, 第三个 1 种: 3 × 2 × 1 = 6。和子集不同, [1,2] 和 [2,1] 是两个</text>
+<text x="40" y="152" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">排列</text>
+<line x1="40" y1="176" x2="640" y2="176" stroke="#B4B2A9" stroke-dasharray="4 4"/></svg>
 <figcaption>例子。</figcaption></figure>
 <h3>Brute force</h3>
 <p>同样是循环层数写不死的问题。</p>
@@ -992,7 +993,7 @@ ol,ul{padding-left:24px}li{margin:4px 0}
 <h3>复杂度</h3>
 <p>Time 是 decision tree 的大小, 上界大约 <code>O(n^(target / min))</code>。Space <code>O(target / min)</code>。</p>
 <details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">combination_sum</span>(candidates, target):</span><span class="l">    <span class="c"># 排序: 一旦 c &gt; remain, 后面更大的也不行, 可以 break</span></span><span class="l">    candidates.<span class="f">sort</span>()</span><span class="l">    res, path = [], []</span><span class="l">    <span class="k">def</span> <span class="f">dfs</span>(start, remain):     <span class="c"># remain = target - sum(path), 不用每次重算 sum</span></span><span class="l">        <span class="k">if</span> remain == 0:         <span class="c"># 结束条件: 刚好凑够</span></span><span class="l">            res.<span class="f">append</span>(path[:])</span><span class="l">            <span class="r">return</span></span><span class="l">        <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(start, <span class="t">len</span>(candidates)):</span><span class="l">            c = candidates[i]</span><span class="l">            <span class="k">if</span> c &gt; remain:      <span class="c"># 剪枝: 超了; 排过序, 后面的更大, 直接 break</span></span><span class="l">                <span class="k">break</span></span><span class="l">            path.<span class="f">append</span>(c)</span><span class="l">            <span class="f">dfs</span>(i, remain - c)  <span class="c"># 关键: 传 i (不是 i+1) =&gt; 同一个数可以重复选</span></span><span class="l">            path.<span class="f">pop</span>()</span><span class="l">    <span class="f">dfs</span>(0, target)</span><span class="l">    <span class="r">return</span> res</span></div>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">combination_sum</span>(candidates, target):</span><span class="l">    <span class="c"># 排序: 一旦 c &gt; remain, 后面更大的也不行, 可以 break</span></span><span class="l">    candidates.<span class="f">sort</span>()</span><span class="l">    res, path = [], []</span><span class="l">    <span class="c"># remain = target - sum(path), 不用每次重算 sum</span></span><span class="l">    <span class="k">def</span> <span class="f">dfs</span>(start, remain):</span><span class="l">        <span class="k">if</span> remain == 0:         <span class="c"># 结束条件: 刚好凑够</span></span><span class="l">            res.<span class="f">append</span>(path[:])</span><span class="l">            <span class="r">return</span></span><span class="l">        <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(start, <span class="t">len</span>(candidates)):</span><span class="l">            c = candidates[i]</span><span class="l">            <span class="k">if</span> c &gt; remain:      <span class="c"># 剪枝: 超了; 排过序, 后面的更大, 直接 break</span></span><span class="l">                <span class="k">break</span></span><span class="l">            path.<span class="f">append</span>(c)</span><span class="l">            <span class="f">dfs</span>(i, remain - c)  <span class="c"># 关键: 传 i (不是 i+1) =&gt; 同一个数可以重复选</span></span><span class="l">            path.<span class="f">pop</span>()</span><span class="l">    <span class="f">dfs</span>(0, target)</span><span class="l">    <span class="r">return</span> res</span></div>
 </details>
 <p class="note"><b>记:</b>可以重复选: 递归传 i; 不能重复选: 传 i + 1。排序后可以用 break 剪枝。</p>
 <h2>4. Combination Sum II</h2>
@@ -1532,38 +1533,38 @@ ol,ul{padding-left:24px}li{margin:4px 0}
 <line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
 <text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  digits = &quot;23&quot;  →  9 个</text>
 <text x="40" y="103" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">2 → abc</text>
-<rect x="104" y="88" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="126.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">a</text>
-<rect x="148" y="88" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="170.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">b</text>
-<rect x="192" y="88" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="214.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">c</text>
+<rect x="107.60000000000001" y="88" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="129.60000000000002" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">a</text>
+<rect x="151.60000000000002" y="88" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="173.60000000000002" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">b</text>
+<rect x="195.60000000000002" y="88" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="217.60000000000002" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">c</text>
 <text x="40" y="149" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">3 → def</text>
-<rect x="104" y="134" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="126.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">d</text>
-<rect x="148" y="134" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="170.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">e</text>
-<rect x="192" y="134" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="214.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">f</text>
+<rect x="107.60000000000001" y="134" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="129.60000000000002" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">d</text>
+<rect x="151.60000000000002" y="134" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="173.60000000000002" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">e</text>
+<rect x="195.60000000000002" y="134" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="217.60000000000002" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">f</text>
 <text x="40" y="195" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">答案</text>
-<rect x="104" y="180" width="44" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="126.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">ad</text>
-<rect x="148" y="180" width="44" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="170.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">ae</text>
-<rect x="192" y="180" width="44" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="214.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">af</text>
-<rect x="236" y="180" width="44" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="258.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">bd</text>
-<rect x="280" y="180" width="44" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="302.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">be</text>
-<rect x="324" y="180" width="44" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="346.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">bf</text>
-<rect x="368" y="180" width="44" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="390.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">cd</text>
-<rect x="412" y="180" width="44" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="434.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">ce</text>
-<rect x="456" y="180" width="44" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="478.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">cf</text>
+<rect x="107.60000000000001" y="180" width="44" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="129.60000000000002" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">ad</text>
+<rect x="151.60000000000002" y="180" width="44" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="173.60000000000002" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">ae</text>
+<rect x="195.60000000000002" y="180" width="44" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="217.60000000000002" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">af</text>
+<rect x="239.60000000000002" y="180" width="44" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="261.6" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">bd</text>
+<rect x="283.6" y="180" width="44" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="305.6" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">be</text>
+<rect x="327.6" y="180" width="44" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="349.6" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">bf</text>
+<rect x="371.6" y="180" width="44" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="393.6" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">cd</text>
+<rect x="415.6" y="180" width="44" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="437.6" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">ce</text>
+<rect x="459.6" y="180" width="44" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="481.6" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">cf</text>
 <text x="40" y="226" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">第一位从 abc 里选一个, 第二位从 def 里选一个: 3 × 3 = 9</text>
 <line x1="40" y1="250" x2="640" y2="250" stroke="#B4B2A9" stroke-dasharray="4 4"/></svg>
 <figcaption>例子。</figcaption></figure>
@@ -1790,43 +1791,44 @@ ol,ul{padding-left:24px}li{margin:4px 0}
 <h3>题目在问什么</h3>
 <p>一个字母 grid 和一个单词 word。能不能从某个格子出发, 每一步走到上下左右相邻的格子, 依次拼出 word? <b>同一个格子在一条路径里只能用一次</b>。</p>
 <h3>看例子</h3>
-<figure><svg width="100%" viewBox="0 0 680 358" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Word Search examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">grid 里每个格子一个字母。能不能从某个格子出发, 每步走到上下左右相邻的格子, 拼出 word? 同一个格子不能用两次</text>
-<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
-<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  word = &quot;ABCCED&quot;  →  True</text>
-<text x="40" y="103" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">row 0</text>
-<rect x="104" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="121.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">A</text>
-<rect x="138" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="155.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">B</text>
-<rect x="172" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="189.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">C</text>
-<rect x="206" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="223.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">E</text>
-<text x="40" y="149" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">row 1</text>
-<rect x="104" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="121.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">S</text>
-<rect x="138" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="155.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">F</text>
-<rect x="172" y="134" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="189.0" y="150.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">C</text>
-<rect x="206" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="223.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">S</text>
-<text x="40" y="195" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">row 2</text>
-<rect x="104" y="180" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="121.0" y="196.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">A</text>
-<rect x="138" y="180" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="155.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">D</text>
-<rect x="172" y="180" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="189.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">E</text>
-<rect x="206" y="180" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="223.0" y="196.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">E</text>
-<text x="40" y="226" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">A(0,0) → B(0,1) → C(0,2) → C(1,2) → E(2,2) → D(2,1)</text>
-<line x1="40" y1="250" x2="640" y2="250" stroke="#B4B2A9" stroke-dasharray="4 4"/>
-<text x="40" y="270" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  word = &quot;ABCB&quot;  →  False</text>
-<text x="40" y="290" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">A → B → C 之后, 下一个 B 只能是刚用过的 (0,1), 不允许重复使用</text>
-<line x1="40" y1="314" x2="640" y2="314" stroke="#B4B2A9" stroke-dasharray="4 4"/>
-<rect x="33" y="329" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
-<text x="54" y="336" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">路径</text></svg>
+<figure><svg width="100%" viewBox="0 0 680 378" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Word Search examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">grid 里每个格子一个字母。能不能从某个格子出发, 每步走到上下左右相邻的格子, 拼出 word? 同一个格子不</text>
+<text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">能用两次</text>
+<line x1="40" y1="62" x2="640" y2="62" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="82" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  word = &quot;ABCCED&quot;  →  True</text>
+<text x="40" y="123" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">row 0</text>
+<rect x="104" y="108" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="121.0" y="124.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">A</text>
+<rect x="138" y="108" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="155.0" y="124.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">B</text>
+<rect x="172" y="108" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="189.0" y="124.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">C</text>
+<rect x="206" y="108" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="223.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">E</text>
+<text x="40" y="169" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">row 1</text>
+<rect x="104" y="154" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="170.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">S</text>
+<rect x="138" y="154" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="155.0" y="170.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">F</text>
+<rect x="172" y="154" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="189.0" y="170.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">C</text>
+<rect x="206" y="154" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="223.0" y="170.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">S</text>
+<text x="40" y="215" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">row 2</text>
+<rect x="104" y="200" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="216.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">A</text>
+<rect x="138" y="200" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="155.0" y="216.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">D</text>
+<rect x="172" y="200" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="189.0" y="216.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">E</text>
+<rect x="206" y="200" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="223.0" y="216.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">E</text>
+<text x="40" y="246" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">A(0,0) → B(0,1) → C(0,2) → C(1,2) → E(2,2) → D(2,1)</text>
+<line x1="40" y1="270" x2="640" y2="270" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="290" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  word = &quot;ABCB&quot;  →  False</text>
+<text x="40" y="310" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">A → B → C 之后, 下一个 B 只能是刚用过的 (0,1), 不允许重复使用</text>
+<line x1="40" y1="334" x2="640" y2="334" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="349" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="356" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">路径</text></svg>
 <figcaption>两个例子。</figcaption></figure>
 <h3>Brute force</h3>
 <p>从每个格子出发, 枚举所有可能的路径。不剪枝的话路径数量是指数级的。</p>
@@ -2395,49 +2397,50 @@ ol,ul{padding-left:24px}li{margin:4px 0}
 <h3>题目在问什么</h3>
 <p>在 n × n 的棋盘上放 n 个皇后, 让它们互相攻击不到。皇后能攻击同一行、同一列、同一条斜线 (两个方向) 上的任何棋子。返回所有的放法。</p>
 <h3>看例子</h3>
-<figure><svg width="100%" viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>N-Queens examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">在 n × n 的棋盘上放 n 个皇后, 让它们互相攻击不到 (同一行、同一列、同一条斜线都不能有两个)。返回所有放法</text>
-<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
-<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  n = 4  →  2 种放法 (下面是其中一种)</text>
-<text x="40" y="103" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">row 0</text>
-<rect x="104" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="121.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">.</text>
-<rect x="138" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="155.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">Q</text>
-<rect x="172" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="189.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">.</text>
-<rect x="206" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="223.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">.</text>
-<text x="40" y="149" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">row 1</text>
-<rect x="104" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="121.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">.</text>
-<rect x="138" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="155.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">.</text>
-<rect x="172" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="189.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">.</text>
-<rect x="206" y="134" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="223.0" y="150.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">Q</text>
-<text x="40" y="195" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">row 2</text>
-<rect x="104" y="180" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="121.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">Q</text>
-<rect x="138" y="180" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="155.0" y="196.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">.</text>
-<rect x="172" y="180" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="189.0" y="196.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">.</text>
-<rect x="206" y="180" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="223.0" y="196.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">.</text>
-<text x="40" y="241" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">row 3</text>
-<rect x="104" y="226" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="121.0" y="242.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">.</text>
-<rect x="138" y="226" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="155.0" y="242.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">.</text>
-<rect x="172" y="226" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="189.0" y="242.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">Q</text>
-<rect x="206" y="226" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="223.0" y="242.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">.</text>
-<text x="40" y="272" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">每行、每列、每条斜线都只有一个 Q。另一种放法是它的左右镜像</text>
-<line x1="40" y1="296" x2="640" y2="296" stroke="#B4B2A9" stroke-dasharray="4 4"/>
-<rect x="33" y="311" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
-<text x="54" y="318" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">皇后</text></svg>
+<figure><svg width="100%" viewBox="0 0 680 360" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>N-Queens examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">在 n × n 的棋盘上放 n 个皇后, 让它们互相攻击不到 (同一行、同一列、同一条斜线都不能有两个)。返回所</text>
+<text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">有放法</text>
+<line x1="40" y1="62" x2="640" y2="62" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="82" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  n = 4  →  2 种放法 (下面是其中一种)</text>
+<text x="40" y="123" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">row 0</text>
+<rect x="104" y="108" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">.</text>
+<rect x="138" y="108" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="155.0" y="124.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">Q</text>
+<rect x="172" y="108" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="189.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">.</text>
+<rect x="206" y="108" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="223.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">.</text>
+<text x="40" y="169" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">row 1</text>
+<rect x="104" y="154" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="170.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">.</text>
+<rect x="138" y="154" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="155.0" y="170.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">.</text>
+<rect x="172" y="154" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="189.0" y="170.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">.</text>
+<rect x="206" y="154" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="223.0" y="170.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">Q</text>
+<text x="40" y="215" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">row 2</text>
+<rect x="104" y="200" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="121.0" y="216.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">Q</text>
+<rect x="138" y="200" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="155.0" y="216.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">.</text>
+<rect x="172" y="200" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="189.0" y="216.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">.</text>
+<rect x="206" y="200" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="223.0" y="216.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">.</text>
+<text x="40" y="261" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">row 3</text>
+<rect x="104" y="246" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="262.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">.</text>
+<rect x="138" y="246" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="155.0" y="262.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">.</text>
+<rect x="172" y="246" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="189.0" y="262.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">Q</text>
+<rect x="206" y="246" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="223.0" y="262.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">.</text>
+<text x="40" y="292" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">每行、每列、每条斜线都只有一个 Q。另一种放法是它的左右镜像</text>
+<line x1="40" y1="316" x2="640" y2="316" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="331" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="338" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">皇后</text></svg>
 <figcaption>例子。</figcaption></figure>
 <h3>Brute force</h3>
 <p>在 n² 个格子里选 n 个放皇后, 再检查。n = 8 时组合数超过 40 亿。</p>
@@ -2785,7 +2788,7 @@ ol,ul{padding-left:24px}li{margin:4px 0}
 <h3>复杂度</h3>
 <p>Time 上界 <code>O(n!)</code>, 实际因为剪枝小很多。Space <code>O(n)</code>。</p>
 <details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">solve_n_queens</span>(n):</span><span class="l">    res, path = [], []    <span class="c"># path[r] = 第 r 行皇后所在的列</span></span><span class="l">                          <span class="c"># 三个 set: 已占用的 列 / r - c (\ 对角线) / r + c (/ 对角线)</span></span><span class="l">    cols, diag, anti = <span class="t">set</span>(), <span class="t">set</span>(), <span class="t">set</span>()</span><span class="l">    <span class="k">def</span> <span class="f">dfs</span>(r):</span><span class="l">        <span class="k">if</span> r == n:        <span class="c"># n 行都放好了</span></span><span class="l">            res.<span class="f">append</span>([<span class="s">&quot;.&quot;</span> * c + <span class="s">&quot;Q&quot;</span> + <span class="s">&quot;.&quot;</span> * (n - c - 1) <span class="k">for</span> c <span class="k">in</span> path])</span><span class="l">            <span class="r">return</span></span><span class="l">        <span class="k">for</span> c <span class="k">in</span> <span class="t">range</span>(n):</span><span class="l">            <span class="k">if</span> c <span class="k">in</span> cols <span class="k">or</span> (r - c) <span class="k">in</span> diag <span class="k">or</span> (r + c) <span class="k">in</span> anti:</span><span class="l">                <span class="k">continue</span>  <span class="c"># 剪枝: 同列或同一条对角线</span></span><span class="l">                          <span class="c"># 做选择: 三个 set 各 add 一个值, path 也要 append</span></span><span class="l">            cols.<span class="f">add</span>(c); diag.<span class="f">add</span>(r - c); anti.<span class="f">add</span>(r + c)</span><span class="l">            path.<span class="f">append</span>(c)</span><span class="l">            <span class="f">dfs</span>(r + 1)</span><span class="l">                          <span class="c"># 撤销: 三个 set 和 path 全部还原</span></span><span class="l">            path.<span class="f">pop</span>()</span><span class="l">            cols.<span class="f">remove</span>(c); diag.<span class="f">remove</span>(r - c); anti.<span class="f">remove</span>(r + c)</span><span class="l">    <span class="f">dfs</span>(0)</span><span class="l">    <span class="r">return</span> res</span></div>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">solve_n_queens</span>(n):</span><span class="l">    res, path = [], []    <span class="c"># path[r] = 第 r 行皇后所在的列</span></span><span class="l">                          <span class="c"># 三个 set: 已占用的 列 / r - c (\ 对角线) / r + c (</span></span><span class="l">                          <span class="c"># / 对角线)</span></span><span class="l">    cols, diag, anti = <span class="t">set</span>(), <span class="t">set</span>(), <span class="t">set</span>()</span><span class="l">    <span class="k">def</span> <span class="f">dfs</span>(r):</span><span class="l">        <span class="k">if</span> r == n:        <span class="c"># n 行都放好了</span></span><span class="l">            res.<span class="f">append</span>([<span class="s">&quot;.&quot;</span> * c + <span class="s">&quot;Q&quot;</span> + <span class="s">&quot;.&quot;</span> * (n - c - 1) <span class="k">for</span> c <span class="k">in</span> path])</span><span class="l">            <span class="r">return</span></span><span class="l">        <span class="k">for</span> c <span class="k">in</span> <span class="t">range</span>(n):</span><span class="l">            <span class="k">if</span> c <span class="k">in</span> cols <span class="k">or</span> (r - c) <span class="k">in</span> diag <span class="k">or</span> (r + c) <span class="k">in</span> anti:</span><span class="l">                <span class="k">continue</span>  <span class="c"># 剪枝: 同列或同一条对角线</span></span><span class="l">                          <span class="c"># 做选择: 三个 set 各 add 一个值, path 也要 append</span></span><span class="l">            cols.<span class="f">add</span>(c); diag.<span class="f">add</span>(r - c); anti.<span class="f">add</span>(r + c)</span><span class="l">            path.<span class="f">append</span>(c)</span><span class="l">            <span class="f">dfs</span>(r + 1)</span><span class="l">                          <span class="c"># 撤销: 三个 set 和 path 全部还原</span></span><span class="l">            path.<span class="f">pop</span>()</span><span class="l">            cols.<span class="f">remove</span>(c); diag.<span class="f">remove</span>(r - c); anti.<span class="f">remove</span>(r + c)</span><span class="l">    <span class="f">dfs</span>(0)</span><span class="l">    <span class="r">return</span> res</span></div>
 </details>
 <p class="note"><b>记:</b>多个约束: 每个约束一个 set, 放之前 O(1) 检查, 放下 add, 退回 remove。</p>
 <h2>9. 识别信号: 看到什么, 就想到 backtracking</h2>

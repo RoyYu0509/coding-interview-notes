@@ -117,7 +117,8 @@ def trace_svg(name, title, desc, hdr, colheads, rows, footer, leg, inp_w=64, rin
     """rows: dict(inp=[l1,l2], pre=[labels], pops=[(slot,label,reason,[calc lines])],
     keep=[(slot,label)], push=label|None, post=[labels], nopop=str|None, calc=[lines])"""
     n_slots = max(max(len(r["pre"]), len(r["post"])) for r in rows)
-    rh = n_slots * SLOT + 26
+    wait_h = 30 if any(r.get("wait") is not None for r in rows) else 0
+    rh = n_slots * SLOT + 26 + wait_h
     XA, XB, XC = 350, 432, 514
     body = []
     for i, h in enumerate(hdr):
@@ -146,6 +147,8 @@ def trace_svg(name, title, desc, hdr, colheads, rows, footer, leg, inp_w=64, rin
             return bottom - SLOT * s - SLOT / 2 - 2
         for bx in (XA, XB):
             body.append(bucket(bx, btop, bottom, CW + 12))
+        if r.get("wait") is not None:   # incoming element hovering above the stack, waiting to be pushed
+            body.append(cell(XA + 6, btop - 28, CW, 24, NEW, r["wait"]))
         # A: remaining at original slots
         for k, (s, lab) in enumerate(r["keep"]):
             istop = (k == 0) if ring_head else (k == len(r["keep"]) - 1)

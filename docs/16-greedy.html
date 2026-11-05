@@ -93,7 +93,7 @@ ol,ul{padding-left:24px}li{margin:4px 0}
 <p>面试里不需要写严格的证明, 但要能用一两句话说出"为什么这样选不会吃亏"。说不出来, 或者能找到反例, 就换成 DP (14)。</p>
 <details><summary>代码: Coin Change 的 DP 解法, 以及 greedy 的一般形式</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">coin_change_dp</span>(coins, amount):</span><span class="l">    INF = <span class="t">float</span>(<span class="s">&quot;inf&quot;</span>)</span><span class="l">    dp = [0] + [INF] * amount  <span class="c"># dp[a] = 凑出 a 的最少枚数</span></span><span class="l">    <span class="k">for</span> a <span class="k">in</span> <span class="t">range</span>(1, amount + 1):</span><span class="l">        <span class="k">for</span> c <span class="k">in</span> coins:        <span class="c"># 试每一种最后一枚, 而不是只赌最大的</span></span><span class="l">            <span class="k">if</span> c &lt;= a:</span><span class="l">                dp[a] = <span class="t">min</span>(dp[a], dp[a - c] + 1)</span><span class="l">    <span class="r">return</span> dp[amount] <span class="k">if</span> dp[amount] &lt; INF <span class="k">else</span> -1</span></div>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">greedy</span>(items):</span><span class="l">    <span class="c"># 1) 有些题需要先排序 (Largest Number / interval 按 end)</span></span><span class="l">    items.<span class="f">sort</span>(key=...)</span><span class="l">    state = 初始值          <span class="c"># 2) 一个(或两个)汇总量: max_reach / tank / end ...</span></span><span class="l">    <span class="k">for</span> x <span class="k">in</span> items:      <span class="c"># 3) 一遍扫描, 每步只看 x 和 state, 不回头</span></span><span class="l">        做局部最优的选择, 更新 state</span><span class="l">    <span class="r">return</span> 答案</span></div>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">greedy</span>(items):</span><span class="l">    <span class="c"># 1) 有些题需要先排序 (Largest Number / interval 按 end)</span></span><span class="l">    items.<span class="f">sort</span>(key=...)</span><span class="l">    <span class="c"># 2) 一个(或两个)汇总量: max_reach / tank / end ...</span></span><span class="l">    state = 初始值</span><span class="l">    <span class="k">for</span> x <span class="k">in</span> items:      <span class="c"># 3) 一遍扫描, 每步只看 x 和 state, 不回头</span></span><span class="l">        做局部最优的选择, 更新 state</span><span class="l">    <span class="r">return</span> 答案</span></div>
 </details>
 <table><tr><th>#</th><th>题目</th><th>考过的公司数</th><th>greedy 的选择</th></tr><tr><td>1</td><td>Jump Game</td><td>31</td><td>只记"最远能到哪"</td></tr><tr><td>2</td><td>Jump Game II</td><td>28</td><td>同上, 再按层数跳了几次</td></tr><tr><td>3</td><td>Gas Station</td><td>27</td><td>油箱变负就换起点</td></tr><tr><td>4</td><td>Best Time to Buy and Sell Stock II</td><td>26</td><td>所有上涨都吃掉</td></tr><tr><td>5</td><td>Candy</td><td>17</td><td>两个方向的约束, 分两遍扫</td></tr><tr><td>6</td><td>Largest Number</td><td>17</td><td>自定义排序</td></tr><tr><td>7</td><td>Partition Labels</td><td>8</td><td>用每个字母最后出现的位置当边界</td></tr></table>
 <p>每道题的顺序: <b>题目在问什么 → 看例子 → brute force → intuition → 算法 → 手动走一遍 → 复杂度</b>。代码放在最后, 默认折叠。</p>
@@ -307,7 +307,7 @@ ol,ul{padding-left:24px}li{margin:4px 0}
 <h3>复杂度</h3>
 <p>Time <code>O(n)</code>, Space <code>O(1)</code>。</p>
 <details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">can_jump</span>(nums):</span><span class="l">    max_reach = 0                             <span class="c"># invariant: 0..max_reach 全部可达</span></span><span class="l">    <span class="k">for</span> i, step <span class="k">in</span> <span class="t">enumerate</span>(nums):</span><span class="l">        <span class="k">if</span> i &gt; max_reach:                     <span class="c"># 连 i 都够不到 -&gt; 后面全都够不到</span></span><span class="l">            <span class="r">return</span> <span class="k">False</span></span><span class="l">        max_reach = <span class="t">max</span>(max_reach, i + step)  <span class="c"># 从 i 起跳最远到 i + step</span></span><span class="l">    <span class="r">return</span> <span class="k">True</span></span></div>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">can_jump</span>(nums):</span><span class="l">    <span class="c"># invariant: 0..max_reach 全部可达</span></span><span class="l">    max_reach = 0</span><span class="l">    <span class="k">for</span> i, step <span class="k">in</span> <span class="t">enumerate</span>(nums):</span><span class="l">        <span class="c"># 连 i 都够不到 -&gt; 后面全都够不到</span></span><span class="l">        <span class="k">if</span> i &gt; max_reach:</span><span class="l">            <span class="r">return</span> <span class="k">False</span></span><span class="l">        max_reach = <span class="t">max</span>(max_reach, i + step)  <span class="c"># 从 i 起跳最远到 i + step</span></span><span class="l">    <span class="r">return</span> <span class="k">True</span></span></div>
 </details>
 <p class="note"><b>记:</b>能到达的位置是一个连续区间时, 只维护它的右端点 max_reach。</p>
 <h2>2. Jump Game II</h2>
@@ -541,49 +541,50 @@ ol,ul{padding-left:24px}li{margin:4px 0}
 <h3>题目在问什么</h3>
 <p>环形公路上有 n 个加油站。在站 i 可以加 <code>gas[i]</code> 升油, 从站 i 开到站 i+1 要花 <code>cost[i]</code> 升。油箱一开始是空的, 容量无限。从哪一站出发能绕一整圈回来? 有解的话答案唯一, 没有就返回 -1。</p>
 <h3>看例子</h3>
-<figure><svg width="100%" viewBox="0 0 680 312" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Gas Station examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">环形公路上 n 个加油站。在站 i 能加 gas[i] 升, 从 i 开到 i+1 要 cost[i] 升。油箱一开始是空的。从哪一站出发能绕一圈? 没有就 -1</text>
-<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
-<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  gas = [1,2,3,4,5], cost = [3,4,5,1,2]  →  3</text>
-<text x="40" y="103" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">gas</text>
-<rect x="104" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="121.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
-<rect x="138" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="155.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
-<rect x="172" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="189.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
-<rect x="206" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="223.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
-<rect x="240" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="257.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
-<text x="40" y="149" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">cost</text>
-<rect x="104" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="121.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
-<rect x="138" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="155.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
-<rect x="172" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="189.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
-<rect x="206" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="223.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
-<rect x="240" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="257.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
-<text x="40" y="195" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">gas-cost</text>
-<rect x="104" y="180" width="34" height="30" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
-<text x="121.0" y="196.0" font-size="15" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">-2</text>
-<rect x="138" y="180" width="34" height="30" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
-<text x="155.0" y="196.0" font-size="15" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">-2</text>
-<rect x="172" y="180" width="34" height="30" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
-<text x="189.0" y="196.0" font-size="15" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">-2</text>
-<rect x="206" y="180" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="223.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
-<rect x="240" y="180" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="257.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
-<text x="40" y="226" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">从站 3 出发: 油箱 3 → 6 → 4 → 2 → 0, 一直不是负数, 能绕回站 3</text>
-<text x="40" y="244" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">从站 0 出发: 加 1 升, 要花 3 升, 第一段就开不过去</text>
-<line x1="40" y1="268" x2="640" y2="268" stroke="#B4B2A9" stroke-dasharray="4 4"/>
-<rect x="33" y="283" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
-<text x="54" y="290" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">净赚油</text>
-<rect x="109" y="283" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
-<text x="130" y="290" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">净亏油</text></svg>
+<figure><svg width="100%" viewBox="0 0 680 332" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Gas Station examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">环形公路上 n 个加油站。在站 i 能加 gas[i] 升, 从 i 开到 i+1 要 cost[i] 升。</text>
+<text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">油箱一开始是空的。从哪一站出发能绕一圈? 没有就 -1</text>
+<line x1="40" y1="62" x2="640" y2="62" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="82" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  gas = [1,2,3,4,5], cost = [3,4,5,1,2]  →  3</text>
+<text x="40" y="123" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">gas</text>
+<rect x="108.80000000000001" y="108" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.80000000000001" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="142.8" y="108" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="159.8" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="176.8" y="108" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="193.8" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="210.8" y="108" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="227.8" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="244.8" y="108" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="261.8" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<text x="40" y="169" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">cost</text>
+<rect x="108.80000000000001" y="154" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.80000000000001" y="170.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="142.8" y="154" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="159.8" y="170.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="176.8" y="154" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="193.8" y="170.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<rect x="210.8" y="154" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="227.8" y="170.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="244.8" y="154" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="261.8" y="170.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="40" y="215" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">gas-cost</text>
+<rect x="108.80000000000001" y="200" width="34" height="30" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
+<text x="125.80000000000001" y="216.0" font-size="15" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">-2</text>
+<rect x="142.8" y="200" width="34" height="30" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
+<text x="159.8" y="216.0" font-size="15" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">-2</text>
+<rect x="176.8" y="200" width="34" height="30" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
+<text x="193.8" y="216.0" font-size="15" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">-2</text>
+<rect x="210.8" y="200" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="227.8" y="216.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="244.8" y="200" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="261.8" y="216.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="40" y="246" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">从站 3 出发: 油箱 3 → 6 → 4 → 2 → 0, 一直不是负数, 能绕回站 3</text>
+<text x="40" y="264" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">从站 0 出发: 加 1 升, 要花 3 升, 第一段就开不过去</text>
+<line x1="40" y1="288" x2="640" y2="288" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="303" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="310" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">净赚油</text>
+<rect x="109" y="303" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
+<text x="130" y="310" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">净亏油</text></svg>
 <figcaption>例子。</figcaption></figure>
 <p>每一站的净收益是 <code>gas[i] - cost[i]</code>。从某站出发, 一路累加净收益, 中途任何时候都不能变成负数。</p>
 <h3>Brute force</h3>
@@ -1632,7 +1633,7 @@ ol,ul{padding-left:24px}li{margin:4px 0}
 <h3>复杂度</h3>
 <p>Time <code>O(n)</code>, Space <code>O(26)</code>。这和 10 里的 Merge Intervals 是一回事: 每个字母对应一个区间 [第一次出现, 最后一次出现], 合并重叠的区间。</p>
 <details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">partition_labels</span>(s):</span><span class="l">    last = {c: i <span class="k">for</span> i, c <span class="k">in</span> <span class="t">enumerate</span>(s)}  <span class="c"># 每个字母最后一次出现的位置</span></span><span class="l">    res = []</span><span class="l">    start = end = 0</span><span class="l">    <span class="k">for</span> i, c <span class="k">in</span> <span class="t">enumerate</span>(s):</span><span class="l">        end = <span class="t">max</span>(end, last[c])             <span class="c"># 这段至少要延伸到 c 的最后一次出现</span></span><span class="l">        <span class="c"># 段内所有字母都已最后一次出现 -&gt; 可以切</span></span><span class="l">        <span class="k">if</span> i == end:</span><span class="l">            res.<span class="f">append</span>(i - start + 1)</span><span class="l">            start = i + 1</span><span class="l">    <span class="r">return</span> res</span></div>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">partition_labels</span>(s):</span><span class="l">    last = {c: i <span class="k">for</span> i, c <span class="k">in</span> <span class="t">enumerate</span>(s)}  <span class="c"># 每个字母最后一次出现的位置</span></span><span class="l">    res = []</span><span class="l">    start = end = 0</span><span class="l">    <span class="k">for</span> i, c <span class="k">in</span> <span class="t">enumerate</span>(s):</span><span class="l">        <span class="c"># 这段至少要延伸到 c 的最后一次出现</span></span><span class="l">        end = <span class="t">max</span>(end, last[c])</span><span class="l">        <span class="c"># 段内所有字母都已最后一次出现 -&gt; 可以切</span></span><span class="l">        <span class="k">if</span> i == end:</span><span class="l">            res.<span class="f">append</span>(i - start + 1)</span><span class="l">            start = i + 1</span><span class="l">    <span class="r">return</span> res</span></div>
 </details>
 <p class="note"><b>记:</b>每个元素必须在同一段: 记下最后出现的位置, 边扫边延伸右边界, 追上了就切。</p>
 <h2>8. 识别信号: 看到什么, 就想到 greedy</h2>

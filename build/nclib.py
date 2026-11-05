@@ -40,6 +40,18 @@ class _S:
                       % (x - 3, y - 3, w + 6, h + 6, RING))
 
 
+def _wrap(text, size, width=600):
+    out, cur = [], ""
+    for ch in str(text):
+        if _w(cur + ch, size) > width and cur:
+            out.append(cur)
+            cur = ch.lstrip()
+        else:
+            cur += ch
+    out.append(cur)
+    return out
+
+
 def examples_svg(path, title, head, blocks, legend=None):
     """画 "看例子" 图。每个 block 是一个 example:
       title    第一行, 例: 'Example 1:  nums = [2,7,11,15], target = 9  →  [0,1]'
@@ -54,9 +66,10 @@ def examples_svg(path, title, head, blocks, legend=None):
     """
     S = _S()
     y = 18
-    for h in head:
-        S.t(40, y, h, 12, SUB)
-        y += 20
+    for h0 in head:
+        for h in _wrap(h0, 12):
+            S.t(40, y, h, 12, SUB)
+            y += 20
     y += 4
     for b in blocks:
         S.line(40, y, 640, y)
@@ -67,10 +80,11 @@ def examples_svg(path, title, head, blocks, legend=None):
             rows.append((None, b["items"], None))
         rows += b.get("rows", [])
         first = True
+        lw = max([_w(r[0], 12) for r in rows if r[0]] or [0])
         for (label, items, roles) in rows:
             n = len(items)
             cw = b.get("cw", 34)
-            x0 = 40 + (64 if label else 0)
+            x0 = 40 + (max(64, lw + 16) if label else 0)
             if label:
                 pass
             top = yy
@@ -104,9 +118,10 @@ def examples_svg(path, title, head, blocks, legend=None):
             first = False
         if b.get("extra") and rows:
             yy += 6
-        for line in b.get("extra", []):
-            S.t(40, yy, line, 12, SUB)
-            yy += 18
+        for line0 in b.get("extra", []):
+            for line in _wrap(line0, 12):
+                S.t(40, yy, line, 12, SUB)
+                yy += 18
         y = yy + 6
     S.line(40, y, 640, y)
     leg = legend if legend is not None else [("new", "答案"), ("ring", "答案的范围"), ("rem", "看起来像, 但不对")]
@@ -141,11 +156,22 @@ def _cw(line):
     return sum(2 if ord(c) > 255 else 1 for c in line)
 
 
-def wrap_code(code, limit=80):
-    """太宽的 "代码  # 注释" 行: 把注释挪到代码上一行 (同缩进)。只影响展示。"""
+def wrap_code(code, limit=78):
+    """太宽的 "代码  # 注释" 行: 把注释挪到代码上一行 (同缩进); 太长的纯注释行折成多行。只影响展示。"""
     out = []
     for line in code.split("\n"):
-        if _cw(line) <= limit or "  # " not in line or line.lstrip().startswith("#"):
+        if _cw(line) > limit and line.lstrip().startswith("#"):
+            pad = line[:len(line) - len(line.lstrip())]
+            body = line.lstrip()[1:].strip()
+            cur = ""
+            for ch in body:
+                if _cw(pad + "# " + cur + ch) > limit:
+                    out.append(pad + "# " + cur)
+                    cur = ""
+                cur += ch
+            out.append(pad + "# " + cur)
+            continue
+        if _cw(line) <= limit or "  # " not in line:
             out.append(line)
             continue
         i = line.index("  # ")
@@ -192,9 +218,10 @@ def tree_examples_svg(path, title, head, blocks, legend=None):
     bad (标红的 node 下标), ring (加橙色圈的 node 下标), hl_edges [(child_idx)] 绿色边, side_text [行], extra [行]。"""
     S = _S()
     y = 18
-    for h in head:
-        S.t(40, y, h, 12, SUB)
-        y += 20
+    for h0 in head:
+        for h in _wrap(h0, 12):
+            S.t(40, y, h, 12, SUB)
+            y += 20
     y += 4
     for b in blocks:
         S.line(40, y, 640, y)
@@ -228,9 +255,10 @@ def tree_examples_svg(path, title, head, blocks, legend=None):
             S.t(tx, ty, line, 13, NEW[2] if line.startswith("→") else SUB, "start", 500 if line.startswith("→") else 400)
             ty += 22
         yy = max(top + (depth - 1) * dy + 34, ty)
-        for line in b.get("extra", []):
-            S.t(40, yy, line, 12, SUB)
-            yy += 18
+        for line0 in b.get("extra", []):
+            for line in _wrap(line0, 12):
+                S.t(40, yy, line, 12, SUB)
+                yy += 18
         y = yy + 6
     S.line(40, y, 640, y)
     leg = legend if legend is not None else []

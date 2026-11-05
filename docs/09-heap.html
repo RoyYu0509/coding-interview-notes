@@ -823,7 +823,7 @@ ol,ul{padding-left:24px}li{margin:4px 0}
 <h3>复杂度</h3>
 <p>Time <code>O(n log k)</code>, Space <code>O(k)</code>。</p>
 <details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">kClosest</span>(points, k):</span><span class="l">    h = []                                 <span class="c"># max-heap (存 -d), 留 &quot;最近的 k 个&quot;</span></span><span class="l">    <span class="k">for</span> x, y <span class="k">in</span> points:</span><span class="l">        d = x * x + y * y                  <span class="c"># 不开根号, 比大小等价</span></span><span class="l">        <span class="t">heapq</span>.<span class="f">heappush</span>(h, (-d, x, y))      <span class="c"># -d 最小 = d 最大, 在 top</span></span><span class="l">        <span class="k">if</span> <span class="t">len</span>(h) &gt; k:</span><span class="l">            <span class="t">heapq</span>.<span class="f">heappop</span>(h)               <span class="c"># 踢掉 d 最大的 (最远的)</span></span><span class="l">    <span class="r">return</span> [[x, y] <span class="k">for</span> _, x, y <span class="k">in</span> h]</span></div>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">kClosest</span>(points, k):</span><span class="l">    <span class="c"># max-heap (存 -d), 留 &quot;最近的 k 个&quot;</span></span><span class="l">    h = []</span><span class="l">    <span class="k">for</span> x, y <span class="k">in</span> points:</span><span class="l">        d = x * x + y * y                  <span class="c"># 不开根号, 比大小等价</span></span><span class="l">        <span class="t">heapq</span>.<span class="f">heappush</span>(h, (-d, x, y))      <span class="c"># -d 最小 = d 最大, 在 top</span></span><span class="l">        <span class="k">if</span> <span class="t">len</span>(h) &gt; k:</span><span class="l">            <span class="t">heapq</span>.<span class="f">heappop</span>(h)               <span class="c"># 踢掉 d 最大的 (最远的)</span></span><span class="l">    <span class="r">return</span> [[x, y] <span class="k">for</span> _, x, y <span class="k">in</span> h]</span></div>
 </details>
 <p class="note"><b>记:</b>留最小的 k 个: max-heap (Python 里存负数)。</p>
 <h2>4. Merge k Sorted Lists</h2>
@@ -1168,17 +1168,17 @@ ol,ul{padding-left:24px}li{margin:4px 0}
 <line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
 <text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  addNum(1), addNum(2), findMedian → 1.5, addNum(3), findMedian → 2</text>
 <text x="40" y="103" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">有 2 个数</text>
-<rect x="104" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="121.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
-<rect x="138" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="155.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="111.80000000000001" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="128.8" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="145.8" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="162.8" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
 <text x="40" y="149" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">有 3 个数</text>
-<rect x="104" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="121.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
-<rect x="138" y="134" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="155.0" y="150.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
-<rect x="172" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="189.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="111.80000000000001" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="128.8" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="145.8" y="134" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="162.8" y="150.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="179.8" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="196.8" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
 <text x="40" y="180" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">偶数个: 中间两个的平均 (1 + 2) / 2 = 1.5;  奇数个: 正中间那个 2</text>
 <text x="40" y="198" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">难点: 数一直在增加, 每次 findMedian 都排序太慢</text>
 <line x1="40" y1="222" x2="640" y2="222" stroke="#B4B2A9" stroke-dasharray="4 4"/>
@@ -1388,24 +1388,25 @@ ol,ul{padding-left:24px}li{margin:4px 0}
 <h3>题目在问什么</h3>
 <p>每个 worker 有 quality <code>q</code> 和最低工资 <code>wage</code>。要雇 k 个人, 两条规则: (1) 每个人的工资和他的 q <b>成正比</b>, 也就是大家用同一个单价 rate, 工资 = rate × q; (2) 每个人拿到的不能低于他自己的 wage。求最少要付多少钱。</p>
 <h3>看例子</h3>
-<figure><svg width="100%" viewBox="0 0 680 256" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Minimum Cost to Hire K Workers examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">每个 worker 有 quality q 和最低工资 wage。雇 k 个人, 规则: 1) 每人工资和 q 成正比 (同一个 rate);</text>
-<text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">2) 每人拿到的不低于自己的 wage。求最少要付多少钱</text>
-<line x1="40" y1="62" x2="640" y2="62" stroke="#B4B2A9" stroke-dasharray="4 4"/>
-<text x="40" y="82" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  quality = [10,20,5], wage = [70,50,30], k = 2  →  105</text>
-<rect x="40" y="108" width="100" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="90.0" y="124.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">q=10 w=70</text>
-<text x="90.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
-<rect x="140" y="108" width="100" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="190.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">q=20 w=50</text>
-<text x="190.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
-<rect x="240" y="108" width="100" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="290.0" y="124.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">q=5 w=30</text>
-<text x="290.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
-<text x="40" y="170" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">每人的 rate = wage / q: 7, 2.5, 6。雇 0 和 2: 要满足 0 号, rate 至少 7</text>
-<text x="40" y="188" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">付 7 × 10 + 7 × 5 = 7 × (10 + 5) = 105。雇 0 和 1: 7 × 30 = 210;  雇 1 和 2: 6 × 25 = 150</text>
-<line x1="40" y1="212" x2="640" y2="212" stroke="#B4B2A9" stroke-dasharray="4 4"/>
-<rect x="33" y="227" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
-<text x="54" y="234" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">雇的人</text></svg>
+<figure><svg width="100%" viewBox="0 0 680 276" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Minimum Cost to Hire K Workers examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">每个 worker 有 quality q 和最低工资 wage。雇 k 个人, 规则: 1) 每人工资和 q 成正比 (同一个 rate)</text>
+<text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">;</text>
+<text x="40" y="58" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">2) 每人拿到的不低于自己的 wage。求最少要付多少钱</text>
+<line x1="40" y1="82" x2="640" y2="82" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="102" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  quality = [10,20,5], wage = [70,50,30], k = 2  →  105</text>
+<rect x="40" y="128" width="100" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="90.0" y="144.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">q=10 w=70</text>
+<text x="90.0" y="170" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="140" y="128" width="100" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="190.0" y="144.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">q=20 w=50</text>
+<text x="190.0" y="170" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="240" y="128" width="100" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="290.0" y="144.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">q=5 w=30</text>
+<text x="290.0" y="170" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="40" y="190" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">每人的 rate = wage / q: 7, 2.5, 6。雇 0 和 2: 要满足 0 号, rate 至少 7</text>
+<text x="40" y="208" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">付 7 × 10 + 7 × 5 = 7 × (10 + 5) = 105。雇 0 和 1: 7 × 30 = 210;  雇 1 和 2: 6 × 25 = 150</text>
+<line x1="40" y1="232" x2="640" y2="232" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="247" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="254" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">雇的人</text></svg>
 <figcaption>例子。</figcaption></figure>
 <p>从例子里能看出: 一组人选定之后, rate 必须满足组里<b>要求最高</b>的那个人, 也就是组里最大的 <code>wage / q</code>。总工资 = <code>rate × total_q</code>, total_q 是组里所有人的 q 相加。</p>
 <h3>Brute force</h3>
@@ -1618,68 +1619,69 @@ ol,ul{padding-left:24px}li{margin:4px 0}
 <p>同样的套路 ("按一个量排序, 往前推进时把现在可选的放进 heap, 堆顶决定选谁"):</p>
 <ul><li>Maximum Number of Events That Can Be Attended: 按开始时间排序, heap 存结束时间, 每天参加结束最早的。</li><li>IPO: 按需要的本钱排序, heap 存利润, 每次在做得起的项目里挑利润最大的。</li></ul>
 <details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">mincostToHireWorkers</span>(quality, wage, k):</span><span class="l">    <span class="c"># rate = wage / q. 按 rate 升序排: 处理到某个 worker 时, 他的 rate 就是 group 里最大的</span></span><span class="l">    workers = <span class="t">sorted</span>(<span class="t">zip</span>(quality, wage), key=<span class="k">lambda</span> w: w[1] / w[0])</span><span class="l">    h = []                          <span class="c"># max-heap (存 -q): group 里 q 最大的在 top</span></span><span class="l">    total_q = 0                     <span class="c"># group 里所有 q 相加</span></span><span class="l">    best = <span class="t">float</span>(<span class="s">&quot;inf&quot;</span>)</span><span class="l">    <span class="k">for</span> q, w <span class="k">in</span> workers:</span><span class="l">        rate = w / q</span><span class="l">        <span class="t">heapq</span>.<span class="f">heappush</span>(h, -q)</span><span class="l">        total_q += q</span><span class="l">        <span class="k">if</span> <span class="t">len</span>(h) &gt; k:</span><span class="l">            <span class="c"># 弹出的是 -q_max, 加上它 = 减去 q_max</span></span><span class="l">            total_q += <span class="t">heapq</span>.<span class="f">heappop</span>(h)</span><span class="l">        <span class="k">if</span> <span class="t">len</span>(h) == k:</span><span class="l">            best = <span class="t">min</span>(best, rate * total_q)   <span class="c"># cost = rate x total_q</span></span><span class="l">    <span class="r">return</span> best</span></div>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">maxEvents</span>(events):                      <span class="c"># events[i] = [start, end]</span></span><span class="l">    events.<span class="f">sort</span>()                           <span class="c"># 排序一维: start</span></span><span class="l">    h = []                                  <span class="c"># min-heap of end: 今天能参加的活动</span></span><span class="l">    day = i = res = 0</span><span class="l">    <span class="k">while</span> i &lt; <span class="t">len</span>(events) <span class="k">or</span> h:</span><span class="l">        <span class="k">if</span> <span class="k">not</span> h:</span><span class="l">            day = <span class="t">max</span>(day, events[i][0])    <span class="c"># 没得参加, 跳到下一个 start</span></span><span class="l">        <span class="k">while</span> i &lt; <span class="t">len</span>(events) <span class="k">and</span> events[i][0] &lt;= day:</span><span class="l">            <span class="t">heapq</span>.<span class="f">heappush</span>(h, events[i][1]) <span class="c"># start 到了的活动, 记下 end</span></span><span class="l">            i += 1</span><span class="l">        <span class="k">while</span> h <span class="k">and</span> h[0] &lt; day:</span><span class="l">            <span class="t">heapq</span>.<span class="f">heappop</span>(h)                <span class="c"># end 已过, 参加不了</span></span><span class="l">        <span class="k">if</span> h:</span><span class="l">            <span class="t">heapq</span>.<span class="f">heappop</span>(h)                <span class="c"># 今天参加 end 最早的 (最急的)</span></span><span class="l">            res += 1</span><span class="l">        day += 1</span><span class="l">    <span class="r">return</span> res</span></div>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">findMaximizedCapital</span>(k, w, profits, capital):</span><span class="l">    projects = <span class="t">sorted</span>(<span class="t">zip</span>(capital, profits))   <span class="c"># 排序一维: capital</span></span><span class="l">    h = []                                     <span class="c"># max-heap (存 -profit): 做得起的</span></span><span class="l">    i = 0</span><span class="l">    <span class="k">for</span> _ <span class="k">in</span> <span class="t">range</span>(k):</span><span class="l">        <span class="k">while</span> i &lt; <span class="t">len</span>(projects) <span class="k">and</span> projects[i][0] &lt;= w:</span><span class="l">            <span class="t">heapq</span>.<span class="f">heappush</span>(h, -projects[i][1]) <span class="c"># capital &lt;= w 的都进 heap</span></span><span class="l">            i += 1</span><span class="l">        <span class="k">if</span> <span class="k">not</span> h:</span><span class="l">            <span class="k">break</span></span><span class="l">        w -= <span class="t">heapq</span>.<span class="f">heappop</span>(h)                  <span class="c"># 做 profit 最大的, w 变大</span></span><span class="l">    <span class="r">return</span> w</span></div>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">mincostToHireWorkers</span>(quality, wage, k):</span><span class="l">    <span class="c"># rate = wage / q. 按 rate 升序排: 处理到某个 worker 时, 他的 rate 就是 gr</span></span><span class="l">    <span class="c"># oup 里最大的</span></span><span class="l">    workers = <span class="t">sorted</span>(<span class="t">zip</span>(quality, wage), key=<span class="k">lambda</span> w: w[1] / w[0])</span><span class="l">    <span class="c"># max-heap (存 -q): group 里 q 最大的在 top</span></span><span class="l">    h = []</span><span class="l">    total_q = 0                     <span class="c"># group 里所有 q 相加</span></span><span class="l">    best = <span class="t">float</span>(<span class="s">&quot;inf&quot;</span>)</span><span class="l">    <span class="k">for</span> q, w <span class="k">in</span> workers:</span><span class="l">        rate = w / q</span><span class="l">        <span class="t">heapq</span>.<span class="f">heappush</span>(h, -q)</span><span class="l">        total_q += q</span><span class="l">        <span class="k">if</span> <span class="t">len</span>(h) &gt; k:</span><span class="l">            <span class="c"># 弹出的是 -q_max, 加上它 = 减去 q_max</span></span><span class="l">            total_q += <span class="t">heapq</span>.<span class="f">heappop</span>(h)</span><span class="l">        <span class="k">if</span> <span class="t">len</span>(h) == k:</span><span class="l">            best = <span class="t">min</span>(best, rate * total_q)   <span class="c"># cost = rate x total_q</span></span><span class="l">    <span class="r">return</span> best</span></div>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">maxEvents</span>(events):                      <span class="c"># events[i] = [start, end]</span></span><span class="l">    events.<span class="f">sort</span>()                           <span class="c"># 排序一维: start</span></span><span class="l">    <span class="c"># min-heap of end: 今天能参加的活动</span></span><span class="l">    h = []</span><span class="l">    day = i = res = 0</span><span class="l">    <span class="k">while</span> i &lt; <span class="t">len</span>(events) <span class="k">or</span> h:</span><span class="l">        <span class="k">if</span> <span class="k">not</span> h:</span><span class="l">            day = <span class="t">max</span>(day, events[i][0])    <span class="c"># 没得参加, 跳到下一个 start</span></span><span class="l">        <span class="k">while</span> i &lt; <span class="t">len</span>(events) <span class="k">and</span> events[i][0] &lt;= day:</span><span class="l">            <span class="t">heapq</span>.<span class="f">heappush</span>(h, events[i][1]) <span class="c"># start 到了的活动, 记下 end</span></span><span class="l">            i += 1</span><span class="l">        <span class="k">while</span> h <span class="k">and</span> h[0] &lt; day:</span><span class="l">            <span class="t">heapq</span>.<span class="f">heappop</span>(h)                <span class="c"># end 已过, 参加不了</span></span><span class="l">        <span class="k">if</span> h:</span><span class="l">            <span class="t">heapq</span>.<span class="f">heappop</span>(h)                <span class="c"># 今天参加 end 最早的 (最急的)</span></span><span class="l">            res += 1</span><span class="l">        day += 1</span><span class="l">    <span class="r">return</span> res</span></div>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">findMaximizedCapital</span>(k, w, profits, capital):</span><span class="l">    projects = <span class="t">sorted</span>(<span class="t">zip</span>(capital, profits))   <span class="c"># 排序一维: capital</span></span><span class="l">    <span class="c"># max-heap (存 -profit): 做得起的</span></span><span class="l">    h = []</span><span class="l">    i = 0</span><span class="l">    <span class="k">for</span> _ <span class="k">in</span> <span class="t">range</span>(k):</span><span class="l">        <span class="k">while</span> i &lt; <span class="t">len</span>(projects) <span class="k">and</span> projects[i][0] &lt;= w:</span><span class="l">            <span class="t">heapq</span>.<span class="f">heappush</span>(h, -projects[i][1]) <span class="c"># capital &lt;= w 的都进 heap</span></span><span class="l">            i += 1</span><span class="l">        <span class="k">if</span> <span class="k">not</span> h:</span><span class="l">            <span class="k">break</span></span><span class="l">        w -= <span class="t">heapq</span>.<span class="f">heappop</span>(h)                  <span class="c"># 做 profit 最大的, w 变大</span></span><span class="l">    <span class="r">return</span> w</span></div>
 </details>
 <p class="note"><b>记:</b>两个维度互相牵制: 排序固定一个维度, heap 管另一个维度。</p>
 <h2>7. Task Scheduler</h2>
 <h3>题目在问什么</h3>
 <p>一串 task (用字母表示), CPU 每个时间单位做一个 task 或者 idle (什么都不做)。<b>同一种 task 两次之间至少要隔 n 个时间单位</b>。task 的顺序可以随便排。求做完所有 task 最少需要多少个时间单位。</p>
 <h3>看例子</h3>
-<figure><svg width="100%" viewBox="0 0 680 318" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Task Scheduler examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">CPU 每个时间单位做一个 task 或者 idle。同一种 task 两次之间至少隔 n 个单位。求做完所有 task 最少要多少单位</text>
-<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
-<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  tasks = [A,A,A,B,B,B], n = 2  →  8</text>
-<rect x="40" y="88" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="62.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">A</text>
-<text x="62.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
-<rect x="84" y="88" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="106.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">B</text>
-<text x="106.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
-<rect x="128" y="88" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="150.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">idle</text>
-<text x="150.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
-<rect x="172" y="88" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="194.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">A</text>
-<text x="194.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
-<rect x="216" y="88" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="238.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">B</text>
-<text x="238.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
-<rect x="260" y="88" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="282.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">idle</text>
-<text x="282.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">5</text>
-<rect x="304" y="88" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="326.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">A</text>
-<text x="326.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">6</text>
-<rect x="348" y="88" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="370.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">B</text>
-<text x="370.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">7</text>
-<text x="40" y="150" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">A 和 A 之间隔了 2 个单位。B 也一样。中间没别的可做, 只好 idle</text>
-<line x1="40" y1="174" x2="640" y2="174" stroke="#B4B2A9" stroke-dasharray="4 4"/>
-<text x="40" y="194" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  tasks = [A,A,A,B,B,C], n = 2  →  7</text>
-<rect x="40" y="220" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="62.0" y="236.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">A</text>
-<text x="62.0" y="262" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
-<rect x="84" y="220" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="106.0" y="236.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">B</text>
-<text x="106.0" y="262" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
-<rect x="128" y="220" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="150.0" y="236.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">C</text>
-<text x="150.0" y="262" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
-<rect x="172" y="220" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="194.0" y="236.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">A</text>
-<text x="194.0" y="262" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
-<rect x="216" y="220" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="238.0" y="236.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">B</text>
-<text x="238.0" y="262" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
-<rect x="260" y="220" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="282.0" y="236.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">idle</text>
-<text x="282.0" y="262" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">5</text>
-<rect x="304" y="220" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="326.0" y="236.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">A</text>
-<text x="326.0" y="262" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">6</text>
-<text x="40" y="282" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">C 填进了第一个空当</text>
-<line x1="40" y1="306" x2="640" y2="306" stroke="#B4B2A9" stroke-dasharray="4 4"/></svg>
+<figure><svg width="100%" viewBox="0 0 680 338" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Task Scheduler examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">CPU 每个时间单位做一个 task 或者 idle。同一种 task 两次之间至少隔 n 个单位。求做完所有 task 最少</text>
+<text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">要多少单位</text>
+<line x1="40" y1="62" x2="640" y2="62" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="82" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  tasks = [A,A,A,B,B,B], n = 2  →  8</text>
+<rect x="40" y="108" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="62.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">A</text>
+<text x="62.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="84" y="108" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="106.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">B</text>
+<text x="106.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="128" y="108" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="150.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">idle</text>
+<text x="150.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="172" y="108" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="194.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">A</text>
+<text x="194.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="216" y="108" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="238.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">B</text>
+<text x="238.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="260" y="108" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="282.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">idle</text>
+<text x="282.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">5</text>
+<rect x="304" y="108" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="326.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">A</text>
+<text x="326.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">6</text>
+<rect x="348" y="108" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="370.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">B</text>
+<text x="370.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">7</text>
+<text x="40" y="170" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">A 和 A 之间隔了 2 个单位。B 也一样。中间没别的可做, 只好 idle</text>
+<line x1="40" y1="194" x2="640" y2="194" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="214" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  tasks = [A,A,A,B,B,C], n = 2  →  7</text>
+<rect x="40" y="240" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="62.0" y="256.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">A</text>
+<text x="62.0" y="282" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="84" y="240" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="106.0" y="256.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">B</text>
+<text x="106.0" y="282" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="128" y="240" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="150.0" y="256.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">C</text>
+<text x="150.0" y="282" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="172" y="240" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="194.0" y="256.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">A</text>
+<text x="194.0" y="282" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="216" y="240" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="238.0" y="256.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">B</text>
+<text x="238.0" y="282" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="260" y="240" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="282.0" y="256.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">idle</text>
+<text x="282.0" y="282" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">5</text>
+<rect x="304" y="240" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="326.0" y="256.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">A</text>
+<text x="326.0" y="282" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">6</text>
+<text x="40" y="302" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">C 填进了第一个空当</text>
+<line x1="40" y1="326" x2="640" y2="326" stroke="#B4B2A9" stroke-dasharray="4 4"/></svg>
 <figcaption>两个例子。</figcaption></figure>
 <h3>Brute force</h3>
 <p>枚举所有排列, 检查间隔, 指数级。</p>

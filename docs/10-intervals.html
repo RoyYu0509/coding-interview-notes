@@ -757,29 +757,30 @@ ol,ul{padding-left:24px}li{margin:4px 0}
 <h3>题目在问什么</h3>
 <p>给一个已经<b>按 start 排好、互不重叠</b>的区间列表, 再给一个新区间 new。把 new 插进去, 有重叠就合并。返回的结果也要排好、不重叠。</p>
 <h3>看例子</h3>
-<figure><svg width="100%" viewBox="0 0 680 236" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Insert Interval examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">intervals 已经按 start 排好, 而且互不重叠。插入一个新的 interval, 有重叠就合并, 结果仍然有序、不重叠</text>
-<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
-<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  intervals = [[1,2],[3,5],[6,7],[8,10],[12,16]], new = [4,8]  →  [[1,2],[3,10],[12,16]]</text>
-<rect x="40" y="88" width="70" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="75.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[1,2]</text>
-<text x="75.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
-<rect x="110" y="88" width="70" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="145.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[3,5]</text>
-<text x="145.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
-<rect x="180" y="88" width="70" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="215.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[6,7]</text>
-<text x="215.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
-<rect x="250" y="88" width="70" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="285.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[8,10]</text>
-<text x="285.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
-<rect x="320" y="88" width="70" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="355.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[12,16]</text>
-<text x="355.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
-<text x="40" y="150" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">[4,8] 和 [3,5]、[6,7]、[8,10] 都重叠, 四个合并成 [3,10]</text>
-<text x="40" y="168" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">[1,2] 在它左边不碰, [12,16] 在它右边不碰</text>
-<line x1="40" y1="192" x2="640" y2="192" stroke="#B4B2A9" stroke-dasharray="4 4"/>
-<rect x="33" y="207" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
-<text x="54" y="214" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">和 new 重叠的</text></svg>
+<figure><svg width="100%" viewBox="0 0 680 256" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Insert Interval examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">intervals 已经按 start 排好, 而且互不重叠。插入一个新的 interval, 有重叠就合并, 结果仍然有序、不</text>
+<text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">重叠</text>
+<line x1="40" y1="62" x2="640" y2="62" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="82" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  intervals = [[1,2],[3,5],[6,7],[8,10],[12,16]], new = [4,8]  →  [[1,2],[3,10],[12,16]]</text>
+<rect x="40" y="108" width="70" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="75.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[1,2]</text>
+<text x="75.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="110" y="108" width="70" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="145.0" y="124.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[3,5]</text>
+<text x="145.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="180" y="108" width="70" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="215.0" y="124.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[6,7]</text>
+<text x="215.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="250" y="108" width="70" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="285.0" y="124.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[8,10]</text>
+<text x="285.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="320" y="108" width="70" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="355.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[12,16]</text>
+<text x="355.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
+<text x="40" y="170" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">[4,8] 和 [3,5]、[6,7]、[8,10] 都重叠, 四个合并成 [3,10]</text>
+<text x="40" y="188" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">[1,2] 在它左边不碰, [12,16] 在它右边不碰</text>
+<line x1="40" y1="212" x2="640" y2="212" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="227" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="234" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">和 new 重叠的</text></svg>
 <figcaption>例子。</figcaption></figure>
 <h3>Brute force</h3>
 <p>把 new 加进列表, 再做一遍第 1 题: 排序 + 合并。<code>O(n log n)</code>。浪费: 列表本来就排好了, 不需要再排。</p>
@@ -1505,33 +1506,34 @@ ol,ul{padding-left:24px}li{margin:4px 0}
 <h3>复杂度</h3>
 <p>Time <code>O(n log n)</code>, Space <code>O(1)</code>。</p>
 <details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">erase_overlap_intervals</span>(intervals):</span><span class="l">    intervals.<span class="f">sort</span>(key=<span class="k">lambda</span> x: x[1])        <span class="c"># 按 end 排序: 先看结束得最早的</span></span><span class="l">    keep_end = -<span class="t">inf</span>                           <span class="c"># 已保留的最后一个 interval 的 end</span></span><span class="l">    removed = 0</span><span class="l">    <span class="k">for</span> s, e <span class="k">in</span> intervals:</span><span class="l">        <span class="c"># 不重叠 (首尾相接 s == keep_end 也算不重叠)</span></span><span class="l">        <span class="k">if</span> s &gt;= keep_end:</span><span class="l">            keep_end = e                      <span class="c"># 保留它, 它是目前 end 最小的选择</span></span><span class="l">        <span class="k">else</span>:</span><span class="l">            <span class="c"># 和已保留的重叠: 丢掉这个 (它的 end 更大)</span></span><span class="l">            removed += 1</span><span class="l">    <span class="r">return</span> removed</span></div>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">erase_overlap_intervals</span>(intervals):</span><span class="l">    intervals.<span class="f">sort</span>(key=<span class="k">lambda</span> x: x[1])        <span class="c"># 按 end 排序: 先看结束得最早的</span></span><span class="l">    <span class="c"># 已保留的最后一个 interval 的 end</span></span><span class="l">    keep_end = -<span class="t">inf</span></span><span class="l">    removed = 0</span><span class="l">    <span class="k">for</span> s, e <span class="k">in</span> intervals:</span><span class="l">        <span class="c"># 不重叠 (首尾相接 s == keep_end 也算不重叠)</span></span><span class="l">        <span class="k">if</span> s &gt;= keep_end:</span><span class="l">            <span class="c"># 保留它, 它是目前 end 最小的选择</span></span><span class="l">            keep_end = e</span><span class="l">        <span class="k">else</span>:</span><span class="l">            <span class="c"># 和已保留的重叠: 丢掉这个 (它的 end 更大)</span></span><span class="l">            removed += 1</span><span class="l">    <span class="r">return</span> removed</span></div>
 </details>
 <p class="note"><b>记:</b>最多保留几个不重叠 / 最少删几个: 按 end 排序, 每次保留最先结束的。</p>
 <h2>4. Minimum Number of Arrows to Burst Balloons</h2>
 <h3>题目在问什么</h3>
 <p>每个气球在 x 轴上占一段 <code>[start, end]</code>。在某个 x 处竖直射一支箭, 能射爆所有 <code>start ≤ x ≤ end</code> 的气球。最少需要几支箭, 才能射爆所有气球?</p>
 <h3>看例子</h3>
-<figure><svg width="100%" viewBox="0 0 680 250" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Minimum Number of Arrows examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">每个气球占 x 轴上的 [start, end]。在 x 处竖直射一箭, 能射爆所有 start ≤ x ≤ end 的气球。最少几支箭能射爆全部</text>
-<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
-<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  [[10,16],[2,8],[1,6],[7,12]]  →  2</text>
-<rect x="40" y="88" width="76" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="78.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[10,16]</text>
-<text x="78.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
-<rect x="116" y="88" width="76" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="154.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[2,8]</text>
-<text x="154.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
-<rect x="192" y="88" width="76" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="230.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[1,6]</text>
-<text x="230.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
-<rect x="268" y="88" width="76" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="306.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[7,12]</text>
-<text x="306.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
-<text x="40" y="150" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">x = 6 射爆 [2,8] 和 [1,6];  x = 12 射爆 [10,16] 和 [7,12]</text>
-<line x1="40" y1="174" x2="640" y2="174" stroke="#B4B2A9" stroke-dasharray="4 4"/>
-<text x="40" y="194" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  [[1,2],[2,3],[3,4],[4,5]]  →  2</text>
-<text x="40" y="214" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">x = 2 射爆前两个, x = 4 射爆后两个。和上一题不同: 这里碰到边也算 (闭区间)</text>
-<line x1="40" y1="238" x2="640" y2="238" stroke="#B4B2A9" stroke-dasharray="4 4"/></svg>
+<figure><svg width="100%" viewBox="0 0 680 270" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Minimum Number of Arrows examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">每个气球占 x 轴上的 [start, end]。在 x 处竖直射一箭, 能射爆所有 start ≤ x ≤ end 的气球。最少几</text>
+<text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">支箭能射爆全部</text>
+<line x1="40" y1="62" x2="640" y2="62" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="82" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  [[10,16],[2,8],[1,6],[7,12]]  →  2</text>
+<rect x="40" y="108" width="76" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="78.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[10,16]</text>
+<text x="78.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="116" y="108" width="76" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="154.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[2,8]</text>
+<text x="154.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="192" y="108" width="76" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="230.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[1,6]</text>
+<text x="230.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="268" y="108" width="76" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="306.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[7,12]</text>
+<text x="306.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="40" y="170" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">x = 6 射爆 [2,8] 和 [1,6];  x = 12 射爆 [10,16] 和 [7,12]</text>
+<line x1="40" y1="194" x2="640" y2="194" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="214" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  [[1,2],[2,3],[3,4],[4,5]]  →  2</text>
+<text x="40" y="234" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">x = 2 射爆前两个, x = 4 射爆后两个。和上一题不同: 这里碰到边也算 (闭区间)</text>
+<line x1="40" y1="258" x2="640" y2="258" stroke="#B4B2A9" stroke-dasharray="4 4"/></svg>
 <figcaption>两个例子。</figcaption></figure>
 <h3>Brute force</h3>
 <p>枚举箭的位置组合, 指数级。</p>
@@ -3196,7 +3198,7 @@ ol,ul{padding-left:24px}li{margin:4px 0}
 <h3>复杂度</h3>
 <p>Time <code>O(m + n)</code>, Space <code>O(m + n)</code> (输出)。</p>
 <details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">interval_intersection</span>(A, B):              <span class="c"># A, B 各自已排序, 各自内部不重叠</span></span><span class="l">    i = j = 0</span><span class="l">    res = []</span><span class="l">    <span class="k">while</span> i &lt; <span class="t">len</span>(A) <span class="k">and</span> j &lt; <span class="t">len</span>(B):</span><span class="l">        lo = <span class="t">max</span>(A[i][0], B[j][0])            <span class="c"># 交集的左端 = 两个 start 里大的</span></span><span class="l">        hi = <span class="t">min</span>(A[i][1], B[j][1])            <span class="c"># 交集的右端 = 两个 end 里小的</span></span><span class="l">        <span class="k">if</span> lo &lt;= hi:                          <span class="c"># 就是 overlap 条件</span></span><span class="l">            res.<span class="f">append</span>([lo, hi])</span><span class="l">        <span class="c"># end 小的那个不可能再和对方后面的相交</span></span><span class="l">        <span class="k">if</span> A[i][1] &lt; B[j][1]:</span><span class="l">            i += 1</span><span class="l">        <span class="k">else</span>:</span><span class="l">            j += 1</span><span class="l">    <span class="r">return</span> res</span></div>
+<div class="code"><span class="l"><span class="c"># A, B 各自已排序, 各自内部不重叠</span></span><span class="l"><span class="k">def</span> <span class="f">interval_intersection</span>(A, B):</span><span class="l">    i = j = 0</span><span class="l">    res = []</span><span class="l">    <span class="k">while</span> i &lt; <span class="t">len</span>(A) <span class="k">and</span> j &lt; <span class="t">len</span>(B):</span><span class="l">        lo = <span class="t">max</span>(A[i][0], B[j][0])            <span class="c"># 交集的左端 = 两个 start 里大的</span></span><span class="l">        hi = <span class="t">min</span>(A[i][1], B[j][1])            <span class="c"># 交集的右端 = 两个 end 里小的</span></span><span class="l">        <span class="k">if</span> lo &lt;= hi:                          <span class="c"># 就是 overlap 条件</span></span><span class="l">            res.<span class="f">append</span>([lo, hi])</span><span class="l">        <span class="c"># end 小的那个不可能再和对方后面的相交</span></span><span class="l">        <span class="k">if</span> A[i][1] &lt; B[j][1]:</span><span class="l">            i += 1</span><span class="l">        <span class="k">else</span>:</span><span class="l">            j += 1</span><span class="l">    <span class="r">return</span> res</span></div>
 </details>
 <p class="note"><b>记:</b>两个有序区间列表求交集: 双指针, 交集是 [max(start), min(end)], 先结束的往前走。</p>
 <h2>8. My Calendar I</h2>
@@ -3204,24 +3206,25 @@ ol,ul{padding-left:24px}li{margin:4px 0}
 <p>实现一个日历: <code>book(start, end)</code> 预订半开区间 <code>[start, end)</code>。如果和已有的任何预订重叠, 就拒绝 (返回 False); 否则记下来, 返回 True。</p>
 <p>和前面不同, 这次区间是<b>一个一个来</b>的, 每来一个都要马上回答。</p>
 <h3>看例子</h3>
-<figure><svg width="100%" viewBox="0 0 680 266" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>My Calendar I examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">实现 book(start, end): 预订半开区间 [start, end)。如果和已有的预订重叠就拒绝 (返回 False), 否则记下并返回 True</text>
-<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
-<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  book(10,20) → True;  book(15,25) → False;  book(20,30) → True</text>
-<text x="40" y="103" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">已预订</text>
-<rect x="104" y="88" width="76" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="142.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[10,20)</text>
-<rect x="180" y="88" width="76" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="218.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[20,30)</text>
-<text x="40" y="149" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">拒绝</text>
-<rect x="104" y="134" width="76" height="30" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
-<text x="142.0" y="150.0" font-size="15" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[15,25)</text>
-<text x="40" y="180" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">[15,25) 和 [10,20) 在 15..20 重叠, 拒绝</text>
-<text x="40" y="198" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">[20,30) 和 [10,20) 首尾相接: 半开区间里 20 不属于 [10,20), 所以不重叠</text>
-<line x1="40" y1="222" x2="640" y2="222" stroke="#B4B2A9" stroke-dasharray="4 4"/>
-<rect x="33" y="237" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
-<text x="54" y="244" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">成功预订</text>
-<rect x="121" y="237" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
-<text x="142" y="244" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">被拒绝</text></svg>
+<figure><svg width="100%" viewBox="0 0 680 286" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>My Calendar I examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">实现 book(start, end): 预订半开区间 [start, end)。如果和已有的预订重叠就拒绝 (返回 False), 否则</text>
+<text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">记下并返回 True</text>
+<line x1="40" y1="62" x2="640" y2="62" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="82" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  book(10,20) → True;  book(15,25) → False;  book(20,30) → True</text>
+<text x="40" y="123" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">已预订</text>
+<rect x="104" y="108" width="76" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="142.0" y="124.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[10,20)</text>
+<rect x="180" y="108" width="76" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="218.0" y="124.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[20,30)</text>
+<text x="40" y="169" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">拒绝</text>
+<rect x="104" y="154" width="76" height="30" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
+<text x="142.0" y="170.0" font-size="15" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[15,25)</text>
+<text x="40" y="200" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">[15,25) 和 [10,20) 在 15..20 重叠, 拒绝</text>
+<text x="40" y="218" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">[20,30) 和 [10,20) 首尾相接: 半开区间里 20 不属于 [10,20), 所以不重叠</text>
+<line x1="40" y1="242" x2="640" y2="242" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="257" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="264" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">成功预订</text>
+<rect x="121" y="257" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
+<text x="142" y="264" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">被拒绝</text></svg>
 <figcaption>例子。</figcaption></figure>
 <h3>Brute force</h3>
 <p>每次 book, 把新区间和已有的所有预订都比一下, 每次 <code>O(n)</code>, 共 <code>O(n²)</code>。</p>
@@ -3696,7 +3699,7 @@ ol,ul{padding-left:24px}li{margin:4px 0}
 <p>查找 <code>O(log n)</code>; Python list 的插入是 <code>O(n)</code>, 所以每次 book 是 <code>O(n)</code>。用平衡树 (比如 sortedcontainers) 可以做到 <code>O(log n)</code>。</p>
 <details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">class</span> MyCalendar:</span><span class="l">    <span class="k">def</span> <span class="f">__init__</span>(<span class="t">self</span>):</span><span class="l">        <span class="t">self</span>.books = []</span><span class="l">    <span class="k">def</span> <span class="f">book</span>(<span class="t">self</span>, start, end):               <span class="c"># 半开区间 [start, end)</span></span><span class="l">        <span class="k">for</span> s, e <span class="k">in</span> <span class="t">self</span>.books:</span><span class="l">            <span class="c"># overlap 条件 (半开区间: 用 &lt; 不用 &lt;=)</span></span><span class="l">            <span class="k">if</span> start &lt; e <span class="k">and</span> s &lt; end:</span><span class="l">                <span class="r">return</span> <span class="k">False</span></span><span class="l">        <span class="t">self</span>.books.<span class="f">append</span>((start, end))</span><span class="l">        <span class="r">return</span> <span class="k">True</span></span></div>
-<div class="code"><span class="l"><span class="k">class</span> MyCalendar:</span><span class="l">    <span class="k">def</span> <span class="f">__init__</span>(<span class="t">self</span>):</span><span class="l">        <span class="t">self</span>.starts = []                      <span class="c"># 已预订的 start, 保持有序</span></span><span class="l">        <span class="t">self</span>.ends = []                        <span class="c"># ends[i] 是 starts[i] 那场的 end</span></span><span class="l">    <span class="k">def</span> <span class="f">book</span>(<span class="t">self</span>, start, end):               <span class="c"># 半开区间 [start, end)</span></span><span class="l">        i = <span class="t">bisect</span>.<span class="f">bisect_left</span>(<span class="t">self</span>.starts, start)   <span class="c"># 新预订应插在第 i 个位置</span></span><span class="l">        <span class="k">if</span> i &gt; 0 <span class="k">and</span> <span class="t">self</span>.ends[i - 1] &gt; start:       <span class="c"># 前一场还没结束</span></span><span class="l">            <span class="r">return</span> <span class="k">False</span></span><span class="l">        <span class="c"># 后一场在我结束前就开始</span></span><span class="l">        <span class="k">if</span> i &lt; <span class="t">len</span>(<span class="t">self</span>.starts) <span class="k">and</span> <span class="t">self</span>.starts[i] &lt; end:</span><span class="l">            <span class="r">return</span> <span class="k">False</span></span><span class="l">        <span class="t">self</span>.starts.<span class="f">insert</span>(i, start)</span><span class="l">        <span class="t">self</span>.ends.<span class="f">insert</span>(i, end)</span><span class="l">        <span class="r">return</span> <span class="k">True</span></span></div>
+<div class="code"><span class="l"><span class="k">class</span> MyCalendar:</span><span class="l">    <span class="k">def</span> <span class="f">__init__</span>(<span class="t">self</span>):</span><span class="l">        <span class="t">self</span>.starts = []                      <span class="c"># 已预订的 start, 保持有序</span></span><span class="l">        <span class="c"># ends[i] 是 starts[i] 那场的 end</span></span><span class="l">        <span class="t">self</span>.ends = []</span><span class="l">    <span class="k">def</span> <span class="f">book</span>(<span class="t">self</span>, start, end):               <span class="c"># 半开区间 [start, end)</span></span><span class="l">        i = <span class="t">bisect</span>.<span class="f">bisect_left</span>(<span class="t">self</span>.starts, start)   <span class="c"># 新预订应插在第 i 个位置</span></span><span class="l">        <span class="k">if</span> i &gt; 0 <span class="k">and</span> <span class="t">self</span>.ends[i - 1] &gt; start:       <span class="c"># 前一场还没结束</span></span><span class="l">            <span class="r">return</span> <span class="k">False</span></span><span class="l">        <span class="c"># 后一场在我结束前就开始</span></span><span class="l">        <span class="k">if</span> i &lt; <span class="t">len</span>(<span class="t">self</span>.starts) <span class="k">and</span> <span class="t">self</span>.starts[i] &lt; end:</span><span class="l">            <span class="r">return</span> <span class="k">False</span></span><span class="l">        <span class="t">self</span>.starts.<span class="f">insert</span>(i, start)</span><span class="l">        <span class="t">self</span>.ends.<span class="f">insert</span>(i, end)</span><span class="l">        <span class="r">return</span> <span class="k">True</span></span></div>
 </details>
 <p class="note"><b>记:</b>区间一个一个来、要判断冲突: 有序存储, 二分找位置, 只和左右两个邻居比。</p>
 <h2>9. 识别信号: 看到什么, 就想到这些做法</h2>

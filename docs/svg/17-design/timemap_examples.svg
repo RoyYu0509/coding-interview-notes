@@ -1,0 +1,12 @@
+<svg width="100%" viewBox="0 0 680 208" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Time Based Key-Value Store examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">set(key, value, timestamp) 记录一个带时间的值。get(key, t): 返回 timestamp ≤ t 的最新那个值, </text>
+<text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">没有就返回 &quot;&quot;。timestamp 严格递增</text>
+<line x1="40" y1="62" x2="640" y2="62" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="82" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  set(foo, bar, 1)  set(foo, bar2, 4)</text>
+<text x="40" y="123" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">foo 的历史</text>
+<rect x="118.4" y="108" width="90" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="163.4" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">t=1 bar</text>
+<rect x="208.4" y="108" width="90" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="253.4" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">t=4 bar2</text>
+<text x="40" y="154" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">get(foo, 1) = bar;  get(foo, 3) = bar (3 之前最新的是 t=1);  get(foo, 5) = bar2;  get(foo, 0</text>
+<text x="40" y="172" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">) = &quot;&quot;</text>
+<line x1="40" y1="196" x2="640" y2="196" stroke="#B4B2A9" stroke-dasharray="4 4"/></svg>

@@ -22,7 +22,7 @@ nc.examples_svg(EX % "jump_game_ii", "Jump Game II examples", ["同上, 保证�
 
 assert ns["can_complete_circuit"]([1, 2, 3, 4, 5], [3, 4, 5, 1, 2]) == 3 and ns["can_complete_circuit"]([2, 3, 4], [3, 4, 3]) == -1
 nc.examples_svg(EX % "gas_station", "Gas Station examples",
-                ["环形公路上 n 个加油站。在站 i 能加 gas[i] 升, 从 i 开到 i+1 要 cost[i] 升。油箱一开始是空的。从哪一站出发能绕一圈? 没有就 -1"], [
+                ["环形公路上 n 个加油站。在站 i 能加 gas[i] 升, 从 i 开到 i+1 要 cost[i] 升。", "油箱一开始是空的。从哪一站出发能绕一圈? 没有就 -1"], [
     dict(title="Example:  gas = [1,2,3,4,5], cost = [3,4,5,1,2]  →  3", index=False, rows=[
         ("gas", [1, 2, 3, 4, 5], None), ("cost", [3, 4, 5, 1, 2], None),
         ("gas-cost", [-2, -2, -2, 3, 3], ["rem", "rem", "rem", "new", "new"])],

@@ -1,4 +1,4 @@
-<svg width="100%" viewBox="0 0 680 170" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Permutations examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">数组里的数互不相同。返回所有排列 (每个数都用一次, 顺序不同就算不同)</text>
+<svg width="100%" viewBox="0 0 680 188" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Permutations examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">数组里的数互不相同。返回所有排列 (每个数都用一次, 顺序不同就算不同)</text>
 <line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
 <text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  nums = [1,2,3]  →  6 个排列</text>
 <rect x="40" y="88" width="76" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
@@ -13,5 +13,6 @@
 <text x="382.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[3,1,2]</text>
 <rect x="420" y="88" width="76" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
 <text x="458.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[3,2,1]</text>
-<text x="40" y="134" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">第一个位置 3 种选法, 第二个 2 种, 第三个 1 种: 3 × 2 × 1 = 6。和子集不同, [1,2] 和 [2,1] 是两个排列</text>
-<line x1="40" y1="158" x2="640" y2="158" stroke="#B4B2A9" stroke-dasharray="4 4"/></svg>
+<text x="40" y="134" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">第一个位置 3 种选法, 第二个 2 种, 第三个 1 种: 3 × 2 × 1 = 6。和子集不同, [1,2] 和 [2,1] 是两个</text>
+<text x="40" y="152" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">排列</text>
+<line x1="40" y1="176" x2="640" y2="176" stroke="#B4B2A9" stroke-dasharray="4 4"/></svg>
