@@ -24,13 +24,16 @@ figure svg{width:100%;height:auto;display:block}
 figcaption{color:#52514e;font-size:14px;padding:4px 6px 0}
 table{border-collapse:collapse;margin:10px 0;font-size:15px}
 td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
+details{margin:12px 0;border:1px dashed var(--box);border-radius:6px;padding:4px 12px}
+summary{cursor:pointer;color:var(--sub);font-size:15px}
+ol,ul{padding-left:24px}li{margin:4px 0}
 </style></head><body><article contenteditable="true">
 <h1>09 · Heap / Top-K</h1>
-<p class="main">主线: heap 只保证 top 是最小 (或最大) 的那一个, push / pop 都是 O(log n)。只要 "反复拿最值" 或 "只要前 k 个", 就别全排序, 用 heap 把 O(n log n) 降到 O(n log k)。</p>
-<p class="main">概念链: Kth Largest (size-k min-heap) → Top K Frequent (key 换成 count) → K Closest Points (方向反过来: max-heap) → Merge k Sorted Lists (heap 里放 k 个 head) → Find Median (两个 heap) → Min Cost Hire K Workers (排序一维 + heap 管另一维) → Task Scheduler (greedy + heap + cooldown)</p>
-<h2>0. 第一性原理: 要最值, 不要全序</h2>
-<p>题目只问 "最大的 k 个" 或 "下一个最小的"。brute force 是 sort 一遍, O(n log n)。浪费在哪: sort 把 <b>所有</b> 元素的相对顺序都排好了, 可是答案只用到最前面 k 个, 后面 n - k 个的顺序白排了。反过来, 如果每次都扫一遍找最小值, 是 O(n) 一次, 反复找就是 O(n²)。</p>
-<p>heap 的做法: 只维护一条规则 "parent ≤ children" (min-heap)。这条规则够把最小的顶到 top, 又足够松, 插入和删除只需要沿着一条路径往上或往下换, 路径长度是树高 log n。所以 heap 是 "拿最小" 和 "加一个数" 两头都不太差的结构。</p>
+<h2>这篇讲什么</h2>
+<p>很多题需要<b>反复拿出当前最小 (或最大) 的那一个</b>, 或者只关心"前 k 大"。最直接的做法是排序, <code>O(n log n)</code>; 如果数据不断变化, 每次都重新排序就更慢。</p>
+<p><b>Heap</b> (堆, Python 里是 <code>heapq</code>) 是专门干这件事的数据结构。它只保证一件事: <b>堆顶是最小的</b>。其他元素之间的顺序它不管。正因为管得少, 所以快:</p>
+<ul><li>看堆顶: <code>h[0]</code>, <code>O(1)</code></li><li>放一个进去: <code>heappush</code>, <code>O(log n)</code></li><li>拿走堆顶: <code>heappop</code>, <code>O(log n)</code></li></ul>
+<p>你可以把 heap 画成一棵 tree: 每个节点都比它的子节点小, 所以最上面的根就是最小的。</p>
 <figure><svg width="100%" viewBox="0 0 680 564" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Heap core: parent &lt;= children, top is the minimum</title><desc>tree and array views of a min-heap, push/pop cost, and comparison with list</desc><defs><marker id="h0-ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="h0-ao" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="564" fill="#FFFFFF"/>
 <text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">min-heap: 每个 parent ≤ 它的两个 children → 最小的永远在 top (index 0)</text>
 <text x="40" y="38" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">tree 只是画法, 底层就是一个 list: index i 的 children = 2i+1, 2i+2</text>
@@ -105,14 +108,83 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="40" y="512" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">heap 只要 "top", 不要全序: 取前 k 个 O(n log k), sort 是 O(n log n)</text>
 <text x="40" y="534" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">Python heapq 只有 min-heap; max-heap 存 -x, 图里一律画正数 (top = 最大)</text>
 </svg>
-<figcaption>heap 保证 top 最小, 不保证全序; push / pop 沿一条路径换位, O(log n)</figcaption></figure>
-<p>固定大小 k 的 heap 是本章 80% 的题: 数据一个个进来, heap 里永远只留 "最该留下的 k 个", 满了就踢 top。每个元素最多进出一次, 一次 O(log k), 总共 O(n log k)。</p>
+<figcaption>heap 保证 top 最小, 不保证全序; push / pop 只沿一条路径换位置, 所以是 O(log n)。</figcaption></figure>
+<p>Python 的 heapq 只有 min-heap。要 max-heap, 就存 <code>-x</code>, 拿出来再取负。图里一律画原来的正数。</p>
+<details><summary>heapq 常用写法</summary>
 <div class="code"><span class="l"><span class="k">import</span> <span class="t">heapq</span></span><span class="l"></span><span class="l">h = []</span><span class="l"><span class="t">heapq</span>.<span class="f">heappush</span>(h, x)           <span class="c"># O(log n)</span></span><span class="l">top = h[0]                     <span class="c"># O(1), 只看 top, 不拿走</span></span><span class="l">x = <span class="t">heapq</span>.<span class="f">heappop</span>(h)           <span class="c"># O(log n), 拿走最小的</span></span><span class="l"><span class="t">heapq</span>.<span class="f">heapify</span>(arr)             <span class="c"># O(n), 原地把 list 变成 heap</span></span><span class="l"></span><span class="l"><span class="c"># max-heap: heapq 只有 min-heap, 存 -x, 取出来再取负</span></span><span class="l"><span class="t">heapq</span>.<span class="f">heappush</span>(h, -x)</span><span class="l">biggest = -<span class="t">heapq</span>.<span class="f">heappop</span>(h)</span><span class="l"></span><span class="l"><span class="c"># tuple 从左到右比大小: (count, num) 先比 count, 再比 num</span></span><span class="l">pairs = []</span><span class="l"><span class="t">heapq</span>.<span class="f">heappush</span>(pairs, (count, num))</span><span class="l"></span><span class="l"><span class="c"># 固定大小 k 的模板: heap 里永远只留 &quot;最该留下的 k 个&quot;</span></span><span class="l"><span class="k">for</span> x <span class="k">in</span> stream:</span><span class="l">    <span class="t">heapq</span>.<span class="f">heappush</span>(h, x)</span><span class="l">    <span class="k">if</span> <span class="t">len</span>(h) &gt; k:</span><span class="l">        <span class="t">heapq</span>.<span class="f">heappop</span>(h)       <span class="c"># 弹出的是 &quot;最该被踢掉的&quot;, 它在 top</span></span></div>
-<p class="note"><b>记:</b>heapq 是 min-heap。max-heap 存 -x。top 放的是 "最该被踢掉的", 不是 "最想要的"。(heapq.nlargest(k, nums) 是现成的, 内部就是这个 heap; 面试里要会手写。)</p>
-<h2>1. Kth Largest Element in an Array: 留下最大的 k 个, 用 min-heap</h2>
-<p>题目: 无序数组 <code>nums</code>, 返回第 k 大的数。例: <code>nums = [3,2,1,5,6,4], k = 2</code> → 5。</p>
-<p>Brute force: sort 后取 <code>nums[-k]</code>, O(n log n)。浪费: 前 n - k 小的数的顺序没人用。</p>
-<p>关键观察: 只留 "目前最大的 k 个"。满了要踢一个, 踢的永远是这 k 个里最小的 → 要立刻拿到最小的 → <b>min-heap</b>。留下来的 k 个里最小的 (top) 恰好就是整体第 k 大。</p>
+</details>
+<table><tr><th>#</th><th>题目</th><th>考过的公司数</th><th>相比上一题多了什么</th></tr><tr><td>1</td><td>Kth Largest Element in an Array</td><td>37</td><td>模板题: 只留 k 个</td></tr><tr><td>2</td><td>Top K Frequent Elements</td><td>49</td><td>比较的东西换成出现次数</td></tr><tr><td>3</td><td>K Closest Points to Origin</td><td>16</td><td>要留最小的 k 个, 方向反过来</td></tr><tr><td>4</td><td>Merge k Sorted Lists</td><td>46</td><td>heap 里只放每条 list 的头</td></tr><tr><td>5</td><td>Find Median from Data Stream</td><td>41</td><td>两个 heap 各管一半</td></tr><tr><td>6</td><td>Minimum Cost to Hire K Workers</td><td>6</td><td>一个维度排序, 另一个维度用 heap</td></tr><tr><td>7</td><td>Task Scheduler</td><td>23</td><td>greedy: 每次选剩得最多的, 用过的要冷却</td></tr></table>
+<p>每道题的顺序: <b>题目在问什么 → 看例子 → brute force → intuition → 算法 → 手动走一遍 → 复杂度</b>。代码放在最后, 默认折叠。</p>
+<h2>1. Kth Largest Element in an Array</h2>
+<h3>题目在问什么</h3>
+<p>给一个整数数组 <code>nums</code> 和 k, 返回第 k 大的数。"第 k 大" 是按从大到小排好之后的第 k 个, 重复的数也各占一个位置。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 350" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Kth Largest examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">找数组里第 k 大的数 (按排好序之后的位置算, 重复的数也各占一个位置)</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  nums = [3,2,1,5,6,4], k = 2  →  5</text>
+<rect x="40" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="57.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="91.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="91.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="108" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="125.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="142" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="159.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<text x="159.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="176" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="193.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">6</text>
+<text x="193.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="210" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="227.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<text x="227.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">5</text>
+<text x="40" y="150" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">从大到小排: 6, 5, 4, 3, 2, 1 → 第 2 个是 5</text>
+<line x1="40" y1="174" x2="640" y2="174" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="194" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  nums = [3,2,3,1,2,4,5,5,6], k = 4  →  4</text>
+<rect x="40" y="220" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="236.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="57.0" y="262" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="220" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="91.0" y="236.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="91.0" y="262" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="108" y="220" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.0" y="236.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="125.0" y="262" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="142" y="220" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="159.0" y="236.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="159.0" y="262" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="176" y="220" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="193.0" y="236.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="193.0" y="262" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="210" y="220" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="227.0" y="236.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<text x="227.0" y="262" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">5</text>
+<rect x="244" y="220" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="261.0" y="236.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<text x="261.0" y="262" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">6</text>
+<rect x="278" y="220" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="295.0" y="236.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<text x="295.0" y="262" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">7</text>
+<rect x="312" y="220" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="329.0" y="236.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">6</text>
+<text x="329.0" y="262" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">8</text>
+<text x="40" y="282" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">从大到小排: 6, 5, 5, 4, ... → 第 4 个是 4。两个 5 各算一个</text>
+<line x1="40" y1="306" x2="640" y2="306" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="321" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="328" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">答案</text></svg>
+<figcaption>两个例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>排序, 取 <code>nums[-k]</code>。<code>O(n log n)</code>。</p>
+<p>浪费在哪: 排序把所有 n 个数的顺序都排出来了, 但我们只关心最大的 k 个, 而且这 k 个之间的顺序也不重要, 只要知道其中最小的那个。</p>
+<h3>Intuition: 只留最大的 k 个, 用 min-heap</h3>
+<p>从左往右扫, 手里只留"目前见过的最大的 k 个数"。扫完之后, 这 k 个里<b>最小</b>的那个就是第 k 大。</p>
+<p>每来一个新数, 怎么更新手里的 k 个? 先放进来, 变成 k + 1 个, 再把最小的那个扔掉。</p>
+<p>"扔掉最小的" 和 "看最小的" 正是 <b>min-heap</b> 擅长的: 堆顶就是最小的。</p>
+<p>这里容易糊涂: 求的是"大", 用的却是 min-heap。原因是 heap 的堆顶应该是<b>下一个要被扔掉的</b>。要留下大的, 就扔小的, 所以堆顶要是最小的。</p>
+<h3>算法</h3>
+<ol><li><code>h = []</code>。</li><li>每个 x: <code>heappush(h, x)</code>; 如果 <code>len(h) > k</code>, <code>heappop(h)</code>。</li><li>返回 <code>h[0]</code>。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 440" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Kth Largest: why a min-heap of size k</title><desc>sorted nums with the top-k kept in the heap, top is the kth largest</desc><defs><marker id="kc0-ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="kc0-ao" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="440" fill="#FFFFFF"/>
 <text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">nums = [3, 2, 1, 5, 6, 4], k = 2 (下面按大小排好, 只为看清谁留下)</text>
 <rect x="40" y="56" width="46" height="36" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
@@ -151,7 +223,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <line x1="40" y1="396" x2="640" y2="396" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
 <text x="40" y="418" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">brute force: sort 再取第 k 个 O(n log n) · min-heap 只留 k 个: O(n log k), 空间 O(k)</text>
 </svg>
-<figcaption>为什么是 min-heap: top = 留下的 k 个里最小的 = 第 k 大, 也是下一个要被踢的</figcaption></figure>
+<figcaption>为什么是 min-heap: 堆顶 = 留下的 k 个里最小的 = 第 k 大, 也是下一个要被踢掉的。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 1102" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Kth Largest Element: min-heap of size k trace</title><desc>nums=[3,2,1,5,6,4], k=2</desc><defs><marker id="kth-ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="kth-ao" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="1102" fill="#FFFFFF"/>
 <text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">k = 2 · min-heap · 每一步: push 进 heap → 超过 k 个就 pop 最小的</text>
 <text x="40" y="38" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">heap 里永远是 "目前最大的 k 个" · top = 其中最小的 = 目前的第 k 大</text>
@@ -315,13 +388,55 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <circle cx="408" cy="1082" r="7" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="422" y="1082" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">heap 里其他的</text>
 </svg>
-<figcaption>trace: k = 2, 每步 push, 超过 k 个就 pop 最小的, heap 里始终是最大的 2 个</figcaption></figure>
+<figcaption>k = 2: 每步 push, 超过 2 个就 pop 最小的, heap 里一直是目前最大的 2 个。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n log k)</code>: n 次 push / pop, heap 最多 k + 1 个元素。Space <code>O(k)</code>。k 远小于 n 时比排序快很多。</p>
+<p>另有 quickselect, 平均 <code>O(n)</code>, 但最坏 <code>O(n²)</code>, 面试里提一句就行。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">findKthLargest</span>(nums, k):</span><span class="l">    h = []                          <span class="c"># min-heap, 永远只留 &quot;目前最大的 k 个&quot;</span></span><span class="l">    <span class="k">for</span> x <span class="k">in</span> nums:</span><span class="l">        <span class="t">heapq</span>.<span class="f">heappush</span>(h, x)</span><span class="l">        <span class="k">if</span> <span class="t">len</span>(h) &gt; k:</span><span class="l">            <span class="t">heapq</span>.<span class="f">heappop</span>(h)        <span class="c"># 弹掉最小的, 它一定不在前 k 大里</span></span><span class="l">    <span class="r">return</span> h[0]                     <span class="c"># k 个里最小的 = 第 k 大</span></span></div>
-<p>Time: 每个数一次 push + 至多一次 pop, 都是 O(log k), 共 O(n log k)。Space: heap O(k)。另有 quickselect 平均 O(n), 面试里一句话提一下即可。</p>
-<p class="note"><b>记:</b>留最大的 k 个 → min-heap, top 是门槛; 第 k 大 = h[0]。</p>
-<h2>2. Top K Frequent Elements: 同一个模板, 比较的 key 换成 count</h2>
-<p>题目: 返回出现次数最多的 k 个数。例: <code>nums = [1,1,1,2,2,3,4,4,4,4], k = 2</code> → [1, 4]。</p>
-<p>相比上一题多了什么: 要先数次数 (Counter), 然后 "按 count 找最大的 k 个"。改的只有 heap 里放什么: 放 <code>(count, num)</code>, 比较自然按 count。Brute force: 对所有不同的 num 按 count sort, O(m log m) (m = 不同数字个数)。heap 只留 k 个, O(m log k)。</p>
+</details>
+<p class="note"><b>记:</b>求最大的 k 个 / 第 k 大: 用大小为 k 的 min-heap。堆顶是"下一个要被踢掉的"。</p>
+<h2>把第 1 题抽象一下: 什么时候用 heap, 用哪个方向</h2>
+<p>第 1 题的规律:</p>
+<ul><li><b>只关心最值, 不关心全部顺序</b>, 或者<b>数据在不断变化, 要反复取最值</b>, 就用 heap 代替排序。</li><li>要<b>留下最大的 k 个</b>, 就扔最小的, 用 <b>min-heap</b>。要<b>留下最小的 k 个</b>, 就扔最大的, 用 <b>max-heap</b>。</li><li>一句话: 堆顶永远放"最该被扔掉的那个"。</li></ul>
+<p class="note"><b>记:</b>heap 的方向: 堆顶 = 最该被扔掉的。留大的 → min-heap; 留小的 → max-heap。</p>
+<h2>2. Top K Frequent Elements</h2>
+<h3>题目在问什么</h3>
+<p>返回数组里<b>出现次数最多</b>的 k 个数。顺序随意。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 218" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Top K Frequent examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">返回出现次数最多的 k 个数 (顺序随意)</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  nums = [1,1,1,2,2,3], k = 2  →  [1, 2]</text>
+<rect x="40" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="57.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="57.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="91.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="91.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="108" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="125.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="125.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="142" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="159.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="159.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="176" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="193.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="193.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="210" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="227.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="227.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">5</text>
+<text x="40" y="150" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">1 出现 3 次, 2 出现 2 次, 3 出现 1 次 → 次数最多的两个是 1 和 2</text>
+<line x1="40" y1="174" x2="640" y2="174" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="189" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="196" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">答案里的数</text></svg>
+<figcaption>例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>用 Counter 数出每个数的次数, 按次数排序, 取前 k 个。<code>O(m log m)</code>, m 是不同的数的个数。</p>
+<h3>Intuition: 先数次数, 再套第 1 题</h3>
+<p>数完次数之后, 问题就变成: 在 <code>(次数, 数)</code> 这些 pair 里, 找次数最大的 k 个。这正是第 1 题, 只是比较的东西从"数本身"换成了"次数"。</p>
+<p>Python 的 tuple 从左往右比较, 所以把 <code>(count, num)</code> 放进 heap, 就是按 count 比。</p>
+<h3>算法</h3>
+<ol><li><code>c = Counter(nums)</code>。</li><li>对每个 <code>(num, count)</code>: push <code>(count, num)</code>, 超过 k 个就 pop。</li><li>返回 heap 里所有的 num。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 436" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Top K Frequent: Counter then size-k heap on count</title><desc>flow from nums to Counter to heap of (count, num)</desc><defs><marker id="tk0-ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="tk0-ao" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="436" fill="#FFFFFF"/>
 <text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">和 Kth Largest 是同一个模板: 比较的 key 从 "值" 换成 "count"</text>
 <rect x="40" y="70" width="176" height="64" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
@@ -359,7 +474,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <line x1="40" y1="382" x2="640" y2="382" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
 <text x="40" y="404" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">Top K Frequent Words: 同一个模板, 只是 count 相同时要按字典序, 把 key 换成 (count, word) 处理</text>
 </svg>
-<figcaption>Counter 把问题变成 "在 count 上找最大的 k 个", 和 Kth Largest 同构</figcaption></figure>
+<figcaption>Counter 把问题变成"在 count 上找最大的 k 个", 和第 1 题一样。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 750" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Top K Frequent Elements trace</title><desc>nums=[1,1,1,2,2,3,4,4,4,4], k=2</desc><defs><marker id="tkf-ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="tkf-ao" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="750" fill="#FFFFFF"/>
 <text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">k = 2 · Counter 之后 · min-heap 存 (count, num), 按 count 比大小</text>
 <text x="40" y="38" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">node 上面的数字 = count, 下面 n = num · 每一步: push → 超过 k 个就 pop count 最小的</text>
@@ -480,13 +596,41 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <circle cx="438" cy="730" r="7" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="452" y="730" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">heap 里其他的</text>
 </svg>
-<figcaption>trace: 4 个不同的 num, k = 2, 每步 pop count 最小的</figcaption></figure>
+<figcaption>4 个不同的数, k = 2, 每步 pop 掉 count 最小的。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n + m log k)</code>, Space <code>O(m)</code>。另有 bucket sort 的 <code>O(n)</code> 做法: 次数最多是 n, 开 n + 1 个桶, 按次数放进桶, 从后往前取。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">topKFrequent</span>(nums, k):</span><span class="l">    count = <span class="t">Counter</span>(nums)                 <span class="c"># O(n): num -&gt; 出现次数</span></span><span class="l">    h = []                                <span class="c"># min-heap of (count, num)</span></span><span class="l">    <span class="k">for</span> num, c <span class="k">in</span> count.<span class="f">items</span>():          <span class="c"># 只遍历不同的 num: m 个</span></span><span class="l">        <span class="t">heapq</span>.<span class="f">heappush</span>(h, (c, num))</span><span class="l">        <span class="k">if</span> <span class="t">len</span>(h) &gt; k:</span><span class="l">            <span class="t">heapq</span>.<span class="f">heappop</span>(h)              <span class="c"># count 最小的踢掉 (和上一题唯一的区别)</span></span><span class="l">    <span class="r">return</span> [num <span class="k">for</span> c, num <span class="k">in</span> h]          <span class="c"># 顺序不限</span></span></div>
-<p>Time: Counter O(n) + heap O(m log k)。Space: O(m)。bucket sort (count 当 index 的 list) 可以做到 O(n), 记住有这个办法。Top K Frequent Words 一样, 只是 count 相同要按字典序, key 改成 <code>(count, word)</code> 并处理好大小顺序。</p>
-<p class="note"><b>记:</b>"按某个量找前 k" → size-k heap, heap 里放 (这个量, 本体)。</p>
-<h2>3. K Closest Points to Origin: 留最小的 k 个, 方向反过来, 用 max-heap</h2>
-<p>题目: 返回离原点最近的 k 个点。例: <code>points = [[3,3],[5,-1],[-2,4],[1,1],[0,2]], k = 2</code> → [[1,1],[0,2]]。</p>
-<p>相比第 1 题: 留下的是 <b>最小的</b> k 个 (d 最小), 要踢的是 d 最大的 → top 必须是最大值 → <b>max-heap</b>, Python 里存 <code>-d</code>。第 1 题是 min-heap 留最大, 这题是 max-heap 留最小, 判断规则只有一条: top 放 "最该被踢掉的"。Brute force: 按 d sort, O(n log n)。</p>
+</details>
+<p class="note"><b>记:</b>Top K 按某个属性: 先算出属性 (Counter), 再用 (属性, 元素) 进 heap。</p>
+<h2>3. K Closest Points to Origin</h2>
+<h3>题目在问什么</h3>
+<p>平面上有一些点, 返回离原点最近的 k 个。距离只用来比较大小, 所以用 <code>x² + y²</code> 就行, 不用开根号。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 218" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>K Closest Points examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">平面上一些点, 返回离原点 (0, 0) 最近的 k 个 (顺序随意)。距离用 x² + y² 比较就行, 不用开根号</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  points = [[3,3],[5,-1],[-2,4]], k = 2  →  [[3,3],[-2,4]]</text>
+<rect x="40" y="88" width="70" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="75.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">(3,3)</text>
+<text x="75.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="110" y="88" width="70" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="145.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">(5,-1)</text>
+<text x="145.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="180" y="88" width="70" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="215.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">(-2,4)</text>
+<text x="215.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="40" y="150" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">距离²: 9 + 9 = 18;  25 + 1 = 26;  4 + 16 = 20 → 最小的两个是 18 和 20</text>
+<line x1="40" y1="174" x2="640" y2="174" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="189" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="196" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">答案</text></svg>
+<figcaption>例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>按距离排序, 取前 k 个, <code>O(n log n)</code>。</p>
+<h3>Intuition: 方向反过来, 用 max-heap</h3>
+<p>这次要留<b>最小</b>的 k 个 (最近的)。按上一节的规律: 留小的 → 扔大的 → 堆顶要是最大的 → <b>max-heap</b>。</p>
+<p>Python 里存 <code>(-距离², x, y)</code>, 这样最远的点在堆顶, 超过 k 个就把它 pop 掉。</p>
+<h3>算法</h3>
+<ol><li>每个点: push <code>(-(x² + y²), x, y)</code>; 超过 k 个就 pop。</li><li>返回 heap 里的点。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 450" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>K Closest: keep-largest uses min-heap, keep-smallest uses max-heap</title><desc>rule: heap top is the element to evict</desc><defs><marker id="cc0-ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="cc0-ao" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="450" fill="#FFFFFF"/>
 <text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">规则: heap 里放 "留下的 k 个", top 放 "最该被踢掉的"</text>
 <rect x="40" y="36" width="290" height="196" rx="6" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
@@ -518,7 +662,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="40" y="398" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">d = x² + y², 不用开根号 (比大小等价)</text>
 <text x="40" y="420" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">sort 全部: O(n log n) · size-k heap: O(n log k)</text>
 </svg>
-<figcaption>同一条规则两个方向: 要留大的 → 踢最小的 → min-heap; 要留小的 → 踢最大的 → max-heap</figcaption></figure>
+<figcaption>同一条规则两个方向: 要留大的 → 踢最小的 → min-heap; 要留小的 → 踢最大的 → max-heap。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 926" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>K Closest Points to Origin trace</title><desc>points=[[3,3],[5,-1],[-2,4],[1,1],[0,2]], k=2</desc><defs><marker id="kc-ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="kc-ao" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="926" fill="#FFFFFF"/>
 <text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">k = 2 · max-heap (最大的 d 在 top) · 每一步: push → 超过 k 个就 pop 最大的 d</text>
 <text x="40" y="38" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">d = x² + y² (不开根号) · heap 里永远是 "目前离原点最近的 k 个"</text>
@@ -674,14 +819,69 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <circle cx="418" cy="906" r="7" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="432" y="906" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">heap 里其他的</text>
 </svg>
-<figcaption>trace: k = 2, heap 里画的是正数 d, top = 最大的 d (代码里存 -d)</figcaption></figure>
+<figcaption>k = 2: heap 里画的是正的距离 d, 堆顶是最大的 d (代码里存的是 -d)。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n log k)</code>, Space <code>O(k)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">kClosest</span>(points, k):</span><span class="l">    h = []                                 <span class="c"># max-heap (存 -d), 留 &quot;最近的 k 个&quot;</span></span><span class="l">    <span class="k">for</span> x, y <span class="k">in</span> points:</span><span class="l">        d = x * x + y * y                  <span class="c"># 不开根号, 比大小等价</span></span><span class="l">        <span class="t">heapq</span>.<span class="f">heappush</span>(h, (-d, x, y))      <span class="c"># -d 最小 = d 最大, 在 top</span></span><span class="l">        <span class="k">if</span> <span class="t">len</span>(h) &gt; k:</span><span class="l">            <span class="t">heapq</span>.<span class="f">heappop</span>(h)               <span class="c"># 踢掉 d 最大的 (最远的)</span></span><span class="l">    <span class="r">return</span> [[x, y] <span class="k">for</span> _, x, y <span class="k">in</span> h]</span></div>
-<p>Time: O(n log k)。Space: O(k)。</p>
-<p class="note"><b>记:</b>留小的 → max-heap (存负数), 留大的 → min-heap。d = x² + y² 不用开根号。</p>
-<h2>4. Merge k Sorted Lists: heap 里只放 k 个 head</h2>
-<p>题目: 合并 k 条有序链表。例: <code>L0 = 1→4→5, L1 = 1→3→4, L2 = 2→6</code> → 1→1→2→3→4→4→5→6。</p>
-<p>Brute force: 所有 node 倒进一个 list 再 sort, O(N log N) (N = node 总数), 浪费: 每条 list 本来就有序, 这个信息被丢掉了。关键观察: 每条 list 有序 → 全局最小的一定是某条 list 的 <b>head</b>。所以 heap 里每条 list 只放当前的 head, 一共 k 个, pop 出最小的, 把它的 next 补进来。</p>
-<p>相比前几题: heap 不再是 "留下 k 个" 的筛子, 而是 "k 路里下一个该走谁" 的选择器; 元素是 <code>(val, i, node)</code>。</p>
+</details>
+<p class="note"><b>记:</b>留最小的 k 个: max-heap (Python 里存负数)。</p>
+<h2>4. Merge k Sorted Lists</h2>
+<h3>题目在问什么</h3>
+<p>给 k 条 linked list, 每条都已经从小到大排好。把它们合并成一条排好序的 linked list。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 316" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Merge k Sorted Lists examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">k 条各自排好序的 linked list, 合并成一条排好序的 linked list</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  [[1,4,5],[1,3,4],[2,6]]  →  [1,1,2,3,4,4,5,6]</text>
+<text x="40" y="103" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">list 0</text>
+<rect x="104" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="138" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="155.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="172" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="189.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<text x="40" y="149" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">list 1</text>
+<rect x="104" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="138" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="155.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="172" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="189.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<text x="40" y="195" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">list 2</text>
+<rect x="104" y="180" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="196.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="138" y="180" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="155.0" y="196.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">6</text>
+<text x="40" y="241" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">结果</text>
+<rect x="104" y="226" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="121.0" y="242.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="138" y="226" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="155.0" y="242.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="172" y="226" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="189.0" y="242.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="206" y="226" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="223.0" y="242.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="240" y="226" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="257.0" y="242.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="274" y="226" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="291.0" y="242.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="308" y="226" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="325.0" y="242.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<rect x="342" y="226" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="359.0" y="242.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">6</text>
+<line x1="40" y1="272" x2="640" y2="272" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="287" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="294" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">合并后</text></svg>
+<figcaption>例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>把所有节点的值收集起来, 排序, 再串成一条 list。N 是节点总数, <code>O(N log N)</code>。</p>
+<p>另一种: 每次扫一遍 k 条 list 的头, 找最小的接到结果后面。每接一个要扫 k 个, <code>O(N·k)</code>。</p>
+<h3>Intuition: 下一个最小的, 一定是某条 list 的头</h3>
+<p>因为每条 list 自己是排好序的, 所以所有剩下的节点里最小的那个, 一定是某条 list 当前的<b>头</b>。</p>
+<p>所以只需要在 k 个头里找最小的。上面第二种 brute force 每次扫 k 个太慢; 用 heap 存这 k 个头, 每次 pop 就是 <code>O(log k)</code>。</p>
+<p>pop 出一个节点之后, 它所在的那条 list 的下一个节点成为新的头, push 进 heap。heap 里始终最多 k 个元素。</p>
+<h3>算法</h3>
+<ol><li>把每条 list 的头 push 进 heap, 存 <code>(val, i, node)</code>。i 是 list 的编号, 用来在 val 相同时比较 (node 本身不能比大小)。</li><li>当 heap 不空: pop 出最小的, 接到结果后面; 如果它有 next, 把 next push 进去。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 484" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Merge k Sorted Lists: heap holds one head per list</title><desc>three lists, heads in heap</desc><defs><marker id="mc0-ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="mc0-ao" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="484" fill="#FFFFFF"/>
 <text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">heap 里每条 list 只放 1 个: 它当前的 head</text>
 <text x="40" y="88" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">L0</text>
@@ -735,7 +935,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="40" y="412" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">heap 每个 node 进出各 1 次: O(N log k)</text>
 <text x="40" y="456" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">tuple 里放 i: val 相同时靠 i 决胜负, 不会去比较 ListNode (没有 &lt; )</text>
 </svg>
-<figcaption>heap 里只有每条 list 的 head, 每个 node 进出 heap 各一次</figcaption></figure>
+<figcaption>heap 里只有每条 list 的头, 每个节点进出 heap 各一次。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 1170" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Merge k Sorted Lists trace</title><desc>L0=1,4,5  L1=1,3,4  L2=2,6</desc><defs><marker id="mk-ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="mk-ao" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="1170" fill="#FFFFFF"/>
 <text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">L0 = 1→4→5 · L1 = 1→3→4 · L2 = 2→6 · heap 存 (val, i, node), 按 val 比 · 最小的在 top</text>
 <text x="40" y="38" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">heap 里每条 list 只放 1 个 (当前的 head) · 每一步: pop 最小的 → 接到 output → push 它的 next</text>
@@ -952,14 +1153,48 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <circle cx="428" cy="1150" r="7" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="442" y="1150" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">heap 里其他的</text>
 </svg>
-<figcaption>trace: 先 push 3 个 head, 每步 pop 最小的接到 output, 再 push 它的 next</figcaption></figure>
+<figcaption>先 push 3 个头, 每步 pop 最小的接到结果, 再 push 它的 next。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(N log k)</code>, Space <code>O(k)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">mergeKLists</span>(lists):</span><span class="l">    h = []</span><span class="l">    <span class="k">for</span> i, node <span class="k">in</span> <span class="t">enumerate</span>(lists):</span><span class="l">        <span class="k">if</span> node:</span><span class="l">            <span class="t">heapq</span>.<span class="f">heappush</span>(h, (node.val, i, node))   <span class="c"># (val, i, node)</span></span><span class="l">            <span class="c"># i 用来在 val 相同时决胜负, 否则会去比较 ListNode (不能比)</span></span><span class="l">    dummy = tail = <span class="t">ListNode</span>()</span><span class="l">    <span class="k">while</span> h:</span><span class="l">        val, i, node = <span class="t">heapq</span>.<span class="f">heappop</span>(h)    <span class="c"># 全局最小一定是某条 list 的 head</span></span><span class="l">        tail.next = node</span><span class="l">        tail = node</span><span class="l">        <span class="k">if</span> node.next:                      <span class="c"># 这条 list 的新 head 补进来</span></span><span class="l">            <span class="t">heapq</span>.<span class="f">heappush</span>(h, (node.next.val, i, node.next))</span><span class="l">    <span class="r">return</span> dummy.next</span></div>
-<p>Time: N 个 node 各进出一次, heap 大小 ≤ k, O(N log k)。Space: 额外 O(k) (node 是原地接起来的)。同一个套路: Kth Smallest in Sorted Matrix (每行是一条有序 list), Find K Pairs with Smallest Sums, Smallest Range Covering K Lists。</p>
-<p class="note"><b>记:</b>k 路有序 → heap 放每一路的当前头, pop 一个补一个; tuple 里加 i 防止比较 node。</p>
-<h2>5. Find Median from Data Stream: 两个 heap, 各管一半</h2>
-<p>题目: 数据流, 随时 addNum, 随时 findMedian。例: 依次加 5, 2, 8, 3, 9, 1 → median 依次 5, 3.5, 5, 4, 5, 4。</p>
-<p>Brute force: 每次 find 都 sort, O(n log n); 或者维护有序 list, 每次插入 O(n) (搬位置)。关键观察: 中位数只看 "正中间那一两个数", 不需要整体有序。把排好序的数从中间切开, 左半 lo 要快速拿到最大, 右半 hi 要快速拿到最小。</p>
-<p>相比前几题: 一个 heap 不够, 要 <b>两个 heap</b>: lo 是 max-heap, hi 是 min-heap。两个 invariant: max(lo) ≤ min(hi); len(lo) = len(hi) 或 len(hi) + 1。每次 add 都用 "先进 lo, 再把 lo 的 top 交给 hi, 不平衡再还回来一个" 修好。</p>
+</details>
+<p class="note"><b>记:</b>k 路归并: heap 里只放每一路当前的头, pop 一个就 push 它的下一个。</p>
+<h2>5. Find Median from Data Stream</h2>
+<h3>题目在问什么</h3>
+<p>设计一个数据结构: <code>addNum(x)</code> 加入一个数, <code>findMedian()</code> 返回目前所有数的中位数。两个操作会交替调用很多次。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 266" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Find Median from Data Stream examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">数一个一个地进来 (addNum), 随时可能被问&quot;目前所有数的中位数是多少&quot; (findMedian)</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  addNum(1), addNum(2), findMedian → 1.5, addNum(3), findMedian → 2</text>
+<text x="40" y="103" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">有 2 个数</text>
+<rect x="104" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="121.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="138" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="155.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="40" y="149" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">有 3 个数</text>
+<rect x="104" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="138" y="134" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="155.0" y="150.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="172" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="189.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="40" y="180" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">偶数个: 中间两个的平均 (1 + 2) / 2 = 1.5;  奇数个: 正中间那个 2</text>
+<text x="40" y="198" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">难点: 数一直在增加, 每次 findMedian 都排序太慢</text>
+<line x1="40" y1="222" x2="640" y2="222" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="237" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="244" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">决定中位数的数</text></svg>
+<figcaption>例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>用 list 存所有数, findMedian 时排序取中间, <code>O(n log n)</code>。或者每次 addNum 用插入保持有序, 插入是 <code>O(n)</code>。</p>
+<h3>Intuition: 中位数只取决于中间那两个数</h3>
+<p>把所有数分成两半: 较小的一半和较大的一半。中位数只和"较小一半的最大值"与"较大一半的最小值"有关。</p>
+<p>所以用两个 heap:</p>
+<ul><li><code>lo</code>: 较小的一半, 用 <b>max-heap</b>, 堆顶是这一半的最大值。</li><li><code>hi</code>: 较大的一半, 用 <b>min-heap</b>, 堆顶是这一半的最小值。</li><li>保持 lo 的个数等于 hi, 或者比 hi 多 1。</li></ul>
+<p>中位数: 总数是奇数, 就是 lo 的堆顶; 偶数, 就是两个堆顶的平均。</p>
+<p>加一个数时, 要保证 lo 里所有数都 ≤ hi 里所有数。简单的办法: 先放进 lo, 再把 lo 的最大值移到 hi; 如果 hi 比 lo 多了, 再把 hi 的最小值移回 lo。</p>
+<h3>算法</h3>
+<ol><li>addNum(x): push x 进 lo; 把 lo 的堆顶 pop 出来 push 进 hi; 如果 <code>len(hi) > len(lo)</code>, 把 hi 的堆顶移回 lo。</li><li>findMedian: lo 多一个就返回 lo 的堆顶, 否则返回两个堆顶的平均。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 506" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Median: two heaps hold the two halves</title><desc>sorted numbers split into lo and hi, tops are the middle numbers</desc><defs><marker id="mdc-ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="mdc-ao" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="506" fill="#FFFFFF"/>
 <text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">把排好序的数从中间切开: 左半 lo, 右半 hi · 中位数只看切口两边的数</text>
 <rect x="170" y="56" width="46" height="34" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
@@ -1012,7 +1247,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="40" y="460" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">每个数 add: O(log n) · 找 median: O(1)</text>
 <text x="40" y="482" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">brute force: 每次 find 都 sort O(n log n), 或者插入有序 list O(n)</text>
 </svg>
-<figcaption>lo / hi 各管一半, 两个 top 就是正中间那两个数</figcaption></figure>
+<figcaption>lo 和 hi 各管一半, 两个堆顶就是正中间的那两个数。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 928" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Find Median from Data Stream: two heaps trace</title><desc>stream 5,2,8,3,9,1</desc><defs><marker id="md-ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="md-ao" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="928" fill="#FFFFFF"/>
 <text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">lo = max-heap (较小的一半, top = 最大) · hi = min-heap (较大的一半, top = 最小)</text>
 <text x="40" y="38" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">每个 num: 先 push 进 lo → lo 的 top 移到 hi → hi 比 lo 多就把 hi 的 top 移回 lo</text>
@@ -1141,14 +1377,47 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <circle cx="248" cy="908" r="7" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="262" y="908" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">heap 里其他的</text>
 </svg>
-<figcaption>trace: 每步绿色节点 = 这一步换了 heap 的元素; 最后一列是当前 median</figcaption></figure>
+<figcaption>每一步绿色的节点是这一步换了 heap 的元素; 最后一列是当前的中位数。</figcaption></figure>
+<h3>复杂度</h3>
+<p>addNum <code>O(log n)</code>, findMedian <code>O(1)</code>。Space <code>O(n)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">class</span> MedianFinder:</span><span class="l">    <span class="k">def</span> <span class="f">__init__</span>(<span class="t">self</span>):</span><span class="l">        <span class="t">self</span>.lo = []        <span class="c"># max-heap (存 -x): 较小的一半, top = 这一半最大</span></span><span class="l">        <span class="t">self</span>.hi = []        <span class="c"># min-heap:         较大的一半, top = 这一半最小</span></span><span class="l"></span><span class="l">    <span class="k">def</span> <span class="f">addNum</span>(<span class="t">self</span>, num):</span><span class="l">        <span class="t">heapq</span>.<span class="f">heappush</span>(<span class="t">self</span>.lo, -num)</span><span class="l">        <span class="c"># 先进 lo, 再把 lo 最大的交给 hi -&gt; 保证 max(lo) &lt;= min(hi)</span></span><span class="l">        <span class="t">heapq</span>.<span class="f">heappush</span>(<span class="t">self</span>.hi, -<span class="t">heapq</span>.<span class="f">heappop</span>(<span class="t">self</span>.lo))</span><span class="l">        <span class="k">if</span> <span class="t">len</span>(<span class="t">self</span>.hi) &gt; <span class="t">len</span>(<span class="t">self</span>.lo):    <span class="c"># lo 允许比 hi 多 1 个, hi 不许多</span></span><span class="l">            <span class="t">heapq</span>.<span class="f">heappush</span>(<span class="t">self</span>.lo, -<span class="t">heapq</span>.<span class="f">heappop</span>(<span class="t">self</span>.hi))</span><span class="l"></span><span class="l">    <span class="k">def</span> <span class="f">findMedian</span>(<span class="t">self</span>):</span><span class="l">        <span class="k">if</span> <span class="t">len</span>(<span class="t">self</span>.lo) &gt; <span class="t">len</span>(<span class="t">self</span>.hi):    <span class="c"># 总数奇数</span></span><span class="l">            <span class="r">return</span> -<span class="t">self</span>.lo[0]</span><span class="l">        <span class="r">return</span> (-<span class="t">self</span>.lo[0] + <span class="t">self</span>.hi[0]) / 2</span></div>
-<p>Time: add O(log n), find O(1)。Space: O(n)。Sliding Window Median 是它的加强版 (要删元素, 需要 lazy delete), 先把这题写熟。</p>
-<p class="note"><b>记:</b>中位数 = 两个 heap 的 top: 左半 max-heap, 右半 min-heap, 大小差 ≤ 1。</p>
-<h2>6. Minimum Cost to Hire K Workers: 排序一维, heap 管另一维</h2>
-<p>题目: 每个 worker 有 quality q 和最低 wage。雇 k 个, 工资必须和 q 成正比 (同一个 rate = wage / q), 每人工资不低于自己的最低 wage。求最小总工资。例: <code>quality = [10,20,5,8,9], wage = [20,60,20,40,63], k = 3</code> → 115 (雇 A, C, D)。</p>
-<p>Brute force: 枚举 C(n, k) 个 group, 对每个 group 取最大的 rate, cost = rate × total_q。浪费: 两个维度 (rate 和 q) 同时变, 没法剪。</p>
-<p>关键观察: 先把一个维度固定住。按 rate 升序排, 处理到某个 worker 时, 他的 rate 是 group 里最大的, 其他人 rate 更小, 按这个 rate 付工资大家都合法。rate 固定后 cost = rate × total_q, 只能压 total_q → 在已经见过的 worker 里留 q 最小的 k 个 → 满了就踢 q 最大的 (max-heap)。这是 "排序一维 + heap 管另一维" 的典型。</p>
+</details>
+<p class="note"><b>记:</b>动态的中位数: 两个 heap, 较小的一半用 max-heap, 较大的一半用 min-heap, 个数差不超过 1。</p>
+<h2>6. Minimum Cost to Hire K Workers</h2>
+<h3>题目在问什么</h3>
+<p>每个 worker 有 quality <code>q</code> 和最低工资 <code>wage</code>。要雇 k 个人, 两条规则: (1) 每个人的工资和他的 q <b>成正比</b>, 也就是大家用同一个单价 rate, 工资 = rate × q; (2) 每个人拿到的不能低于他自己的 wage。求最少要付多少钱。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 256" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Minimum Cost to Hire K Workers examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">每个 worker 有 quality q 和最低工资 wage。雇 k 个人, 规则: 1) 每人工资和 q 成正比 (同一个 rate);</text>
+<text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">2) 每人拿到的不低于自己的 wage。求最少要付多少钱</text>
+<line x1="40" y1="62" x2="640" y2="62" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="82" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  quality = [10,20,5], wage = [70,50,30], k = 2  →  105</text>
+<rect x="40" y="108" width="100" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="90.0" y="124.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">q=10 w=70</text>
+<text x="90.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="140" y="108" width="100" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="190.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">q=20 w=50</text>
+<text x="190.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="240" y="108" width="100" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="290.0" y="124.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">q=5 w=30</text>
+<text x="290.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="40" y="170" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">每人的 rate = wage / q: 7, 2.5, 6。雇 0 和 2: 要满足 0 号, rate 至少 7</text>
+<text x="40" y="188" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">付 7 × 10 + 7 × 5 = 7 × (10 + 5) = 105。雇 0 和 1: 7 × 30 = 210;  雇 1 和 2: 6 × 25 = 150</text>
+<line x1="40" y1="212" x2="640" y2="212" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="227" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="234" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">雇的人</text></svg>
+<figcaption>例子。</figcaption></figure>
+<p>从例子里能看出: 一组人选定之后, rate 必须满足组里<b>要求最高</b>的那个人, 也就是组里最大的 <code>wage / q</code>。总工资 = <code>rate × total_q</code>, total_q 是组里所有人的 q 相加。</p>
+<h3>Brute force</h3>
+<p>枚举所有 k 人组合, 每组算 <code>max(rate) × total_q</code>, 取最小。组合数 <code>C(n, k)</code>, 指数级。</p>
+<p>难在两个量互相牵制: 想让 rate 小, 就要挑 rate 小的人; 想让 total_q 小, 就要挑 q 小的人。这两件事经常冲突。</p>
+<h3>Intuition: 先固定一个维度</h3>
+<p>先把所有人按 rate 从小到大排序。然后从左往右, 依次考虑"<b>让当前这个人当 rate 最高的那个</b>"。</p>
+<p>当前这个人的 rate 是 r, 那组里其他人只能从他左边 (rate 更小的) 挑。rate 已经固定为 r 了, 总工资 = r × total_q, 要让它最小, 就只能让 total_q 最小。</p>
+<p>所以问题变成: <b>在目前见过的人里, 挑 q 最小的 k 个</b>。这是第 3 题: 留最小的 k 个 → 用 max-heap 存 q, 超过 k 个就 pop 掉最大的 q。</p>
+<p>每一步, heap 里是 q 最小的 k 个人, total_q 是 heap 里所有 q 相加, 算一次 <code>r × total_q</code>, 取所有步里的最小值。</p>
+<h3>算法</h3>
+<ol><li>按 <code>wage / q</code> 从小到大排序。</li><li>从左往右, 对每个人: push 他的 q 进 max-heap, <code>total_q += q</code>。</li><li>如果 heap 超过 k 个: pop 最大的 q, <code>total_q -= 它</code>。</li><li>如果 heap 正好 k 个: <code>ans = min(ans, rate × total_q)</code>。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 460" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Hire K Workers: sort by rate, heap drops the biggest q</title><desc>worker D is current, B has the biggest q and is dropped</desc><defs><marker id="hc0-ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="hc0-ao" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="460" fill="#FFFFFF"/>
 <text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">rate = wage / q · 每人 wage = rate × q · k = 3 · 现在处理到 D</text>
 <text x="40" y="38" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">先按 rate 升序排好, 从左往右处理 (rate 越来越大)</text>
@@ -1197,7 +1466,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <line x1="40" y1="406" x2="640" y2="406" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
 <text x="40" y="428" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">brute force: 枚举 C(n, k) 个 group · 排序一维 (rate) + heap 管另一维 (q): O(n log n)</text>
 </svg>
-<figcaption>按 rate 排序固定一维; heap 里留 q 最小的 k 个压低 total_q</figcaption></figure>
+<figcaption>按 rate 排序, 固定一个维度; heap 里留 q 最小的 k 个, 压低 total_q。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 892" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Minimum Cost to Hire K Workers: max-heap trace</title><desc>k=3 workers A..E sorted by rate</desc><defs><marker id="hw-ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="hw-ao" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="892" fill="#FFFFFF"/>
 <text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">k = 3 · 每一步: push 进 heap → 超过 k 个就 pop 最大的 q → 算 cost</text>
 <text x="40" y="38" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">total_q = 当前 group (heap 里所有节点) 的 q 全部相加 · cost = rate × total_q</text>
@@ -1342,18 +1612,84 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <circle cx="418" cy="872" r="7" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="432" y="872" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">heap 里其他的</text>
 </svg>
-<figcaption>trace: A–E 按 rate 升序, k = 3, heap 存 q, 每步 pop 最大的 q, total_q 为 heap 里所有 q 相加</figcaption></figure>
+<figcaption>quality = [10,20,5,8,9], wage = [20,60,20,40,63], k = 3: A 到 E 按 rate 升序。每步 push, 超过 3 个就 pop 最大的 q; total_q 写成 heap 里所有 q 相加。最小 115。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n log n)</code> (排序 + heap)。Space <code>O(n)</code>。</p>
+<p>同样的套路 ("按一个量排序, 往前推进时把现在可选的放进 heap, 堆顶决定选谁"):</p>
+<ul><li>Maximum Number of Events That Can Be Attended: 按开始时间排序, heap 存结束时间, 每天参加结束最早的。</li><li>IPO: 按需要的本钱排序, heap 存利润, 每次在做得起的项目里挑利润最大的。</li></ul>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">mincostToHireWorkers</span>(quality, wage, k):</span><span class="l">    <span class="c"># rate = wage / q. 按 rate 升序排: 处理到某个 worker 时, 他的 rate 就是 group 里最大的</span></span><span class="l">    workers = <span class="t">sorted</span>(<span class="t">zip</span>(quality, wage), key=<span class="k">lambda</span> w: w[1] / w[0])</span><span class="l">    h = []                          <span class="c"># max-heap (存 -q): group 里 q 最大的在 top</span></span><span class="l">    total_q = 0                     <span class="c"># group 里所有 q 相加</span></span><span class="l">    best = <span class="t">float</span>(<span class="s">&quot;inf&quot;</span>)</span><span class="l">    <span class="k">for</span> q, w <span class="k">in</span> workers:</span><span class="l">        rate = w / q</span><span class="l">        <span class="t">heapq</span>.<span class="f">heappush</span>(h, -q)</span><span class="l">        total_q += q</span><span class="l">        <span class="k">if</span> <span class="t">len</span>(h) &gt; k:</span><span class="l">            total_q += <span class="t">heapq</span>.<span class="f">heappop</span>(h)     <span class="c"># 弹出的是 -q_max, 加上它 = 减去 q_max</span></span><span class="l">        <span class="k">if</span> <span class="t">len</span>(h) == k:</span><span class="l">            best = <span class="t">min</span>(best, rate * total_q)   <span class="c"># cost = rate x total_q</span></span><span class="l">    <span class="r">return</span> best</span></div>
-<p>Time: sort O(n log n) + heap O(n log k) = O(n log n)。Space: O(n)。</p>
-<h3>同一个套路的两道变体</h3>
-<p>Maximum Number of Events: 排序 start, heap 存 end, 每天参加 end 最早的 (最急的)。IPO: 排序 capital, heap 存 profit, 做得起的项目里挑 profit 最大的 (max-heap)。形状一样: 按一个量排序, 往前推进时把 "现在可选的" 放进 heap, heap 的 top 决定选谁。</p>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">maxEvents</span>(events):                      <span class="c"># events[i] = [start, end]</span></span><span class="l">    events.<span class="f">sort</span>()                           <span class="c"># 排序一维: start</span></span><span class="l">    h = []                                  <span class="c"># min-heap of end: 今天能参加的活动</span></span><span class="l">    day = i = res = 0</span><span class="l">    <span class="k">while</span> i &lt; <span class="t">len</span>(events) <span class="k">or</span> h:</span><span class="l">        <span class="k">if</span> <span class="k">not</span> h:</span><span class="l">            day = <span class="t">max</span>(day, events[i][0])    <span class="c"># 没得参加, 跳到下一个 start</span></span><span class="l">        <span class="k">while</span> i &lt; <span class="t">len</span>(events) <span class="k">and</span> events[i][0] &lt;= day:</span><span class="l">            <span class="t">heapq</span>.<span class="f">heappush</span>(h, events[i][1]) <span class="c"># start 到了的活动, 记下 end</span></span><span class="l">            i += 1</span><span class="l">        <span class="k">while</span> h <span class="k">and</span> h[0] &lt; day:</span><span class="l">            <span class="t">heapq</span>.<span class="f">heappop</span>(h)                <span class="c"># end 已过, 参加不了</span></span><span class="l">        <span class="k">if</span> h:</span><span class="l">            <span class="t">heapq</span>.<span class="f">heappop</span>(h)                <span class="c"># 今天参加 end 最早的 (最急的)</span></span><span class="l">            res += 1</span><span class="l">        day += 1</span><span class="l">    <span class="r">return</span> res</span></div>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">findMaximizedCapital</span>(k, w, profits, capital):</span><span class="l">    projects = <span class="t">sorted</span>(<span class="t">zip</span>(capital, profits))   <span class="c"># 排序一维: capital</span></span><span class="l">    h = []                                     <span class="c"># max-heap (存 -profit): 做得起的</span></span><span class="l">    i = 0</span><span class="l">    <span class="k">for</span> _ <span class="k">in</span> <span class="t">range</span>(k):</span><span class="l">        <span class="k">while</span> i &lt; <span class="t">len</span>(projects) <span class="k">and</span> projects[i][0] &lt;= w:</span><span class="l">            <span class="t">heapq</span>.<span class="f">heappush</span>(h, -projects[i][1]) <span class="c"># capital &lt;= w 的都进 heap</span></span><span class="l">            i += 1</span><span class="l">        <span class="k">if</span> <span class="k">not</span> h:</span><span class="l">            <span class="k">break</span></span><span class="l">        w -= <span class="t">heapq</span>.<span class="f">heappop</span>(h)                  <span class="c"># 做 profit 最大的, w 变大</span></span><span class="l">    <span class="r">return</span> w</span></div>
-<p class="note"><b>记:</b>两个维度互相牵制 → 排序一维, heap 管另一维; total_q 就是 heap 里所有 q 相加。</p>
-<h2>7. Task Scheduler: greedy + heap, 加一个 cooldown 队列</h2>
-<p>题目: 一串 task (字母), 同一种 task 两次执行之间至少隔 n 个 slot, 可以 idle。求最少需要多少 slot。例: <code>tasks = AAABBC, n = 2</code> → 7 (A B C A B idle A)。</p>
-<p>Brute force: 枚举所有执行顺序, 指数级。关键观察 (greedy): 剩余次数最多的 task 间隔要求最紧, 每个 slot 都做 "当前能做的里剩余最多的", 不会被迫在最后只剩它一个而 idle。"当前能做的里剩余最多" 就是 max-heap 的 top。刚做过的 task 不能马上再做, 先放进 cooldown 队列, 过了 n 个 slot 再 push 回 heap。</p>
-<p>相比前几题: heap 里元素会 <b>回来</b> (不是 pop 就扔掉), 要配一个 FIFO 队列管冷却时间。heap 为空但 cooldown 非空 → 这个 slot 是 idle。</p>
+</details>
+<p class="note"><b>记:</b>两个维度互相牵制: 排序固定一个维度, heap 管另一个维度。</p>
+<h2>7. Task Scheduler</h2>
+<h3>题目在问什么</h3>
+<p>一串 task (用字母表示), CPU 每个时间单位做一个 task 或者 idle (什么都不做)。<b>同一种 task 两次之间至少要隔 n 个时间单位</b>。task 的顺序可以随便排。求做完所有 task 最少需要多少个时间单位。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 318" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Task Scheduler examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">CPU 每个时间单位做一个 task 或者 idle。同一种 task 两次之间至少隔 n 个单位。求做完所有 task 最少要多少单位</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  tasks = [A,A,A,B,B,B], n = 2  →  8</text>
+<rect x="40" y="88" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="62.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">A</text>
+<text x="62.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="84" y="88" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="106.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">B</text>
+<text x="106.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="128" y="88" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="150.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">idle</text>
+<text x="150.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="172" y="88" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="194.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">A</text>
+<text x="194.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="216" y="88" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="238.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">B</text>
+<text x="238.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="260" y="88" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="282.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">idle</text>
+<text x="282.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">5</text>
+<rect x="304" y="88" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="326.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">A</text>
+<text x="326.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">6</text>
+<rect x="348" y="88" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="370.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">B</text>
+<text x="370.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">7</text>
+<text x="40" y="150" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">A 和 A 之间隔了 2 个单位。B 也一样。中间没别的可做, 只好 idle</text>
+<line x1="40" y1="174" x2="640" y2="174" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="194" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  tasks = [A,A,A,B,B,C], n = 2  →  7</text>
+<rect x="40" y="220" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="62.0" y="236.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">A</text>
+<text x="62.0" y="262" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="84" y="220" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="106.0" y="236.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">B</text>
+<text x="106.0" y="262" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="128" y="220" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="150.0" y="236.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">C</text>
+<text x="150.0" y="262" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="172" y="220" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="194.0" y="236.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">A</text>
+<text x="194.0" y="262" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="216" y="220" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="238.0" y="236.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">B</text>
+<text x="238.0" y="262" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="260" y="220" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="282.0" y="236.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">idle</text>
+<text x="282.0" y="262" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">5</text>
+<rect x="304" y="220" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="326.0" y="236.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">A</text>
+<text x="326.0" y="262" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">6</text>
+<text x="40" y="282" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">C 填进了第一个空当</text>
+<line x1="40" y1="306" x2="640" y2="306" stroke="#B4B2A9" stroke-dasharray="4 4"/></svg>
+<figcaption>两个例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>枚举所有排列, 检查间隔, 指数级。</p>
+<h3>Intuition: 每次做剩得最多的那种</h3>
+<p>剩得最多的那种 task 最"危险": 它需要的间隔最多, 如果拖到最后, 就只剩它一种, 中间只能 idle。所以 greedy: <b>每个时间单位, 都做当前能做的里剩得最多的</b>。</p>
+<p>"能做的里剩得最多的" 就是 max-heap 的堆顶 (按剩余次数)。</p>
+<p>但这次有一个新问题: 做完一种 task 之后, 它要等 n 个单位才能再做。所以不能直接 push 回 heap, 而是放进一个<b>冷却队列</b>, 记下它什么时候可以回来。时间到了再 push 回 heap。</p>
+<p>如果某个时间单位 heap 是空的, 但冷却队列里还有, 这个单位就只能 idle。</p>
+<h3>算法</h3>
+<ol><li>数每种 task 的次数, 全部放进 max-heap。<code>time = 0</code>, 冷却队列 <code>cool = deque()</code>。</li><li>当 heap 或 cool 不空: <code>time += 1</code>。heap 不空就 pop 一个, 次数减 1, 还有剩就放进 cool, 记录 <code>(剩余次数, time + n)</code>。</li><li>如果 cool 的队头到时间了 (<code>== time</code>), 把它 push 回 heap。</li><li>返回 time。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 470" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Task Scheduler: ready heap and cooldown queue</title><desc>pop the most frequent ready task, it waits in cooldown, then returns to heap</desc><defs><marker id="tc0-ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="tc0-ao" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="470" fill="#FFFFFF"/>
 <text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">heap = 现在能做的 task (剩余次数最多的在 top) · cooldown = 刚做过, 还要等</text>
 <line x1="110" y1="90" x2="70" y2="136" stroke="#898781" stroke-width="1.2"/>
@@ -1390,7 +1726,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <line x1="40" y1="420" x2="640" y2="420" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
 <text x="40" y="442" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">Reorganize String 同构: n = 1, 每次 pop 剩余最多的, 刚用过的先放一边, 下一步再 push 回来</text>
 </svg>
-<figcaption>heap = 现在能做的; cooldown = 刚做过; 每个 slot 做 heap 里剩余最多的</figcaption></figure>
+<figcaption>heap = 现在能做的; cool = 刚做过的; 每个时间单位做 heap 里剩得最多的。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 1312" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Task Scheduler: heap + cooldown queue trace</title><desc>tasks=AAABBC, n=2</desc><defs><marker id="ts-ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ts-ao" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="1312" fill="#FFFFFF"/>
 <text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">tasks = A,A,A,B,B,C · n = 2 · max-heap 存 (剩余次数, 任务) · 每个 slot 执行 1 次 (pop)</text>
 <text x="40" y="38" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">执行完还有剩 → 进 cooldown, 过 n 个 slot 才能回 heap · heap 空但 cooldown 非空 → idle</text>
@@ -1557,23 +1894,16 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <circle cx="468" cy="1292" r="7" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="482" y="1292" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">heap 里其他的</text>
 </svg>
-<figcaption>trace: slot 6 heap 空, 只能 idle 等 A 回来, 总共 7 个 slot</figcaption></figure>
+<figcaption>AAABBC, n = 2: 第 6 个单位 heap 空了, 只能 idle 等 A 回来, 一共 7 个单位。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(T log 26)</code>, T 是总时间单位数。Space <code>O(26)</code>。</p>
+<p>这题也有公式解: <code>max(len(tasks), (max_count - 1) × (n + 1) + 次数等于 max_count 的种类数)</code>。Reorganize String (相邻字符不能相同) 是 n = 1 的同一个结构。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">leastInterval</span>(tasks, n):</span><span class="l">    heap = [(-c, t) <span class="k">for</span> t, c <span class="k">in</span> <span class="t">Counter</span>(tasks).<span class="f">items</span>()]   <span class="c"># max-heap: 剩余次数</span></span><span class="l">    <span class="t">heapq</span>.<span class="f">heapify</span>(heap)</span><span class="l">    cooldown = <span class="t">deque</span>()          <span class="c"># (回来的 slot, -剩余次数, task), 回来时间递增</span></span><span class="l">    time = 0</span><span class="l">    <span class="k">while</span> heap <span class="k">or</span> cooldown:</span><span class="l">        time += 1               <span class="c"># 每个 slot 无论做不做事, time 都 +1</span></span><span class="l">        <span class="k">if</span> heap:</span><span class="l">            c, t = <span class="t">heapq</span>.<span class="f">heappop</span>(heap)      <span class="c"># 剩余最多的, 这个 slot 做它</span></span><span class="l">            <span class="k">if</span> c + 1:                       <span class="c"># c 是负数, c + 1 != 0 说明还有剩</span></span><span class="l">                cooldown.<span class="f">append</span>((time + n, c + 1, t))</span><span class="l">        <span class="k">if</span> cooldown <span class="k">and</span> cooldown[0][0] == time:   <span class="c"># 冷却完了, 下个 slot 可以做</span></span><span class="l">            _, c, t = cooldown.<span class="f">popleft</span>()</span><span class="l">            <span class="t">heapq</span>.<span class="f">heappush</span>(heap, (c, t))</span><span class="l">    <span class="r">return</span> time</span></div>
-<p>Time: 每个 slot O(log m) (m = task 种类数, 至多 26), slot 总数 T, 共 O(T log m)。Space: O(m)。只要答案有公式: <code>max(len(tasks), (max_count - 1) * (n + 1) + 达到 max_count 的 task 种类数)</code>。Reorganize String 是同一个结构 (n = 1): 每次 pop 剩余最多的字符, 上一个用过的先放一边, 下一步再 push 回来。</p>
-<p class="note"><b>记:</b>"每步选当前最优" + 候选会变化 → greedy + heap; 用过要等一阵 → 再加 cooldown 队列。</p>
-<h2>8. 识别信号: 看到什么 → 试什么</h2>
-<table>
-<tr><th>题目特征</th><th>做法</th><th>complexity</th></tr>
-<tr><td>第 k 大 / 前 k 大 / 前 k 个出现最多</td><td>size-k min-heap, top 是门槛</td><td>O(n log n) → O(n log k)</td></tr>
-<tr><td>前 k 小 / 离某点最近的 k 个</td><td>size-k max-heap (存负数), 踢最大的</td><td>O(n log n) → O(n log k)</td></tr>
-<tr><td>k 条有序 list / 矩阵每行有序, 要合并或第 k 小</td><td>heap 放每条的当前头, pop 一个补一个</td><td>O(N log N) → O(N log k)</td></tr>
-<tr><td>数据流, 随时要中位数</td><td>两个 heap: lo (max) + hi (min), 大小差 ≤ 1</td><td>每次 O(n) 或 O(n log n) → add O(log n), find O(1)</td></tr>
-<tr><td>两个维度互相牵制, 求最小/最大 cost 或个数</td><td>排序一维, heap 管另一维 (Hire Workers, Events, IPO)</td><td>O(n^k) 枚举 → O(n log n)</td></tr>
-<tr><td>每步选 "当前最优", 候选会变, 用过要冷却</td><td>greedy + heap, 加 cooldown 队列 (Task Scheduler, Reorganize String)</td><td>指数 → O(T log m)</td></tr>
-<tr><td>反复取最大再放回 (Last Stone Weight)</td><td>max-heap, pop 两个, 差值 push 回</td><td>每轮 O(n) 找最大 → O(log n)</td></tr>
-<tr><td>只要一个 top, 不要全序</td><td>先问自己: 是不是不用 sort 全部</td><td>O(n log n) → O(n log k)</td></tr>
-</table>
-<p>选 min 还是 max 的一条规则: top 放 "最该被踢掉的"。留大的 → 踢小的 → min-heap; 留小的 → 踢大的 → max-heap。</p>
+</details>
+<p class="note"><b>记:</b>每一步选当前最优, 而且候选会变化: greedy + heap。用过的要等一阵才能再用: 再加一个冷却队列。</p>
+<h2>8. 识别信号: 看到什么, 就想到 heap</h2>
+<table><tr><th>题目特征</th><th>做法</th><th>complexity</th></tr><tr><td>第 k 大 / 前 k 个 / 最大的 k 个</td><td>大小为 k 的 min-heap</td><td><code>O(n log n)</code> → <code>O(n log k)</code></td></tr><tr><td>最小的 k 个 / 最近的 k 个</td><td>大小为 k 的 max-heap (存负数)</td><td><code>O(n log n)</code> → <code>O(n log k)</code></td></tr><tr><td>按出现次数 / 某个属性取 top k</td><td>Counter + (属性, 元素) 进 heap</td><td><code>O(n log k)</code></td></tr><tr><td>合并 k 个有序的序列</td><td>heap 里放每一路的头</td><td><code>O(N·k)</code> → <code>O(N log k)</code></td></tr><tr><td>数据流的中位数</td><td>两个 heap 各管一半</td><td>每次 <code>O(n log n)</code> → <code>O(log n)</code></td></tr><tr><td>两个维度互相牵制 (rate 和 q、开始和结束)</td><td>排序一维, heap 管另一维</td><td>指数 → <code>O(n log n)</code></td></tr><tr><td>每一步选"当前最优", 候选在变化</td><td>greedy + heap (+ 冷却队列)</td><td><code>O(n log n)</code></td></tr><tr><td>图上的最短路 (边有权重)</td><td>Dijkstra, heap 存 (距离, 节点) → 12</td><td><code>O(E log V)</code></td></tr></table>
 <h2>以后再学</h2>
-<p>quickselect (平均 O(n) 的第 k 大)、lazy delete (Sliding Window Median 里删元素)、indexed heap / decrease-key (Dijkstra 的变体)、Skyline / Car Pooling 的 sweep line + heap。</p>
+<p>quickselect (平均 O(n) 的第 k 大)、lazy delete (Sliding Window Median)、sweep line + heap (The Skyline Problem)。</p>
 </article></body></html>

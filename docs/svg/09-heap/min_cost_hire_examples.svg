@@ -1,0 +1,18 @@
+<svg width="100%" viewBox="0 0 680 256" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Minimum Cost to Hire K Workers examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">每个 worker 有 quality q 和最低工资 wage。雇 k 个人, 规则: 1) 每人工资和 q 成正比 (同一个 rate);</text>
+<text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">2) 每人拿到的不低于自己的 wage。求最少要付多少钱</text>
+<line x1="40" y1="62" x2="640" y2="62" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="82" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  quality = [10,20,5], wage = [70,50,30], k = 2  →  105</text>
+<rect x="40" y="108" width="100" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="90.0" y="124.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">q=10 w=70</text>
+<text x="90.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="140" y="108" width="100" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="190.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">q=20 w=50</text>
+<text x="190.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="240" y="108" width="100" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="290.0" y="124.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">q=5 w=30</text>
+<text x="290.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="40" y="170" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">每人的 rate = wage / q: 7, 2.5, 6。雇 0 和 2: 要满足 0 号, rate 至少 7</text>
+<text x="40" y="188" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">付 7 × 10 + 7 × 5 = 7 × (10 + 5) = 105。雇 0 和 1: 7 × 30 = 210;  雇 1 和 2: 6 × 25 = 150</text>
+<line x1="40" y1="212" x2="640" y2="212" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="227" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="234" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">雇的人</text></svg>
