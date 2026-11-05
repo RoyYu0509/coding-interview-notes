@@ -1,0 +1,185 @@
+<svg width="100%" viewBox="0 0 680 962" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'>
+<title>Minimum Path Sum trace</title><desc>grid = [[1,3,1],[1,5,1],[4,2,1]] · 格子左上角的 g = grid 值, 大数字 = dp 值 第 0 行 / 第 0 列已按累加预先填好 · 每一步: dp[i][j] = min(top, left) + g</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="12" fill="#52514E" dominant-baseline="central">grid = [[1,3,1],[1,5,1],[4,2,1]] · 格子左上角的 g = grid 值, 大数字 = dp 值</text>
+<text x="40" y="38" font-size="12" fill="#52514E" dominant-baseline="central">第 0 行 / 第 0 列已按累加预先填好 · 每一步: dp[i][j] = min(top, left) + g</text>
+<text x="40" y="64" font-size="12" fill="#52514E" dominant-baseline="central">dp 表 (这一步之后)</text>
+<text x="300" y="64" font-size="12" fill="#52514E" dominant-baseline="central">怎么算</text>
+<line x1="40" y1="74" x2="640" y2="74" stroke="#B4B2A9" stroke-width="0.5" stroke-dasharray="4 4"/>
+<text x="112.0" y="106" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">0</text>
+<text x="176.0" y="106" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">1</text>
+<text x="240.0" y="106" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">2</text>
+<text x="72" y="142.0" font-size="12" text-anchor="end" fill="#52514E" dominant-baseline="central">0</text>
+<text x="72" y="192.0" font-size="12" text-anchor="end" fill="#52514E" dominant-baseline="central">1</text>
+<text x="72" y="242.0" font-size="12" text-anchor="end" fill="#52514E" dominant-baseline="central">2</text>
+<rect x="86" y="122" width="52" height="40" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+<text x="91" y="130" font-size="12" fill="#444441" dominant-baseline="central">g=1</text>
+<text x="116.0" y="152" font-size="14" font-weight="500" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<rect x="150" y="122" width="52" height="40" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+<text x="155" y="130" font-size="12" fill="#444441" dominant-baseline="central">g=3</text>
+<text x="180.0" y="152" font-size="14" font-weight="500" text-anchor="middle" fill="#444441" dominant-baseline="central">4</text>
+<rect x="214" y="122" width="52" height="40" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+<text x="219" y="130" font-size="12" fill="#444441" dominant-baseline="central">g=1</text>
+<text x="244.0" y="152" font-size="14" font-weight="500" text-anchor="middle" fill="#444441" dominant-baseline="central">5</text>
+<rect x="86" y="172" width="52" height="40" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+<text x="91" y="180" font-size="12" fill="#444441" dominant-baseline="central">g=1</text>
+<text x="116.0" y="202" font-size="14" font-weight="500" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<rect x="150" y="172" width="52" height="40" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+<text x="155" y="180" font-size="12" fill="#085041" dominant-baseline="central">g=5</text>
+<text x="180.0" y="202" font-size="14" font-weight="500" text-anchor="middle" fill="#085041" dominant-baseline="central">7</text>
+<rect x="214" y="172" width="52" height="40" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="0.5" stroke-dasharray="3 3"/>
+<text x="240.0" y="193.0" font-size="14" font-weight="500" text-anchor="middle" fill="#B4B2A9" dominant-baseline="central"></text>
+<rect x="86" y="222" width="52" height="40" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+<text x="91" y="230" font-size="12" fill="#444441" dominant-baseline="central">g=4</text>
+<text x="116.0" y="252" font-size="14" font-weight="500" text-anchor="middle" fill="#444441" dominant-baseline="central">6</text>
+<rect x="150" y="222" width="52" height="40" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="0.5" stroke-dasharray="3 3"/>
+<text x="176.0" y="243.0" font-size="14" font-weight="500" text-anchor="middle" fill="#B4B2A9" dominant-baseline="central"></text>
+<rect x="214" y="222" width="52" height="40" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="0.5" stroke-dasharray="3 3"/>
+<text x="240.0" y="243.0" font-size="14" font-weight="500" text-anchor="middle" fill="#B4B2A9" dominant-baseline="central"></text>
+<rect x="147" y="119" width="58" height="46" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="83" y="169" width="58" height="46" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<line x1="176.0" y1="165.0" x2="176.0" y2="169.0" stroke="#8A6D1E" stroke-width="1.6" marker-end="url(#arrow)"/>
+<line x1="141.0" y1="192.0" x2="147.0" y2="192.0" stroke="#8A6D1E" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="300" y="100" font-size="14" font-weight="500" fill="#0B0B0B" dominant-baseline="central">填 dp[1][1]</text>
+<text x="300" y="118" font-size="12" fill="#52514E" dominant-baseline="central">top = dp[0][1] = 4 · left = dp[1][0] = 2</text>
+<text x="300" y="136" font-size="12" fill="#52514E" dominant-baseline="central">min(4, 2) + g = 2 + 5</text>
+<text x="300" y="154" font-size="14" font-weight="500" fill="#0B0B0B" dominant-baseline="central">= 7</text>
+<text x="300" y="172" font-size="12" fill="#52514E" dominant-baseline="central">取左边那条 (2 更小)</text>
+<line x1="40" y1="274" x2="640" y2="274" stroke="#B4B2A9" stroke-width="0.5" stroke-dasharray="4 4"/>
+<text x="112.0" y="306" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">0</text>
+<text x="176.0" y="306" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">1</text>
+<text x="240.0" y="306" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">2</text>
+<text x="72" y="342.0" font-size="12" text-anchor="end" fill="#52514E" dominant-baseline="central">0</text>
+<text x="72" y="392.0" font-size="12" text-anchor="end" fill="#52514E" dominant-baseline="central">1</text>
+<text x="72" y="442.0" font-size="12" text-anchor="end" fill="#52514E" dominant-baseline="central">2</text>
+<rect x="86" y="322" width="52" height="40" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+<text x="91" y="330" font-size="12" fill="#444441" dominant-baseline="central">g=1</text>
+<text x="116.0" y="352" font-size="14" font-weight="500" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<rect x="150" y="322" width="52" height="40" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+<text x="155" y="330" font-size="12" fill="#444441" dominant-baseline="central">g=3</text>
+<text x="180.0" y="352" font-size="14" font-weight="500" text-anchor="middle" fill="#444441" dominant-baseline="central">4</text>
+<rect x="214" y="322" width="52" height="40" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+<text x="219" y="330" font-size="12" fill="#444441" dominant-baseline="central">g=1</text>
+<text x="244.0" y="352" font-size="14" font-weight="500" text-anchor="middle" fill="#444441" dominant-baseline="central">5</text>
+<rect x="86" y="372" width="52" height="40" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+<text x="91" y="380" font-size="12" fill="#444441" dominant-baseline="central">g=1</text>
+<text x="116.0" y="402" font-size="14" font-weight="500" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<rect x="150" y="372" width="52" height="40" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+<text x="155" y="380" font-size="12" fill="#444441" dominant-baseline="central">g=5</text>
+<text x="180.0" y="402" font-size="14" font-weight="500" text-anchor="middle" fill="#444441" dominant-baseline="central">7</text>
+<rect x="214" y="372" width="52" height="40" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+<text x="219" y="380" font-size="12" fill="#085041" dominant-baseline="central">g=1</text>
+<text x="244.0" y="402" font-size="14" font-weight="500" text-anchor="middle" fill="#085041" dominant-baseline="central">6</text>
+<rect x="86" y="422" width="52" height="40" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+<text x="91" y="430" font-size="12" fill="#444441" dominant-baseline="central">g=4</text>
+<text x="116.0" y="452" font-size="14" font-weight="500" text-anchor="middle" fill="#444441" dominant-baseline="central">6</text>
+<rect x="150" y="422" width="52" height="40" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="0.5" stroke-dasharray="3 3"/>
+<text x="176.0" y="443.0" font-size="14" font-weight="500" text-anchor="middle" fill="#B4B2A9" dominant-baseline="central"></text>
+<rect x="214" y="422" width="52" height="40" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="0.5" stroke-dasharray="3 3"/>
+<text x="240.0" y="443.0" font-size="14" font-weight="500" text-anchor="middle" fill="#B4B2A9" dominant-baseline="central"></text>
+<rect x="211" y="319" width="58" height="46" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="147" y="369" width="58" height="46" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<line x1="240.0" y1="365.0" x2="240.0" y2="369.0" stroke="#8A6D1E" stroke-width="1.6" marker-end="url(#arrow)"/>
+<line x1="205.0" y1="392.0" x2="211.0" y2="392.0" stroke="#8A6D1E" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="300" y="300" font-size="14" font-weight="500" fill="#0B0B0B" dominant-baseline="central">填 dp[1][2]</text>
+<text x="300" y="318" font-size="12" fill="#52514E" dominant-baseline="central">top = dp[0][2] = 5 · left = dp[1][1] = 7</text>
+<text x="300" y="336" font-size="12" fill="#52514E" dominant-baseline="central">min(5, 7) + g = 5 + 1</text>
+<text x="300" y="354" font-size="14" font-weight="500" fill="#0B0B0B" dominant-baseline="central">= 6</text>
+<text x="300" y="372" font-size="12" fill="#52514E" dominant-baseline="central">取上面那条 (5 更小)</text>
+<line x1="40" y1="474" x2="640" y2="474" stroke="#B4B2A9" stroke-width="0.5" stroke-dasharray="4 4"/>
+<text x="112.0" y="506" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">0</text>
+<text x="176.0" y="506" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">1</text>
+<text x="240.0" y="506" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">2</text>
+<text x="72" y="542.0" font-size="12" text-anchor="end" fill="#52514E" dominant-baseline="central">0</text>
+<text x="72" y="592.0" font-size="12" text-anchor="end" fill="#52514E" dominant-baseline="central">1</text>
+<text x="72" y="642.0" font-size="12" text-anchor="end" fill="#52514E" dominant-baseline="central">2</text>
+<rect x="86" y="522" width="52" height="40" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+<text x="91" y="530" font-size="12" fill="#444441" dominant-baseline="central">g=1</text>
+<text x="116.0" y="552" font-size="14" font-weight="500" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<rect x="150" y="522" width="52" height="40" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+<text x="155" y="530" font-size="12" fill="#444441" dominant-baseline="central">g=3</text>
+<text x="180.0" y="552" font-size="14" font-weight="500" text-anchor="middle" fill="#444441" dominant-baseline="central">4</text>
+<rect x="214" y="522" width="52" height="40" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+<text x="219" y="530" font-size="12" fill="#444441" dominant-baseline="central">g=1</text>
+<text x="244.0" y="552" font-size="14" font-weight="500" text-anchor="middle" fill="#444441" dominant-baseline="central">5</text>
+<rect x="86" y="572" width="52" height="40" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+<text x="91" y="580" font-size="12" fill="#444441" dominant-baseline="central">g=1</text>
+<text x="116.0" y="602" font-size="14" font-weight="500" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<rect x="150" y="572" width="52" height="40" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+<text x="155" y="580" font-size="12" fill="#444441" dominant-baseline="central">g=5</text>
+<text x="180.0" y="602" font-size="14" font-weight="500" text-anchor="middle" fill="#444441" dominant-baseline="central">7</text>
+<rect x="214" y="572" width="52" height="40" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+<text x="219" y="580" font-size="12" fill="#444441" dominant-baseline="central">g=1</text>
+<text x="244.0" y="602" font-size="14" font-weight="500" text-anchor="middle" fill="#444441" dominant-baseline="central">6</text>
+<rect x="86" y="622" width="52" height="40" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+<text x="91" y="630" font-size="12" fill="#444441" dominant-baseline="central">g=4</text>
+<text x="116.0" y="652" font-size="14" font-weight="500" text-anchor="middle" fill="#444441" dominant-baseline="central">6</text>
+<rect x="150" y="622" width="52" height="40" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+<text x="155" y="630" font-size="12" fill="#085041" dominant-baseline="central">g=2</text>
+<text x="180.0" y="652" font-size="14" font-weight="500" text-anchor="middle" fill="#085041" dominant-baseline="central">8</text>
+<rect x="214" y="622" width="52" height="40" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="0.5" stroke-dasharray="3 3"/>
+<text x="240.0" y="643.0" font-size="14" font-weight="500" text-anchor="middle" fill="#B4B2A9" dominant-baseline="central"></text>
+<rect x="147" y="569" width="58" height="46" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="83" y="619" width="58" height="46" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<line x1="176.0" y1="615.0" x2="176.0" y2="619.0" stroke="#8A6D1E" stroke-width="1.6" marker-end="url(#arrow)"/>
+<line x1="141.0" y1="642.0" x2="147.0" y2="642.0" stroke="#8A6D1E" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="300" y="500" font-size="14" font-weight="500" fill="#0B0B0B" dominant-baseline="central">填 dp[2][1]</text>
+<text x="300" y="518" font-size="12" fill="#52514E" dominant-baseline="central">top = dp[1][1] = 7 · left = dp[2][0] = 6</text>
+<text x="300" y="536" font-size="12" fill="#52514E" dominant-baseline="central">min(7, 6) + g = 6 + 2</text>
+<text x="300" y="554" font-size="14" font-weight="500" fill="#0B0B0B" dominant-baseline="central">= 8</text>
+<text x="300" y="572" font-size="12" fill="#52514E" dominant-baseline="central">取左边那条 (6 更小)</text>
+<line x1="40" y1="674" x2="640" y2="674" stroke="#B4B2A9" stroke-width="0.5" stroke-dasharray="4 4"/>
+<text x="112.0" y="706" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">0</text>
+<text x="176.0" y="706" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">1</text>
+<text x="240.0" y="706" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">2</text>
+<text x="72" y="742.0" font-size="12" text-anchor="end" fill="#52514E" dominant-baseline="central">0</text>
+<text x="72" y="792.0" font-size="12" text-anchor="end" fill="#52514E" dominant-baseline="central">1</text>
+<text x="72" y="842.0" font-size="12" text-anchor="end" fill="#52514E" dominant-baseline="central">2</text>
+<rect x="86" y="722" width="52" height="40" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+<text x="91" y="730" font-size="12" fill="#444441" dominant-baseline="central">g=1</text>
+<text x="116.0" y="752" font-size="14" font-weight="500" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<rect x="150" y="722" width="52" height="40" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+<text x="155" y="730" font-size="12" fill="#444441" dominant-baseline="central">g=3</text>
+<text x="180.0" y="752" font-size="14" font-weight="500" text-anchor="middle" fill="#444441" dominant-baseline="central">4</text>
+<rect x="214" y="722" width="52" height="40" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+<text x="219" y="730" font-size="12" fill="#444441" dominant-baseline="central">g=1</text>
+<text x="244.0" y="752" font-size="14" font-weight="500" text-anchor="middle" fill="#444441" dominant-baseline="central">5</text>
+<rect x="86" y="772" width="52" height="40" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+<text x="91" y="780" font-size="12" fill="#444441" dominant-baseline="central">g=1</text>
+<text x="116.0" y="802" font-size="14" font-weight="500" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<rect x="150" y="772" width="52" height="40" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+<text x="155" y="780" font-size="12" fill="#444441" dominant-baseline="central">g=5</text>
+<text x="180.0" y="802" font-size="14" font-weight="500" text-anchor="middle" fill="#444441" dominant-baseline="central">7</text>
+<rect x="214" y="772" width="52" height="40" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+<text x="219" y="780" font-size="12" fill="#444441" dominant-baseline="central">g=1</text>
+<text x="244.0" y="802" font-size="14" font-weight="500" text-anchor="middle" fill="#444441" dominant-baseline="central">6</text>
+<rect x="86" y="822" width="52" height="40" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+<text x="91" y="830" font-size="12" fill="#444441" dominant-baseline="central">g=4</text>
+<text x="116.0" y="852" font-size="14" font-weight="500" text-anchor="middle" fill="#444441" dominant-baseline="central">6</text>
+<rect x="150" y="822" width="52" height="40" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+<text x="155" y="830" font-size="12" fill="#444441" dominant-baseline="central">g=2</text>
+<text x="180.0" y="852" font-size="14" font-weight="500" text-anchor="middle" fill="#444441" dominant-baseline="central">8</text>
+<rect x="214" y="822" width="52" height="40" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+<text x="219" y="830" font-size="12" fill="#085041" dominant-baseline="central">g=1</text>
+<text x="244.0" y="852" font-size="14" font-weight="500" text-anchor="middle" fill="#085041" dominant-baseline="central">7</text>
+<rect x="211" y="769" width="58" height="46" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="147" y="819" width="58" height="46" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<line x1="240.0" y1="815.0" x2="240.0" y2="819.0" stroke="#8A6D1E" stroke-width="1.6" marker-end="url(#arrow)"/>
+<line x1="205.0" y1="842.0" x2="211.0" y2="842.0" stroke="#8A6D1E" stroke-width="1.6" marker-end="url(#arrow)"/>
+<text x="300" y="700" font-size="14" font-weight="500" fill="#0B0B0B" dominant-baseline="central">填 dp[2][2]</text>
+<text x="300" y="718" font-size="12" fill="#52514E" dominant-baseline="central">top = dp[1][2] = 6 · left = dp[2][1] = 8</text>
+<text x="300" y="736" font-size="12" fill="#52514E" dominant-baseline="central">min(6, 8) + g = 6 + 1</text>
+<text x="300" y="754" font-size="14" font-weight="500" fill="#0B0B0B" dominant-baseline="central">= 7</text>
+<text x="300" y="772" font-size="12" fill="#52514E" dominant-baseline="central">取上面那条 (6 更小)</text>
+<line x1="40" y1="874" x2="640" y2="874" stroke="#B4B2A9" stroke-width="0.5" stroke-dasharray="4 4"/>
+<text x="40" y="892" font-size="14" font-weight="500" fill="#0B0B0B" dominant-baseline="central">答案 dp[2][2] = min(dp[1][2], dp[2][1]) + g = min(6, 8) + 1 = 7</text>
+<text x="40" y="912" font-size="12" fill="#52514E" dominant-baseline="central">路径 1→3→1→1→1 = 7 (右, 右, 下, 下)</text>
+<rect x="40" y="933" width="18" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+<text x="66" y="940" font-size="12" fill="#52514E" dominant-baseline="central">这一步新填的</text>
+<rect x="156.39999999999998" y="933" width="18" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+<text x="182.39999999999998" y="940" font-size="12" fill="#52514E" dominant-baseline="central">已经填好的</text>
+<rect x="261.4" y="933" width="18" height="14" rx="3" fill="#F1EFE8" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="287.4" y="940" font-size="12" fill="#52514E" dominant-baseline="central">依赖的格子</text>
+<line x1="366.4" y1="940.0" x2="386.4" y2="940.0" stroke="#52514E" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text x="396.4" y="940" font-size="12" fill="#52514E" dominant-baseline="central">依赖方向</text>
+</svg>
