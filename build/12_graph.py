@@ -229,7 +229,7 @@ def maxAreaOfIsland(grid):
         if r < 0 or r >= m or c < 0 or c >= n or grid[r][c] != 1:
             return 0
         grid[r][c] = 0
-        return 1 + sum(dfs(r + dr, c + dc) for dr, dc in DIRS)   # 改动: void → 返回面积
+        return 1 + sum(dfs(r + dr, c + dc) for dr, dc in DIRS)   # 改动: 返回面积
 
     return max(dfs(r, c) for r in range(m) for c in range(n))
 '''
@@ -280,7 +280,7 @@ def ladderLength(beginWord, endWord, wordList):
 '''
 
 CODE["canfinish"] = '''
-def canFinish(numCourses, prerequisites):   # prerequisites[i] = [course, pre]: 先 pre 后 course
+def canFinish(numCourses, prerequisites):   # [course, pre]: 先 pre 后 course
     graph = [[] for _ in range(numCourses)]
     indegree = [0] * numCourses             # indegree[v] = v 还有几门前置课没上完
     for course, pre in prerequisites:
@@ -295,7 +295,7 @@ def canFinish(numCourses, prerequisites):   # prerequisites[i] = [course, pre]: 
             indegree[v] -= 1                # v 少了一门前置
             if indegree[v] == 0:            # 前置全上完 → v 可以上了
                 q.append(v)
-    return done == numCourses               # 有环 → 环上的点 indegree 永远 > 0 → done 不够
+    return done == numCourses               # 有环 → 环上的点 indegree 永远 > 0 → 不够 n
 '''
 
 CODE["findorder"] = '''
@@ -321,7 +321,7 @@ CODE["clone"] = '''
 def cloneGraph(node):                       # Node 有 .val 和 .neighbors (list[Node])
     if not node:
         return None
-    old2new = {}                            # Hash Table: 原节点 → 它的副本 (同时当 visited)
+    old2new = {}                            # Hash Table: 原节点 → 副本 (兼 visited)
 
     def dfs(old):
         if old in old2new:                  # 已经复制过 → 直接返回副本, 不再递归
@@ -343,7 +343,7 @@ class DSU:
 
     def find(self, x):
         while self.parent[x] != x:
-            self.parent[x] = self.parent[self.parent[x]]   # path compression (halving): 爷爷接管
+            self.parent[x] = self.parent[self.parent[x]]   # path compression: 跳到爷爷
             x = self.parent[x]
         return x
 
@@ -1501,7 +1501,7 @@ def fig_dijkstra_trace():
     top = 262
     H = top + rh * len(steps) + 110
     s = Svg(H, "Network Delay Time (Dijkstra) 运行流程")
-    head(s, "k = 1 · heap 存 (dist, node) · pop 最小的 → 过期就 skip → 否则 relax 每条出边: nd = d + w, nd < dist[v] 才更新并 push",
+    head(s, "heap 存 (dist, node) · pop 最小的 → 过期就 skip → 否则 relax 出边: nd = d + w, nd < dist[v] 才更新并 push",
          "图: u → v 边上的数字 = 耗时 w")
     pos = DJ_POS
     for u, v, w in DJ_TIMES:
