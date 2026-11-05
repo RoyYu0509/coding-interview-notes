@@ -12,7 +12,7 @@
 <rect x="55" y="109" width="80" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="95.0" y="125.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">b</text>
 <text x="40" y="252" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">第 3 个 b 进来才知道凑够 3</text>
-<text x="40" y="272" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">删完后又要回头数 a 有几个 → 重复劳动</text>
+<text x="40" y="272" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">删完还要回头数 a 有几个</text>
 <line x1="250" y1="62" x2="250" y2="290" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
 <text x="270" y="70" font-size="14" fill="#0F6E56" font-weight="500" text-anchor="start" dominant-baseline="central">存 [char, count] (对): 栈顶的 count 就是答案</text>
 <path d="M280 104 L280 230 L380 230 L380 104" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>

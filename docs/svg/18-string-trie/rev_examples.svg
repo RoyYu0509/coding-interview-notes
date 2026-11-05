@@ -1,0 +1,10 @@
+<svg width="100%" viewBox="0 0 680 228" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Reverse Words examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">把字符串里的单词倒过来排。单词之间可能有多个空格, 开头结尾也可能有空格; 结果里单词之间只留一个空格</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  &quot;the sky is blue&quot;  →  &quot;blue is sky the&quot;</text>
+<line x1="40" y1="88" x2="640" y2="88" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="108" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  &quot;  hello world  &quot;  →  &quot;world hello&quot;</text>
+<text x="40" y="128" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">开头和结尾的空格去掉</text>
+<line x1="40" y1="152" x2="640" y2="152" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="172" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 3:  &quot;a good   example&quot;  →  &quot;example good a&quot;</text>
+<text x="40" y="192" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">中间的多个空格变成一个</text>
+<line x1="40" y1="216" x2="640" y2="216" stroke="#B4B2A9" stroke-dasharray="4 4"/></svg>

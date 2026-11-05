@@ -418,7 +418,8 @@ def trace_svg(name, title, head, heads, arr, steps, foot, legend_items, cw=22, r
             if st.get(key) and r >= l1:
                 S.ring(c + l1 * cw, y + 10, (r - l1 + 1) * cw, 26)
             S.ptrs(c, y + 50, [(l1 if (two or key == "ring3") else l0, "L"), (r, "R")], cw)
-            S.t(c, y + 68, note, 12, SUB)
+            for j_, ln_ in enumerate(note.split("\n")):
+                S.t(c, y + 68 + 15 * j_, ln_, 12, SUB)
         lines = st["c4"]
         sp, off = (20, 20) if len(lines) <= 3 else (17, 12)
         for j, (txt, sz, wt, col) in enumerate(lines):
@@ -726,7 +727,7 @@ def trace_perm():
             rem = s2[right - m]
             win[rem] -= 1
         l1 = right - m + 1 if right >= m else 0
-        n3 = ("pop %s → win: %s" % (rem, cnt_str(win))) if rem else "win: " + cnt_str(win) + " (还没满 m)"
+        n3 = ("len %d > m = %d → pop %s" % (m + 1, m, rem)) if rem else "len %d ≤ m = %d, 不用 pop" % (right + 1, m)
         eq = all(win[c] == need[c] for c in set(win) | set(need))
         c4 = [("need: " + cnt_str(need), 12, 400, SUB),
               ("win:  " + cnt_str(win), 12, 400, SUB),
@@ -1044,26 +1045,30 @@ def trace_kdistinct():
         for right, x in enumerate(nums):
             cnt[x] += 1
             l0 = left
+            ndist = len(cnt)
             while len(cnt) > kk:
                 cnt[nums[left]] -= 1
                 if cnt[nums[left]] == 0:
                     del cnt[nums[left]]
                 left += 1
-            res.append((l0, left, right - left + 1, dict(cnt)))
+            res.append((l0, left, right - left + 1, dict(cnt), ndist, kk))
         return res
 
     ra, rb = run(k), run(k - 1)
     steps = []
     ta = tb = 0
     for r in range(len(nums)):
-        (a0, a1, a, ca), (b0, b1, b, cb) = ra[r], rb[r]
+        (a0, a1, a, ca, da, ka), (b0, b1, b, cb, db, kb) = ra[r], rb[r]
         ta += a
         tb += b
 
         def fmt(c):
             return " ".join("%d:%d" % (key, c[key]) for key in sorted(c))
-        n2 = ("pop → " if a1 > a0 else "") + "cnt " + fmt(ca) + (" (%d 种)" % len(ca))
-        n3 = ("pop → " if b1 > b0 else "") + "cnt " + fmt(cb) + (" (%d 种)" % len(cb))
+        def note(l0, l1, d, kk, c):
+            top = ("%d 种 > %d → pop %s" % (d, kk, ",".join(str(v) for v in nums[l0:l1]))) if l1 > l0 else "%d 种 ≤ %d, 不用 pop" % (d, kk)
+            return top + "\n" + "cnt " + fmt(c)
+        n2 = note(a0, a1, da, ka, ca)
+        n3 = note(b0, b1, db, kb, cb)
         c4 = [("a2 = %d - %d + 1 = %d" % (r, a1, a), 12, 400, SUB),
               ("a1 = %d - %d + 1 = %d" % (r, b1, b), 12, 400, SUB),
               ("a2 - a1 = %d" % (a - b), 14, 500, INK)]
@@ -1082,7 +1087,7 @@ def svg_kdistinct():
               ["当前输入", "atMost(2) 的 window", "atMost(1) 的 window", "以 right 结尾的个数"],
               [str(x) for x in nums], steps,
               "答案: atMost(2) = 1+2+3+4+2 = %d, atMost(1) = 1+1+1+1+1 = %d, 12 - 5 = %d" % (ta, tb, ta - tb),
-              LEG_NR, cw=26, rowh=88)
+              LEG_NR, cw=26, rowh=100)
 
 
 svg_kdistinct()

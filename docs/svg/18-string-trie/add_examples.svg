@@ -1,0 +1,8 @@
+<svg width="100%" viewBox="0 0 680 172" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Add and Search Words examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">addWord(word) 加一个词; search(word) 判断有没有匹配的词, word 里的 &#x27;.&#x27; 可以匹配任意一个字母</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  addWord(bad) addWord(dad) addWord(mad)</text>
+<text x="40" y="82" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">search(&quot;pad&quot;) → False</text>
+<text x="40" y="100" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">search(&quot;bad&quot;) → True</text>
+<text x="40" y="118" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">search(&quot;.ad&quot;) → True (bad、dad、mad 都可以)</text>
+<text x="40" y="136" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">search(&quot;b..&quot;) → True</text>
+<line x1="40" y1="160" x2="640" y2="160" stroke="#B4B2A9" stroke-dasharray="4 4"/></svg>

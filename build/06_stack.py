@@ -518,7 +518,9 @@ def trace_svg(name, head, rows, footer, title_extra=None, hdr=("输入", "pop �
             cy = bottom - (slot + 1) * CELL_H + 2
             s.cell(X_POP, cy, 72, CELL_H - 4, lab, "gone", dashed=True)
             s.arrow(X_BKT + 8, cy + (CELL_H - 4) / 2, X_POP + 76, cy + (CELL_H - 4) / 2, "#D85A30", dashed=True)
-            if reason:
+            if reason and n > 1:
+                s.text(X_POP + 80, cy + (CELL_H - 4) / 2 - 11, reason, 12, "#712B13")
+            elif reason:
                 for k, ln in enumerate(reason.split("\n")):
                     s.text(X_POP, cy + CELL_H + 8 + 15 * k, ln, 12, "#712B13")
         # input
@@ -803,45 +805,32 @@ def tr_ast():
         if alive:
             stack_before_push = list(stack)
             stack.append(x)
-        # 生成行
+        # 生成行: 一个输入 = 一行, 连续 pop 都扔到左边
         if not steps:
             rows.append(dict(inp=[(str(x), 16, 500)], stack=stk(stack, True),
                              notes=[("%d 和栈顶不会相撞" % x if len(stack) > 1 else "栈空 → push %d" % x, "n"),
                                     ("push %d" % x, "b")]))
         else:
-            # 重放: 每个 pop 一行, 最后一行包含 push/消失
-            sim = list(stack_before_push) if alive else None
-            # 重建 pop 前的栈
             pre = list(stack) if not alive else list(stack[:-1])
             popped_vals = [v for k, v, _ in steps if k in ("pop", "both")]
-            full = pre + list(reversed(popped_vals))   # pop 之前的栈 (底到顶)
-            cur = list(full)
+            cur = list(pre)                                  # 全部 pop 完之后的栈 (不含 x)
+            multi = len([1 for k, _, _ in steps if k in ("pop", "both")]) > 1
+            popped, notes = [], []
             for idx, (k, t, _) in enumerate(steps):
-                is_last = idx == len(steps) - 1
+                lead = "栈顶 %d > 0, %d < 0 → 相撞" % (t, x) if idx == 0 else "栈顶 %d > 0 → 继续相撞" % t
                 if k == "pop":
-                    cur.pop()
-                    if is_last:   # pop 之后栈顶不再相撞, 然后 push
-                        st_ = list(cur) + [x]
-                        rows.append(dict(inp=[(str(x), 16, 500)], stack=stk(st_, True),
-                                         popped=[(str(t), "%d < |%d| = %d\n栈顶炸掉" % (t, x, -x))],
-                                         notes=[("栈顶 %d > 0, %d < 0 → 相撞" % (t, x), "n"),
-                                                ("%d < %d: pop %d" % (t, -x, t), "b"),
-                                                ("%s → 不再相撞, push %d" % ("栈空" if not cur else "栈顶 %d" % cur[-1] + " 为负" if cur[-1] < 0 else "?", x), "n")]))
-                    else:
-                        rows.append(dict(inp=[(str(x), 16, 500)], inp_role="old", stack=stk(cur),
-                                         popped=[(str(t), "%d < |%d| = %d\n栈顶炸掉" % (t, x, -x))],
-                                         notes=[("栈顶 %d > 0, %d < 0 → 相撞" % (t, x), "n"),
-                                                ("%d < %d: pop %d" % (t, -x, t), "b"),
-                                                ("%d 还活着, 继续撞下一个" % x, "n")]))
+                    popped.append((str(t), ("%d < %d" % (t, -x)) if multi else "%d < |%d| = %d\n栈顶炸掉" % (t, x, -x)))
+                    notes += [(lead, "n"), ("%d < %d: pop %d" % (t, -x, t), "b")]
                 elif k == "both":
-                    cur.pop()
-                    rows.append(dict(inp=[(str(x), 16, 500)], inp_role="gone", stack=stk(cur),
-                                     popped=[(str(t), "一样大\n同归于尽")],
-                                     notes=[("%d == %d" % (t, -x), "b"), ("两个都消失, 不 push", "n")]))
+                    popped.append((str(t), "一样大\n同归于尽"))
+                    notes += [(lead, "n"), ("%d == %d" % (t, -x), "b"), ("两个都消失, 不 push", "n")]
                 else:
-                    rows.append(dict(inp=[(str(x), 16, 500)], inp_role="gone", stack=stk(cur),
-                                     notes=[("栈顶 %d > 0, %d < 0 → 相撞" % (t, x), "n"),
-                                            ("%d > %d: %d 被炸掉" % (t, -x, x), "b"), ("不 push, stack 不变", "n")]))
+                    notes += [(lead, "n"), ("%d > %d: %d 被炸掉" % (t, -x, x), "b"), ("不 push, stack 不变", "n")]
+            if alive:
+                notes.append((("栈空 → 不再相撞, push %d" if not cur else "栈顶 %d 为负, 不会相撞 → push %d") % ((x,) if not cur else (cur[-1], x)), "n"))
+                rows.append(dict(inp=[(str(x), 16, 500)], stack=stk(cur + [x], True), popped=popped, notes=notes))
+            else:
+                rows.append(dict(inp=[(str(x), 16, 500)], inp_role="gone", stack=stk(cur), popped=popped, notes=notes))
     assert stack == load("asteroid")["asteroid_collision"](a) == [-12, 3]
     return rows, stack
 
@@ -1143,7 +1132,7 @@ def core_dup2():
     s.text(40, 70, "只存 char (需要回头数)", 14, "#993C1D", weight=500)
     s.bucket(50, 230, 90, [("a", "old"), ("b", "old"), ("b", "old"), ("b", "old")], 4)
     s.text(40, 252, "第 3 个 b 进来才知道凑够 3", 12, SUB)
-    s.text(40, 272, "删完后又要回头数 a 有几个 → 重复劳动", 12, SUB)
+    s.text(40, 272, "删完还要回头数 a 有几个", 12, SUB)
     s.line(250, 62, 250, 290, "#B4B2A9", True)
     s.text(270, 70, "存 [char, count] (对): 栈顶的 count 就是答案", 14, "#0F6E56", weight=500)
     s.bucket(280, 230, 100, [("(a, 1)", "old"), ("(b, 3)", "old")], 4)

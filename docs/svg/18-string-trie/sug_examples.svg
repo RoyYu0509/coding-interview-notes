@@ -1,0 +1,9 @@
+<svg width="100%" viewBox="0 0 680 192" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Search Suggestions examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">用户一个字母一个字母地输入 searchWord。每输入一个字母, 返回以当前输入为前缀的产品里, 字典序最小的 </text>
+<text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">3 个</text>
+<line x1="40" y1="62" x2="640" y2="62" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="82" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  products = [mobile,mouse,moneypot,monitor,mousepad], searchWord = &quot;mouse&quot;</text>
+<text x="40" y="102" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">输入 m   → [mobile, moneypot, monitor]</text>
+<text x="40" y="120" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">输入 mo  → [mobile, moneypot, monitor]</text>
+<text x="40" y="138" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">输入 mou → [mouse, mousepad]   (只有两个)</text>
+<text x="40" y="156" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">输入 mous、mouse → [mouse, mousepad]</text>
+<line x1="40" y1="180" x2="640" y2="180" stroke="#B4B2A9" stroke-dasharray="4 4"/></svg>
