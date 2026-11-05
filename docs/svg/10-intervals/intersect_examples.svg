@@ -1,0 +1,38 @@
+<svg width="100%" viewBox="0 0 680 294" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Interval List Intersections examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">两个列表, 各自按顺序排好、内部不重叠。求它们的交集 (两边都覆盖到的部分)</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  A = [[0,2],[5,10],[13,23],[24,25]], B = [[1,5],[8,12],[15,24],[25,26]]</text>
+<text x="40" y="103" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">A</text>
+<rect x="104" y="88" width="76" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="142.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[0,2]</text>
+<rect x="180" y="88" width="76" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="218.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[5,10]</text>
+<rect x="256" y="88" width="76" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="294.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[13,23]</text>
+<rect x="332" y="88" width="76" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="370.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[24,25]</text>
+<text x="40" y="149" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">B</text>
+<rect x="104" y="134" width="76" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="142.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[1,5]</text>
+<rect x="180" y="134" width="76" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="218.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[8,12]</text>
+<rect x="256" y="134" width="76" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="294.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[15,24]</text>
+<rect x="332" y="134" width="76" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="370.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[25,26]</text>
+<text x="40" y="195" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">交集</text>
+<rect x="104" y="180" width="76" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="142.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[1,2]</text>
+<rect x="180" y="180" width="76" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="218.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[5,5]</text>
+<rect x="256" y="180" width="76" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="294.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[8,10]</text>
+<rect x="332" y="180" width="76" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="370.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[15,23]</text>
+<rect x="408" y="180" width="76" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="446.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[24,24]</text>
+<rect x="484" y="180" width="76" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="522.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[25,25]</text>
+<text x="40" y="226" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">[5,5] 是一个点: A 的 [5,10] 和 B 的 [1,5] 只在 5 这一点重合</text>
+<line x1="40" y1="250" x2="640" y2="250" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="265" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="272" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">交集</text></svg>
