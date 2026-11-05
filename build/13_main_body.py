@@ -19,11 +19,11 @@ SRC["subsets"] = '''
 def subsets(nums):
     res, path = [], []
     def dfs(start):
-        res.append(path[:])                  # 每个节点本身就是一个答案; copy, 因为 path 之后还会变
-        for i in range(start, len(nums)):    # 只能选 start 之后的: [1,2] 会出现, [2,1] 不会
+        res.append(path[:])                  # 每个节点都是答案; 要 copy, path 之后还会变
+        for i in range(start, len(nums)):    # 只选 start 之后的: 有 [1,2], 没有 [2,1]
             path.append(nums[i])             # 做选择
             dfs(i + 1)                       # 递归: 下一层只能选 i 之后的
-            path.pop()                       # 撤销: 回到做选择之前, 兄弟分支才看到干净的 path
+            path.pop()                       # 撤销: 兄弟分支要看到干净的 path
     dfs(0)
     return res
 '''
@@ -46,7 +46,7 @@ def subsets(nums):                   # 另一种写法: 每个元素 "选 / 不�
 SRC["permute"] = '''
 def permute(nums):
     res, path = [], []
-    used = [False] * len(nums)               # used[i]: nums[i] 已经在 path 里 (比 "x in path" 的 O(n) 快)
+    used = [False] * len(nums)               # used[i]: nums[i] 已在 path 里, O(1) 判断
     def dfs():
         if len(path) == len(nums):           # 每个位置都填好了
             res.append(path[:])
@@ -92,7 +92,7 @@ def combination_sum2(candidates, target):
             return
         for i in range(start, len(candidates)):
             if i > start and candidates[i] == candidates[i - 1]:
-                continue                     # 同一层 (同一个 for 里) 已经试过这个值了, 子树会完全一样
+                continue                     # 同一层已试过这个值, 子树一样
             c = candidates[i]
             if c > remain:
                 break
@@ -129,11 +129,11 @@ def letter_combinations(digits):
     PHONE = {"2": "abc", "3": "def", "4": "ghi", "5": "jkl",
              "6": "mno", "7": "pqrs", "8": "tuv", "9": "wxyz"}
     res, path = [], []
-    def dfs(idx):                            # idx: 正在决定第几个数字; 层数 = len(digits), 固定
+    def dfs(idx):                            # idx: 正在决定第几位数字
         if idx == len(digits):
             res.append("".join(path))
             return
-        for ch in PHONE[digits[idx]]:        # choices 取决于层数, 不是 start index: 每层是独立的 "槽"
+        for ch in PHONE[digits[idx]]:        # choices 由层数 idx 决定, 不用 start
             path.append(ch)
             dfs(idx + 1)
             path.pop()
@@ -159,19 +159,22 @@ def exist(board, word):
 
 SRC["nqueens"] = '''
 def solve_n_queens(n):
-    res, path = [], []                       # path[r] = 第 r 行的皇后放在第几列
-    cols, diag, anti = set(), set(), set()   # 已占用的 列 / 主对角线 (r - c) / 副对角线 (r + c)
+    res, path = [], []                       # path[r] = 第 r 行皇后所在的列
+    # 三个 set: 已占用的 列 / r - c (\\ 对角线) / r + c (/ 对角线)
+    cols, diag, anti = set(), set(), set()
     def dfs(r):
         if r == n:                           # n 行都放好了
             res.append(["." * c + "Q" + "." * (n - c - 1) for c in path])
             return
         for c in range(n):
             if c in cols or (r - c) in diag or (r + c) in anti:
-                continue                     # 剪枝: 同列 / 同一条 \\ 对角线 / 同一条 / 对角线
-            cols.add(c); diag.add(r - c); anti.add(r + c)      # 做选择: 三个 set + path
+                continue                     # 剪枝: 同列或同一条对角线
+            # 做选择: 三个 set 各 add 一个值, path 也要 append
+            cols.add(c); diag.add(r - c); anti.add(r + c)
             path.append(c)
             dfs(r + 1)
-            path.pop()                                         # 撤销: 三个 set + path 全部还原
+            # 撤销: 三个 set 和 path 全部还原
+            path.pop()
             cols.remove(c); diag.remove(r - c); anti.remove(r + c)
     dfs(0)
     return res
