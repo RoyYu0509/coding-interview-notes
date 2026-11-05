@@ -1,0 +1,56 @@
+<svg width="100%" viewBox="0 0 680 410" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Valid Anagram examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">t 是不是 s 把字母换了顺序得到的: 每个字母出现的次数必须完全一样</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">Example 1:  s = &quot;anagram&quot;, t = &quot;nagaram&quot;  →  True</text>
+<text x="40" y="103" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">s</text>
+<rect x="104" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">a</text>
+<rect x="138" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="155.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">n</text>
+<rect x="172" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="189.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">a</text>
+<rect x="206" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="223.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">g</text>
+<rect x="240" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="257.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">r</text>
+<rect x="274" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="291.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">a</text>
+<rect x="308" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="325.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">m</text>
+<text x="40" y="149" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">t</text>
+<rect x="104" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">n</text>
+<rect x="138" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="155.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">a</text>
+<rect x="172" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="189.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">g</text>
+<rect x="206" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="223.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">a</text>
+<rect x="240" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="257.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">r</text>
+<rect x="274" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="291.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">a</text>
+<rect x="308" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="325.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">m</text>
+<text x="40" y="180" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">两边都是: a × 3, n × 1, g × 1, r × 1, m × 1 → 次数完全一样</text>
+<line x1="40" y1="204" x2="640" y2="204" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="224" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">Example 2:  s = &quot;rat&quot;, t = &quot;car&quot;  →  False</text>
+<text x="40" y="265" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">s</text>
+<rect x="104" y="250" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="266.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">r</text>
+<rect x="138" y="250" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="155.0" y="266.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">a</text>
+<rect x="172" y="250" width="34" height="30" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
+<text x="189.0" y="266.0" font-size="15" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central">t</text>
+<text x="40" y="311" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">t</text>
+<rect x="104" y="296" width="34" height="30" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
+<text x="121.0" y="312.0" font-size="15" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central">c</text>
+<rect x="138" y="296" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="155.0" y="312.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">a</text>
+<rect x="172" y="296" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="189.0" y="312.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">r</text>
+<text x="40" y="342" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">s 有 t, t 没有; t 有 c, s 没有 → 次数对不上</text>
+<line x1="40" y1="366" x2="640" y2="366" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="381" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="54" y="388" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">两边都有, 次数一样</text>
+<rect x="182.2" y="381" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
+<text x="203.2" y="388" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">对不上的字母</text></svg>

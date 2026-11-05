@@ -100,8 +100,10 @@ def examples_svg(path, title, head, blocks, legend=None):
                     S.ring(x0 + l * cw, cy, (r - l + 1) * cw, 30)
                 if b.get("ans_text"):
                     S.t(tx, cy + 15, b["ans_text"], 14, NEW[2], "start", 500)
-            yy = cy + 56
+            yy = cy + (56 if b.get("index", True) else 40)
             first = False
+        if b.get("extra") and rows:
+            yy += 6
         for line in b.get("extra", []):
             S.t(40, yy, line, 12, SUB)
             yy += 18
