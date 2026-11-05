@@ -1,0 +1,28 @@
+<svg width="100%" viewBox="0 0 680 284" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Level Order examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">按层输出: 第 0 层、第 1 层……每层从左到右</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  root = [3,9,20,null,null,15,7]</text>
+<line x1="190.0" y1="96" x2="115.0" y2="148" stroke="#898781" stroke-width="1.2"/>
+<line x1="190.0" y1="96" x2="265.0" y2="148" stroke="#898781" stroke-width="1.2"/>
+<line x1="265.0" y1="148" x2="227.5" y2="200" stroke="#898781" stroke-width="1.2"/>
+<line x1="265.0" y1="148" x2="302.5" y2="200" stroke="#898781" stroke-width="1.2"/>
+<circle cx="190.0" cy="96" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<circle cx="190.0" cy="96" r="21" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="190.0" y="97" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<circle cx="115.0" cy="148" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="115.0" y="149" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">9</text>
+<circle cx="265.0" cy="148" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<circle cx="265.0" cy="148" r="21" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="265.0" y="149" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">20</text>
+<circle cx="227.5" cy="200" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="227.5" y="201" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">15</text>
+<circle cx="302.5" cy="200" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<circle cx="302.5" cy="200" r="21" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="302.5" y="201" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">7</text>
+<text x="370" y="88" font-size="13" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">Level Order → [[3], [9,20], [15,7]]</text>
+<text x="370" y="110" font-size="13" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">Right Side View → [3, 20, 7]</text>
+<text x="370" y="132" font-size="13" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">   (每层最右边的, 橙圈)</text>
+<text x="370" y="154" font-size="13" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">Zigzag → [[3], [20,9], [15,7]]</text>
+<text x="370" y="176" font-size="13" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">   (第 1 层反过来)</text>
+<line x1="40" y1="240" x2="640" y2="240" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<circle cx="40" cy="262" r="7" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="54" y="262" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">每层最右边的 node</text></svg>

@@ -148,3 +148,85 @@ def table(doc, header, rows):
     h = "".join("<th>%s</th>" % x for x in header)
     r = "".join("<tr>%s</tr>" % "".join("<td>%s</td>" % c for c in row) for row in rows)
     doc.raw("<table><tr>%s</tr>%s</table>" % (h, r))
+
+
+def _tree_nodes(vals):
+    """LeetCode level-order list (None = 空) → [(idx, val, depth, pos, parent_idx)]"""
+    if not vals or vals[0] is None:
+        return []
+    nodes = [(0, vals[0], 0, 0, None)]
+    queue = [0]
+    i = 1
+    while queue and i < len(vals):
+        p = queue.pop(0)
+        _, _, dp, pp, _ = nodes[p]
+        for side in (0, 1):
+            if i < len(vals) and vals[i] is not None:
+                nodes.append((len(nodes), vals[i], dp + 1, pp * 2 + side, p))
+                queue.append(len(nodes) - 1)
+            i += 1
+    return nodes
+
+
+def tree_examples_svg(path, title, head, blocks, legend=None):
+    """画 tree 的 "看例子" 图。block: title, tree (level-order list), hl (要标绿的 node 下标, 按 list 中非 None 的顺序),
+    bad (标红的 node 下标), ring (加橙色圈的 node 下标), hl_edges [(child_idx)] 绿色边, side_text [行], extra [行]。"""
+    S = _S()
+    y = 18
+    for h in head:
+        S.t(40, y, h, 12, SUB)
+        y += 20
+    y += 4
+    for b in blocks:
+        S.line(40, y, 640, y)
+        S.t(40, y + 20, b["title"], 14, INK, "start", 500)
+        nodes = _tree_nodes(b["tree"])
+        depth = max(n[2] for n in nodes) + 1
+        W = b.get("width", 300)
+        top = y + 54
+        dy = 52
+        pos = {}
+        for (i, v, dp, pp, par) in nodes:
+            x = 40 + (pp + 0.5) * W / (2 ** dp)
+            pos[i] = (x, top + dp * dy)
+        for (i, v, dp, pp, par) in nodes:
+            if par is not None:
+                (x1, y1), (x2, y2) = pos[par], pos[i]
+                green = i in b.get("hl_edges", [])
+                S.p.append('<line x1="%s" y1="%s" x2="%s" y2="%s" stroke="%s" stroke-width="%s"/>'
+                           % (x1, y1, x2, y2, NEW[1] if green else "#898781", 2.5 if green else 1.2))
+        for (i, v, dp, pp, par) in nodes:
+            x, yy = pos[i]
+            role = "new" if i in b.get("hl", []) else ("rem" if i in b.get("bad", []) else "keep")
+            f, s_, c = {"new": NEW, "rem": REM, "keep": KEEP}[role]
+            S.p.append('<circle cx="%s" cy="%s" r="17" fill="%s" stroke="%s" stroke-width="1"/>' % (x, yy, f, s_))
+            if i in b.get("ring", []):
+                S.p.append('<circle cx="%s" cy="%s" r="21" fill="none" stroke="%s" stroke-width="2.5"/>' % (x, yy, RING))
+            S.t(x, yy + 1, v, 14, c, "middle", 500)
+        tx = 40 + W + 30
+        ty = top - 8
+        for line in b.get("side_text", []):
+            S.t(tx, ty, line, 13, NEW[2] if line.startswith("→") else SUB, "start", 500 if line.startswith("→") else 400)
+            ty += 22
+        yy = max(top + (depth - 1) * dy + 34, ty)
+        for line in b.get("extra", []):
+            S.t(40, yy, line, 12, SUB)
+            yy += 18
+        y = yy + 6
+    S.line(40, y, 640, y)
+    leg = legend if legend is not None else []
+    x = 40
+    for role, text in leg:
+        if role == "ring":
+            S.p.append('<circle cx="%s" cy="%s" r="7" fill="none" stroke="%s" stroke-width="2.5"/>' % (x, y + 22, RING))
+        else:
+            f, s_, _ = {"new": NEW, "rem": REM, "keep": KEEP}[role]
+            S.p.append('<circle cx="%s" cy="%s" r="7" fill="%s" stroke="%s"/>' % (x, y + 22, f, s_))
+        S.t(x + 14, y + 22, text, 12, SUB)
+        x += 14 + _w(text, 12) + 26
+    h = y + (44 if leg else 12)
+    svg = ('<svg width="100%%" viewBox="0 0 680 %d" xmlns="http://www.w3.org/2000/svg" role="img" '
+           'font-family="%s"><title>%s</title>%s</svg>\n' % (h, FONT, html.escape(title), "\n".join(S.p)))
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(svg)

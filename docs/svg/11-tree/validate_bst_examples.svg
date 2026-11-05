@@ -1,0 +1,53 @@
+<svg width="100%" viewBox="0 0 680 628" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Validate BST examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">BST: 每个 node 的左子树里&lt;所有&gt; node 都比它小, 右子树里&lt;所有&gt; node 都比它大</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  [2,1,3]  →  True</text>
+<line x1="190.0" y1="96" x2="115.0" y2="148" stroke="#898781" stroke-width="1.2"/>
+<line x1="190.0" y1="96" x2="265.0" y2="148" stroke="#898781" stroke-width="1.2"/>
+<circle cx="190.0" cy="96" r="17" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="190.0" y="97" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<circle cx="115.0" cy="148" r="17" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="115.0" y="149" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<circle cx="265.0" cy="148" r="17" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="265.0" y="149" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="370" y="88" font-size="13" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">1 &lt; 2 &lt; 3 ✓</text>
+<line x1="40" y1="188" x2="640" y2="188" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="208" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  [5,1,4,null,null,3,6]  →  False</text>
+<line x1="190.0" y1="242" x2="115.0" y2="294" stroke="#898781" stroke-width="1.2"/>
+<line x1="190.0" y1="242" x2="265.0" y2="294" stroke="#898781" stroke-width="1.2"/>
+<line x1="265.0" y1="294" x2="227.5" y2="346" stroke="#898781" stroke-width="1.2"/>
+<line x1="265.0" y1="294" x2="302.5" y2="346" stroke="#898781" stroke-width="1.2"/>
+<circle cx="190.0" cy="242" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="190.0" y="243" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<circle cx="115.0" cy="294" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="115.0" y="295" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<circle cx="265.0" cy="294" r="17" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="265.0" y="295" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<circle cx="227.5" cy="346" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="227.5" y="347" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<circle cx="302.5" cy="346" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="302.5" y="347" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">6</text>
+<text x="370" y="234" font-size="13" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">4 在 5 的右边, 但 4 &lt; 5 ✗</text>
+<line x1="40" y1="386" x2="640" y2="386" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="406" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 3:  [5,4,6,null,null,3,7]  →  False</text>
+<line x1="190.0" y1="440" x2="115.0" y2="492" stroke="#898781" stroke-width="1.2"/>
+<line x1="190.0" y1="440" x2="265.0" y2="492" stroke="#898781" stroke-width="1.2"/>
+<line x1="265.0" y1="492" x2="227.5" y2="544" stroke="#898781" stroke-width="1.2"/>
+<line x1="265.0" y1="492" x2="302.5" y2="544" stroke="#898781" stroke-width="1.2"/>
+<circle cx="190.0" cy="440" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="190.0" y="441" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<circle cx="115.0" cy="492" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="115.0" y="493" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<circle cx="265.0" cy="492" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="265.0" y="493" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">6</text>
+<circle cx="227.5" cy="544" r="17" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="227.5" y="545" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<circle cx="302.5" cy="544" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="302.5" y="545" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">7</text>
+<text x="370" y="432" font-size="13" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">3 &lt; 6, 和它的 parent 比没问题</text>
+<text x="370" y="454" font-size="13" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">但 3 在 5 的右子树里, 必须 &gt; 5 ✗</text>
+<text x="370" y="476" font-size="13" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">→ 只和 parent 比是不够的</text>
+<line x1="40" y1="584" x2="640" y2="584" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<circle cx="40" cy="606" r="7" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="606" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">合法</text>
+<circle cx="104" cy="606" r="7" fill="#FAECE7" stroke="#993C1D"/>
+<text x="118" y="606" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">违反规则</text></svg>

@@ -24,15 +24,16 @@ figure svg{width:100%;height:auto;display:block}
 figcaption{color:#52514e;font-size:14px;padding:4px 6px 0}
 table{border-collapse:collapse;margin:10px 0;font-size:15px}
 td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
+details{margin:12px 0;border:1px dashed var(--box);border-radius:6px;padding:4px 12px}
+summary{cursor:pointer;color:var(--sub);font-size:15px}
+ol,ul{padding-left:24px}li{margin:4px 0}
 </style></head><body><article contenteditable="true">
 <h1>11 · Binary Tree / BST</h1>
-<p class="main">主线: tree 题 = "假设左、右子树已经算好, 当前 node 怎么合并"。信息从下往上流 → post-order 返回值; 从上往下流 → pre-order 传参数。</p>
-<p class="main">概念链: 第一性原理 → Maximum Depth (最基础的 post-order) → Diameter (返回值 ≠ 答案, nonlocal) → Max Path Sum (返回单边, 拐点更新答案) → Validate BST (自顶向下传区间) → Level Order / Right Side View / Zigzag (BFS 分层) → LCA (返回值语义: 找到的 p/q) → Kth Smallest (BST inorder = sorted) → Serialize / Deserialize (pre-order + None 标记)。</p>
-<h2>0. 第一性原理: tree 题只有两种信息流向</h2>
-<p>tree 是递归定义的: 一棵树 = 一个 node + 左子树 + 右子树。所以几乎所有 tree 题都能写成 "我只管当前这个 node, 子树的事交给递归"。关键是想清楚: <b>当前 node 需要谁告诉它什么</b>。</p>
-<p><b>brute force 在浪费什么。</b>对每个 node 单独问一遍"以你为根, 答案是多少" (比如重新数一遍 height, 重新扫一遍子树找 max/min), 每次都从这个 node 往下重新走。子树里的信息本来可以被算一次、带上来复用, 暴力却让每个 node 被它的所有祖先各走一遍: 总共 O(n · h), 链状时 O(n²)。</p>
-<p><b>pattern 怎么消掉它。</b>两种做法, 对应两种信息流向:</p>
-<p>(1) 自底向上 (post-order): 先递归拿到 L、R, 再合并。子树的信息作为<b>返回值</b>被带上来, 每个 node 只访问一次。(2) 自顶向下 (pre-order): 先用祖先传来的<b>参数</b>检查自己, 再把更新后的参数传给孩子。祖先的信息作为参数被带下去, 同样每个 node 只访问一次。</p>
+<h2>这篇讲什么</h2>
+<p>binary tree (二叉树) 的每个 node 最多有两个孩子: left 和 right。面试里的 tree 题, 几乎都能用 <b>recursion</b> (递归) 解决, 而且写法很固定。</p>
+<p>关键的思路是: <b>不要去想整棵树。只想一个 node: 假设它的左子树、右子树的答案已经算好了, 当前这个 node 要怎么用这两个答案, 算出自己的答案?</b> 剩下的交给 recursion。</p>
+<p>信息在 tree 里只有两种流向:</p>
+<ul><li><b>自底向上 (post-order)</b>: 先算孩子, 孩子把结果<b>返回</b>给 parent。比如高度、子树的和。本篇大部分题是这种。</li><li><b>自顶向下 (pre-order)</b>: parent 把信息当成<b>参数</b>传给孩子。比如"你的值必须在 (low, high) 之间"。</li></ul>
 <figure><svg width="100%" viewBox="0 0 680 352" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>tree 题的两种信息流向</title><desc>pre-order 往下传参数, post-order 往上传返回值</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <line x1="124" y1="108" x2="70" y2="164" stroke="#898781" stroke-width="1.2"/>
 <line x1="232" y1="164" x2="178" y2="220" stroke="#898781" stroke-width="1.2"/>
@@ -93,15 +94,57 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <line x1="40" y1="314" x2="640" y2="314" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
 <text x="40" y="334" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">两者可以同时用: 参数往下传约束, 返回值往上传摘要 (本文每题只用其中一种, 最清楚)</text>
 </svg>
-<figcaption>同一棵树的两种信息流向: 绿色 = 往下传参数 (depth), 橙色 = 往上传返回值 (height)</figcaption></figure>
-<div class="code"><span class="l"><span class="k">class</span> <span class="t">TreeNode</span>:</span><span class="l">    <span class="k">def</span> <span class="f">__init__</span>(<span class="t">self</span>, val=0, left=<span class="k">None</span>, right=<span class="k">None</span>):</span><span class="l">        <span class="t">self</span>.val, <span class="t">self</span>.left, <span class="t">self</span>.right = val, left, right</span><span class="l"></span><span class="l"><span class="c"># 模板 A: 自底向上 (post-order)。返回值 = 这棵子树的&quot;摘要&quot;</span></span><span class="l"><span class="k">def</span> <span class="f">solve</span>(node):</span><span class="l">    <span class="k">if</span> <span class="k">not</span> node:</span><span class="l">        <span class="r">return</span> BASE                    <span class="c"># None 的摘要: depth 0 / gain 0 / None</span></span><span class="l">    L = <span class="f">solve</span>(node.left)               <span class="c"># 假设: 左子树已经算好</span></span><span class="l">    R = <span class="f">solve</span>(node.right)              <span class="c"># 假设: 右子树已经算好</span></span><span class="l">    <span class="r">return</span> <span class="f">merge</span>(node.val, L, R)       <span class="c"># 当前 node 只做合并: L、R -&gt; 自己的摘要</span></span><span class="l"></span><span class="l"><span class="c"># 模板 B: 自顶向下 (pre-order)。参数 = 祖先传下来的&quot;约束&quot;</span></span><span class="l"><span class="k">def</span> <span class="f">check</span>(node, constraint):</span><span class="l">    <span class="k">if</span> <span class="k">not</span> node:</span><span class="l">        <span class="r">return</span> <span class="k">True</span></span><span class="l">    <span class="k">if</span> <span class="f">violates</span>(node, constraint):     <span class="c"># 先用约束检查自己</span></span><span class="l">        <span class="r">return</span> <span class="k">False</span></span><span class="l">    <span class="r">return</span> (<span class="f">check</span>(node.left,  <span class="f">tighten</span>(constraint, node, <span class="s">&quot;L&quot;</span>)) <span class="k">and</span></span><span class="l">            <span class="f">check</span>(node.right, <span class="f">tighten</span>(constraint, node, <span class="s">&quot;R&quot;</span>)))   <span class="c"># 把更严的约束传给孩子</span></span></div>
-<p>两个常见补充: (a) 答案不一定等于返回值 (见 Diameter / Max Path Sum), 这时答案放在 <code>nonlocal</code> 变量里, 在 node 处更新; (b) 需要"按层"的题用 BFS (deque), 不用递归。</p>
-<p>Python 注意: 递归深度默认约 1000, 链状 tree 会 <code>RecursionError</code>。面试里先口头说一句, 需要时 <code>sys.setrecursionlimit(10**5)</code>。</p>
-<p class="note"><b>记:</b>看到 tree 先问两句: node 需要祖先给它什么 (参数)? 需要子树给它什么 (返回值)? 答完这两句, 代码骨架就出来了。</p>
-<h2>1. Maximum Depth of Binary Tree: post-order 最小模板</h2>
-<p>题目: 求 tree 的最大深度 (root 到最远 leaf 的 node 数)。例: <code>[3, 9, 20, None, None, 15, 7]</code> → 3。</p>
-<p><b>Brute force:</b> 枚举每条 root → leaf 路径, 数 node 个数取最大。每条路径都重新走一遍共同的前缀, O(叶子数 × h), 还要存路径。<b>浪费:</b> 上面几层被每条路径重复走。</p>
-<p><b>关键观察:</b> 一棵树的深度只取决于它两个孩子子树的深度, 和上面是什么无关。所以让每个 node 返回自己子树的深度, 父亲拿到后 +1 即可。</p>
+<figcaption>两种信息流向: 返回值往上走 (post-order), 参数往下走 (pre-order)。</figcaption></figure>
+<p>另外一种是一层一层地处理, 用 BFS (queue), 第 5 题会讲。</p>
+<table><tr><th>#</th><th>题目</th><th>考过的公司数</th><th>相比上一题多了什么</th></tr><tr><td>1</td><td>Maximum Depth of Binary Tree</td><td>18</td><td>模板题: 返回值往上走</td></tr><tr><td>2</td><td>Diameter of Binary Tree</td><td>19</td><td>返回值和最终答案不一样</td></tr><tr><td>3</td><td>Binary Tree Maximum Path Sum</td><td>24</td><td>同上, 还有负数</td></tr><tr><td>4</td><td>Validate Binary Search Tree</td><td>19</td><td>换成参数往下传</td></tr><tr><td>5</td><td>Level Order / Right Side View / Zigzag</td><td>15 / 14 / 18</td><td>一层一层处理: BFS</td></tr><tr><td>6</td><td>Lowest Common Ancestor</td><td>21</td><td>返回值的含义要自己设计</td></tr><tr><td>7</td><td>Kth Smallest Element in a BST</td><td>10</td><td>BST 的 inorder 是排好序的</td></tr><tr><td>8</td><td>Serialize and Deserialize</td><td>23</td><td>把 tree 写成字符串再还原</td></tr></table>
+<p>每道题的顺序: <b>题目在问什么 → 看例子 → brute force → intuition → 算法 → 手动走一遍 → 复杂度</b>。代码放在最后, 默认折叠。</p>
+<p>例子里的 <code>[3,9,20,null,null,15,7]</code> 是 LeetCode 表示 tree 的方式: 按层从左到右列出 node, null 表示这个位置没有 node。</p>
+<h2>1. Maximum Depth of Binary Tree</h2>
+<h3>题目在问什么</h3>
+<p>给一棵 binary tree, 求它的最大深度: 从 root 走到最远的叶子, 一路上经过几个 node (包括 root 和叶子)。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 430" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Maximum Depth examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">depth = 从 root 走到最远的叶子, 一路经过几个 node</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  root = [3,9,20,null,null,15,7]  →  3</text>
+<line x1="190.0" y1="96" x2="115.0" y2="148" stroke="#898781" stroke-width="1.2"/>
+<line x1="190.0" y1="96" x2="265.0" y2="148" stroke="#0F6E56" stroke-width="2.5"/>
+<line x1="265.0" y1="148" x2="227.5" y2="200" stroke="#0F6E56" stroke-width="2.5"/>
+<line x1="265.0" y1="148" x2="302.5" y2="200" stroke="#898781" stroke-width="1.2"/>
+<circle cx="190.0" cy="96" r="17" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="190.0" y="97" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<circle cx="115.0" cy="148" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="115.0" y="149" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">9</text>
+<circle cx="265.0" cy="148" r="17" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="265.0" y="149" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">20</text>
+<circle cx="227.5" cy="200" r="17" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="227.5" y="201" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">15</text>
+<circle cx="302.5" cy="200" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="302.5" y="201" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">7</text>
+<text x="370" y="88" font-size="13" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">最长的一条: 3 → 20 → 15</text>
+<text x="370" y="110" font-size="13" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">(3 → 20 → 7 也一样长)</text>
+<text x="370" y="132" font-size="13" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">→ 经过 3 个 node</text>
+<line x1="40" y1="240" x2="640" y2="240" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="260" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  root = [1,null,2]  →  2</text>
+<line x1="190.0" y1="294" x2="265.0" y2="346" stroke="#0F6E56" stroke-width="2.5"/>
+<circle cx="190.0" cy="294" r="17" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="190.0" y="295" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<circle cx="265.0" cy="346" r="17" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="265.0" y="347" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="370" y="286" font-size="13" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">只有右孩子: 1 → 2</text>
+<text x="370" y="308" font-size="13" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">→ 2</text>
+<line x1="40" y1="386" x2="640" y2="386" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<circle cx="40" cy="408" r="7" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="408" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">最长的路径</text></svg>
+<figcaption>两个例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>列出从 root 到每个叶子的所有路径, 取最长的。这其实已经是 <code>O(n)</code> 了 (每个 node 走一次), 但写起来要维护路径, 很麻烦。这题重点不在优化, 而在学会 recursion 的思考方式。</p>
+<h3>Intuition: 只想一个 node</h3>
+<p>站在某个 node 上想: 如果我已经知道左子树的深度是 L, 右子树的深度是 R, 那么以我为根的这棵树, 深度是多少?</p>
+<p>答案是 <code>1 + max(L, R)</code>: 我自己算 1 层, 再加上更深的那一边。</p>
+<p>至于 L 和 R 怎么来的, 不用管, 它们就是对左、右孩子调用同一个函数。recursion 会负责把它们算出来。</p>
+<p>最后要想清楚最简单的情况 (base case): 空树的深度是 0。</p>
+<h3>算法</h3>
+<ol><li><code>maxDepth(node)</code>: 如果 node 是 None, 返回 0。</li><li>否则返回 <code>1 + max(maxDepth(node.left), maxDepth(node.right))</code>。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 262" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Maximum Depth 的核心: 假设子树已经算好</title><desc>node 只合并两个数</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="20" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">不用想子树里面长什么样: 左、右子树的深度已经是对的数, 当前 node 只做一步合并</text>
 <circle cx="170" cy="78" r="22" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
@@ -127,7 +170,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="40" y="226" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">这就是 post-order 的全部: 先拿 L、R, 再 return merge(node, L, R)</text>
 <text x="40" y="246" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">以后每一题只是把"摘要"换了 (深度 → 单边链 → 找到的 node), 骨架不变</text>
 </svg>
-<figcaption>假设左、右子树的深度已经是对的: 当前 node 只做 1 + max(2, 1)</figcaption></figure>
+<figcaption>假设左、右子树的深度已经是对的: 当前 node 只做 1 + max(2, 1)。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 700" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Maximum Depth 的 post-order trace</title><desc>tree [3, 9, 20, None, None, 15, 7]; 每一行是一个 node 返回的时刻</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">每一步: 左、右子树的深度已经算好 → 当前 node 合并 → return 给父亲</text>
 <text x="40" y="38" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">return 1 + max(左深度, 右深度) · None 的深度是 0 · 箭头旁的数字 = 该 node 返回的值</text>
@@ -262,15 +306,60 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="216" y="678" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central"></text>
 <text x="232" y="678" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">还没访问</text>
 </svg>
-<figcaption>post-order 走一遍: 叶子先返回 1, 然后 20 返回 2, 根返回 3</figcaption></figure>
+<figcaption>post-order 走一遍: 叶子先返回 1, 然后 20 返回 2, root 返回 3。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n)</code>: 每个 node 访问一次。Space <code>O(h)</code>: recursion 的深度是树高 h, 最坏 (一条链) 是 <code>O(n)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">maxDepth</span>(root):</span><span class="l">    <span class="k">if</span> <span class="k">not</span> root:</span><span class="l">        <span class="r">return</span> 0                                       <span class="c"># base: None 的深度是 0</span></span><span class="l">    <span class="r">return</span> 1 + <span class="t">max</span>(<span class="f">maxDepth</span>(root.left),                <span class="c"># 左子树已算好</span></span><span class="l">                   <span class="f">maxDepth</span>(root.right))               <span class="c"># 右子树已算好; +1 = 自己这层</span></span></div>
-<p><b>Time</b> O(n): 每个 node 恰好进来一次, 做 O(1) 合并。<b>Space</b> O(h): 递归栈深度 = tree 高度 (平衡 O(log n), 链状 O(n))。</p>
-<p class="note"><b>记:</b>post-order = 先 L、R, 后合并。None → base case, 通常是 0。后面每一题只是把 "摘要" 换了。</p>
-<h2>2. Diameter of Binary Tree: 返回值 ≠ 答案</h2>
-<p>题目: 求 tree 中任意两个 node 之间最长路径的边数 (路径不一定过 root)。例: <code>[1,2,3,4,5,None,None,6,None,None,7]</code> → 4 (路径 6-4-2-5-7)。</p>
-<p>相比上一题: 多了一个条件 —— <b>答案不再是根的返回值</b>。最长路径可能在任何一个 node "拐弯"。改动: 递归函数仍返回 height, 另用 <code>nonlocal best</code> 记答案。</p>
-<p><b>Brute force:</b> 对每个 node, 调一次 <code>height(left)</code> 和 <code>height(right)</code> 算 L + R, 再递归到孩子。每个 node 被它所有祖先的 height() 各走一次, 总共 Σ(depth + 1), 链状 O(n²)。</p>
-<p><b>关键观察:</b> 经过 node 的最长路径 = 左链 + 右链 = height(L) + height(R)。而 height(L)、height(R) 恰好是后序遍历本来就要算的返回值 —— 顺手用一下就行。</p>
+</details>
+<p class="note"><b>记:</b>tree recursion: 假设左右子树的答案已经算好, 只想当前 node 怎么合并。别忘了 base case (None)。</p>
+<h2>把第 1 题抽象一下: tree recursion 的模板</h2>
+<p>每道 tree 题写之前, 先回答三个问题:</p>
+<ol><li><b>函数返回什么?</b> (第 1 题: 这棵子树的深度)</li><li><b>当前 node 怎么用左右孩子的返回值?</b> (第 1 题: 1 + max(L, R))</li><li><b>空 node 返回什么?</b> (第 1 题: 0)</li></ol>
+<p>如果信息是从上往下传的 (比如第 4 题的范围), 就把它写成函数的参数。</p>
+<details><summary>两种模板的代码</summary>
+<div class="code"><span class="l"><span class="k">class</span> <span class="t">TreeNode</span>:</span><span class="l">    <span class="k">def</span> <span class="f">__init__</span>(<span class="t">self</span>, val=0, left=<span class="k">None</span>, right=<span class="k">None</span>):</span><span class="l">        <span class="t">self</span>.val, <span class="t">self</span>.left, <span class="t">self</span>.right = val, left, right</span><span class="l"></span><span class="l"><span class="c"># 模板 A: 自底向上 (post-order)。返回值 = 这棵子树的&quot;摘要&quot;</span></span><span class="l"><span class="k">def</span> <span class="f">solve</span>(node):</span><span class="l">    <span class="k">if</span> <span class="k">not</span> node:</span><span class="l">        <span class="r">return</span> BASE                    <span class="c"># None 的摘要: depth 0 / gain 0 / None</span></span><span class="l">    L = <span class="f">solve</span>(node.left)               <span class="c"># 假设: 左子树已经算好</span></span><span class="l">    R = <span class="f">solve</span>(node.right)              <span class="c"># 假设: 右子树已经算好</span></span><span class="l">    <span class="r">return</span> <span class="f">merge</span>(node.val, L, R)       <span class="c"># 当前 node 只做合并: L、R -&gt; 自己的摘要</span></span><span class="l"></span><span class="l"><span class="c"># 模板 B: 自顶向下 (pre-order)。参数 = 祖先传下来的&quot;约束&quot;</span></span><span class="l"><span class="k">def</span> <span class="f">check</span>(node, constraint):</span><span class="l">    <span class="k">if</span> <span class="k">not</span> node:</span><span class="l">        <span class="r">return</span> <span class="k">True</span></span><span class="l">    <span class="k">if</span> <span class="f">violates</span>(node, constraint):     <span class="c"># 先用约束检查自己</span></span><span class="l">        <span class="r">return</span> <span class="k">False</span></span><span class="l">    <span class="r">return</span> (<span class="f">check</span>(node.left,  <span class="f">tighten</span>(constraint, node, <span class="s">&quot;L&quot;</span>)) <span class="k">and</span></span><span class="l">            <span class="f">check</span>(node.right, <span class="f">tighten</span>(constraint, node, <span class="s">&quot;R&quot;</span>)))   <span class="c"># 把更严的约束传给孩子</span></span></div>
+</details>
+<p class="note"><b>记:</b>写 tree recursion 前先定三件事: 返回什么、怎么合并、空 node 返回什么。</p>
+<h2>2. Diameter of Binary Tree</h2>
+<h3>题目在问什么</h3>
+<p>diameter (直径) 是 tree 里<b>任意两个 node</b> 之间最长的路径, 用<b>边</b>的条数来算。这条路径不一定经过 root。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 302" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Diameter examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">diameter = 任意两个 node 之间最长的路径, 有几条边。这条路径不一定经过 root</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  root = [1,2,3,4,5]  →  3</text>
+<line x1="190.0" y1="96" x2="115.0" y2="148" stroke="#0F6E56" stroke-width="2.5"/>
+<line x1="190.0" y1="96" x2="265.0" y2="148" stroke="#0F6E56" stroke-width="2.5"/>
+<line x1="115.0" y1="148" x2="77.5" y2="200" stroke="#0F6E56" stroke-width="2.5"/>
+<line x1="115.0" y1="148" x2="152.5" y2="200" stroke="#898781" stroke-width="1.2"/>
+<circle cx="190.0" cy="96" r="17" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="190.0" y="97" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<circle cx="115.0" cy="148" r="17" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="115.0" y="149" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<circle cx="265.0" cy="148" r="17" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="265.0" y="149" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<circle cx="77.5" cy="200" r="17" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="77.5" y="201" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<circle cx="152.5" cy="200" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="152.5" y="201" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<text x="370" y="88" font-size="13" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">最长: 4 → 2 → 1 → 3</text>
+<text x="370" y="110" font-size="13" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">(5 → 2 → 1 → 3 也一样)</text>
+<text x="370" y="132" font-size="13" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">→ 3 条边</text>
+<text x="40" y="234" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">路径可以&quot;拐弯&quot;: 从左子树上来, 经过某个 node, 再下到右子树</text>
+<line x1="40" y1="258" x2="640" y2="258" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<circle cx="40" cy="280" r="7" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="280" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">最长的路径</text></svg>
+<figcaption>例子。</figcaption></figure>
+<p>注意路径可以"拐弯": 从左子树往上走到某个 node, 再往下走到右子树。</p>
+<h3>Brute force</h3>
+<p>对每个 node, 都把它当成拐弯的点: 算它左子树的深度 L 和右子树的深度 R, 经过它的最长路径是 <code>L + R</code>。取所有 node 里最大的。</p>
+<p>如果每个 node 都单独调用第 1 题去算深度, 每次是 <code>O(n)</code>, 总共 <code>O(n²)</code>。浪费: 下面的 node 的深度被反复算了很多次。</p>
+<h3>Intuition: 算深度的同时, 顺便更新答案</h3>
+<p>第 1 题的 recursion 本来就会对每个 node 算出 L 和 R。那就在算的时候, 顺便看一下 <code>L + R</code>, 更新一个全局的最大值 best。</p>
+<p>这里出现了一个很重要的区别: <b>函数返回的东西 (深度), 和最终要的答案 (直径), 不是同一个东西</b>。</p>
+<ul><li>返回给 parent 的是深度 <code>1 + max(L, R)</code>: parent 只能接上其中<b>一边</b>, 路径不能分叉。</li><li>答案是在当前 node 拐弯的路径 <code>L + R</code>: 两边都用上。它不返回, 只用来更新 best。</li></ul>
+<h3>算法</h3>
+<ol><li><code>best = 0</code>。<code>height(node)</code>: None 返回 0。</li><li><code>L = height(left)</code>, <code>R = height(right)</code>。<code>best = max(best, L + R)</code>。</li><li>返回 <code>1 + max(L, R)</code>。调用 <code>height(root)</code>, 返回 best。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 340" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Diameter: 暴力重算 height vs 一次 post-order</title><desc>每个 node 被走过的次数</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="20" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">同一棵树, 数一数每个 node 被 height() 走过几次 (×k)</text>
 <text x="40" y="44" font-size="14" text-anchor="start" fill="#712B13" font-weight="600" dominant-baseline="central">暴力: 每个 node 重新调 height()</text>
@@ -338,7 +427,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <line x1="40" y1="298" x2="640" y2="298" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
 <text x="40" y="320" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">浪费的是: 父亲算过的 height, 子节点又从头数一遍. 返回值把它带上来, 就不用再数</text>
 </svg>
-<figcaption>暴力: 每个 node 被走过 depth + 1 次 (共 19); 一次 post-order: 每个 node 走 1 次 (共 7)</figcaption></figure>
+<figcaption>brute force: 每个 node 被走过很多次 (共 19 次); 一次 post-order: 每个 node 只走 1 次 (共 7 次)。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 1124" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Diameter of Binary Tree 的 post-order trace</title><desc>tree [1, 2, 3, 4, 5, None, None, 6, None, None, 7]; 答案 4 = 路径 6-4-2-5-7, 拐点在 node 2</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">L、R = 左、右子树的 height (点数) · best = 目前见过的最长路径 (边数) · 初值 0</text>
 <text x="40" y="38" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">每步: 先更新 best (经过本 node 的路径 = L + R), 再 return 1 + max(L, R) 给父亲</text>
@@ -584,15 +674,66 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="216" y="1102" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central"></text>
 <text x="232" y="1102" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">还没访问</text>
 </svg>
-<figcaption>步骤 5 的 node 2 把 best 更新到 4; 根的 L + R 也是 4, 没有变化</figcaption></figure>
+<figcaption>第 5 步 node 2 把 best 更新到 4; root 的 L + R 也是 4, 没变。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n)</code>, Space <code>O(h)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">diameterOfBinaryTree</span>(root):</span><span class="l">    best = 0                          <span class="c"># 答案: 全局记录, 不是递归的返回值</span></span><span class="l">    <span class="k">def</span> <span class="f">height</span>(node):                 <span class="c"># 返回值: 以 node 为顶向下的最长链 (点数)</span></span><span class="l">        <span class="k">nonlocal</span> best</span><span class="l">        <span class="k">if</span> <span class="k">not</span> node:</span><span class="l">            <span class="r">return</span> 0</span><span class="l">        L = <span class="f">height</span>(node.left)</span><span class="l">        R = <span class="f">height</span>(node.right)</span><span class="l">        best = <span class="t">max</span>(best, L + R)       <span class="c"># 拐点: 经过 node 的路径 = 左链 + 右链 (边数)</span></span><span class="l">        <span class="r">return</span> 1 + <span class="t">max</span>(L, R)          <span class="c"># 给父亲: 路径不能分叉, 只能带一边上去</span></span><span class="l">    <span class="f">height</span>(root)</span><span class="l">    <span class="r">return</span> best</span></div>
-<p><b>Time</b> O(n)。<b>Space</b> O(h)。注意两个量的差别: 返回给父亲的 <code>1 + max(L, R)</code> 只能走一边 (路径不能分叉), 而答案候选 <code>L + R</code> 两边都用。</p>
-<p class="note"><b>记:</b>递归返回的是 "能延伸给父亲的东西", 答案是 "在这个 node 拐弯的东西"。两者不同就用 nonlocal 记答案。</p>
-<h2>3. Binary Tree Maximum Path Sum: 返回单边最大贡献</h2>
-<p>题目: 路径 = 树里任意相连的 node 序列 (不能分叉, 不一定过 root), 求路径上 node 值之和的最大值。node 值可以为负。例: <code>[-10,-5,20,None,None,15,7]</code> → 42 (15 + 20 + 7)。</p>
-<p>相比上一题: 把 "边数" 换成 "node 值之和", 多了负数。改两行: (1) 孩子的 gain 取 <code>max(·, 0)</code>, 负的链不如不接; (2) <code>best</code> 初值是 <code>-inf</code>。</p>
-<p><b>Brute force:</b> 枚举所有 node 对 (u, v), 沿树求路径和: O(n²) 对, 每对 O(n) → O(n³) (稍优化 O(n²))。<b>浪费:</b> 同一条向下的链被不同的 (u, v) 反复求和; 而"以 node 为顶向下的最大链和"只取决于子树, 算一次就够。</p>
-<p><b>关键观察:</b> 路径有一个<b>最高的 node</b> (拐点)。枚举拐点 = 枚举所有 node, 在拐点处答案 = node.val + 左链 + 右链。而给父亲返回的链只能选一边。</p>
+</details>
+<p class="note"><b>记:</b>返回值 ≠ 答案: 返回给 parent 的只能是一边 (不能分叉); 在当前 node 拐弯的路径用两边, 用来更新全局 best。</p>
+<h2>3. Binary Tree Maximum Path Sum</h2>
+<h3>题目在问什么</h3>
+<p>path 是沿着边走的一串 node, 每个 node 最多经过一次, 可以拐弯, 不必经过 root。求 node 值加起来最大的 path。node 的值可能是<b>负数</b>。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 430" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Max Path Sum examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">path = 沿着边走的一串 node, 每个 node 最多经过一次, 可以拐弯, 不必经过 root。求 node 值之和最大的 path</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  root = [1,2,3]  →  6</text>
+<line x1="190.0" y1="96" x2="115.0" y2="148" stroke="#0F6E56" stroke-width="2.5"/>
+<line x1="190.0" y1="96" x2="265.0" y2="148" stroke="#0F6E56" stroke-width="2.5"/>
+<circle cx="190.0" cy="96" r="17" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="190.0" y="97" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<circle cx="115.0" cy="148" r="17" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="115.0" y="149" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<circle cx="265.0" cy="148" r="17" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="265.0" y="149" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="370" y="88" font-size="13" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">2 → 1 → 3</text>
+<text x="370" y="110" font-size="13" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">→ 2 + 1 + 3 = 6</text>
+<line x1="40" y1="188" x2="640" y2="188" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="208" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  root = [-10,9,20,null,null,15,7]  →  42</text>
+<line x1="190.0" y1="242" x2="115.0" y2="294" stroke="#898781" stroke-width="1.2"/>
+<line x1="190.0" y1="242" x2="265.0" y2="294" stroke="#898781" stroke-width="1.2"/>
+<line x1="265.0" y1="294" x2="227.5" y2="346" stroke="#0F6E56" stroke-width="2.5"/>
+<line x1="265.0" y1="294" x2="302.5" y2="346" stroke="#0F6E56" stroke-width="2.5"/>
+<circle cx="190.0" cy="242" r="17" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="190.0" y="243" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">-10</text>
+<circle cx="115.0" cy="294" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="115.0" y="295" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">9</text>
+<circle cx="265.0" cy="294" r="17" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="265.0" y="295" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">20</text>
+<circle cx="227.5" cy="346" r="17" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="227.5" y="347" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">15</text>
+<circle cx="302.5" cy="346" r="17" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="302.5" y="347" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">7</text>
+<text x="370" y="234" font-size="13" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">15 → 20 → 7</text>
+<text x="370" y="256" font-size="13" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">→ 15 + 20 + 7 = 42</text>
+<text x="370" y="278" font-size="13" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre"></text>
+<text x="370" y="300" font-size="13" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">经过 root 反而更小:</text>
+<text x="370" y="322" font-size="13" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">9 + (-10) + 20 + 15 = 34</text>
+<line x1="40" y1="386" x2="640" y2="386" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<circle cx="40" cy="408" r="7" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="408" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">最大的 path</text>
+<circle cx="149.0" cy="408" r="7" fill="#FAECE7" stroke="#993C1D"/>
+<text x="163.0" y="408" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">负数, 不值得经过</text></svg>
+<figcaption>两个例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>枚举所有两个 node 之间的路径, <code>O(n²)</code> 条, 每条求和。</p>
+<h3>Intuition: 和第 2 题一模一样的结构</h3>
+<p>还是"返回一边, 答案用两边":</p>
+<ul><li>函数返回: 从当前 node 往下走 (只走一边) 能得到的最大和, 叫 gain。</li><li>答案: 在当前 node 拐弯 = <code>node.val + 左边的 gain + 右边的 gain</code>, 用来更新 best。</li></ul>
+<p>新问题是负数: 如果某一边的 gain 是负的, 接上它只会更小, 不如不接。所以用 <code>max(gain, 0)</code>, 负的就当 0 (不走那边)。</p>
+<p>best 的初始值要是 <code>-∞</code>, 不能是 0: 如果所有 node 都是负数, 答案是最大的那个负数。</p>
+<h3>算法</h3>
+<ol><li><code>best = -inf</code>。<code>gain(node)</code>: None 返回 0。</li><li><code>L = max(gain(left), 0)</code>, <code>R = max(gain(right), 0)</code>。</li><li><code>best = max(best, node.val + L + R)</code>。返回 <code>node.val + max(L, R)</code>。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 372" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Max Path Sum: 拐点更新答案, 返回值只带一边</title><desc>同一个 node 20, 两个不同的用途</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="20" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">同一个 node 20 (L = 15, R = 7), 做两件不同的事</text>
 <text x="40" y="46" font-size="14" text-anchor="start" fill="#085041" font-weight="600" dominant-baseline="central">① 答案 best: 两边都用</text>
@@ -638,7 +779,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="40" y="334" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">所以递归的返回值 (35) ≠ 答案 (42): 答案放在 nonlocal 的 best 里, 在每个 node 的拐点处更新</text>
 <text x="40" y="354" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">初值 best = -inf, 因为全部为负时答案是"最大的那个负数", 不是 0</text>
 </svg>
-<figcaption>同一个 node 20: 答案用两边 (42), 返回值只带一边 (35)</figcaption></figure>
+<figcaption>同一个 node 20: 答案用两边 (15 + 20 + 7 = 42), 返回值只带一边 (20 + 15 = 35)。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 722" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Binary Tree Maximum Path Sum 的 post-order trace</title><desc>tree [-10, -5, 20, None, None, 15, 7]; 答案 42 = 15 + 20 + 7, 拐点在 node 20</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">gain(node) = 以 node 为顶、只往下走一条链的最大和 (返回值) · best = 答案 (初值 -inf)</text>
 <text x="40" y="38" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">L、R = 左右 gain, 负的取 0 · best 看 node.val + L + R (两边都用) · return 只带一边</text>
@@ -779,15 +921,80 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="216" y="700" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central"></text>
 <text x="232" y="700" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">还没访问</text>
 </svg>
-<figcaption>答案 42 在 step 4 的 node 20 产生; 根的返回值 25 与答案无关</figcaption></figure>
+<figcaption>答案 42 在第 4 步的 node 20 产生; root 的返回值 25 和答案无关。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n)</code>, Space <code>O(h)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">maxPathSum</span>(root):</span><span class="l">    best = <span class="t">float</span>(<span class="s">&quot;-inf&quot;</span>)              <span class="c"># 答案: 全局; 值可负, 初值是 -inf 不是 0</span></span><span class="l">    <span class="k">def</span> <span class="f">gain</span>(node):                   <span class="c"># 返回值: 以 node 为顶、只往下走一条链的最大和</span></span><span class="l">        <span class="k">nonlocal</span> best</span><span class="l">        <span class="k">if</span> <span class="k">not</span> node:</span><span class="l">            <span class="r">return</span> 0</span><span class="l">        L = <span class="t">max</span>(<span class="f">gain</span>(node.left), 0)   <span class="c"># 改动 1: 负的链不如不要 (clamp 到 0)</span></span><span class="l">        R = <span class="t">max</span>(<span class="f">gain</span>(node.right), 0)</span><span class="l">        best = <span class="t">max</span>(best, node.val + L + R)   <span class="c"># 拐点: 两边都用 -&gt; 候选答案</span></span><span class="l">        <span class="r">return</span> node.val + <span class="t">max</span>(L, R)          <span class="c"># 给父亲: 只能选一边</span></span><span class="l">    <span class="f">gain</span>(root)</span><span class="l">    <span class="r">return</span> best</span></div>
-<p><b>Time</b> O(n)。<b>Space</b> O(h)。</p>
-<p class="note"><b>记:</b>path 类题固定写法: gain 返回单边 (含 clamp), 答案在拐点用 node.val + L + R 更新 nonlocal。</p>
-<h2>4. Validate Binary Search Tree: 自顶向下传区间</h2>
-<p>题目: 判断是否是合法 BST (每个 node 的左子树全部 < node < 右子树全部)。例: <code>[5,3,8,2,6,None,None,1]</code> → False (6 在 5 的左子树里却 > 5)。</p>
-<p>相比前面: <b>信息流向反过来了</b>。node 是否合法取决于祖先, 不取决于子树, 所以用 pre-order 传参数。改动: 递归多两个参数 <code>(low, high)</code>。</p>
-<p><b>Brute force:</b> 对每个 node, 扫描整棵左子树确认最大值 < node, 扫描整棵右子树确认最小值 > node。每个 node 扫一遍子树, O(n · h), 链状 O(n²)。<b>浪费:</b> 反复遍历子树, 只为得到一个 max / min。</p>
-<p><b>关键观察:</b> 向左走一步, 上界收紧成 node.val; 向右走一步, 下界收紧成 node.val。把所有祖先的约束压成一个开区间, 每个 node 只做一次比较。</p>
+</details>
+<p class="note"><b>记:</b>path 类的 tree 题: 返回"单边最大", 在拐弯处用两边更新答案。负的贡献用 max(·, 0) 去掉, best 从 -inf 开始。</p>
+<h2>4. Validate Binary Search Tree</h2>
+<h3>题目在问什么</h3>
+<p>判断一棵 binary tree 是不是 BST (binary search tree)。BST 的规则: 每个 node 的<b>左子树里所有 node</b> 都比它小, <b>右子树里所有 node</b> 都比它大。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 628" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Validate BST examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">BST: 每个 node 的左子树里&lt;所有&gt; node 都比它小, 右子树里&lt;所有&gt; node 都比它大</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  [2,1,3]  →  True</text>
+<line x1="190.0" y1="96" x2="115.0" y2="148" stroke="#898781" stroke-width="1.2"/>
+<line x1="190.0" y1="96" x2="265.0" y2="148" stroke="#898781" stroke-width="1.2"/>
+<circle cx="190.0" cy="96" r="17" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="190.0" y="97" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<circle cx="115.0" cy="148" r="17" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="115.0" y="149" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<circle cx="265.0" cy="148" r="17" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="265.0" y="149" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="370" y="88" font-size="13" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">1 &lt; 2 &lt; 3 ✓</text>
+<line x1="40" y1="188" x2="640" y2="188" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="208" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  [5,1,4,null,null,3,6]  →  False</text>
+<line x1="190.0" y1="242" x2="115.0" y2="294" stroke="#898781" stroke-width="1.2"/>
+<line x1="190.0" y1="242" x2="265.0" y2="294" stroke="#898781" stroke-width="1.2"/>
+<line x1="265.0" y1="294" x2="227.5" y2="346" stroke="#898781" stroke-width="1.2"/>
+<line x1="265.0" y1="294" x2="302.5" y2="346" stroke="#898781" stroke-width="1.2"/>
+<circle cx="190.0" cy="242" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="190.0" y="243" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<circle cx="115.0" cy="294" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="115.0" y="295" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<circle cx="265.0" cy="294" r="17" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="265.0" y="295" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<circle cx="227.5" cy="346" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="227.5" y="347" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<circle cx="302.5" cy="346" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="302.5" y="347" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">6</text>
+<text x="370" y="234" font-size="13" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">4 在 5 的右边, 但 4 &lt; 5 ✗</text>
+<line x1="40" y1="386" x2="640" y2="386" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="406" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 3:  [5,4,6,null,null,3,7]  →  False</text>
+<line x1="190.0" y1="440" x2="115.0" y2="492" stroke="#898781" stroke-width="1.2"/>
+<line x1="190.0" y1="440" x2="265.0" y2="492" stroke="#898781" stroke-width="1.2"/>
+<line x1="265.0" y1="492" x2="227.5" y2="544" stroke="#898781" stroke-width="1.2"/>
+<line x1="265.0" y1="492" x2="302.5" y2="544" stroke="#898781" stroke-width="1.2"/>
+<circle cx="190.0" cy="440" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="190.0" y="441" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<circle cx="115.0" cy="492" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="115.0" y="493" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<circle cx="265.0" cy="492" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="265.0" y="493" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">6</text>
+<circle cx="227.5" cy="544" r="17" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="227.5" y="545" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<circle cx="302.5" cy="544" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="302.5" y="545" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">7</text>
+<text x="370" y="432" font-size="13" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">3 &lt; 6, 和它的 parent 比没问题</text>
+<text x="370" y="454" font-size="13" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">但 3 在 5 的右子树里, 必须 &gt; 5 ✗</text>
+<text x="370" y="476" font-size="13" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">→ 只和 parent 比是不够的</text>
+<line x1="40" y1="584" x2="640" y2="584" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<circle cx="40" cy="606" r="7" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="606" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">合法</text>
+<circle cx="104" cy="606" r="7" fill="#FAECE7" stroke="#993C1D"/>
+<text x="118" y="606" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">违反规则</text></svg>
+<figcaption>三个例子。</figcaption></figure>
+<p>Example 3 是最容易错的地方: 3 和它的 parent 6 比没问题 (3 < 6), 但 3 在 5 的右子树里, 必须大于 5。所以<b>只和 parent 比是不够的</b>。</p>
+<h3>Brute force</h3>
+<p>对每个 node, 找出它左子树的最大值和右子树的最小值, 检查是否满足规则。每个 node 都要扫一遍子树, <code>O(n²)</code>。</p>
+<h3>Intuition: 往下传一个"合法范围"</h3>
+<p>换个角度: 每个 node 的值都必须落在一个范围 <code>(low, high)</code> 里, 这个范围是由它所有的祖先决定的。</p>
+<ul><li>root 的范围是 <code>(-∞, +∞)</code>。</li><li>往左走: 孩子必须比当前 node 小, 所以上界变成当前值: <code>(low, node.val)</code>。</li><li>往右走: 孩子必须比当前 node 大, 所以下界变成当前值: <code>(node.val, high)</code>。</li></ul>
+<p>这次信息是<b>从上往下</b>流的, 所以把范围写成函数的参数 (pre-order)。和前三题的方向相反。</p>
+<h3>算法</h3>
+<ol><li><code>ok(node, low, high)</code>: None 返回 True。</li><li>如果 <code>not (low < node.val < high)</code>, 返回 False。</li><li>返回 <code>ok(left, low, node.val) and ok(right, node.val, high)</code>。调用 <code>ok(root, -inf, inf)</code>。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 330" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Validate BST: 约束是从所有祖先累积下来的</title><desc>区间 (low, high) 向下传递</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="20" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">node 的合法范围由所有祖先决定, 不只是 parent: 把它压成 (low, high) 往下传</text>
 <line x1="178" y1="146" x2="120" y2="208" stroke="#898781" stroke-width="1.2"/>
@@ -821,7 +1028,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="40" y="280" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">3 &lt; 6 局部成立, 但 6 在 5 的左子树里, 必须 &lt; 5. 5 这条约束只能由祖先一路传下来</text>
 <text x="40" y="300" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">暴力做法: 每个 node 去扫整棵左、右子树找 max/min → O(n²). 传区间: 每个 node 比一次 → O(n)</text>
 </svg>
-<figcaption>(low, high) 向下传递: 6 的合法范围是 (3, 5), 不是只看 parent 3</figcaption></figure>
+<figcaption>(low, high) 往下传: 6 的合法范围是 (3, 5), 不只是看 parent 3。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 830" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Validate BST 的 top-down trace</title><desc>tree [5, 3, 8, 2, 6, None, None, 1]; 6 在 3 的右边 (6 &gt; 3), 但在 5 的左边 (6 &gt; 5 违规)</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">pre-order: 先用 (low, high) 检查自己 → 再把更严的区间传给孩子 · 初值 (-inf, inf)</text>
 <text x="40" y="38" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">向左: high = node.val · 向右: low = node.val · 只比较 parent 的局部检查会漏掉 6</text>
@@ -965,15 +1173,55 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="302" y="808" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central"></text>
 <text x="318" y="808" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">还没访问</text>
 </svg>
-<figcaption>pre-order 走到 6 时区间是 (3, 5), 6 不在其中, 直接返回 False</figcaption></figure>
+<figcaption>pre-order 走到 6 时范围是 (3, 5), 6 不在里面, 直接返回 False。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n)</code>, Space <code>O(h)</code>。另一种做法: BST 的 inorder 一定是严格递增的 (见第 7 题), 检查 inorder 是否递增也可以。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">isValidBST</span>(root):</span><span class="l">    <span class="k">def</span> <span class="f">ok</span>(node, low, high):                  <span class="c"># 参数: node 必须在开区间 (low, high) 内</span></span><span class="l">        <span class="k">if</span> <span class="k">not</span> node:</span><span class="l">            <span class="r">return</span> <span class="k">True</span></span><span class="l">        <span class="k">if</span> <span class="k">not</span> (low &lt; node.val &lt; high):       <span class="c"># 违反祖先传下来的约束</span></span><span class="l">            <span class="r">return</span> <span class="k">False</span></span><span class="l">        <span class="r">return</span> (<span class="f">ok</span>(node.left,  low, node.val) <span class="k">and</span>      <span class="c"># 向左: 上界收紧成 node.val</span></span><span class="l">                <span class="f">ok</span>(node.right, node.val, high))        <span class="c"># 向右: 下界收紧成 node.val</span></span><span class="l">    <span class="r">return</span> <span class="f">ok</span>(root, <span class="t">float</span>(<span class="s">&quot;-inf&quot;</span>), <span class="t">float</span>(<span class="s">&quot;inf&quot;</span>))</span></div>
-<p><b>Time</b> O(n)。<b>Space</b> O(h)。区间必须是<b>开</b>区间 (BST 通常不允许重复值)。另一种写法: inorder 遍历检查严格递增, 见第 7 节。</p>
-<p class="note"><b>记:</b>每个 node 的合法性依赖祖先 → 自顶向下传参数。传的是"压缩后的约束", 不是整条祖先链。</p>
-<h2>5. Level Order / Right Side View / Zigzag: BFS 分层</h2>
-<p>题目: 按层输出 node 值。例: <code>[1,2,3,4,5,None,None,6]</code> → <code>[[1],[2,3],[4,5],[6]]</code>。变体: Right Side View 每层只取最右一个 (<code>[1,3,5,6]</code>); Zigzag 奇数层反向 (<code>[[1],[3,2],[4,5],[6]]</code>)。</p>
-<p>相比前面: 信号变了 —— 题目问的是"按层 / 第几层 / 最短", 这不是子树性质, 是<b>层</b>的性质。用 deque 做 BFS, 关键是怎么知道"这一层结束了"。</p>
-<p><b>Brute force:</b> 对每个深度 d, 从 root 重新往下走 d 层收集 node: O(n · h)。<b>浪费:</b> 每一层都重新走一遍上面所有层。BFS 的队列天然按层推进: 弹出一层的同时把下一层排到队尾。</p>
-<p><b>关键观察:</b> 每轮 while 开始时, queue 里恰好是一整层。先记下 <code>len(q)</code>, 恰好弹 n 个, 就是这一层; 这期间 push 进去的孩子留给下一轮。</p>
+</details>
+<p class="note"><b>记:</b>约束来自所有祖先, 而不只是 parent: 把约束写成参数, 从上往下传。</p>
+<h2>5. Binary Tree Level Order Traversal (+ Right Side View, Zigzag)</h2>
+<h3>题目在问什么</h3>
+<p><b>Level Order</b>: 按层输出 node 的值, 每层从左到右, 返回一个 list of list。</p>
+<p>两个常见变体: <b>Right Side View</b> (从右边看过去, 每层只能看到最右边的那个); <b>Zigzag</b> (第一层从左到右, 第二层从右到左, 交替)。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 284" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Level Order examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">按层输出: 第 0 层、第 1 层……每层从左到右</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  root = [3,9,20,null,null,15,7]</text>
+<line x1="190.0" y1="96" x2="115.0" y2="148" stroke="#898781" stroke-width="1.2"/>
+<line x1="190.0" y1="96" x2="265.0" y2="148" stroke="#898781" stroke-width="1.2"/>
+<line x1="265.0" y1="148" x2="227.5" y2="200" stroke="#898781" stroke-width="1.2"/>
+<line x1="265.0" y1="148" x2="302.5" y2="200" stroke="#898781" stroke-width="1.2"/>
+<circle cx="190.0" cy="96" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<circle cx="190.0" cy="96" r="21" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="190.0" y="97" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<circle cx="115.0" cy="148" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="115.0" y="149" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">9</text>
+<circle cx="265.0" cy="148" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<circle cx="265.0" cy="148" r="21" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="265.0" y="149" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">20</text>
+<circle cx="227.5" cy="200" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="227.5" y="201" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">15</text>
+<circle cx="302.5" cy="200" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<circle cx="302.5" cy="200" r="21" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="302.5" y="201" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">7</text>
+<text x="370" y="88" font-size="13" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">Level Order → [[3], [9,20], [15,7]]</text>
+<text x="370" y="110" font-size="13" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">Right Side View → [3, 20, 7]</text>
+<text x="370" y="132" font-size="13" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">   (每层最右边的, 橙圈)</text>
+<text x="370" y="154" font-size="13" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">Zigzag → [[3], [20,9], [15,7]]</text>
+<text x="370" y="176" font-size="13" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">   (第 1 层反过来)</text>
+<line x1="40" y1="240" x2="640" y2="240" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<circle cx="40" cy="262" r="7" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="54" y="262" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">每层最右边的 node</text></svg>
+<figcaption>同一棵树的三种输出。</figcaption></figure>
+<h3>Brute force</h3>
+<p>用 recursion 记录每个 node 的深度, 按深度分组。可以做, 但"一层一层"本身就是 BFS 的天然顺序, 用 queue 更直接。</p>
+<h3>Intuition: BFS, 每一轮处理一整层</h3>
+<p>BFS (breadth-first search, 广度优先) 用一个 queue: 先放进 root; 每次从队头取一个 node, 把它的孩子放到队尾。这样 node 出队的顺序就是一层一层、从左到右的。</p>
+<p>但我们还需要知道"一层在哪里结束"。技巧是: 每一轮开始时, 先记下 <code>len(q)</code>, 它正好是这一层的 node 数。然后只 pop 这么多个, 这一轮 pop 出来的就是完整的一层。这一轮里新加进去的孩子, 留给下一轮。</p>
+<p>有了"一层"之后, 两个变体都很简单: Right Side View 只取每层的最后一个; Zigzag 把奇数层反过来。</p>
+<h3>算法</h3>
+<ol><li><code>q = deque([root])</code>。</li><li>当 q 不空: <code>size = len(q)</code>, <code>level = []</code>。循环 size 次: popleft 一个 node, 值放进 level, 把它的孩子 append 到 q。</li><li>把 level 放进结果。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 300" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>BFS 分层: for _ in range(len(q))</title><desc>len(q) 在每轮开始时只算一次</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="20" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">tree [1, 2, 3, 4, 5]: 第 2 轮开始时 q = [2, 3]</text>
 <text x="40" y="42" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">range(len(q)) 的 len(q) 只在循环开始时算一次 = 2, 之后 q 变长也不影响</text>
@@ -1017,7 +1265,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="181" y="288" font-size="14" text-anchor="middle" fill="#712B13" dominant-baseline="central"></text>
 <text x="197" y="288" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">弹出</text>
 </svg>
-<figcaption>len(q) 在每轮开始时算一次: 弹出 2 个 = 本层, 新 push 的 4、5 留给下一轮</figcaption></figure>
+<figcaption>len(q) 在每一轮开始时算一次: pop 出 2 个 = 这一层, 新 push 的 4、5 留给下一轮。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 738" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Level Order / Right Side View / Zigzag 的 BFS trace</title><desc>tree [1, 2, 3, 4, 5, None, None, 6]; 每一行 = 一层 = 外层 while 的一轮</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">q = deque · 每轮先记下 n = len(q), 恰好弹出 n 个 = 这一层; 它们的孩子排到队尾 = 下一层</text>
 <text x="40" y="38" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">level = 这层的值 · right += level[-1] (右视图) · zigzag: 第 1、3 层反转</text>
@@ -1170,16 +1419,96 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="289" y="716" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central"></text>
 <text x="305" y="716" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">已处理</text>
 </svg>
-<figcaption>每行 = 一层: 同时给出 level、右视图、zigzag 三种输出</figcaption></figure>
+<figcaption>每一行是一层: 同时给出 level order、right side view、zigzag 三种输出。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n)</code>, Space <code>O(w)</code>, w 是最宽那一层的 node 数。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">from</span> <span class="t">collections</span> <span class="k">import</span> <span class="t">deque</span></span><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">levelOrder</span>(root):</span><span class="l">    res = []</span><span class="l">    <span class="k">if</span> <span class="k">not</span> root:</span><span class="l">        <span class="r">return</span> res</span><span class="l">    q = <span class="t">deque</span>([root])</span><span class="l">    <span class="k">while</span> q:</span><span class="l">        level = []</span><span class="l">        <span class="k">for</span> _ <span class="k">in</span> <span class="t">range</span>(<span class="t">len</span>(q)):          <span class="c"># len(q) 只算一次 = 这一层的 node 数</span></span><span class="l">            node = q.<span class="f">popleft</span>()</span><span class="l">            level.<span class="f">append</span>(node.val)</span><span class="l">            <span class="k">if</span> node.left:  q.<span class="f">append</span>(node.left)     <span class="c"># 孩子排在队尾 = 下一层</span></span><span class="l">            <span class="k">if</span> node.right: q.<span class="f">append</span>(node.right)</span><span class="l">        res.<span class="f">append</span>(level)</span><span class="l">    <span class="r">return</span> res</span><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">rightSideView</span>(root):                 <span class="c"># 变体 1: 每层只留最后一个</span></span><span class="l">    res = []</span><span class="l">    <span class="k">if</span> <span class="k">not</span> root:</span><span class="l">        <span class="r">return</span> res</span><span class="l">    q = <span class="t">deque</span>([root])</span><span class="l">    <span class="k">while</span> q:</span><span class="l">        last = <span class="k">None</span></span><span class="l">        <span class="k">for</span> _ <span class="k">in</span> <span class="t">range</span>(<span class="t">len</span>(q)):</span><span class="l">            node = q.<span class="f">popleft</span>()</span><span class="l">            last = node.val              <span class="c"># 改动: 不收集整层, 只记最后弹出的</span></span><span class="l">            <span class="k">if</span> node.left:  q.<span class="f">append</span>(node.left)</span><span class="l">            <span class="k">if</span> node.right: q.<span class="f">append</span>(node.right)</span><span class="l">        res.<span class="f">append</span>(last)</span><span class="l">    <span class="r">return</span> res</span><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">zigzagLevelOrder</span>(root):              <span class="c"># 变体 2: 奇数层反转</span></span><span class="l">    res = []</span><span class="l">    <span class="k">if</span> <span class="k">not</span> root:</span><span class="l">        <span class="r">return</span> res</span><span class="l">    q = <span class="t">deque</span>([root])</span><span class="l">    <span class="k">while</span> q:</span><span class="l">        level = []</span><span class="l">        <span class="k">for</span> _ <span class="k">in</span> <span class="t">range</span>(<span class="t">len</span>(q)):</span><span class="l">            node = q.<span class="f">popleft</span>()</span><span class="l">            level.<span class="f">append</span>(node.val)</span><span class="l">            <span class="k">if</span> node.left:  q.<span class="f">append</span>(node.left)</span><span class="l">            <span class="k">if</span> node.right: q.<span class="f">append</span>(node.right)</span><span class="l">        <span class="k">if</span> <span class="t">len</span>(res) % 2 == 1:            <span class="c"># 改动: 第 0 层不反转, 第 1 层反转 ...</span></span><span class="l">            level.<span class="f">reverse</span>()</span><span class="l">        res.<span class="f">append</span>(level)</span><span class="l">    <span class="r">return</span> res</span></div>
-<p><b>Time</b> O(n): 每个 node 入队、出队各一次。<b>Space</b> O(w): queue 最大 = 最宽的一层 (完全二叉树约 n / 2)。</p>
-<p>Right Side View 的陷阱: 右边没有 node 时, 左子树的 node 会露出来 (本例的 5、6)。所以不能只沿着 right 指针走, 要取每层最后一个。</p>
-<p class="note"><b>记:</b>按层 → deque + <code>for _ in range(len(q))</code>。变体只改一行: 每层收集什么 (整层 / 最后一个 / 反转)。</p>
-<h2>6. Lowest Common Ancestor of a Binary Tree: 返回值的语义</h2>
-<p>题目: 给定 tree 和 node p、q, 求它们的最近公共祖先 (一个 node 也算自己的祖先)。例: <code>[3,5,1,6,2]</code>, p = 6, q = 2 → 5。</p>
-<p>相比 Diameter: 返回的不再是数字, 而是 <b>node</b>。要先<b>定义返回值的语义</b>: "在 root 这棵子树里找到的 p 或 q; 都没找到返回 None; 两个都找到了返回它们的 LCA"。</p>
-<p><b>Brute force:</b> 对每个 node, 检查 p、q 是否都在它的子树里, 取最深的那个: O(n²)。更好一点: 找出 root → p 和 root → q 两条路径再比较公共前缀, O(n) 但要存路径。<b>浪费:</b> 反复问"p 在我下面吗"; 返回值可以一次把答案带上来。</p>
-<p><b>关键观察:</b> 合并只有三种情况 (见图): 左右都找到 → 当前 node 就是拐点; 只有一边 → 原样往上传; node 自己就是 p/q → 直接返回自己。</p>
+</details>
+<p class="note"><b>记:</b>按层处理: BFS + 每轮先记 len(q)。右视图取每层最后一个, zigzag 把奇数层反转。</p>
+<h2>6. Lowest Common Ancestor of a Binary Tree</h2>
+<h3>题目在问什么</h3>
+<p>给一棵 binary tree (不是 BST) 和其中两个 node p、q。找它们的 LCA (lowest common ancestor, 最近公共祖先): 同时是 p 和 q 的祖先的 node 里, 最深的那个。一个 node 也算是它自己的祖先。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 586" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>LCA examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">LCA (最近公共祖先) = 同时是 p 和 q 的祖先的 node 里, 最深的那个。一个 node 也算自己的祖先</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  p = 5, q = 1  →  3</text>
+<line x1="210.0" y1="96" x2="125.0" y2="148" stroke="#898781" stroke-width="1.2"/>
+<line x1="210.0" y1="96" x2="295.0" y2="148" stroke="#898781" stroke-width="1.2"/>
+<line x1="125.0" y1="148" x2="82.5" y2="200" stroke="#898781" stroke-width="1.2"/>
+<line x1="125.0" y1="148" x2="167.5" y2="200" stroke="#898781" stroke-width="1.2"/>
+<line x1="295.0" y1="148" x2="252.5" y2="200" stroke="#898781" stroke-width="1.2"/>
+<line x1="295.0" y1="148" x2="337.5" y2="200" stroke="#898781" stroke-width="1.2"/>
+<line x1="167.5" y1="200" x2="146.25" y2="252" stroke="#898781" stroke-width="1.2"/>
+<line x1="167.5" y1="200" x2="188.75" y2="252" stroke="#898781" stroke-width="1.2"/>
+<circle cx="210.0" cy="96" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<circle cx="210.0" cy="96" r="21" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="210.0" y="97" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<circle cx="125.0" cy="148" r="17" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="125.0" y="149" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<circle cx="295.0" cy="148" r="17" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="295.0" y="149" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<circle cx="82.5" cy="200" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="82.5" y="201" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">6</text>
+<circle cx="167.5" cy="200" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="167.5" y="201" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<circle cx="252.5" cy="200" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="252.5" y="201" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">0</text>
+<circle cx="337.5" cy="200" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="337.5" y="201" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">8</text>
+<circle cx="146.25" cy="252" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="146.25" y="253" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">7</text>
+<circle cx="188.75" cy="252" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="188.75" y="253" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<text x="410" y="88" font-size="13" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">5 和 1 分别在 3 的左右两边</text>
+<text x="410" y="110" font-size="13" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">→ 3</text>
+<line x1="40" y1="292" x2="640" y2="292" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="312" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  p = 5, q = 4  →  5</text>
+<line x1="210.0" y1="346" x2="125.0" y2="398" stroke="#898781" stroke-width="1.2"/>
+<line x1="210.0" y1="346" x2="295.0" y2="398" stroke="#898781" stroke-width="1.2"/>
+<line x1="125.0" y1="398" x2="82.5" y2="450" stroke="#898781" stroke-width="1.2"/>
+<line x1="125.0" y1="398" x2="167.5" y2="450" stroke="#898781" stroke-width="1.2"/>
+<line x1="295.0" y1="398" x2="252.5" y2="450" stroke="#898781" stroke-width="1.2"/>
+<line x1="295.0" y1="398" x2="337.5" y2="450" stroke="#898781" stroke-width="1.2"/>
+<line x1="167.5" y1="450" x2="146.25" y2="502" stroke="#898781" stroke-width="1.2"/>
+<line x1="167.5" y1="450" x2="188.75" y2="502" stroke="#898781" stroke-width="1.2"/>
+<circle cx="210.0" cy="346" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="210.0" y="347" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<circle cx="125.0" cy="398" r="17" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<circle cx="125.0" cy="398" r="21" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="125.0" y="399" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<circle cx="295.0" cy="398" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="295.0" y="399" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<circle cx="82.5" cy="450" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="82.5" y="451" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">6</text>
+<circle cx="167.5" cy="450" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="167.5" y="451" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<circle cx="252.5" cy="450" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="252.5" y="451" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">0</text>
+<circle cx="337.5" cy="450" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="337.5" y="451" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">8</text>
+<circle cx="146.25" cy="502" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="146.25" y="503" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">7</text>
+<circle cx="188.75" cy="502" r="17" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="188.75" y="503" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<text x="410" y="338" font-size="13" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">4 在 5 的子树里</text>
+<text x="410" y="360" font-size="13" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">5 是自己的祖先</text>
+<text x="410" y="382" font-size="13" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">→ 5</text>
+<line x1="40" y1="542" x2="640" y2="542" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<circle cx="40" cy="564" r="7" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="564" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">p 和 q</text>
+<circle cx="118.4" cy="564" r="7" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="132.4" y="564" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">LCA</text></svg>
+<figcaption>同一棵树的两个例子。</figcaption></figure>
+<p>Example 2 里 q = 4 在 p = 5 的子树里, 所以 LCA 就是 p 自己。</p>
+<h3>Brute force</h3>
+<p>分别找出从 root 到 p 和到 q 的路径 (两次 DFS), 然后比较两条路径, 最后一个相同的 node 就是 LCA。<code>O(n)</code> 时间, 但要存两条路径。</p>
+<h3>Intuition: 让每个子树报告"我这里有没有 p 或 q"</h3>
+<p>设计函数的返回值: <code>lca(node)</code> 在 node 这棵子树里找 p 和 q, 返回:</p>
+<ul><li>如果 node 本身就是 p 或 q, 返回 node。</li><li>否则看左右孩子的返回值。<b>两边都不是 None</b>: p 和 q 分别在左右两边, 当前 node 就是 LCA, 返回 node。</li><li><b>只有一边不是 None</b>: 把那一边的结果原样往上传。</li><li>两边都是 None: 返回 None。</li></ul>
+<p>返回值的意思是"这棵子树里找到的 p、q 或者 LCA"。第一次出现"两边都不是 None"的那个 node, 就是 LCA, 之后它会被一路原样传到 root。</p>
+<h3>算法</h3>
+<ol><li>node 是 None、p 或 q: 返回 node。</li><li><code>L = lca(left)</code>, <code>R = lca(right)</code>。</li><li>L 和 R 都有: 返回 node。否则返回 <code>L or R</code>。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 318" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>LCA 的返回值语义</title><desc>三种合并情况</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="20" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">返回值 = 这棵子树里"找到的 p 或 q" (什么都没找到 = None). 当前 node 只有三种情况:</text>
 <text x="30" y="54" font-size="14" text-anchor="start" fill="#085041" font-weight="600" dominant-baseline="central">① p、q 分居两侧</text>
@@ -1227,7 +1556,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <line x1="40" y1="286" x2="640" y2="286" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
 <text x="40" y="304" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">第 ③ 种的依据: 若 q 在 p 下面, p 就是 LCA; 若 q 不在下面, 也会由别处的非 None 在更上层汇合</text>
 </svg>
-<figcaption>三种合并情况: 分居两侧 / 只有一侧 / node 自己就是 p 或 q</figcaption></figure>
+<figcaption>三种合并情况: 分在两边 / 只在一边 / node 自己就是 p 或 q。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 792" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Lowest Common Ancestor 的 post-order trace</title><desc>tree [3, 5, 1, 6, 2], p = 6, q = 2; 返回值 = 这棵子树里找到的 p/q, 没找到就是 None</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">p、q 在树上标出 · 遇到 p 或 q 直接 return 它自己 · 左右都找到 → 当前 node 就是 LCA</text>
 <text x="40" y="38" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">否则 return L or R, 即把找到的那一个原样往上传 · 箭头旁的数字 = 返回值</text>
@@ -1374,15 +1704,52 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="216" y="770" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central"></text>
 <text x="232" y="770" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">还没访问</text>
 </svg>
-<figcaption>step 3 的 node 5 第一次左右都非 None → 它就是 LCA; 之后只是被原样往上传</figcaption></figure>
+<figcaption>第 3 步 node 5 第一次左右都不是 None, 它就是 LCA; 之后只是被原样往上传。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n)</code>, Space <code>O(h)</code>。如果是 BST, 可以直接比大小: p、q 都比当前小就往左, 都大就往右, 否则当前就是 LCA, <code>O(h)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">lowestCommonAncestor</span>(root, p, q):</span><span class="l">    <span class="c"># 返回值语义: root 子树里&quot;找到的 p 或 q&quot;; 两个都在 -&gt; 它们的 LCA; 都不在 -&gt; None</span></span><span class="l">    <span class="k">if</span> <span class="k">not</span> root <span class="k">or</span> root <span class="k">is</span> p <span class="k">or</span> root <span class="k">is</span> q:</span><span class="l">        <span class="r">return</span> root                    <span class="c"># 遇到 p/q 直接返回 (另一个在下面则它就是 LCA)</span></span><span class="l">    L = <span class="f">lowestCommonAncestor</span>(root.left, p, q)</span><span class="l">    R = <span class="f">lowestCommonAncestor</span>(root.right, p, q)</span><span class="l">    <span class="k">if</span> L <span class="k">and</span> R:                        <span class="c"># p、q 分居两侧: root 就是拐点</span></span><span class="l">        <span class="r">return</span> root</span><span class="l">    <span class="r">return</span> L <span class="k">or</span> R                      <span class="c"># 只有一侧有: 原样往上传; 都没有: None</span></span><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">lcaBST</span>(root, p, q):                <span class="c"># BST 版: 大小关系直接告诉你往哪走</span></span><span class="l">    <span class="k">while</span> root:</span><span class="l">        <span class="k">if</span> p.val &lt; root.val <span class="k">and</span> q.val &lt; root.val:</span><span class="l">            root = root.left</span><span class="l">        <span class="k">elif</span> p.val &gt; root.val <span class="k">and</span> q.val &gt; root.val:</span><span class="l">            root = root.right</span><span class="l">        <span class="k">else</span>:</span><span class="l">            <span class="r">return</span> root                <span class="c"># 分叉点</span></span></div>
-<p><b>Time</b> O(n)。<b>Space</b> O(h)。BST 版本不需要返回值: 大小关系直接告诉你往哪走, O(h)。</p>
-<p class="note"><b>记:</b>返回值语义写清楚就不会乱: "这棵子树里找到的 p/q"。合并 = <code>if L and R: return root; return L or R</code>。</p>
-<h2>7. Kth Smallest Element in a BST: inorder = sorted</h2>
-<p>题目: BST 里第 k 小的值。例: <code>[5,3,6,2,4,None,None,1]</code>, k = 3 → 3。</p>
-<p>相比前面: 第一次用到 <b>BST 的性质</b>。BST 保证 "左子树全部 < node < 右子树全部", 所以 inorder (左 → 自己 → 右) 读出来就是升序。</p>
-<p><b>Brute force:</b> 遍历全部 node 收集进 list, sort, 取第 k 个: O(n log n) 时间, O(n) 空间。<b>浪费:</b> BST 本来就是有序的, sort 白做; 而且只要前 k 个, 却遍历了全部。</p>
-<p><b>关键观察:</b> 用显式 stack 做 iterative inorder, 弹出的顺序就是从小到大, 弹到第 k 个就停。</p>
+</details>
+<p class="note"><b>记:</b>返回值的含义可以自己设计。LCA: 子树里找到了 p / q 就返回它; 左右都找到了, 当前 node 就是答案。</p>
+<h2>7. Kth Smallest Element in a BST</h2>
+<h3>题目在问什么</h3>
+<p>给一棵 BST 和整数 k, 返回第 k 小的值 (k 从 1 开始)。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 336" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Kth Smallest examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">给一个 BST, 返回第 k 小的值 (k 从 1 开始)</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  root = [5,3,6,2,4,null,null,1], k = 3  →  3</text>
+<line x1="190.0" y1="96" x2="115.0" y2="148" stroke="#898781" stroke-width="1.2"/>
+<line x1="190.0" y1="96" x2="265.0" y2="148" stroke="#898781" stroke-width="1.2"/>
+<line x1="115.0" y1="148" x2="77.5" y2="200" stroke="#898781" stroke-width="1.2"/>
+<line x1="115.0" y1="148" x2="152.5" y2="200" stroke="#898781" stroke-width="1.2"/>
+<line x1="77.5" y1="200" x2="58.75" y2="252" stroke="#898781" stroke-width="1.2"/>
+<circle cx="190.0" cy="96" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="190.0" y="97" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<circle cx="115.0" cy="148" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<circle cx="115.0" cy="148" r="21" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="115.0" y="149" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<circle cx="265.0" cy="148" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="265.0" y="149" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">6</text>
+<circle cx="77.5" cy="200" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="77.5" y="201" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<circle cx="152.5" cy="200" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="152.5" y="201" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<circle cx="58.75" cy="252" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="58.75" y="253" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="370" y="88" font-size="13" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">从小到大: 1, 2, 3, 4, 5, 6</text>
+<text x="370" y="110" font-size="13" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">→ 第 3 个是 3</text>
+<line x1="40" y1="292" x2="640" y2="292" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<circle cx="40" cy="314" r="7" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="54" y="314" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">答案</text></svg>
+<figcaption>例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>遍历所有 node, 收集值, 排序, 取第 k 个。<code>O(n log n)</code>。浪费: BST 本身已经包含了大小顺序。</p>
+<h3>Intuition: BST 的 inorder 就是从小到大</h3>
+<p>inorder (中序) 遍历的顺序是: 先左子树, 再当前 node, 再右子树。</p>
+<p>在 BST 里, 左子树都比当前小, 右子树都比当前大。所以 inorder 访问的顺序<b>正好是从小到大</b>。第 k 个访问到的就是答案, 访问到就可以停, 不用遍历完。</p>
+<p>用 stack 写 iterative 的 inorder, 方便在第 k 个时停下: 一路往左走, 把经过的 node 都 push; 走到底就 pop 一个 (这就是下一个最小的), 然后转去它的右子树。</p>
+<h3>算法</h3>
+<ol><li><code>stack = []</code>, <code>cur = root</code>。</li><li>当 cur 或 stack 不空: 一路往左, 把 cur push 进 stack, <code>cur = cur.left</code>。</li><li>pop 出一个 node, k 减 1; k 变成 0 就返回 node.val。否则 <code>cur = node.right</code>。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 352" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>BST 的 inorder = 排好序</title><desc>左 &lt; node &lt; 右, 所以 左→自己→右 依次读出来是升序</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <line x1="196" y1="158" x2="150" y2="202" stroke="#898781" stroke-width="1.2"/>
 <line x1="242" y1="114" x2="196" y2="158" stroke="#898781" stroke-width="1.2"/>
@@ -1435,7 +1802,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="430" y="210" font-size="12" text-anchor="start" fill="#085041" dominant-baseline="central">且能提前停: O(h + k)</text>
 <text x="40" y="338" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">node 的虚线 = 它在 inorder 序列里的位置: 画 tree 时按 inorder 排 x 坐标, 同一列就是同一个数</text>
 </svg>
-<figcaption>虚线把 tree 上的 node 对应到 inorder 序列: 左子树全部在 5 左边, 右子树在右边</figcaption></figure>
+<figcaption>虚线把 tree 上的 node 对应到 inorder 序列: 左子树全部在 5 的左边, 右子树在右边。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 694" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Kth Smallest in BST 的 iterative inorder trace</title><desc>BST [5, 3, 6, 2, 4, None, None, 1], k = 3; inorder 依次弹出 1, 2, 3, ...</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">stack = 往左走的路上还没处理的祖先 · 每次 pop 出来的 = inorder 的下一个 = 下一个更大的数</text>
 <text x="40" y="38" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">pop 一个就 k -= 1; k 变成 0 就是第 k 小, 立刻返回 · 右子树 4、6 根本没访问</text>
@@ -1584,16 +1952,49 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="218" y="672" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central"></text>
 <text x="234" y="672" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">在 stack 里</text>
 </svg>
-<figcaption>stack 里存"往左走的路上还没处理的祖先"; 第 3 次 pop 出来的 3 就是答案</figcaption></figure>
+<figcaption>stack 里存"往左走的路上还没处理的祖先"; 第 3 次 pop 出来的 3 就是答案。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(h + k)</code>: 先往左走到底 h 步, 再 pop k 次。Space <code>O(h)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">kthSmallest</span>(root, k):</span><span class="l">    stack = []                         <span class="c"># 栈里是&quot;还没处理自己、但已经在往左走的祖先&quot;</span></span><span class="l">    node = root</span><span class="l">    <span class="k">while</span> stack <span class="k">or</span> node:</span><span class="l">        <span class="k">while</span> node:                    <span class="c"># 一路往左走到底, 路上的祖先全压栈</span></span><span class="l">            stack.<span class="f">append</span>(node)</span><span class="l">            node = node.left</span><span class="l">        node = stack.<span class="f">pop</span>()             <span class="c"># 弹出 = inorder 的下一个 (比已弹出的都大)</span></span><span class="l">        k -= 1</span><span class="l">        <span class="k">if</span> k == 0:</span><span class="l">            <span class="r">return</span> node.val            <span class="c"># 数到第 k 个就停, 不用遍历完</span></span><span class="l">        node = node.right              <span class="c"># 处理完自己, 转去右子树</span></span></div>
-<p><b>Time</b> O(h + k): 先往左走 h 层, 然后弹 k 次 (每次弹出摊到的 push 总共不超过 n)。<b>Space</b> O(h)。</p>
-<p>顺带: Validate BST 也可以用 inorder, 遍历时检查每个值严格大于上一个值。多次查询第 k 小 / 频繁插入删除时, 在每个 node 额外存子树大小 (一句话带过, 不展开)。</p>
-<p class="note"><b>记:</b>BST + 有序 / 第 k / 范围 → inorder。iterative 版 stack 可以提前停, 不用遍历完。</p>
-<h2>8. Serialize and Deserialize Binary Tree: pre-order + None 标记</h2>
-<p>题目: 把 tree 转成字符串, 再从字符串还原成同样的 tree。例: <code>[1,2,3,None,None,4,5]</code> ↔ <code>"1,2,#,#,3,4,#,#,5,#,#"</code>。</p>
-<p>相比前面: 综合题。把 pre-order 的递归结构<b>拍平成线性序列</b>, 再用同样的递归结构还原。新东西只有一个: <b>None 也要写一个标记</b>。</p>
-<p><b>Brute force:</b> 层序存成数组, 下标 2i+1、2i+2 找孩子。完全树没问题, 但链状 tree 要 O(2^h) 个格子。<b>浪费:</b> 为不存在的位置留了一大堆空格。pre-order + "#" 只为每个 None 存一个 token, 总共 n 个 node + (n+1) 个 None = O(n)。</p>
-<p><b>关键观察:</b> 有了 "#" 之后, 每棵子树都是一段连续 token 且自己知道在哪里结束。deserialize 时 <code>left = build()</code> 吃掉左子树的所有 token, 剩下的正好是右子树的。</p>
+</details>
+<p class="note"><b>记:</b>BST + 第 k 小 / 有序 / 检查合法: 用 inorder, 它就是从小到大的顺序。</p>
+<h2>8. Serialize and Deserialize Binary Tree</h2>
+<h3>题目在问什么</h3>
+<p>设计两个函数: <code>serialize</code> 把一棵 tree 变成一个字符串, <code>deserialize</code> 把这个字符串变回<b>一模一样</b>的 tree。字符串的格式由你自己决定。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 252" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Serialize examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">serialize: 把 tree 变成一个字符串; deserialize: 把字符串变回原来的 tree。格式自己定, 只要能还原</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  root = [1,2,3,null,null,4,5]</text>
+<line x1="190.0" y1="96" x2="115.0" y2="148" stroke="#898781" stroke-width="1.2"/>
+<line x1="190.0" y1="96" x2="265.0" y2="148" stroke="#898781" stroke-width="1.2"/>
+<line x1="265.0" y1="148" x2="227.5" y2="200" stroke="#898781" stroke-width="1.2"/>
+<line x1="265.0" y1="148" x2="302.5" y2="200" stroke="#898781" stroke-width="1.2"/>
+<circle cx="190.0" cy="96" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="190.0" y="97" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<circle cx="115.0" cy="148" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="115.0" y="149" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<circle cx="265.0" cy="148" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="265.0" y="149" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<circle cx="227.5" cy="200" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="227.5" y="201" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<circle cx="302.5" cy="200" r="17" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="302.5" y="201" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<text x="370" y="88" font-size="13" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">一种格式 (pre-order, # 表示空):</text>
+<text x="370" y="110" font-size="13" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">&quot;1,2,#,#,3,4,#,#,5,#,#&quot;</text>
+<text x="370" y="132" font-size="13" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre"></text>
+<text x="370" y="154" font-size="13" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">deserialize 之后要得到</text>
+<text x="370" y="176" font-size="13" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">一模一样的 tree</text>
+<line x1="40" y1="240" x2="640" y2="240" stroke="#B4B2A9" stroke-dasharray="4 4"/></svg>
+<figcaption>例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>只记录值的遍历顺序 (比如只有 pre-order) 是不够的: 不同形状的 tree 可能得到同样的序列, 没法还原。比如 [1,2] (2 是左孩子) 和 [1,null,2] (2 是右孩子) 的 pre-order 都是 1, 2。</p>
+<h3>Intuition: pre-order, 并且把空的位置也写出来</h3>
+<p>问题出在不知道哪里是空的。只要把空 node 也写下来 (用 <code>#</code>), 序列就唯一确定了 tree 的形状。</p>
+<p>用 pre-order 写: 先写当前 node, 再写整个左子树, 再写整个右子树。空 node 写 #。</p>
+<p>还原的时候按同样的顺序读: 读到一个值, 就新建 node; 然后<b>递归地</b>读出它的左子树 (左子树的 token 正好接在后面), 再读出右子树。读到 # 就返回 None。</p>
+<h3>算法</h3>
+<ol><li>serialize(node): None 写 #; 否则写 node.val, 再 serialize(left), serialize(right)。用逗号连起来。</li><li>deserialize: 把字符串切成 token, 用一个 iterator 一个一个读。<code>build()</code>: 读一个 token, 是 # 返回 None; 否则新建 node, <code>node.left = build()</code>, <code>node.right = build()</code>。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 340" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Serialize: pre-order + None 标记</title><desc>token 序列 = 递归结构的拍平</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="20" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">tree [1, 2, 3, None, None, 4, 5] → 11 个 token. 每棵子树都是一段连续的 token</text>
 <rect x="54" y="44" width="46" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
@@ -1638,7 +2039,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="40" y="288" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">为什么用 iterator: 两次 build() 共享同一个读指针, 谁先调用谁先吃</text>
 <text x="40" y="308" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">对比: 层序 + 下标 (2i+1, 2i+2) 要为每个空位置留格子, 链状 tree 需要 O(2^h) 空间</text>
 </svg>
-<figcaption>token 序列 = 递归结构的拍平: 根 1 + 左子树 (2 # #) + 右子树 (3 4 # # 5 # #)</figcaption></figure>
+<figcaption>token 序列就是 recursion 结构拍平: root 1 + 左子树 (2 # #) + 右子树 (3 4 # # 5 # #)。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 702" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Serialize 的 pre-order trace</title><desc>tree [1, 2, 3, None, None, 4, 5]; 绿色 token = 这一步新写进去的</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">pre-order: 先写自己, 再递归左、再递归右 · None 也写一个 "#" · 每行 = 访问一个 node</text>
 <text x="40" y="38" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">out 越写越长, 最后 11 个 token = 5 个 node + 6 个 "#" (n 个 node 恰好有 n + 1 个 None)</text>
@@ -1817,13 +2219,16 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="292" y="680" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central"></text>
 <text x="308" y="680" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">已写的 token</text>
 </svg>
-<figcaption>serialize 的 5 步: 绿色 token 是每一步新写的; 叶子一步写 3 个 token (值 + 两个 #)</figcaption></figure>
+<figcaption>serialize 的 5 步: 绿色 token 是每一步新写的; 一个叶子一步写 3 个 token (值 + 两个 #)。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n)</code>, Space <code>O(n)</code>。也可以用 BFS (level order) 写, 就是 LeetCode 自己用的格式。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">class</span> Codec:</span><span class="l">    <span class="k">def</span> <span class="f">serialize</span>(<span class="t">self</span>, root):</span><span class="l">        out = []</span><span class="l">        <span class="k">def</span> <span class="f">dfs</span>(node):                 <span class="c"># pre-order: 先写自己, 再写左, 再写右</span></span><span class="l">            <span class="k">if</span> <span class="k">not</span> node:</span><span class="l">                out.<span class="f">append</span>(<span class="s">&quot;#&quot;</span>)        <span class="c"># None 也写一个标记: 子树边界靠它确定</span></span><span class="l">                <span class="r">return</span></span><span class="l">            out.<span class="f">append</span>(<span class="t">str</span>(node.val))</span><span class="l">            <span class="f">dfs</span>(node.left)</span><span class="l">            <span class="f">dfs</span>(node.right)</span><span class="l">        <span class="f">dfs</span>(root)</span><span class="l">        <span class="r">return</span> <span class="s">&quot;,&quot;</span>.<span class="f">join</span>(out)</span><span class="l"></span><span class="l">    <span class="k">def</span> <span class="f">deserialize</span>(<span class="t">self</span>, data):</span><span class="l">        it = <span class="f">iter</span>(data.<span class="f">split</span>(<span class="s">&quot;,&quot;</span>))     <span class="c"># iterator: next() 消费一个 token, 共享读指针</span></span><span class="l">        <span class="k">def</span> <span class="f">build</span>():</span><span class="l">            v = <span class="f">next</span>(it)</span><span class="l">            <span class="k">if</span> v == <span class="s">&quot;#&quot;</span>:</span><span class="l">                <span class="r">return</span> <span class="k">None</span></span><span class="l">            node = <span class="t">TreeNode</span>(<span class="t">int</span>(v))</span><span class="l">            node.left = <span class="f">build</span>()        <span class="c"># 先建左 (吃掉左子树的所有 token) ...</span></span><span class="l">            node.right = <span class="f">build</span>()       <span class="c"># ... 剩下的 token 正好是右子树的</span></span><span class="l">            <span class="r">return</span> node</span><span class="l">        <span class="r">return</span> <span class="f">build</span>()</span></div>
-<p><b>Time</b> O(n) (serialize 和 deserialize 都是每个 node / token 一次)。<b>Space</b> O(n) 存输出, 递归栈 O(h)。</p>
-<p>值里如果有逗号或负号, 用 <code>","</code> 分隔就够了 (<code>int("-5")</code> 没问题); 另有 BFS 层序版本, 思路一样, 这里不展开。</p>
-<p class="note"><b>记:</b>序列化 = 先序 + None 标记; 反序列化 = iterator + 同样的递归。<code>left = build()</code> 在 <code>right = build()</code> 之前, 顺序不能换。</p>
-<h2>9. 识别信号: 看到什么 → 试什么</h2>
-<table><tr><th>题目特征</th><th>做法</th><th>complexity</th></tr><tr><td>depth / height / size / count / 是否平衡: 子树的一个数</td><td>post-order, 返回这个数, 父亲合并</td><td>O(n²) 重算 → O(n)</td></tr><tr><td>"路径" (直径 / 最大路径和), 路径不一定过 root</td><td>post-order 返回单边链; 拐点处用 nonlocal 更新答案</td><td>O(n²) 枚举拐点 + 重算 → O(n)</td></tr><tr><td>node 合法性依赖祖先 (BST 校验, 路径和 = target, 区间约束)</td><td>pre-order, 往下传参数 (low, high) / 剩余和</td><td>O(n²) 反复扫子树 → O(n)</td></tr><tr><td>按层 / level / 最短到 leaf / 右视图 / 之字形</td><td>BFS, deque, <code>for _ in range(len(q))</code></td><td>O(n · h) 重走 → O(n)</td></tr><tr><td>两个 node 的公共祖先 / "它们在哪棵子树"</td><td>post-order, 返回找到的 p/q; 左右都有 → 当前 node</td><td>O(n²) 反复问 → O(n)</td></tr><tr><td>BST + 有序 / 第 k 小 / 范围内 / 前驱后继</td><td>inorder (iterative stack), 数到 k 停</td><td>O(n log n) sort → O(h + k)</td></tr><tr><td>BST 查找 / 插入 / BST 的 LCA</td><td>每步用大小关系只走一边, 不递归两边</td><td>O(n) → O(h)</td></tr><tr><td>序列化 / 重建 tree</td><td>pre-order + None 标记; 还原用 iterator + 同样的递归</td><td>数组 O(2^h) → O(n)</td></tr></table>
-<p>面试提醒: (1) 递归写完先走一个 None 和一个单 node 的 case; (2) 全局答案用 <code>nonlocal</code>, 初值要想清楚 (<code>-inf</code> 还是 0); (3) 链状 tree 会撞递归上限, 口头提一句; (4) BFS 里 <code>for _ in range(len(q))</code> 的 <code>len(q)</code> 不要写成每次重新算的 while 条件。</p>
-<p><b>以后再学 (一行):</b> Morris traversal (O(1) 空间中序)、由 pre + in order 重建 tree、Tree DP 的多状态版本 (House Robber III, Binary Tree Cameras)、LCA 的 binary lifting / Euler tour、Segment Tree / Trie 另有专章。</p>
+</details>
+<p class="note"><b>记:</b>要能唯一还原 tree: 遍历时把空 node 也记下来。pre-order + # 最好写, 还原时按同样的 recursion 顺序读。</p>
+<h2>9. 识别信号: 看到什么, 就想到什么写法</h2>
+<table><tr><th>题目特征</th><th>做法</th><th>complexity</th></tr><tr><td>高度、节点数、子树和、是否平衡</td><td>post-order, 返回值往上</td><td><code>O(n)</code></td></tr><tr><td>路径可以拐弯 (直径、最大路径和)</td><td>返回单边, 在拐弯处用两边更新全局 best</td><td><code>O(n²)</code> → <code>O(n)</code></td></tr><tr><td>约束来自祖先 (BST 合法范围、从 root 来的路径和)</td><td>pre-order, 参数往下传</td><td><code>O(n²)</code> → <code>O(n)</code></td></tr><tr><td>按层输出、每层最右、最小深度</td><td>BFS + 每轮记 len(q)</td><td><code>O(n)</code></td></tr><tr><td>两个 node 的最近公共祖先</td><td>返回"子树里找到的 p / q", 两边都有就是答案</td><td><code>O(n)</code></td></tr><tr><td>BST + 有序 / 第 k 小 / 检查合法</td><td>inorder = 从小到大</td><td><code>O(n log n)</code> → <code>O(h + k)</code></td></tr><tr><td>tree 变字符串再还原</td><td>pre-order + 空标记</td><td><code>O(n)</code></td></tr></table>
+<p>一句话: 先想清楚信息往哪个方向流。往上 → 返回值; 往下 → 参数; 一层一层 → BFS。</p>
+<h2>以后再学</h2>
+<p>Construct Binary Tree from Preorder and Inorder、Path Sum III (从上往下的 prefix sum + Hash Table)、Morris traversal (O(1) 空间的 inorder)。</p>
 </article></body></html>
