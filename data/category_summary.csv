@@ -1,0 +1,26 @@
+category,n_problems,top30_company_hits,top_problem
+Dynamic Programming,439,761,Best Time to Buy and Sell Stock
+Two Pointers,119,692,Trapping Rain Water
+Hash Table / Counting,283,640,Two Sum
+Graph (BFS / DFS / Topological Sort / Shortest Path),211,597,Number of Islands
+Design,82,522,LRU Cache
+Binary Search,190,499,Search in Rotated Sorted Array
+Heap / Top-K,125,478,Top K Frequent Elements
+Stack,56,453,Valid Parentheses
+Sliding Window,123,434,Longest Substring Without Repeating Characters
+Linked List,65,428,Reverse Linked List
+Tree,217,403,Binary Tree Maximum Path Sum
+Backtracking,96,389,Generate Parentheses
+Monotonic Stack / Queue,61,347,Sliding Window Maximum
+Matrix / Simulation,132,324,Spiral Matrix
+Intervals,42,319,Merge Intervals
+Greedy,215,314,Jump Game
+Array / String Basics,209,301,Longest Common Prefix
+Math,177,287,Palindrome Number
+Prefix Sum,116,269,Subarray Sum Equals K
+SQL / Database,178,242,Second Highest Salary
+Union-Find,66,228,Evaluate Division
+Bit Manipulation,92,216,Single Number
+Trie,51,208,Implement Trie (Prefix Tree)
+Sorting,44,158,Minimum Absolute Difference
+Concurrency,7,24,Web Crawler Multithreaded
