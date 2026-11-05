@@ -1,0 +1,8 @@
+<svg width="100%" viewBox="0 0 680 182" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Palindromic Substrings examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">数一数: 有多少个 substring 是 palindrome (位置不同就算不同)</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  s = &quot;abc&quot;  →  3</text>
+<text x="40" y="82" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">&quot;a&quot;, &quot;b&quot;, &quot;c&quot;</text>
+<line x1="40" y1="106" x2="640" y2="106" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="126" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  s = &quot;aaa&quot;  →  6</text>
+<text x="40" y="146" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">&quot;a&quot; × 3,  &quot;aa&quot; × 2,  &quot;aaa&quot; × 1</text>
+<line x1="40" y1="170" x2="640" y2="170" stroke="#B4B2A9" stroke-dasharray="4 4"/></svg>

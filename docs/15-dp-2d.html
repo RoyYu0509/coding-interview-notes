@@ -24,15 +24,15 @@ figure svg{width:100%;height:auto;display:block}
 figcaption{color:#52514e;font-size:14px;padding:4px 6px 0}
 table{border-collapse:collapse;margin:10px 0;font-size:15px}
 td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
+details{margin:12px 0;border:1px dashed var(--box);border-radius:6px;padding:4px 12px}
+summary{cursor:pointer;color:var(--sub);font-size:15px}
+ol,ul{padding-left:24px}li{margin:4px 0}
 </style></head><body><article contenteditable="true">
 <h1>15 · Dynamic Programming (2): Grid / Two Strings / Interval</h1>
-<p class="main">主线: state 需要<b>两个 index</b> 才能描述子问题时, 用 2D 表 <code>dp[i][j]</code>。问 "最后一步做了什么" 得到 transition, 依赖方向决定填表顺序, 只依赖上一行就能滚动数组。</p>
-<p class="main">概念链: Unique Paths → Minimum Path Sum → Maximal Square → Longest Common Subsequence → Edit Distance → Longest Palindromic Substring → Palindromic Substrings → Regular Expression Matching。(1D 的 Climbing Stairs / House Robber / Coin Change / knapsack 在 14 号文档。)</p>
-<h2>0. 第一性原理: 为什么需要 2D, 怎么推 transition</h2>
-<p><b>Brute force 在浪费什么。</b>以 Unique Paths 为例: 从 (0,0) 走到 (m-1,n-1), 暴力递归 <code>f(i,j) = f(i-1,j) + f(i,j-1)</code>, 每个格子拆成两个子问题, 时间 O(2^(m+n))。但是不同的 <code>(i, j)</code> 一共只有 m*n 个: 同一个 <code>f(1,2)</code> 被反复重新算。<b>DP 就是给每个 (i, j) 一个格子, 只算一次, 之后直接读。</b></p>
-<p><b>为什么是 2D。</b>子问题的 state 要用<b>两个</b> index 才说得清: 走到第 i 行第 j 列; text1 的前 i 个字符和 text2 的前 j 个字符; s[i..j] 这一段。只用一个 index 描述不了, 所以表是 2D 的。1D DP (一个数组 / 一个序列) 在 14 号文档。</p>
-<p><b>怎么推 transition。</b>固定三步:</p>
-<p>① 写下 state 的<b>含义</b>(一句话, 包括 i、j 是 "前 i 个" 还是 "第 i 个"); ② 问<b>"最后一步做了什么"</b>: 最后一步有几种做法, 每种做法把问题缩成哪个更小的 (i', j'); ③ 把几种做法用题目要的方式合起来 (求方案数用 +, 求最小用 min, 求能不能用 or)。</p>
+<h2>这篇讲什么</h2>
+<p>14 里的 DP, state 只需要一个下标。这篇的题, 一个子问题需要<b>两个下标</b>才能描述清楚, 所以 dp 是一个二维表格 <code>dp[i][j]</code>。常见的有三种:</p>
+<ul><li><b>grid</b>: <code>dp[i][j]</code> 表示走到格子 (i, j) 的答案。</li><li><b>两个字符串</b>: <code>dp[i][j]</code> 表示第一个字符串的前 i 个字符和第二个字符串的前 j 个字符的答案。</li><li><b>一个字符串的区间</b>: <code>dp[i][j]</code> 表示子串 <code>s[i..j]</code> 的答案。</li></ul>
+<p>思考方法和 14 一样: 先想"最后一步做了什么", 推出 transition。新的难点是<b>填表的顺序</b>: 要保证填 <code>dp[i][j]</code> 的时候, 它依赖的格子都已经填好了。画出依赖的方向, 顺序就清楚了。</p>
 <figure><svg width="100%" viewBox="0 0 680 432" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'>
 <title>2D DP 的骨架</title><desc>state 需要两个 index,依赖上 左 左上,填表顺序,滚动数组</desc>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
@@ -99,15 +99,51 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <line x1="505.6" y1="406.0" x2="525.6" y2="406.0" stroke="#52514E" stroke-width="1.5" marker-end="url(#arrow)"/>
 <text x="535.6" y="406" font-size="12" fill="#52514E" dominant-baseline="central">依赖方向</text>
 </svg>
-<figcaption>图 0: dp[i][j] 依赖上 / 左 / 左上, 所以 i 从上到下、j 从左到右; 只读上一行, 所以更早的行可以丢掉</figcaption></figure>
-<p><b>填表顺序。</b>不用背: 画出 dp[i][j] 依赖哪些格子, 这些格子必须先填好。依赖上 / 左 / 左上, 就是行从上到下、列从左到右。如果依赖的是<b>下一行</b>(第 6 题的 dp[i+1][j-1]), 就要从下往上填。</p>
-<p><b>滚动数组。</b>如果 dp[i] 只读 dp[i-1] (和同一行左边), 只需要两行 prev / cur, 甚至一行原地更新, space 从 O(m*n) 降到 O(n)。代价: 丢了整张表, 如果要 <b>还原方案</b>(比如打印出 LCS 本身)就不能滚动。</p>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">solve</span>(A, B):                       <span class="c"># A, B: 两个 string / 一个 grid 的行列</span></span><span class="l">    m, n = <span class="t">len</span>(A), <span class="t">len</span>(B)</span><span class="l">    <span class="c"># dp[i][j] = 只看 A 的前 i 个、B 的前 j 个时, 子问题的答案  (两个 index → 2D)</span></span><span class="l">    dp = [[0] * (n + 1) <span class="k">for</span> _ <span class="k">in</span> <span class="t">range</span>(m + 1)]</span><span class="l">    <span class="c"># base: dp[0][*] 和 dp[*][0] = 其中一边为空时的答案 (先填好)</span></span><span class="l">    <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(1, m + 1):          <span class="c"># 填表顺序 = 依赖的反方向:</span></span><span class="l">        <span class="k">for</span> j <span class="k">in</span> <span class="t">range</span>(1, n + 1):      <span class="c">#   dp[i][j] 依赖 (i-1, j) (i, j-1) (i-1, j-1)</span></span><span class="l">            <span class="c"># 问 &quot;最后一步做了什么&quot;? 每种选择 → 一个更小的子问题 → 取 min / max / sum</span></span><span class="l">            dp[i][j] = <span class="f">f</span>(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1])</span><span class="l">    <span class="r">return</span> dp[m][n]                    <span class="c"># 答案在右下角</span></span><span class="l"></span><span class="l"><span class="c"># 滚动数组: dp[i] 只读 dp[i-1] → 只留 prev, cur 两行, space O(m*n) → O(n)</span></span></div>
-<p class="note"><b>记:</b>2D DP = 定义 dp[i][j] 的含义 → 问最后一步做了什么 → 依赖方向定填表顺序 → 只读上一行就滚动。</p>
-<h2>1. Unique Paths: 最后一步从上或从左, 相加</h2>
-<p><b>题目。</b>m × n 的格子, 机器人从左上角走到右下角, 每次只能向右或向下, 有多少条不同路径? 例: m = 3, n = 4 → 10。</p>
-<p><b>Brute force。</b>递归 <code>f(i,j) = f(i-1,j) + f(i,j-1)</code>, O(2^(m+n)) time。浪费: 同一个格子被重复展开 (见图)。</p>
-<p><b>关键观察。</b>到 (i,j) 的最后一步只可能从上面或左边来, 这两类路径不重叠、也没有遗漏 → 相加。第 0 行 / 第 0 列只有一种走法。</p>
+<figcaption>什么时候需要 2D、怎么从"最后一步"推出 transition、依赖的方向决定填表顺序。</figcaption></figure>
+<details><summary>2D DP 通用模板</summary>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">solve</span>(A, B):                       <span class="c"># A, B: 两个 string / 一个 grid 的行列</span></span><span class="l">    m, n = <span class="t">len</span>(A), <span class="t">len</span>(B)</span><span class="l">    <span class="c"># dp[i][j] = 只看 A 的前 i 个、B 的前 j 个时, 子问题的答案  (两个 index → 2D)</span></span><span class="l">    dp = [[0] * (n + 1) <span class="k">for</span> _ <span class="k">in</span> <span class="t">range</span>(m + 1)]</span><span class="l">    <span class="c"># base: dp[0][*] 和 dp[*][0] = 其中一边为空时的答案 (先填好)</span></span><span class="l">    <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(1, m + 1):          <span class="c"># 填表顺序 = 依赖的反方向:</span></span><span class="l">        <span class="c">#   dp[i][j] 依赖 (i-1, j) (i, j-1) (i-1, j-1)</span></span><span class="l">        <span class="k">for</span> j <span class="k">in</span> <span class="t">range</span>(1, n + 1):</span><span class="l">            <span class="c"># 问 &quot;最后一步做了什么&quot;? 每种选择 → 一个更小的子问题 → 取 min / max / sum</span></span><span class="l">            dp[i][j] = <span class="f">f</span>(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1])</span><span class="l">    <span class="r">return</span> dp[m][n]                    <span class="c"># 答案在右下角</span></span><span class="l"></span><span class="l"><span class="c"># 滚动数组: dp[i] 只读 dp[i-1] → 只留 prev, cur 两行, space O(m*n) → O(n)</span></span></div>
+</details>
+<table><tr><th>#</th><th>题目</th><th>考过的公司数</th><th>相比上一题多了什么</th></tr><tr><td>1</td><td>Unique Paths</td><td>18</td><td>模板题: grid, 上 + 左</td></tr><tr><td>2</td><td>Minimum Path Sum</td><td>15</td><td>相加换成取 min</td></tr><tr><td>3</td><td>Maximal Square</td><td>25</td><td>依赖三个邻居</td></tr><tr><td>4</td><td>Longest Common Subsequence</td><td>19</td><td>换成两个字符串</td></tr><tr><td>5</td><td>Edit Distance</td><td>22</td><td>三种操作, 三个方向</td></tr><tr><td>6</td><td>Longest Palindromic Substring</td><td>65</td><td>一个字符串的区间</td></tr><tr><td>7</td><td>Palindromic Substrings</td><td>24</td><td>同上, 改成计数</td></tr><tr><td>8</td><td>Regular Expression Matching</td><td>24</td><td>* 有两种选择</td></tr></table>
+<p>每道题的顺序: <b>题目在问什么 → 看例子 → brute force → intuition → 算法 → 手动走一遍 → 复杂度</b>。代码放在最后, 默认折叠。</p>
+<p>前置知识: 14 · DP (1) 的四步思路。</p>
+<h2>1. Unique Paths</h2>
+<h3>题目在问什么</h3>
+<p>一个 m × n 的 grid, 机器人从左上角出发, 每一步只能往<b>右</b>或往<b>下</b>走。走到右下角一共有多少条不同的路径?</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Unique Paths examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">m × n 的 grid, 从左上角走到右下角, 每一步只能往右或往下。一共有多少条不同的路径</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  m = 3, n = 2  →  3</text>
+<text x="40" y="103" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">row 0</text>
+<rect x="104" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="121.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">S</text>
+<rect x="138" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="155.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre"></text>
+<text x="40" y="149" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">row 1</text>
+<rect x="104" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre"></text>
+<rect x="138" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="155.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre"></text>
+<text x="40" y="195" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">row 2</text>
+<rect x="104" y="180" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="196.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre"></text>
+<rect x="138" y="180" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="155.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">E</text>
+<text x="40" y="226" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">右 → 下 → 下;  下 → 右 → 下;  下 → 下 → 右  → 3 条</text>
+<line x1="40" y1="250" x2="640" y2="250" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="270" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  m = 3, n = 7  →  28</text>
+<line x1="40" y1="296" x2="640" y2="296" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="311" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="318" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">起点 S / 终点 E</text></svg>
+<figcaption>例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>recursion: 到达 (i, j) 的最后一步, 要么从上面 (i-1, j) 下来, 要么从左边 (i, j-1) 过来。所以 <code>f(i, j) = f(i-1, j) + f(i, j-1)</code>。直接 recursion 会重复计算, 指数级。</p>
+<h3>Intuition: 两个参数 → 二维表</h3>
+<p>recursion 有两个参数 i 和 j, 所以 state 是二维的: <code>dp[i][j]</code> = 走到 (i, j) 的路径数。</p>
+<p>transition: <code>dp[i][j] = dp[i-1][j] + dp[i][j-1]</code>。base case: 第一行和第一列都只有一种走法 (一直往右或一直往下), 都是 1。</p>
+<p>填表顺序: 每个格子依赖<b>上面</b>和<b>左边</b>, 所以一行一行、从左往右填, 用到的格子一定已经填好了。</p>
+<p>省空间: 每一行只依赖上一行和本行左边, 所以只留一行数组就够了: <code>row[j] += row[j-1]</code> (加号左边的 row[j] 是上一行的值, row[j-1] 是本行刚更新的值)。</p>
+<h3>算法</h3>
+<ol><li><code>dp</code> 全部初始化为 1 (第一行、第一列都是 1)。</li><li>i 从 1 到 m-1, j 从 1 到 n-1: <code>dp[i][j] = dp[i-1][j] + dp[i][j-1]</code>。</li><li>返回 <code>dp[m-1][n-1]</code>。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 350" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'>
 <title>Unique Paths: 暴力递归重复算同一格</title><desc>f(2,3) 展开后 f(1,2) 出现两次;dp 表每格只算一次</desc>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
@@ -183,7 +219,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="430" y="306" font-size="12" fill="#52514E" dominant-baseline="central">m*n = 12 格, 每格 O(1) → O(m*n)</text>
 <text x="430" y="324" font-size="12" fill="#52514E" dominant-baseline="central">f(1,2) 在表里是 dp[1][2] = 3, 读两次</text>
 </svg>
-<figcaption>图 1-1: 暴力递归里 f(1,2) 被算两遍; dp 表每格只算一次</figcaption></figure>
+<figcaption>recursion 里 f(1,2) 被算了两遍; dp 表每个格子只算一次。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 1234" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'>
 <title>Unique Paths trace</title><desc>m = 3, n = 4 · dp[i][j] = 从 (0,0) 走到第 i 行第 j 列的路径数 · 第 0 行 / 第 0 列预先填 1 每一步: 读 上面 dp[i-1][j] 和 左边 dp[i][j-1] → 相加</desc>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
@@ -442,14 +479,53 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <line x1="366.4" y1="1212.0" x2="386.4" y2="1212.0" stroke="#52514E" stroke-width="1.5" marker-end="url(#arrow)"/>
 <text x="396.4" y="1212" font-size="12" fill="#52514E" dominant-baseline="central">依赖方向</text>
 </svg>
-<figcaption>图 1-2: m = 3, n = 4, 逐格填表, 每格 = 上面 + 左边</figcaption></figure>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">unique_paths</span>(m, n):</span><span class="l">    dp = [[1] * n <span class="k">for</span> _ <span class="k">in</span> <span class="t">range</span>(m)]          <span class="c"># 第 0 行 / 第 0 列只有 1 种走法 (一直直走)</span></span><span class="l">    <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(1, m):</span><span class="l">        <span class="k">for</span> j <span class="k">in</span> <span class="t">range</span>(1, n):</span><span class="l">            <span class="c"># 最后一步要么从上面 (i-1, j) 下来, 要么从左边 (i, j-1) 过来</span></span><span class="l">            <span class="c"># 两类路径互不重叠, 而且已经包含了所有路径 → 相加</span></span><span class="l">            dp[i][j] = dp[i - 1][j] + dp[i][j - 1]</span><span class="l">    <span class="r">return</span> dp[m - 1][n - 1]</span><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">unique_paths_1row</span>(m, n):                  <span class="c"># 滚动数组: 只依赖上一行 → 一维就够</span></span><span class="l">    row = [1] * n                             <span class="c"># row 当前代表 &quot;上一行&quot;</span></span><span class="l">    <span class="k">for</span> _ <span class="k">in</span> <span class="t">range</span>(m - 1):</span><span class="l">        <span class="k">for</span> j <span class="k">in</span> <span class="t">range</span>(1, n):</span><span class="l">            row[j] += row[j - 1]              <span class="c"># row[j] 旧值 = 上面, row[j-1] 新值 = 左边</span></span><span class="l">    <span class="r">return</span> row[-1]</span></div>
-<p><b>Complexity。</b>Time O(m*n): 每格 O(1)。Space O(m*n); 滚动成一行后 O(n)。</p>
-<p class="note"><b>记:</b>grid 路径计数: dp[i][j] = 上 + 左, 第 0 行 / 列 = 1。</p>
-<h2>2. Minimum Path Sum: 相加变 min, 多加自己</h2>
-<p><b>题目。</b>grid 每格有非负数, 从左上走到右下 (只能右 / 下), 求路径上数字之和的最小值。例: [[1,3,1],[1,5,1],[4,2,1]] → 7。</p>
-<p><b>Brute force。</b>枚举所有路径 (Unique Paths 的那 C(m+n-2, m-1) 条), 每条求和。浪费: 不同路径共享大量前缀。</p>
-<p><b>关键观察。</b>相比上一题, 改两处: ① 不再数路径条数, 而是求最小和, 所以 <b>+ 变 min</b>; ② 每格有自己的代价, 所以要<b>加上 grid[i][j]</b>。之所以只看邻居的 dp 值就够, 是因为 optimal substructure: 到 (i,j) 的最优路径, 去掉最后一格后, 一定是到某个邻居的最优路径。</p>
+<figcaption>m = 3, n = 4: 逐格填表, 每格 = 上面 + 左边。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(m·n)</code>, Space <code>O(n)</code> (一行)。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">unique_paths</span>(m, n):</span><span class="l">    <span class="c"># 第 0 行 / 第 0 列只有 1 种走法 (一直直走)</span></span><span class="l">    dp = [[1] * n <span class="k">for</span> _ <span class="k">in</span> <span class="t">range</span>(m)]</span><span class="l">    <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(1, m):</span><span class="l">        <span class="k">for</span> j <span class="k">in</span> <span class="t">range</span>(1, n):</span><span class="l">            <span class="c"># 最后一步要么从上面 (i-1, j) 下来, 要么从左边 (i, j-1) 过来</span></span><span class="l">            <span class="c"># 两类路径互不重叠, 而且已经包含了所有路径 → 相加</span></span><span class="l">            dp[i][j] = dp[i - 1][j] + dp[i][j - 1]</span><span class="l">    <span class="r">return</span> dp[m - 1][n - 1]</span><span class="l"></span><span class="l"><span class="c"># 滚动数组: 只依赖上一行 → 一维就够</span></span><span class="l"><span class="k">def</span> <span class="f">unique_paths_1row</span>(m, n):</span><span class="l">    row = [1] * n                             <span class="c"># row 当前代表 &quot;上一行&quot;</span></span><span class="l">    <span class="k">for</span> _ <span class="k">in</span> <span class="t">range</span>(m - 1):</span><span class="l">        <span class="k">for</span> j <span class="k">in</span> <span class="t">range</span>(1, n):</span><span class="l">            <span class="c"># row[j] 旧值 = 上面, row[j-1] 新值 = 左边</span></span><span class="l">            row[j] += row[j - 1]</span><span class="l">    <span class="r">return</span> row[-1]</span></div>
+</details>
+<p class="note"><b>记:</b>grid 上只能往右 / 往下: dp[i][j] 由上面和左边推出, 一行一行填, 可以压成一行。</p>
+<h2>2. Minimum Path Sum</h2>
+<h3>题目在问什么</h3>
+<p>grid 里每格有一个非负整数。从左上走到右下, 只能往右或往下。求路径上所有数加起来的<b>最小值</b>。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 294" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Minimum Path Sum examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">grid 里每格有一个非负数。从左上走到右下, 只能往右或往下, 路径上的数加起来最小是多少</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  grid = [[1,3,1],[1,5,1],[4,2,1]]  →  7</text>
+<text x="40" y="103" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">row 0</text>
+<rect x="104" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="121.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="138" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="155.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="172" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="189.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="40" y="149" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">row 1</text>
+<rect x="104" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="138" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="155.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<rect x="172" y="134" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="189.0" y="150.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="40" y="195" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">row 2</text>
+<rect x="104" y="180" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="196.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="138" y="180" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="155.0" y="196.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="172" y="180" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="189.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="40" y="226" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">1 → 3 → 1 → 1 → 1 = 7</text>
+<line x1="40" y1="250" x2="640" y2="250" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="265" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="272" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">最优路径</text></svg>
+<figcaption>例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>枚举所有路径, 和第 1 题一样是指数级的。</p>
+<h3>Intuition: 和第 1 题一样, 相加换成 min</h3>
+<p>到达 (i, j) 还是只能从上面或左边来。这次要的是最小和, 所以选两者里小的那个, 再加上自己: <code>dp[i][j] = grid[i][j] + min(dp[i-1][j], dp[i][j-1])</code>。</p>
+<p>base case: 第一行只能从左边来, 第一列只能从上面来, 都是一路累加。</p>
+<h3>算法</h3>
+<ol><li>第一行、第一列做累加。</li><li>其他格子: <code>dp[i][j] = grid[i][j] + min(上, 左)</code>。</li><li>返回右下角。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 285" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'>
 <title>Minimum Path Sum: 最后一步 + 前缀最优</title><desc>dp[1][1] 取上面和左边里小的</desc>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
@@ -481,7 +557,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="238.6" y="255" width="18" height="14" rx="3" fill="#F1EFE8" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="264.6" y="262" font-size="12" fill="#52514E" dominant-baseline="central">候选来路</text>
 </svg>
-<figcaption>图 2-1: dp[1][1] 在 top 和 left 里选小的</figcaption></figure>
+<figcaption>dp[1][1] 在上面和左边里选小的那个。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 962" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'>
 <title>Minimum Path Sum trace</title><desc>grid = [[1,3,1],[1,5,1],[4,2,1]] · 格子左上角的 g = grid 值, 大数字 = dp 值 第 0 行 / 第 0 列已按累加预先填好 · 每一步: dp[i][j] = min(top, left) + g</desc>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
@@ -667,14 +744,78 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <line x1="366.4" y1="940.0" x2="386.4" y2="940.0" stroke="#52514E" stroke-width="1.5" marker-end="url(#arrow)"/>
 <text x="396.4" y="940" font-size="12" fill="#52514E" dominant-baseline="central">依赖方向</text>
 </svg>
-<figcaption>图 2-2: 3×3 grid 逐格填表, 每格写出 min 和加法</figcaption></figure>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">min_path_sum</span>(grid):</span><span class="l">    m, n = <span class="t">len</span>(grid), <span class="t">len</span>(grid[0])</span><span class="l">    dp = [[0] * n <span class="k">for</span> _ <span class="k">in</span> <span class="t">range</span>(m)]</span><span class="l">    dp[0][0] = grid[0][0]</span><span class="l">    <span class="k">for</span> j <span class="k">in</span> <span class="t">range</span>(1, n):                     <span class="c"># 第 0 行: 只能从左边来</span></span><span class="l">        dp[0][j] = dp[0][j - 1] + grid[0][j]</span><span class="l">    <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(1, m):                     <span class="c"># 第 0 列: 只能从上面来</span></span><span class="l">        dp[i][0] = dp[i - 1][0] + grid[i][0]</span><span class="l">    <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(1, m):</span><span class="l">        <span class="k">for</span> j <span class="k">in</span> <span class="t">range</span>(1, n):</span><span class="l">            <span class="c"># 改的就是这一行: 相加 → min。到 (i, j) 的最小和 = 两个来路里小的那个 + 自己</span></span><span class="l">            dp[i][j] = <span class="t">min</span>(dp[i - 1][j], dp[i][j - 1]) + grid[i][j]</span><span class="l">    <span class="r">return</span> dp[m - 1][n - 1]</span><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">min_path_sum_1row</span>(grid):                  <span class="c"># 滚动数组: inf 当哨兵, 不用单独处理第 0 行</span></span><span class="l">    n = <span class="t">len</span>(grid[0])</span><span class="l">    row = [<span class="t">float</span>(<span class="s">&quot;inf&quot;</span>)] * n</span><span class="l">    row[0] = 0</span><span class="l">    <span class="k">for</span> r <span class="k">in</span> grid:</span><span class="l">        row[0] += r[0]                        <span class="c"># 第 0 列: 只能从上面来</span></span><span class="l">        <span class="k">for</span> j <span class="k">in</span> <span class="t">range</span>(1, n):</span><span class="l">            row[j] = <span class="t">min</span>(row[j], row[j - 1]) + r[j]   <span class="c"># 旧 row[j] = 上, row[j-1] = 左</span></span><span class="l">    <span class="r">return</span> row[-1]</span></div>
-<p><b>Complexity。</b>Time O(m*n); Space O(m*n), 滚动后 O(n)。</p>
-<p class="note"><b>记:</b>路径最小和: dp[i][j] = min(上, 左) + grid[i][j]。从 Unique Paths 改一行。</p>
-<h2>3. Maximal Square: min(上, 左, 左上) + 1</h2>
-<p><b>题目。</b>0/1 矩阵, 找只含 1 的最大正方形, 返回面积。例: ["10100","10111","11111","10010"] → 4。</p>
-<p><b>Brute force。</b>枚举每个格子当左上角, 再枚举边长 k, 检查 k×k 是否全 1: O(m*n*min(m,n)²) (检查也要算)。浪费: 检查 k×k 全 1 时, 又把 (k-1)×(k-1) 检查了一遍。</p>
-<p><b>关键观察。</b>改 state: <code>dp[i][j]</code> = 以 (i,j) 为<b>右下角</b>的最大全 1 正方形边长。当前格是 1 时, 想长成 (k+1)×(k+1), 它的上、左、左上三个邻居都必须能撑起 k×k。三个里最小的先撞墙, 所以边长 = 最小 + 1。这里依赖<b>三个</b>邻居, 是本文档里第一次用到左上。</p>
+<figcaption>3 × 3 grid 逐格填表, 每格写出了 min 和加法。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(m·n)</code>, Space <code>O(n)</code> 或者直接在 grid 上改 <code>O(1)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">min_path_sum</span>(grid):</span><span class="l">    m, n = <span class="t">len</span>(grid), <span class="t">len</span>(grid[0])</span><span class="l">    dp = [[0] * n <span class="k">for</span> _ <span class="k">in</span> <span class="t">range</span>(m)]</span><span class="l">    dp[0][0] = grid[0][0]</span><span class="l">    <span class="k">for</span> j <span class="k">in</span> <span class="t">range</span>(1, n):                     <span class="c"># 第 0 行: 只能从左边来</span></span><span class="l">        dp[0][j] = dp[0][j - 1] + grid[0][j]</span><span class="l">    <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(1, m):                     <span class="c"># 第 0 列: 只能从上面来</span></span><span class="l">        dp[i][0] = dp[i - 1][0] + grid[i][0]</span><span class="l">    <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(1, m):</span><span class="l">        <span class="k">for</span> j <span class="k">in</span> <span class="t">range</span>(1, n):</span><span class="l">            <span class="c"># 改的就是这一行: 相加 → min。到 (i, j) 的最小和 = 两个来路里小的那个 + 自己</span></span><span class="l">            dp[i][j] = <span class="t">min</span>(dp[i - 1][j], dp[i][j - 1]) + grid[i][j]</span><span class="l">    <span class="r">return</span> dp[m - 1][n - 1]</span><span class="l"></span><span class="l"><span class="c"># 滚动数组: inf 当哨兵, 不用单独处理第 0 行</span></span><span class="l"><span class="k">def</span> <span class="f">min_path_sum_1row</span>(grid):</span><span class="l">    n = <span class="t">len</span>(grid[0])</span><span class="l">    row = [<span class="t">float</span>(<span class="s">&quot;inf&quot;</span>)] * n</span><span class="l">    row[0] = 0</span><span class="l">    <span class="k">for</span> r <span class="k">in</span> grid:</span><span class="l">        row[0] += r[0]                        <span class="c"># 第 0 列: 只能从上面来</span></span><span class="l">        <span class="k">for</span> j <span class="k">in</span> <span class="t">range</span>(1, n):</span><span class="l">            <span class="c"># 旧 row[j] = 上, row[j-1] = 左</span></span><span class="l">            row[j] = <span class="t">min</span>(row[j], row[j - 1]) + r[j]</span><span class="l">    <span class="r">return</span> row[-1]</span></div>
+</details>
+<p class="note"><b>记:</b>同一个依赖方向, 换一个运算: 计数用 +, 最优用 min / max。</p>
+<h2>3. Maximal Square</h2>
+<h3>题目在问什么</h3>
+<p>一个只有 0 和 1 的矩阵, 找出<b>只包含 1</b> 的最大正方形, 返回它的面积。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Maximal Square examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">0/1 矩阵里, 找只包含 1 的最大正方形, 返回面积</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  →  4</text>
+<text x="40" y="103" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">row 0</text>
+<rect x="104" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="138" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="155.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="172" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="189.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="206" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="223.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="240" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="257.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">0</text>
+<text x="40" y="149" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">row 1</text>
+<rect x="104" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="138" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="155.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="172" y="134" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="189.0" y="150.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="206" y="134" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="223.0" y="150.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="240" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="257.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="40" y="195" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">row 2</text>
+<rect x="104" y="180" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="196.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="138" y="180" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="155.0" y="196.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="172" y="180" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="189.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="206" y="180" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="223.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="240" y="180" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="257.0" y="196.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="40" y="241" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">row 3</text>
+<rect x="104" y="226" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="242.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="138" y="226" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="155.0" y="242.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="172" y="226" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="189.0" y="242.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="206" y="226" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="223.0" y="242.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="240" y="226" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="257.0" y="242.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">0</text>
+<text x="40" y="272" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">边长 2 的正方形 (绿色), 面积 4。row 1..2, col 3..4 也是一个</text>
+<line x1="40" y1="296" x2="640" y2="296" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="311" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="318" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">最大正方形</text></svg>
+<figcaption>例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>枚举每个格子作为正方形的左上角, 再枚举边长, 检查里面是不是全是 1。<code>O((m·n)²)</code> 左右。</p>
+<h3>Intuition: 以 (i, j) 为右下角的最大正方形</h3>
+<p>state: <code>dp[i][j]</code> = 以 (i, j) 为<b>右下角</b>的、全是 1 的最大正方形的边长。</p>
+<p>如果 matrix[i][j] 是 0, dp 就是 0。如果是 1, 它能形成多大的正方形, 取决于三个邻居: 上面 <code>dp[i-1][j]</code>、左边 <code>dp[i][j-1]</code>、左上 <code>dp[i-1][j-1]</code>。</p>
+<p><code>dp[i][j] = min(上, 左, 左上) + 1</code>。为什么是 min? 想象要在 (i, j) 拼一个边长 k 的正方形, 需要它上面、左边、左上这三个方向都至少有边长 k - 1 的正方形。三个里最小的那个, 决定了能拼多大。</p>
+<p>答案是所有 dp 里最大的边长, 平方就是面积。</p>
+<h3>算法</h3>
+<ol><li>多开一行一列 0 当边界。</li><li>matrix[i][j] == '1' 时: <code>dp[i+1][j+1] = min(dp[i][j+1], dp[i+1][j], dp[i][j]) + 1</code>, 更新最大边长。</li><li>返回最大边长的平方。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 270" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'>
 <title>Maximal Square: min(上, 左, 左上) + 1</title><desc>三个邻居里最小的决定边长</desc>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
@@ -768,7 +909,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="40" y="230" font-size="12" fill="#0B0B0B" dominant-baseline="central">三块里最小的那块先 "撞墙" (这里左上角的 0 把 diag 限制成 1), 所以边长 = 最小 + 1。</text>
 <text x="40" y="250" font-size="12" fill="#52514E" dominant-baseline="central">当前格是 0 时 dp = 0: 它不能当任何正方形的右下角。</text>
 </svg>
-<figcaption>图 3-1: 三个邻居里最小的决定边长, 左上角的 0 把 diag 限制成 1</figcaption></figure>
+<figcaption>三个邻居里最小的决定边长; 左上角的 0 把对角方向限制成 1。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 1854" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'>
 <title>Maximal Square trace</title><desc>matrix = [10100, 10111, 11111, 10010] · 格子左上角 m = 原矩阵的值, 大数字 = dp (边长) 第 0 行 / 第 0 列是补的一圈 0 · 只挑 6 个有代表性的格子, 其余格子照同一公式填 (灰色里的数字是真实结果)</desc>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
@@ -1392,14 +1534,56 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <line x1="366.4" y1="1832.0" x2="386.4" y2="1832.0" stroke="#52514E" stroke-width="1.5" marker-end="url(#arrow)"/>
 <text x="396.4" y="1832" font-size="12" fill="#52514E" dominant-baseline="central">依赖方向</text>
 </svg>
-<figcaption>图 3-2: 4×5 矩阵, 补一圈 0 后逐格填表</figcaption></figure>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">maximal_square</span>(matrix):                   <span class="c"># matrix 里是 &quot;0&quot; / &quot;1&quot; 字符</span></span><span class="l">    m, n = <span class="t">len</span>(matrix), <span class="t">len</span>(matrix[0])</span><span class="l">    <span class="c"># dp[i][j] = 以 matrix[i-1][j-1] 为右下角的全 1 正方形, 最大边长</span></span><span class="l">    dp = [[0] * (n + 1) <span class="k">for</span> _ <span class="k">in</span> <span class="t">range</span>(m + 1)]    <span class="c"># 多一圈 0 当边界, 省掉 if i == 0</span></span><span class="l">    best = 0</span><span class="l">    <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(1, m + 1):</span><span class="l">        <span class="k">for</span> j <span class="k">in</span> <span class="t">range</span>(1, n + 1):</span><span class="l">            <span class="k">if</span> matrix[i - 1][j - 1] == <span class="s">&quot;1&quot;</span>:</span><span class="l">                <span class="c"># 上 / 左 / 左上 三个邻居里最小的那个, 决定先撞墙的方向 → 边长 = 最小 + 1</span></span><span class="l">                dp[i][j] = <span class="t">min</span>(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]) + 1</span><span class="l">                best = <span class="t">max</span>(best, dp[i][j])</span><span class="l">            <span class="c"># 是 &quot;0&quot; 就保持 0: 这个格子不能当任何正方形的右下角</span></span><span class="l">    <span class="r">return</span> best * best                        <span class="c"># 题目要面积</span></span></div>
-<p><b>Complexity。</b>Time O(m*n); Space O(m*n), 滚动成两行后 O(n)。答案是整张表的最大值 (不是右下角), 因为正方形可以在任何位置。</p>
-<p class="note"><b>记:</b>最大正方形: 当前格是 1 → dp = min(上, 左, 左上) + 1; 答案取全表最大值再平方。</p>
-<h2>4. Longest Common Subsequence: 比较两个前缀的最后一个字符</h2>
-<p><b>题目。</b>两个 string, 求最长公共子序列 (不要求连续) 的长度。例: "abcde", "ace" → 3 ("ace")。</p>
-<p><b>Brute force。</b>枚举 text1 的所有子序列 (2^m 个), 逐个判断是不是 text2 的子序列, O(2^m * n)。浪费: 子序列的前半段被无数次重复判断。</p>
-<p><b>关键观察。</b>从 grid 过渡到两个 string: <code>dp[i][j]</code> 看 <code>text1[:i]</code> 和 <code>text2[:j]</code>, i 和 j 分别是两个 string 的指针。最后一步: 看 text1[i-1] 和 text2[j-1]。相同 → 配对, 去掉这一对看左上; 不同 → 至少有一个字符没用, 丢一个, 看上或左, 取 max。</p>
+<figcaption>4 × 5 矩阵, 补一圈 0 之后逐格填表。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(m·n)</code>, Space <code>O(m·n)</code> (可以压成一行)。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">maximal_square</span>(matrix):                   <span class="c"># matrix 里是 &quot;0&quot; / &quot;1&quot; 字符</span></span><span class="l">    m, n = <span class="t">len</span>(matrix), <span class="t">len</span>(matrix[0])</span><span class="l">    <span class="c"># dp[i][j] = 以 matrix[i-1][j-1] 为右下角的全 1 正方形, 最大边长</span></span><span class="l">    <span class="c"># 多一圈 0 当边界, 省掉 if i == 0</span></span><span class="l">    dp = [[0] * (n + 1) <span class="k">for</span> _ <span class="k">in</span> <span class="t">range</span>(m + 1)]</span><span class="l">    best = 0</span><span class="l">    <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(1, m + 1):</span><span class="l">        <span class="k">for</span> j <span class="k">in</span> <span class="t">range</span>(1, n + 1):</span><span class="l">            <span class="k">if</span> matrix[i - 1][j - 1] == <span class="s">&quot;1&quot;</span>:</span><span class="l">                <span class="c"># 上 / 左 / 左上 三个邻居里最小的那个, 决定先撞墙的方向 → 边长 = 最小 + 1</span></span><span class="l">                dp[i][j] = <span class="t">min</span>(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]) + 1</span><span class="l">                best = <span class="t">max</span>(best, dp[i][j])</span><span class="l">            <span class="c"># 是 &quot;0&quot; 就保持 0: 这个格子不能当任何正方形的右下角</span></span><span class="l">    <span class="r">return</span> best * best                        <span class="c"># 题目要面积</span></span></div>
+</details>
+<p class="note"><b>记:</b>以 (i, j) 为右下角的最大正方形: min(上, 左, 左上) + 1。</p>
+<h2>4. Longest Common Subsequence</h2>
+<h3>题目在问什么</h3>
+<p>两个字符串 text1 和 text2, 求它们最长的<b>公共子序列</b>的长度。子序列可以跳着选字符, 但不能改变顺序。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 312" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>LCS examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">两个字符串的最长公共子序列 (common subsequence) 有多长。子序列可以跳着选, 但顺序不能变</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  text1 = &quot;abcde&quot;, text2 = &quot;ace&quot;  →  3</text>
+<text x="40" y="103" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">text1</text>
+<rect x="104" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="121.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">a</text>
+<rect x="138" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="155.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">b</text>
+<rect x="172" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="189.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">c</text>
+<rect x="206" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="223.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">d</text>
+<rect x="240" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="257.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">e</text>
+<text x="40" y="149" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">text2</text>
+<rect x="104" y="134" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="121.0" y="150.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">a</text>
+<rect x="138" y="134" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="155.0" y="150.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">c</text>
+<rect x="172" y="134" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="189.0" y="150.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">e</text>
+<text x="40" y="180" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">&quot;ace&quot; 同时是两个字符串的子序列</text>
+<line x1="40" y1="204" x2="640" y2="204" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="224" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  &quot;abc&quot; 和 &quot;def&quot;  →  0</text>
+<text x="40" y="244" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">没有共同的字母</text>
+<line x1="40" y1="268" x2="640" y2="268" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="283" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="290" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">公共子序列</text></svg>
+<figcaption>两个例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>枚举 text1 的所有子序列 (<code>2^m</code> 个), 检查是不是 text2 的子序列。指数级。</p>
+<h3>Intuition: 比较两个前缀的最后一个字符</h3>
+<p>两个字符串, 子问题就是"两个前缀": <code>dp[i][j]</code> = <code>text1[:i]</code> 和 <code>text2[:j]</code> 的 LCS 长度。</p>
+<p>transition 看两个前缀的<b>最后一个字符</b> <code>text1[i-1]</code> 和 <code>text2[j-1]</code>:</p>
+<ul><li><b>相同</b>: 这个字符一定可以放进 LCS 里。去掉两个末尾, 剩下的问题是 <code>dp[i-1][j-1]</code>, 再加 1。</li><li><b>不同</b>: 这两个字符不可能都在 LCS 的末尾。至少有一个要丢掉: 丢 text1 的末尾 (<code>dp[i-1][j]</code>), 或者丢 text2 的末尾 (<code>dp[i][j-1]</code>), 取大的。</li></ul>
+<p>base case: 任何一个前缀是空的, LCS 是 0, 所以 dp 第 0 行、第 0 列都是 0。</p>
+<p>依赖: 左上、上、左。所以还是一行一行、从左往右填。</p>
+<h3>算法</h3>
+<ol><li><code>dp</code> 是 (m+1) × (n+1), 全 0。</li><li>i 从 1 到 m, j 从 1 到 n: 相同则 <code>dp[i][j] = dp[i-1][j-1] + 1</code>; 不同则 <code>max(dp[i-1][j], dp[i][j-1])</code>。</li><li>返回 <code>dp[m][n]</code>。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 366" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'>
 <title>LCS: 看最后一个字符</title><desc>相同则左上+1,不同则丢一个字符</desc>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
@@ -1446,7 +1630,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="341.2" y="337" width="18" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
 <text x="367.2" y="344" font-size="12" fill="#52514E" dominant-baseline="central">其余字符</text>
 </svg>
-<figcaption>图 4-1: 最后字符相同 → 左上 + 1; 不同 → 丢一个字符, 取 max(上, 左)</figcaption></figure>
+<figcaption>最后一个字符相同 → 左上 + 1; 不同 → 丢掉一个字符, 取 max(上, 左)。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 2032" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'>
 <title>LCS trace</title><desc>text1 = "abcde" (行), text2 = "ace" (列) · dp[i][j] = text1[:i] 与 text2[:j] 的 LCS 长度 第 0 行 / 第 0 列 = 0 (空串) · 挑 7 个格子; 相同 → 只依赖左上, 不同 → 依赖上 + 左</desc>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
@@ -1998,14 +2183,34 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <line x1="366.4" y1="2010.0" x2="386.4" y2="2010.0" stroke="#52514E" stroke-width="1.5" marker-end="url(#arrow)"/>
 <text x="396.4" y="2010" font-size="12" fill="#52514E" dominant-baseline="central">依赖方向</text>
 </svg>
-<figcaption>图 4-2: "abcde" vs "ace", 相同的格子只依赖左上, 不同的依赖上 + 左</figcaption></figure>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">longest_common_subsequence</span>(text1, text2):</span><span class="l">    m, n = <span class="t">len</span>(text1), <span class="t">len</span>(text2)</span><span class="l">    <span class="c"># dp[i][j] = text1[:i] 和 text2[:j] 的 LCS 长度</span></span><span class="l">    dp = [[0] * (n + 1) <span class="k">for</span> _ <span class="k">in</span> <span class="t">range</span>(m + 1)]    <span class="c"># dp[0][*] = dp[*][0] = 0: 有一边是空串</span></span><span class="l">    <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(1, m + 1):</span><span class="l">        <span class="k">for</span> j <span class="k">in</span> <span class="t">range</span>(1, n + 1):</span><span class="l">            <span class="k">if</span> text1[i - 1] == text2[j - 1]:</span><span class="l">                <span class="c"># 最后一个字符相同 → 一定可以配对, 去掉这一对, 看左上角</span></span><span class="l">                dp[i][j] = dp[i - 1][j - 1] + 1</span><span class="l">            <span class="k">else</span>:</span><span class="l">                <span class="c"># 不同 → 至少有一个字符没用上: 丢 text1 的最后一个, 或丢 text2 的最后一个</span></span><span class="l">                dp[i][j] = <span class="t">max</span>(dp[i - 1][j], dp[i][j - 1])</span><span class="l">    <span class="r">return</span> dp[m][n]</span><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">lcs_2rows</span>(text1, text2):                  <span class="c"># 滚动数组: 只留上一行 prev 和当前行 cur</span></span><span class="l">    n = <span class="t">len</span>(text2)</span><span class="l">    prev = [0] * (n + 1)</span><span class="l">    <span class="k">for</span> ch <span class="k">in</span> text1:</span><span class="l">        cur = [0] * (n + 1)</span><span class="l">        <span class="k">for</span> j <span class="k">in</span> <span class="t">range</span>(1, n + 1):</span><span class="l">            <span class="k">if</span> ch == text2[j - 1]:</span><span class="l">                cur[j] = prev[j - 1] + 1</span><span class="l">            <span class="k">else</span>:</span><span class="l">                cur[j] = <span class="t">max</span>(prev[j], cur[j - 1])</span><span class="l">        prev = cur</span><span class="l">    <span class="r">return</span> prev[n]</span></div>
-<p><b>Complexity。</b>Time O(m*n); Space O(m*n), 滚动后 O(min(m,n)) (让短的当列)。</p>
-<p class="note"><b>记:</b>两个 string 求最优: dp[i][j] 看两个前缀, 比最后一个字符: 相同 → 左上, 不同 → 丢一个。</p>
-<h2>5. Edit Distance: 三种操作对应三个方向</h2>
-<p><b>题目。</b>把 word1 变成 word2, 每步可以 insert / delete / replace 一个字符, 求最少步数。例: "horse" → "ros" = 3。</p>
-<p><b>Brute force。</b>每个位置试三种操作的递归, O(3^max(m,n))。浪费: 不同操作顺序会走到同一个 (i, j) 状态。</p>
-<p><b>关键观察。</b>state 和 LCS 完全一样 (两个前缀), 变的是 transition 和 base:① 最后字符相同 → 白拿左上, 不加 1; ② 不同 → 三种操作, 对应<b>三个方向</b>:replace = 左上, delete = 上, insert = 左, 取 min 再 +1; ③ base 不是 0: 第 0 行 / 第 0 列是 0, 1, 2, ... (全插入 / 全删除)。</p>
+<figcaption>"abcde" vs "ace": 字符相同的格子只依赖左上, 不同的依赖上和左。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(m·n)</code>, Space <code>O(m·n)</code> (可以压成两行)。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">longest_common_subsequence</span>(text1, text2):</span><span class="l">    m, n = <span class="t">len</span>(text1), <span class="t">len</span>(text2)</span><span class="l">    <span class="c"># dp[i][j] = text1[:i] 和 text2[:j] 的 LCS 长度</span></span><span class="l">    <span class="c"># dp[0][*] = dp[*][0] = 0: 有一边是空串</span></span><span class="l">    dp = [[0] * (n + 1) <span class="k">for</span> _ <span class="k">in</span> <span class="t">range</span>(m + 1)]</span><span class="l">    <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(1, m + 1):</span><span class="l">        <span class="k">for</span> j <span class="k">in</span> <span class="t">range</span>(1, n + 1):</span><span class="l">            <span class="k">if</span> text1[i - 1] == text2[j - 1]:</span><span class="l">                <span class="c"># 最后一个字符相同 → 一定可以配对, 去掉这一对, 看左上角</span></span><span class="l">                dp[i][j] = dp[i - 1][j - 1] + 1</span><span class="l">            <span class="k">else</span>:</span><span class="l">                <span class="c"># 不同 → 至少有一个字符没用上: 丢 text1 的最后一个, 或丢 text2 的最后一个</span></span><span class="l">                dp[i][j] = <span class="t">max</span>(dp[i - 1][j], dp[i][j - 1])</span><span class="l">    <span class="r">return</span> dp[m][n]</span><span class="l"></span><span class="l"><span class="c"># 滚动数组: 只留上一行 prev 和当前行 cur</span></span><span class="l"><span class="k">def</span> <span class="f">lcs_2rows</span>(text1, text2):</span><span class="l">    n = <span class="t">len</span>(text2)</span><span class="l">    prev = [0] * (n + 1)</span><span class="l">    <span class="k">for</span> ch <span class="k">in</span> text1:</span><span class="l">        cur = [0] * (n + 1)</span><span class="l">        <span class="k">for</span> j <span class="k">in</span> <span class="t">range</span>(1, n + 1):</span><span class="l">            <span class="k">if</span> ch == text2[j - 1]:</span><span class="l">                cur[j] = prev[j - 1] + 1</span><span class="l">            <span class="k">else</span>:</span><span class="l">                cur[j] = <span class="t">max</span>(prev[j], cur[j - 1])</span><span class="l">        prev = cur</span><span class="l">    <span class="r">return</span> prev[n]</span></div>
+</details>
+<p class="note"><b>记:</b>两个字符串的 DP: dp[i][j] = 前 i 个和前 j 个; 看两个末尾字符相同还是不同。</p>
+<h2>5. Edit Distance</h2>
+<h3>题目在问什么</h3>
+<p>把 word1 变成 word2, 每一步可以做三种操作之一: <b>插入</b>一个字符、<b>删除</b>一个字符、<b>替换</b>一个字符。最少需要几步?</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 154" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Edit Distance examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">把 word1 变成 word2, 每一步可以: 插入一个字符 / 删除一个字符 / 替换一个字符。最少几步</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  word1 = &quot;horse&quot;, word2 = &quot;ros&quot;  →  3</text>
+<text x="40" y="82" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">horse → rorse (把 h 换成 r)</text>
+<text x="40" y="100" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">rorse → rose (删掉 r)</text>
+<text x="40" y="118" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">rose → ros (删掉 e)</text>
+<line x1="40" y1="142" x2="640" y2="142" stroke="#B4B2A9" stroke-dasharray="4 4"/></svg>
+<figcaption>例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>recursion 试所有操作序列, 指数级。</p>
+<h3>Intuition: 和 LCS 一样看末尾, 三种操作对应三个方向</h3>
+<p>state: <code>dp[i][j]</code> = 把 <code>word1[:i]</code> 变成 <code>word2[:j]</code> 的最少步数。</p>
+<p>看两个末尾字符:</p>
+<ul><li><b>相同</b>: 不用动, <code>dp[i][j] = dp[i-1][j-1]</code>。</li><li><b>不同</b>: 最后一步是三种操作之一, 取最少的再加 1:</li><li>　替换 word1 的末尾成 word2 的末尾 → 剩下 <code>dp[i-1][j-1]</code> (左上)</li><li>　删掉 word1 的末尾 → 剩下 <code>dp[i-1][j]</code> (上)</li><li>　在 word1 末尾插入 word2 的末尾 → 剩下 <code>dp[i][j-1]</code> (左)</li></ul>
+<p>base case: <code>dp[i][0] = i</code> (删掉 i 个字符), <code>dp[0][j] = j</code> (插入 j 个字符)。</p>
+<h3>算法</h3>
+<ol><li>初始化第 0 行、第 0 列。</li><li>相同: <code>dp[i][j] = dp[i-1][j-1]</code>; 不同: <code>1 + min(dp[i-1][j-1], dp[i-1][j], dp[i][j-1])</code>。</li><li>返回 <code>dp[m][n]</code>。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 350" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'>
 <title>Edit Distance: 三种操作 = 三个方向</title><desc>replace 左上,delete 上,insert 左</desc>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
@@ -2050,7 +2255,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <line x1="389.2" y1="326.0" x2="409.2" y2="326.0" stroke="#52514E" stroke-width="1.5" marker-end="url(#arrow)"/>
 <text x="419.2" y="326" font-size="12" fill="#52514E" dominant-baseline="central">依赖方向</text>
 </svg>
-<figcaption>图 5-1: replace = 左上, delete = 上, insert = 左</figcaption></figure>
+<figcaption>替换 = 左上, 删除 = 上, 插入 = 左。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 1842" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'>
 <title>Edit Distance trace</title><desc>word1 = "horse" (行) → word2 = "ros" (列) · dp[i][j] = word1[:i] 变成 word2[:j] 的最少操作数 第 0 行 = 0,1,2,3 (全插入) · 第 0 列 = 0..5 (全删除) · 挑 6 个格子</desc>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
@@ -2540,14 +2746,66 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <line x1="366.4" y1="1820.0" x2="386.4" y2="1820.0" stroke="#52514E" stroke-width="1.5" marker-end="url(#arrow)"/>
 <text x="396.4" y="1820" font-size="12" fill="#52514E" dominant-baseline="central">依赖方向</text>
 </svg>
-<figcaption>图 5-2: "horse" → "ros", 相同时白拿左上, 不同时 1 + min(三个)</figcaption></figure>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">min_distance</span>(word1, word2):</span><span class="l">    m, n = <span class="t">len</span>(word1), <span class="t">len</span>(word2)</span><span class="l">    <span class="c"># dp[i][j] = word1[:i] 变成 word2[:j] 的最少操作数</span></span><span class="l">    dp = [[0] * (n + 1) <span class="k">for</span> _ <span class="k">in</span> <span class="t">range</span>(m + 1)]</span><span class="l">    <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(m + 1):</span><span class="l">        dp[i][0] = i                          <span class="c"># word1[:i] → &quot;&quot;: 删 i 次</span></span><span class="l">    <span class="k">for</span> j <span class="k">in</span> <span class="t">range</span>(n + 1):</span><span class="l">        dp[0][j] = j                          <span class="c"># &quot;&quot; → word2[:j]: 插 j 次</span></span><span class="l">    <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(1, m + 1):</span><span class="l">        <span class="k">for</span> j <span class="k">in</span> <span class="t">range</span>(1, n + 1):</span><span class="l">            <span class="k">if</span> word1[i - 1] == word2[j - 1]:</span><span class="l">                dp[i][j] = dp[i - 1][j - 1]   <span class="c"># 最后一个字符已经一样: 不用操作, 白拿左上角</span></span><span class="l">            <span class="k">else</span>:</span><span class="l">                dp[i][j] = 1 + <span class="t">min</span>(</span><span class="l">                    dp[i - 1][j - 1],         <span class="c"># replace: 改成 word2[j-1], 两边各缩 1</span></span><span class="l">                    dp[i - 1][j],             <span class="c"># delete:  删掉 word1[i-1], word1 缩短 1</span></span><span class="l">                    dp[i][j - 1],             <span class="c"># insert:  在末尾补上 word2[j-1], word2 缩短 1</span></span><span class="l">                )</span><span class="l">    <span class="r">return</span> dp[m][n]</span></div>
-<p><b>Complexity。</b>Time O(m*n); Space O(m*n), 滚动后 O(n)。</p>
-<p class="note"><b>记:</b>Edit Distance = LCS 的 state + 三个方向 (替换 / 删 / 插) 取 min + 1, base 是 0..n。</p>
-<h2>6. Longest Palindromic Substring: 先中心扩展, 再看 interval 填表</h2>
-<p><b>题目。</b>求 s 的最长回文子串 (连续)。例: "babad" → "bab" ("aba" 也对)。</p>
-<p><b>Brute force。</b>枚举所有子串 O(n²), 每个检查是不是 palindrome O(n), 共 O(n³)。浪费: 检查 s[i..j] 时又把里面的 s[i+1..j-1] 检查了一遍。</p>
-<p><b>最实用的解: 中心扩展。</b>palindrome 一定对称, 有一个中心。枚举 2n-1 个中心从中心往外扩, O(n²) time, O(1) space, 代码短、不容易错。面试首选这个。</p>
+<figcaption>"horse" → "ros": 字符相同时直接拿左上, 不同时 1 + min(三个)。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(m·n)</code>, Space <code>O(m·n)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">min_distance</span>(word1, word2):</span><span class="l">    m, n = <span class="t">len</span>(word1), <span class="t">len</span>(word2)</span><span class="l">    <span class="c"># dp[i][j] = word1[:i] 变成 word2[:j] 的最少操作数</span></span><span class="l">    dp = [[0] * (n + 1) <span class="k">for</span> _ <span class="k">in</span> <span class="t">range</span>(m + 1)]</span><span class="l">    <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(m + 1):</span><span class="l">        dp[i][0] = i                          <span class="c"># word1[:i] → &quot;&quot;: 删 i 次</span></span><span class="l">    <span class="k">for</span> j <span class="k">in</span> <span class="t">range</span>(n + 1):</span><span class="l">        dp[0][j] = j                          <span class="c"># &quot;&quot; → word2[:j]: 插 j 次</span></span><span class="l">    <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(1, m + 1):</span><span class="l">        <span class="k">for</span> j <span class="k">in</span> <span class="t">range</span>(1, n + 1):</span><span class="l">            <span class="k">if</span> word1[i - 1] == word2[j - 1]:</span><span class="l">                <span class="c"># 最后一个字符已经一样: 不用操作, 白拿左上角</span></span><span class="l">                dp[i][j] = dp[i - 1][j - 1]</span><span class="l">            <span class="k">else</span>:</span><span class="l">                dp[i][j] = 1 + <span class="t">min</span>(</span><span class="l">                    <span class="c"># replace: 改成 word2[j-1], 两边各缩 1</span></span><span class="l">                    dp[i - 1][j - 1],</span><span class="l">                    <span class="c"># delete:  删掉 word1[i-1], word1 缩短 1</span></span><span class="l">                    dp[i - 1][j],</span><span class="l">                    <span class="c"># insert:  在末尾补上 word2[j-1], word2 缩短 1</span></span><span class="l">                    dp[i][j - 1],</span><span class="l">                )</span><span class="l">    <span class="r">return</span> dp[m][n]</span></div>
+</details>
+<p class="note"><b>记:</b>编辑距离: 末尾相同直接拿左上; 不同则 1 + min(替换 = 左上, 删除 = 上, 插入 = 左)。</p>
+<h2>6. Longest Palindromic Substring</h2>
+<h3>题目在问什么</h3>
+<p>找 s 里最长的 palindrome <b>substring</b> (连续的, 正着读和反着读一样)。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 302" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Longest Palindromic Substring examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">找最长的 palindrome substring (连续的, 正着读和反着读一样)</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  s = &quot;babad&quot;  →  &quot;bab&quot; (或 &quot;aba&quot;)</text>
+<rect x="40" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="57.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">b</text>
+<text x="57.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="91.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">a</text>
+<text x="91.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="108" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="125.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">b</text>
+<text x="125.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="142" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="159.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">a</text>
+<text x="159.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="176" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="193.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">d</text>
+<text x="193.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="37" y="85" width="108" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="234" y="103" font-size="14" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">&quot;bab&quot;</text>
+<line x1="40" y1="150" x2="640" y2="150" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="170" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  s = &quot;cbbd&quot;  →  &quot;bb&quot;</text>
+<rect x="40" y="196" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="212.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">c</text>
+<text x="57.0" y="238" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="196" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="91.0" y="212.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">b</text>
+<text x="91.0" y="238" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="108" y="196" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="125.0" y="212.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">b</text>
+<text x="125.0" y="238" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="142" y="196" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="159.0" y="212.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">d</text>
+<text x="159.0" y="238" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="71" y="193" width="74" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="200" y="211" font-size="14" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">偶数长度, 中心在两个 b 之间</text>
+<line x1="40" y1="258" x2="640" y2="258" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="273" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="280" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">答案</text>
+<rect x="97" y="273" width="14" height="14" rx="3" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="118" y="280" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">答案的范围</text>
+<rect x="197" y="273" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
+<text x="218" y="280" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">看起来像, 但不对</text></svg>
+<figcaption>两个例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>枚举所有 substring (<code>O(n²)</code> 个), 每个检查是不是 palindrome (<code>O(n)</code>)。<code>O(n³)</code>。</p>
+<h3>Intuition 1: 从中心往两边扩</h3>
+<p>palindrome 是左右对称的, 有一个中心。所以反过来: <b>枚举中心, 从中心往两边扩</b>, 两边字符相同就继续扩, 不同就停。</p>
+<p>中心有两种: 一个字符 (奇数长度, 比如 "aba"), 或者两个字符之间 (偶数长度, 比如 "abba")。一共 <code>2n - 1</code> 个中心, 每个最多扩 <code>O(n)</code>, 总共 <code>O(n²)</code>, 空间 <code>O(1)</code>。这是面试里最实用的写法。</p>
 <figure><svg width="100%" viewBox="0 0 680 376" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'>
 <title>Longest Palindromic Substring: expand around center</title><desc>从中心往两边扩</desc>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
@@ -2624,9 +2882,14 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="307.0" y="347" width="18" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
 <text x="333.0" y="354" font-size="12" fill="#52514E" dominant-baseline="central">没碰到</text>
 </svg>
-<figcaption>图 6-1: babad 里几个中心的扩展; 两端不同或越界就停</figcaption></figure>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">longest_palindrome</span>(s):</span><span class="l">    start, end = 0, 0                         <span class="c"># 当前最长 palindrome 的闭区间 [start, end]</span></span><span class="l"></span><span class="l">    <span class="k">def</span> <span class="f">expand</span>(l, r):                         <span class="c"># 从中心往两边扩, 直到越界或两端不同</span></span><span class="l">        <span class="k">while</span> l &gt;= 0 <span class="k">and</span> r &lt; <span class="t">len</span>(s) <span class="k">and</span> s[l] == s[r]:</span><span class="l">            l -= 1</span><span class="l">            r += 1</span><span class="l">        <span class="r">return</span> l + 1, r - 1                   <span class="c"># 循环停下时 l, r 已经多走了一步, 退回来</span></span><span class="l"></span><span class="l">    <span class="k">for</span> c <span class="k">in</span> <span class="t">range</span>(<span class="t">len</span>(s)):                   <span class="c"># 2n-1 个中心: n 个字符 + n-1 个缝</span></span><span class="l">        <span class="k">for</span> l, r <span class="k">in</span> (<span class="f">expand</span>(c, c), <span class="f">expand</span>(c, c + 1)):   <span class="c"># 奇数长度 / 偶数长度</span></span><span class="l">            <span class="k">if</span> r - l &gt; end - start:</span><span class="l">                start, end = l, r</span><span class="l">    <span class="r">return</span> s[start:end + 1]</span></div>
-<p><b>Interval DP 版。</b>state 变成一段区间: <code>dp[i][j]</code> = s[i..j] 是不是 palindrome。最后一步: 看两端。<code>s[i] == s[j]</code> 且里面 <code>dp[i+1][j-1]</code> 也是 → True。<b>填表顺序是关键</b>: dp[i][j] 依赖下一行 (i+1) 的左边一格 (j-1), 所以 i 必须从大到小; 按长度从短到长填也行, 这是 interval DP 的通用顺序。</p>
+<figcaption>babad 里几个中心的扩展; 两端不同或者越界就停。</figcaption></figure>
+<details><summary>代码: 中心扩展</summary>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">longest_palindrome</span>(s):</span><span class="l">    <span class="c"># 当前最长 palindrome 的闭区间 [start, end]</span></span><span class="l">    start, end = 0, 0</span><span class="l"></span><span class="l">    <span class="c"># 从中心往两边扩, 直到越界或两端不同</span></span><span class="l">    <span class="k">def</span> <span class="f">expand</span>(l, r):</span><span class="l">        <span class="k">while</span> l &gt;= 0 <span class="k">and</span> r &lt; <span class="t">len</span>(s) <span class="k">and</span> s[l] == s[r]:</span><span class="l">            l -= 1</span><span class="l">            r += 1</span><span class="l">        <span class="c"># 循环停下时 l, r 已经多走了一步, 退回来</span></span><span class="l">        <span class="r">return</span> l + 1, r - 1</span><span class="l"></span><span class="l">    <span class="k">for</span> c <span class="k">in</span> <span class="t">range</span>(<span class="t">len</span>(s)):                   <span class="c"># 2n-1 个中心: n 个字符 + n-1 个缝</span></span><span class="l">        <span class="k">for</span> l, r <span class="k">in</span> (<span class="f">expand</span>(c, c), <span class="f">expand</span>(c, c + 1)):   <span class="c"># 奇数长度 / 偶数长度</span></span><span class="l">            <span class="k">if</span> r - l &gt; end - start:</span><span class="l">                start, end = l, r</span><span class="l">    <span class="r">return</span> s[start:end + 1]</span></div>
+</details>
+<h3>Intuition 2: 区间 DP</h3>
+<p>也可以用 DP: <code>dp[i][j]</code> = <code>s[i..j]</code> 是不是 palindrome。它是 palindrome, 当且仅当两端相同 <code>s[i] == s[j]</code>, 并且里面的 <code>s[i+1..j-1]</code> 也是 palindrome。</p>
+<p><code>dp[i][j]</code> 依赖 <code>dp[i+1][j-1]</code> (左下方的格子)。所以 i 要<b>从大到小</b>填 (从下往上), j 从小到大。这是区间 DP 典型的填表顺序: 短的区间先算, 长的后算。</p>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 1614" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'>
 <title>Longest Palindromic Substring dp trace</title><desc>s = "babad" · dp[i][j] = s[i..j] 是不是 palindrome (闭区间) · 只有 j &gt;= i 的上三角有意义 填表顺序: i 从 4 到 0 (下 → 上), 每行 j 从 i 到 4 (左 → 右), 因为 dp[i][j] 要读下一行 dp[i+1][j-1]</desc>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
@@ -2976,15 +3239,30 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <line x1="366.4" y1="1592.0" x2="386.4" y2="1592.0" stroke="#52514E" stroke-width="1.5" marker-end="url(#arrow)"/>
 <text x="396.4" y="1592" font-size="12" fill="#52514E" dominant-baseline="central">依赖方向</text>
 </svg>
-<figcaption>图 6-2: babad 的 dp 表, 从下往上填, 只用上三角</figcaption></figure>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">longest_palindrome_dp</span>(s):</span><span class="l">    n = <span class="t">len</span>(s)</span><span class="l">    <span class="c"># dp[i][j] = s[i..j] (闭区间) 是不是 palindrome</span></span><span class="l">    dp = [[<span class="k">False</span>] * n <span class="k">for</span> _ <span class="k">in</span> <span class="t">range</span>(n)]</span><span class="l">    start, best = 0, 1</span><span class="l">    <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(n - 1, -1, -1):            <span class="c"># i 从大到小: dp[i+1][j-1] 在 &quot;下一行&quot;</span></span><span class="l">        <span class="k">for</span> j <span class="k">in</span> <span class="t">range</span>(i, n):</span><span class="l">            <span class="c"># 两端相同 + 里面 s[i+1..j-1] 也是 palindrome; 长度 &lt;= 2 时里面是空的, 直接成立</span></span><span class="l">            <span class="k">if</span> s[i] == s[j] <span class="k">and</span> (j - i &lt; 2 <span class="k">or</span> dp[i + 1][j - 1]):</span><span class="l">                dp[i][j] = <span class="k">True</span></span><span class="l">                <span class="k">if</span> j - i + 1 &gt; best:</span><span class="l">                    start, best = i, j - i + 1</span><span class="l">    <span class="r">return</span> s[start:start + best]</span></div>
-<p><b>Complexity。</b>中心扩展: Time O(n²), Space O(1)。DP: Time O(n²), Space O(n²)。(另有 Manacher 算法 O(n), 面试不需要。)</p>
-<p><b>Interval DP 的模板</b>(dp[i][j] 描述一段区间, 由更短的区间推出): <code>for length in range(2, n+1): for i in range(n-length+1): j = i+length-1</code>。最难的 Burst Balloons 就是这个套路, 在区间里枚举 "最后一个" 被戳的气球 k, 合并 dp[i][k] 和 dp[k][j]; 这里一句话带过, 不展开。</p>
-<p class="note"><b>记:</b>最长回文子串: 面试写中心扩展 (O(n²), O(1))。interval DP 记住: 依赖更短的区间 → 从下往上 / 按长度填。</p>
-<h2>7. Palindromic Substrings: 同一套中心, 改成计数</h2>
-<p><b>题目。</b>数 s 里有多少个回文子串 (位置不同算不同)。例: "aba" → 4。</p>
-<p><b>Brute force。</b>O(n³), 同上一题。</p>
-<p><b>关键观察。</b>相比上一题, 只改一件事: 不记最长, 而是<b>每扩一步成功 count += 1</b>。每个 palindrome 恰好有一个中心, 所以不重不漏。(DP 版也行: 数 dp 表里 True 的个数。)</p>
+<figcaption>babad 的 dp 表, 从下往上填, 只用上三角。</figcaption></figure>
+<h3>复杂度</h3>
+<p>两种都是 Time <code>O(n²)</code>。中心扩展 Space <code>O(1)</code>, DP 是 <code>O(n²)</code>。</p>
+<details><summary>代码: 区间 DP</summary>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">longest_palindrome_dp</span>(s):</span><span class="l">    n = <span class="t">len</span>(s)</span><span class="l">    <span class="c"># dp[i][j] = s[i..j] (闭区间) 是不是 palindrome</span></span><span class="l">    dp = [[<span class="k">False</span>] * n <span class="k">for</span> _ <span class="k">in</span> <span class="t">range</span>(n)]</span><span class="l">    start, best = 0, 1</span><span class="l">    <span class="c"># i 从大到小: dp[i+1][j-1] 在 &quot;下一行&quot;</span></span><span class="l">    <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(n - 1, -1, -1):</span><span class="l">        <span class="k">for</span> j <span class="k">in</span> <span class="t">range</span>(i, n):</span><span class="l">            <span class="c"># 两端相同 + 里面 s[i+1..j-1] 也是 palindrome; 长度 &lt;= 2 时里面是空的, 直接成立</span></span><span class="l">            <span class="k">if</span> s[i] == s[j] <span class="k">and</span> (j - i &lt; 2 <span class="k">or</span> dp[i + 1][j - 1]):</span><span class="l">                dp[i][j] = <span class="k">True</span></span><span class="l">                <span class="k">if</span> j - i + 1 &gt; best:</span><span class="l">                    start, best = i, j - i + 1</span><span class="l">    <span class="r">return</span> s[start:start + best]</span></div>
+</details>
+<p class="note"><b>记:</b>回文子串: 优先用中心扩展 (2n - 1 个中心)。区间 DP 的 dp[i][j] 依赖 dp[i+1][j-1], 所以 i 从大到小填。</p>
+<h2>7. Palindromic Substrings</h2>
+<h3>题目在问什么</h3>
+<p>数一数 s 里有多少个 substring 是 palindrome。位置不同的算不同的。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 182" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Palindromic Substrings examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">数一数: 有多少个 substring 是 palindrome (位置不同就算不同)</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  s = &quot;abc&quot;  →  3</text>
+<text x="40" y="82" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">&quot;a&quot;, &quot;b&quot;, &quot;c&quot;</text>
+<line x1="40" y1="106" x2="640" y2="106" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="126" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  s = &quot;aaa&quot;  →  6</text>
+<text x="40" y="146" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">&quot;a&quot; × 3,  &quot;aa&quot; × 2,  &quot;aaa&quot; × 1</text>
+<line x1="40" y1="170" x2="640" y2="170" stroke="#B4B2A9" stroke-dasharray="4 4"/></svg>
+<figcaption>两个例子。</figcaption></figure>
+<h3>Intuition: 第 6 题的中心扩展, 改成计数</h3>
+<p>每个 palindrome 都有唯一的中心。从每个中心往外扩, 每扩成功一次, 就多找到一个 palindrome, count 加 1。</p>
+<h3>算法</h3>
+<ol><li>对每个中心 (2n - 1 个): l, r 从中心开始, 当 <code>s[l] == s[r]</code>: count += 1, l -= 1, r += 1。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 316" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'>
 <title>Palindromic Substrings: 一个 palindrome 一个中心</title><desc>s = aba 的 4 个 palindrome</desc>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
@@ -3019,7 +3297,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="40" y="276" font-size="12" fill="#0B0B0B" dominant-baseline="central">共 4 个。dp 版也能做: 数 dp 表里 True 的个数, 但要 O(n²) space; 中心扩展 O(1) space。</text>
 <text x="40" y="296" font-size="12" fill="#993C1D" dominant-baseline="central">和上一题的区别: 不记最长的, 每扩一步 count += 1。</text>
 </svg>
-<figcaption>图 7-1: aba 的 4 个 palindrome 分别属于哪个中心</figcaption></figure>
+<figcaption>aba 的 4 个 palindrome 分别属于哪个中心。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 744" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'>
 <title>Palindromic Substrings trace</title><desc>s = aba, 5 个中心逐个扩展</desc>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
@@ -3142,15 +3421,37 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="466.6" y="713" width="18" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
 <text x="492.6" y="720" font-size="12" fill="#52514E" dominant-baseline="central">没参与</text>
 </svg>
-<figcaption>图 7-2: aba 的 5 个中心逐个扩展, count 一步步变成 4</figcaption></figure>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">count_substrings</span>(s):</span><span class="l">    count = 0</span><span class="l">    <span class="k">for</span> c <span class="k">in</span> <span class="t">range</span>(<span class="t">len</span>(s)):</span><span class="l">        <span class="k">for</span> l, r <span class="k">in</span> ((c, c), (c, c + 1)):     <span class="c"># 奇数中心 / 偶数中心</span></span><span class="l">            <span class="k">while</span> l &gt;= 0 <span class="k">and</span> r &lt; <span class="t">len</span>(s) <span class="k">and</span> s[l] == s[r]:</span><span class="l">                count += 1                    <span class="c"># 每成功扩一步 = 发现一个新的 palindrome</span></span><span class="l">                l -= 1</span><span class="l">                r += 1</span><span class="l">    <span class="r">return</span> count</span></div>
-<p><b>Complexity。</b>Time O(n²) (最坏全是同一个字符, 每个中心扩 O(n)); Space O(1)。</p>
-<p class="note"><b>记:</b>数回文子串: 中心扩展, 每成功一步 count += 1。</p>
-<h2>8. Regular Expression Matching: '*' 的两种选择</h2>
-<p><b>题目。</b>实现 <code>.</code> (任意一个字符) 和 <code>*</code> (前一个字符重复 0 次或多次) 的匹配, 要求<b>整个</b> s 被匹配。例: s = "aab", p = "c*a*b" → True。</p>
-<p><b>Brute force。</b>递归: 遇到 '*' 就枚举吃几个, 最坏指数级。浪费: 同一对 (s 的位置, p 的位置) 被反复匹配。</p>
-<p><b>关键观察。</b>state 和 LCS 一样 (两个前缀), 难在 <b>'*' 的 transition</b>。普通字符 / '.' : 各吃一个, 看左上。遇到 'x*' 有两种选择, 任一成立即可 (or):</p>
-<p>① <b>匹配 0 次</b>: 把 "x*" 整个去掉 → <code>dp[i][j-2]</code>; ② <b>匹配 1 次并保留 pattern</b>: 前提 x 能匹配 s[i-1], s 去掉一个字符, 但 "x*" 还留着 → <code>dp[i-1][j]</code>。"保留" 是关键: 因为 x* 还可以继续吃前面的字符, 这样就不用枚举到底吃几个。</p>
+<figcaption>aba 的 5 个中心逐个扩展, count 一步步变成 4。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n²)</code>, Space <code>O(1)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">count_substrings</span>(s):</span><span class="l">    count = 0</span><span class="l">    <span class="k">for</span> c <span class="k">in</span> <span class="t">range</span>(<span class="t">len</span>(s)):</span><span class="l">        <span class="k">for</span> l, r <span class="k">in</span> ((c, c), (c, c + 1)):     <span class="c"># 奇数中心 / 偶数中心</span></span><span class="l">            <span class="k">while</span> l &gt;= 0 <span class="k">and</span> r &lt; <span class="t">len</span>(s) <span class="k">and</span> s[l] == s[r]:</span><span class="l">                <span class="c"># 每成功扩一步 = 发现一个新的 palindrome</span></span><span class="l">                count += 1</span><span class="l">                l -= 1</span><span class="l">                r += 1</span><span class="l">    <span class="r">return</span> count</span></div>
+</details>
+<p class="note"><b>记:</b>数回文子串: 中心扩展, 每扩成功一次 count + 1。</p>
+<h2>8. Regular Expression Matching</h2>
+<h3>题目在问什么</h3>
+<p>实现一个简单的正则匹配: pattern p 里, <code>.</code> 匹配任意一个字符, <code>x*</code> 匹配 0 个或多个 x (* 总是跟在一个字符后面)。判断 p 能不能匹配<b>整个</b> s。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 246" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Regular Expression Matching examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">pattern p 里: &#x27;.&#x27; 匹配任意一个字符; &#x27;x*&#x27; 匹配 0 个或多个 x。判断 p 能不能匹配&lt;整个&gt; s</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  s = &quot;aa&quot;, p = &quot;a&quot;  →  False</text>
+<text x="40" y="82" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">a 只能匹配一个字符, s 有两个</text>
+<line x1="40" y1="106" x2="640" y2="106" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="126" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  s = &quot;aa&quot;, p = &quot;a*&quot;  →  True</text>
+<text x="40" y="146" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">a* 匹配两个 a</text>
+<line x1="40" y1="170" x2="640" y2="170" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="190" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 3:  s = &quot;aab&quot;, p = &quot;c*a*b&quot;  →  True</text>
+<text x="40" y="210" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">c* 匹配 0 个 c, a* 匹配两个 a, b 匹配 b</text>
+<line x1="40" y1="234" x2="640" y2="234" stroke="#B4B2A9" stroke-dasharray="4 4"/></svg>
+<figcaption>三个例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>recursion: 遇到 x* 就试匹配 0 个、1 个、2 个……, 分支很多, 指数级。</p>
+<h3>Intuition: 两个字符串的 DP, 难点只在 *</h3>
+<p>和第 4、5 题一样: <code>dp[i][j]</code> = <code>s[:i]</code> 能不能被 <code>p[:j]</code> 完全匹配。看 p 的最后一个字符 <code>p[j-1]</code>:</p>
+<ul><li><b>普通字符或 .</b>: 和 s 的最后一个字符匹配 (相同或者是 .), 并且前面也匹配: <code>dp[i-1][j-1]</code>。</li><li><b>*</b>: 它和前一个字符 x 一起算 (<code>x*</code>)。有两种选择:</li><li>　匹配 0 次: 把 x* 整个扔掉 → <code>dp[i][j-2]</code> (往左跳两格)。</li><li>　匹配至少 1 次: s 的最后一个字符要能和 x 匹配, 吃掉它, 但 x* 保留 (还可以继续吃) → <code>dp[i-1][j]</code> (往上一格)。</li><li>　两个选择有一个成立就行。</li></ul>
+<p>base case: <code>dp[0][0] = True</code>。空的 s 也可能被 p 匹配, 比如 <code>a*b*</code>, 所以第 0 行要按 * 的规则填: <code>dp[0][j] = dp[0][j-2]</code> (p[j-1] 是 * 时)。</p>
+<h3>算法</h3>
+<ol><li>dp 是 (m+1) × (n+1)。<code>dp[0][0] = True</code>, 按 * 填第 0 行。</li><li>p[j-1] 不是 *: <code>dp[i][j] = 匹配(s[i-1], p[j-1]) and dp[i-1][j-1]</code>。</li><li>p[j-1] 是 *: <code>dp[i][j] = dp[i][j-2] or (匹配(s[i-1], p[j-2]) and dp[i-1][j])</code>。</li><li>返回 <code>dp[m][n]</code>。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 348" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'>
 <title>Regular Expression Matching: * 的两种选择</title><desc>匹配 0 次或匹配一个并保留 pattern</desc>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
@@ -3201,7 +3502,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="352.6" y="319" width="18" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
 <text x="378.6" y="326" font-size="12" fill="#52514E" dominant-baseline="central">其余</text>
 </svg>
-<figcaption>图 8-1: * 要么匹配 0 次 (往左跳 2 格), 要么吃掉一个字符并保留自己 (往上跳 1 格)</figcaption></figure>
+<figcaption>* 要么匹配 0 次 (往左跳 2 格), 要么吃掉一个字符并保留自己 (往上 1 格)。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 1414" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'>
 <title>Regular Expression Matching trace</title><desc>s = "aab" (行), p = "c*a*b" (列) · dp[i][j] = s[:i] 能否被 p[:j] 完整匹配 · T = True, F = False 第 0 行 = 空 s: "c*" 匹配 0 次 → T, "c*a*" → T · 第 0 列 = 空 p: 只有 dp[0][0] = T · 挑 6 个格子</desc>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
@@ -3677,24 +3979,16 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <line x1="366.4" y1="1392.0" x2="386.4" y2="1392.0" stroke="#52514E" stroke-width="1.5" marker-end="url(#arrow)"/>
 <text x="396.4" y="1392" font-size="12" fill="#52514E" dominant-baseline="central">依赖方向</text>
 </svg>
-<figcaption>图 8-2: s = aab, p = c*a*b, 每个 * 格子都写出两种选择</figcaption></figure>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">is_match</span>(s, p):</span><span class="l">    m, n = <span class="t">len</span>(s), <span class="t">len</span>(p)</span><span class="l">    <span class="c"># dp[i][j] = s[:i] 能不能被 p[:j] 完整匹配</span></span><span class="l">    dp = [[<span class="k">False</span>] * (n + 1) <span class="k">for</span> _ <span class="k">in</span> <span class="t">range</span>(m + 1)]</span><span class="l">    dp[0][0] = <span class="k">True</span>                           <span class="c"># 空 pattern 匹配空 string</span></span><span class="l">    <span class="k">for</span> j <span class="k">in</span> <span class="t">range</span>(2, n + 1):                 <span class="c"># s 为空: 只有 &quot;a*b*&quot; 这类全匹配 0 次的能过</span></span><span class="l">        <span class="k">if</span> p[j - 1] == <span class="s">&quot;*&quot;</span>:</span><span class="l">            dp[0][j] = dp[0][j - 2]</span><span class="l">    <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(1, m + 1):</span><span class="l">        <span class="k">for</span> j <span class="k">in</span> <span class="t">range</span>(1, n + 1):</span><span class="l">            <span class="k">if</span> p[j - 1] == <span class="s">&quot;*&quot;</span>:               <span class="c"># p[j-2] 是被 * 修饰的字符, 比如 &quot;a*&quot; 里的 a</span></span><span class="l">                dp[i][j] = dp[i][j - 2]       <span class="c"># 选择 1: a* 匹配 0 次 → 把 &quot;a*&quot; 整个去掉</span></span><span class="l">                <span class="k">if</span> p[j - 2] <span class="k">in</span> (s[i - 1], <span class="s">&quot;.&quot;</span>):</span><span class="l">                    <span class="c"># 选择 2: a* 匹配 s[i-1] 这一个, 但 pattern 保留 (还能继续匹配更多)</span></span><span class="l">                    dp[i][j] = dp[i][j] <span class="k">or</span> dp[i - 1][j]</span><span class="l">            <span class="k">elif</span> p[j - 1] <span class="k">in</span> (s[i - 1], <span class="s">&quot;.&quot;</span>):</span><span class="l">                dp[i][j] = dp[i - 1][j - 1]   <span class="c"># 普通字符 / &quot;.&quot; 匹配: 各吃一个</span></span><span class="l">    <span class="r">return</span> dp[m][n]</span></div>
-<p><b>Complexity。</b>Time O(m*n); Space O(m*n), 可滚动成 O(n)。</p>
-<p class="note"><b>记:</b>正则 / 通配符匹配: dp[i][j] = s[:i] 匹配 p[:j]; '*' = (匹配 0 次: dp[i][j-2]) or (吃一个保留: dp[i-1][j])。</p>
-<h2>9. 识别信号: 看到什么 → 试什么</h2>
-<table>
-<tr><th>题目特征</th><th>做法</th><th>Complexity</th></tr>
-<tr><td>grid 从左上走到右下, 只能右 / 下, 数方案 / 求最小和</td><td>dp[i][j] = 上 + 左 (数方案) 或 min(上, 左) + 自己 (最小和)</td><td>O(2^(m+n)) → O(m*n), 滚动后 space O(n)</td></tr>
-<tr><td>0/1 矩阵里找最大的正方形</td><td>dp = 以 (i,j) 为右下角的边长 = min(上, 左, 左上) + 1</td><td>O(m*n*min(m,n)²) → O(m*n)</td></tr>
-<tr><td>两个 string, 问公共 / 最长 / 最少操作</td><td>dp[i][j] 看 a[:i] 和 b[:j], 比较最后一个字符</td><td>指数 → O(m*n)</td></tr>
-<tr><td>"最少 insert / delete / replace 几次"</td><td>Edit Distance: 左上 / 上 / 左 三个方向 + 1</td><td>O(3^n) → O(m*n)</td></tr>
-<tr><td>子序列 (不连续) 对比两个 string</td><td>LCS 的变体: 不同时取 max(上, 左)</td><td>O(2^m) → O(m*n)</td></tr>
-<tr><td>回文子串 (连续), 最长 / 计数</td><td>中心扩展, 2n-1 个中心。DP 备用: dp[i][j] = 两端相同 and dp[i+1][j-1]</td><td>O(n³) → O(n²), 中心扩展 space O(1)</td></tr>
-<tr><td>pattern 匹配带 '*' / '?' / '.'</td><td>dp[i][j] = s[:i] 匹配 p[:j]; '*' 分两种选择 (0 次 / 吃一个保留)</td><td>指数 → O(m*n)</td></tr>
-<tr><td>区间 [i, j] 由更短的区间合成 (戳气球、石子合并)</td><td>interval DP: 按长度从短到长填, 枚举分割点 k (Burst Balloons: 枚举最后戳哪个)</td><td>指数 → O(n³)</td></tr>
-<tr><td>dp[i] 只读 dp[i-1]</td><td>滚动数组, 只留 prev / cur 两行</td><td>space O(m*n) → O(n)</td></tr>
-</table>
-<p><b>从 1D 过渡的例子: Decode Ways</b>("226" → 3)。dp[i] = s 前 i 个字符的解码方式数, 最后一步 "解一位" 或 "解两位": <code>dp[i] = dp[i-1](末位 1-9) + dp[i-2](末两位 10-26)</code>。state 只需一个 index, 所以是 1D, 放在 14 号文档; 但 "问最后一步做了什么" 的推法和本文档一模一样。</p>
+<figcaption>s = aab, p = c*a*b: 每个 * 的格子都写出了两种选择。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(m·n)</code>, Space <code>O(m·n)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">is_match</span>(s, p):</span><span class="l">    m, n = <span class="t">len</span>(s), <span class="t">len</span>(p)</span><span class="l">    <span class="c"># dp[i][j] = s[:i] 能不能被 p[:j] 完整匹配</span></span><span class="l">    dp = [[<span class="k">False</span>] * (n + 1) <span class="k">for</span> _ <span class="k">in</span> <span class="t">range</span>(m + 1)]</span><span class="l">    dp[0][0] = <span class="k">True</span>                           <span class="c"># 空 pattern 匹配空 string</span></span><span class="l">    <span class="c"># s 为空: 只有 &quot;a*b*&quot; 这类全匹配 0 次的能过</span></span><span class="l">    <span class="k">for</span> j <span class="k">in</span> <span class="t">range</span>(2, n + 1):</span><span class="l">        <span class="k">if</span> p[j - 1] == <span class="s">&quot;*&quot;</span>:</span><span class="l">            dp[0][j] = dp[0][j - 2]</span><span class="l">    <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(1, m + 1):</span><span class="l">        <span class="k">for</span> j <span class="k">in</span> <span class="t">range</span>(1, n + 1):</span><span class="l">            <span class="c"># p[j-2] 是被 * 修饰的字符, 比如 &quot;a*&quot; 里的 a</span></span><span class="l">            <span class="k">if</span> p[j - 1] == <span class="s">&quot;*&quot;</span>:</span><span class="l">                <span class="c"># 选择 1: a* 匹配 0 次 → 把 &quot;a*&quot; 整个去掉</span></span><span class="l">                dp[i][j] = dp[i][j - 2]</span><span class="l">                <span class="k">if</span> p[j - 2] <span class="k">in</span> (s[i - 1], <span class="s">&quot;.&quot;</span>):</span><span class="l">                    <span class="c"># 选择 2: a* 匹配 s[i-1] 这一个, 但 pattern 保留 (还能继续匹配更多)</span></span><span class="l">                    dp[i][j] = dp[i][j] <span class="k">or</span> dp[i - 1][j]</span><span class="l">            <span class="k">elif</span> p[j - 1] <span class="k">in</span> (s[i - 1], <span class="s">&quot;.&quot;</span>):</span><span class="l">                dp[i][j] = dp[i - 1][j - 1]   <span class="c"># 普通字符 / &quot;.&quot; 匹配: 各吃一个</span></span><span class="l">    <span class="r">return</span> dp[m][n]</span></div>
+</details>
+<p class="note"><b>记:</b>x*: 匹配 0 次 → dp[i][j-2]; 匹配至少 1 次 → 当前字符能配 x 并且 dp[i-1][j]。</p>
+<h2>9. 识别信号: 看到什么, 就想到 2D DP</h2>
+<table><tr><th>题目特征</th><th>state</th><th>transition / 填表顺序</th></tr><tr><td>grid 上只能往右 / 往下, 数路径或求最优</td><td>dp[i][j] = 到 (i, j)</td><td>上 + 左 (或 min); 一行一行填</td></tr><tr><td>0/1 矩阵最大正方形</td><td>以 (i, j) 为右下角的边长</td><td>min(上, 左, 左上) + 1</td></tr><tr><td>两个字符串: 公共子序列、编辑距离、匹配</td><td>dp[i][j] = 前 i 个和前 j 个</td><td>看两个末尾字符; 左上 / 上 / 左</td></tr><tr><td>回文子串 (最长 / 个数)</td><td>中心扩展; 或 dp[i][j] = s[i..j] 是否回文</td><td>dp[i+1][j-1]; i 从大到小</td></tr><tr><td>正则 / 通配符匹配</td><td>dp[i][j] = 前 i 个能否被前 j 个匹配</td><td>* 两种选择: 0 次 / 至少 1 次</td></tr><tr><td>区间上的最优 (戳气球、合并石头)</td><td>dp[i][j] = 区间 [i, j] 的最优</td><td>枚举最后一步 k; 按区间长度从短到长</td></tr></table>
+<p>判断 dp 是几维: 看 brute force recursion 里有几个参数在变。两个字符串几乎一定是 dp[i][j]。</p>
 <h2>以后再学</h2>
-<p>Manacher (最长回文子串 O(n))、Wildcard Matching ('*' 匹配任意串, 和 Regex 同一张表, '*' 只有 dp[i-1][j] 和 dp[i][j-1] 两个转移)、Burst Balloons / Strange Printer 等 interval DP、LCS 的 O(n log n) 变体 (转成 LIS)、还原具体方案 (从右下角沿 dp 表回溯)。</p>
+<p>Burst Balloons (区间 DP, 枚举最后一个戳的)、Distinct Subsequences、Interleaving String、Wildcard Matching (和第 8 题几乎一样)。</p>
 </article></body></html>

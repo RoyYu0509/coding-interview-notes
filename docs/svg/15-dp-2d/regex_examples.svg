@@ -1,0 +1,11 @@
+<svg width="100%" viewBox="0 0 680 246" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Regular Expression Matching examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">pattern p 里: &#x27;.&#x27; 匹配任意一个字符; &#x27;x*&#x27; 匹配 0 个或多个 x。判断 p 能不能匹配&lt;整个&gt; s</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  s = &quot;aa&quot;, p = &quot;a&quot;  →  False</text>
+<text x="40" y="82" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">a 只能匹配一个字符, s 有两个</text>
+<line x1="40" y1="106" x2="640" y2="106" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="126" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  s = &quot;aa&quot;, p = &quot;a*&quot;  →  True</text>
+<text x="40" y="146" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">a* 匹配两个 a</text>
+<line x1="40" y1="170" x2="640" y2="170" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="190" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 3:  s = &quot;aab&quot;, p = &quot;c*a*b&quot;  →  True</text>
+<text x="40" y="210" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">c* 匹配 0 个 c, a* 匹配两个 a, b 匹配 b</text>
+<line x1="40" y1="234" x2="640" y2="234" stroke="#B4B2A9" stroke-dasharray="4 4"/></svg>
