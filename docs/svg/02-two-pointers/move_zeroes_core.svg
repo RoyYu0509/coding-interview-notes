@@ -27,25 +27,25 @@
 <line x1="40" y1="144" x2="142" y2="144" stroke="#085041" stroke-width="2"/>
 <line x1="40" y1="139" x2="40" y2="144" stroke="#085041" stroke-width="2"/>
 <line x1="142" y1="139" x2="142" y2="144" stroke="#085041" stroke-width="2"/>
-<text x="91.0" y="160" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#085041">[0, w): 非零, 顺序没变</text>
+<text x="91.0" y="160" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#085041">[0, w)</text>
 <line x1="144" y1="144" x2="246" y2="144" stroke="#712B13" stroke-width="2"/>
 <line x1="144" y1="139" x2="144" y2="144" stroke="#712B13" stroke-width="2"/>
 <line x1="246" y1="139" x2="246" y2="144" stroke="#712B13" stroke-width="2"/>
-<text x="195.0" y="160" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#712B13">[w, r): 全是 0</text>
+<text x="195.0" y="160" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#712B13">[w, r)</text>
 <line x1="248" y1="144" x2="350" y2="144" stroke="#52514E" stroke-width="2"/>
 <line x1="248" y1="139" x2="248" y2="144" stroke="#52514E" stroke-width="2"/>
 <line x1="350" y1="139" x2="350" y2="144" stroke="#52514E" stroke-width="2"/>
-<text x="299.0" y="160" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">[r, n) 还没读</text>
+<text x="299.0" y="160" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">[r, n)</text>
 <text x="40" y="184" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">nums[r] != 0 时, 把它和 nums[w] 交换: nums[w] 一定是 0 (或 w == r), 交换后区间仍然成立。</text>
 <text x="40" y="206" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">nums[r] == 0 时什么都不做, r 前进, 这个 0 自然并入 [w, r)。</text>
 <text x="40" y="228" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">w &lt;= r 永远成立, 所以 nums[w] 在 r 之前, 写入不会盖掉没读的数据。</text>
 <rect x="40" y="253" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="62" y="260" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">答案区: 非零</text>
-<rect x="171" y="253" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
-<text x="193" y="260" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">残留区: 0</text>
-<rect x="289" y="253" width="14" height="14" rx="3" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
-<text x="311" y="260" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">未读</text>
-<rect x="355" y="253" width="14" height="14" rx="3" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
-<rect x="352" y="250" width="20" height="20" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="377" y="260" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">r = 当前读到</text>
+<text x="62" y="260" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">[0, w) 非零, 顺序没变</text>
+<rect x="275" y="253" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="297" y="260" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">[w, r) 全是 0</text>
+<rect x="458" y="253" width="14" height="14" rx="3" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<text x="480" y="260" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">[r, n) 没读</text>
+<rect x="615" y="253" width="14" height="14" rx="3" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="612" y="250" width="20" height="20" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="637" y="260" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">r</text>
 </svg>

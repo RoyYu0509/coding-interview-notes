@@ -48,7 +48,7 @@
 <text x="169.0" y="264" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">i</text>
 <path d="M325.0 247 L320.0 255 L330.0 255 Z" fill="#0B0B0B"/>
 <text x="325.0" y="264" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">k</text>
-<text x="40" y="278" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">k = i + (j + 1) &gt;= i: 写入位置永远在 i 的右边或等于 i,</text>
+<text x="40" y="278" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">k = i + j + 1 &gt;= i: 写入位置永远在 i 的右边 (或和 i 重合, 此时 j = -1 已经结束),</text>
 <text x="40" y="300" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">写进去的格子要么是空位, 要么是 nums1 已经读过 (搬走) 的格子, 不会盖掉没读的数。</text>
 <rect x="40" y="325" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="62" y="332" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">还没读的 nums1</text>

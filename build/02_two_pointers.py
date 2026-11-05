@@ -423,8 +423,8 @@ def trace_svg(fname, title, desc, top, heads, rows, final, legend, cw=34, name_w
         yy = y
         for arr in row["arrays"]:
             draw_array(g, 40, yy, arr, cw, arr.get("name"), name_w)
-            yy += 70
-        bh = 70 * len(row["arrays"])
+            yy += 70 + (12 if len(row["arrays"]) > 1 else 0)
+        bh = 70 * len(row["arrays"]) + (12 * len(row["arrays"]) if len(row["arrays"]) > 1 else 0)
         lines = row["lines"]
         ly = y + (bh - 18 * len(lines)) / 2 + 9 + (4 if len(row["arrays"]) == 1 else 0)
         for k, (txt, kind) in enumerate(lines):
@@ -899,7 +899,7 @@ def trace_palin(s):
         matched.add(l)
         c = cells()
     rows.append(dict(arrays=[A(c, {l: "l,r"} if l == r else {}, [])], lines=[
-        ("l == r %d, 循环结束" % l, "val"), ("中间不用配对", "sub"), ("return True", "new")]))
+        ("l == r == %d, 循环结束" % l, "val"), ("中间不用配对", "sub"), ("return True", "new")]))
     return rows, True
 
 
@@ -1155,11 +1155,12 @@ def core_trap(h):
     print("  trap table h", h, "lmax", lm, "rmax", rm, "water", wt, total)
     g = Svg()
     g.t(40, 18, "height = %s · 第 i 格的水 = min(左边最高, 右边最高) - height[i]" % h, 12, INK2)
+    g.t(40, 38, "lmax[i] = height[0..i] 的最大值 · rmax[i] = height[i..n-1] 的最大值 · min = min(lmax, rmax) · water = min - height", 12, INK2)
     u = 16
     top = max(h)
     bw = 44
     x0 = 150
-    base = 40 + top * u + 16
+    base = 56 + top * u + 16
     for k in range(n):
         x = x0 + k * bw
         g.rect(x, base - h[k] * u, bw - 4, h[k] * u, "other", rx=2)
@@ -1167,11 +1168,11 @@ def core_trap(h):
             g.rect(x, base - (h[k] + wt[k]) * u, bw - 4, wt[k] * u, "new", rx=2, dash=True)
         g.t(x + (bw - 4) / 2, base + 14, k, 12, "#898781", "middle")
     # 表
-    rows = [("height", h), ("lmax = 左边(含自己)最高", lm), ("rmax = 右边(含自己)最高", rm),
-            ("min(lmax, rmax)", [min(a, b) for a, b in zip(lm, rm)]), ("water = min - height", wt)]
+    rows = [("height", h), ("lmax", lm), ("rmax", rm),
+            ("min", [min(a, b) for a, b in zip(lm, rm)]), ("water", wt)]
     y = base + 40
     for name, vals in rows:
-        g.t(40, y + 15, name if len(name) < 12 else name.split(" ")[0], 12, INK2)
+        g.t(40, y + 15, name.split(" ")[0] if not name.startswith("min") else "min", 12, INK2)
         for k, v in enumerate(vals):
             role = "new" if name.startswith("water") and v > 0 else "plain"
             g.cell(x0 + k * bw, y, bw - 4, 30, v, role, 14)
@@ -1179,8 +1180,8 @@ def core_trap(h):
     for k, v in enumerate(["height", "lmax", "rmax", "min", "water"]):
         pass
     g.t(x0 + n * bw + 6, y - 21, "= %s" % " + ".join(str(v) for v in wt if v) if False else "", 12, INK2)
-    g.t(40, y + 8, "total = %s = %d" % (" + ".join(str(v) for v in wt), total), 14, INK, "start", 500)
-    y += 40
+    g.t(40, y + 14, "total = %s = %d" % (" + ".join(str(v) for v in wt), total), 14, INK, "start", 500)
+    y += 50
     g.t(40, y, "O(n) 空间: 先扫两遍把 lmax[], rmax[] 存下来。双指针把这两个数组换成两个变量:", 14, INK, "start", 500)
     g.t(40, y + 24, "lmax < rmax 时, 位置 l 的 \"右边最高\" >= rmax > lmax, 所以 min(...) 一定是 lmax", 12, INK2)
     g.t(40, y + 44, "-> 这一格的水只看 lmax 就能算, 完全不用知道右边具体是多少, 然后 l 前进。反之对称。", 12, INK2)
@@ -1203,13 +1204,13 @@ def core_zone(fname, title, nums, w, r, labels, left_name, mid_name, caption, ex
         ptrs[v] = name
     y = 64
     if extra_arc:
+        y = 92
         # r 去和 w-1 比
         x1 = 40 + r * cw + (cw - 2) / 2
         x2 = 40 + (w - 1) * cw + (cw - 2) / 2
-        g.path("M%s %s C %s %s, %s %s, %s %s" % (x1, y + 10, x1, y - 24 + 10, x2, y - 24 + 10, x2, y + 12),
+        g.path("M%s %s C %s %s, %s %s, %s %s" % (x1, y - 4, x1, y - 40, x2, y - 40, x2, y - 4),
                INK2, False, True, 1.5)
-        g.t((x1 + x2) / 2, y - 12, "nums[r] 和 nums[w-1] 比", 12, INK2, "middle")
-        y += 6
+        g.t((x1 + x2) / 2, y - 40, "nums[r] 和 nums[w-1] 比", 12, INK2, "middle")
     draw_array(g, 40, y, A(cells, ptrs, [r]), cw)
     by = y + 80
     # 括号
@@ -1220,15 +1221,15 @@ def core_zone(fname, title, nums, w, r, labels, left_name, mid_name, caption, ex
         g.line(xa, by - 5, xa, by, col, None, 2)
         g.line(xb, by - 5, xb, by, col, None, 2)
         g.t((xa + xb) / 2, by + 16, txt, 12, col, "middle")
-    brace(0, w, left_name[0], "#085041")
+    brace(0, w, "[0, w)", "#085041")
     if r > w:
-        brace(w, r, mid_name[0], "#712B13")
-    brace(r, n, "[r, n) 还没读", INK2)
+        brace(w, r, "[w, r)", "#712B13")
+    brace(r, n, "[r, n)", INK2)
     y2 = by + 40
     for k, ln in enumerate(lines2 or []):
         g.t(40, y2 + 22 * k, ln[0], ln[1], INK if ln[1] == 14 else INK2, "start", 500 if ln[1] == 14 else 400)
     y2 += 22 * len(lines2 or []) + 10
-    g.legend(y2, [("new", left_name[1]), ("gone", mid_name[1]), ("plain", "未读"), ("ring", "r = 当前读到")])
+    g.legend(y2, [("new", left_name[1]), ("gone", mid_name[1]), ("plain", "[r, n) 没读"), ("ring", "r")])
     return g.out(y2 + 24, title, caption, fname)
 
 
@@ -1280,7 +1281,7 @@ def core_merge():
     g.t(40, 190, "从后往前: 最大值要写到 k = 5, 那里是空位", 14, INK, "start", 500)
     c2 = [(4, "other"), (5, "other"), (6, "other"), ("_", "plain"), ("_", "plain"), ("_", "new")]
     draw_array(g, 40, 200, A(c2, {2: "i", 5: "k"}, [2]), cw, None, 0)
-    g.t(40, 278, "k = i + (j + 1) >= i: 写入位置永远在 i 的右边或等于 i,", 14, INK, "start", 500)
+    g.t(40, 278, "k = i + j + 1 >= i: 写入位置永远在 i 的右边 (或和 i 重合, 此时 j = -1 已经结束),", 14, INK, "start", 500)
     g.t(40, 300, "写进去的格子要么是空位, 要么是 nums1 已经读过 (搬走) 的格子, 不会盖掉没读的数。", 14, INK, "start", 500)
     g.legend(332, [("other", "还没读的 nums1"), ("gone", "被误盖掉的"), ("plain", "空位"), ("new", "写入")])
     return g.out(356, "Merge 核心", "为什么要从后往前写", "merge_core.svg")
@@ -1295,8 +1296,6 @@ def core_palin():
     g.t(40, 48, "Valid Palindrome: 只比字母/数字, 非字母数字先跳过", 14, INK, "start", 500)
     cells = [("A", "new"), (",", "gone"), ("b", "other"), ("x", "other"), ("B", "other"), (";", "gone"), ("a", "new")]
     draw_array(g, 40, 62, A(cells, {2: "l", 4: "r"}, [2, 4]), cw)
-    g.path("M%s %s C %s %s, %s %s, %s %s" % (40 + 0 * cw + 25, 60, 40 + 0 * cw + 25, 40, 40 + 6 * cw + 25, 40, 40 + 6 * cw + 25, 60),
-           "#0F6E56", False, False, 1.5)
     g.t(40, 150, "invariant: s[0..l) 和 s(r..n) 去掉标点后已经一一配对相等, 现在配 s[l] 和 s[r]", 12, INK2)
     g.line(40, 172, 640, 172)
     g.t(40, 198, "Valid Palindrome II (最多删 1 个): 第一次失配时, 只有 2 种删法", 14, INK, "start", 500)
@@ -1364,7 +1363,7 @@ print("== move zeroes")
 core_zone("move_zeroes_core.svg", "Move Zeroes 核心", [1, 3, 0, 0, 5, 7], 2, 4,
           ["r 一路读过去, w 只在\"遇到要保留的\"时才走 · 两个 pointer 同向, 速度不同",
            "某一刻 (示意): w = 2, r = 4  ->  [0, w) 非零, [w, r) 全是 0, [r, n) 没读"],
-          ("[0, w): 非零, 顺序没变", "答案区: 非零"), ("[w, r): 全是 0", "残留区: 0"),
+          ("", "[0, w) 非零, 顺序没变"), ("", "[w, r) 全是 0"),
           "三个区", False,
           [("nums[r] != 0 时, 把它和 nums[w] 交换: nums[w] 一定是 0 (或 w == r), 交换后区间仍然成立。", 12),
            ("nums[r] == 0 时什么都不做, r 前进, 这个 0 自然并入 [w, r)。", 12),
@@ -1384,7 +1383,7 @@ print("== remove duplicates")
 core_zone("remove_dup_core.svg", "Remove Duplicates 核心", [0, 1, 1, 1, 2, 2, 3], 2, 4,
           ["sorted -> 重复的值一定挨在一起, 所以只要和\"最后一个保留的\" nums[w-1] 比",
            "某一刻 (示意): w = 2, r = 4  ->  nums[:2] = [0, 1] 是 \"已读部分去重后的结果\""],
-          ("[0, w): 去重后的结果", "答案区"), ("[w, r): 残留 (没用)", "残留区"),
+          ("", "[0, w) 去重后的结果"), ("", "[w, r) 残留 (没用)"),
           "去重区", True,
           [("nums[r] = 2 != nums[w-1] = 1  ->  新值: nums[w] = 2, w += 1", 14),
            ("nums[r] == nums[w-1]  ->  重复, 什么都不做。", 12),
@@ -1444,7 +1443,7 @@ trace_svg("valid_palindrome_ii_trace.svg", "Valid Palindrome II trace", "失配�
     's = "cbbcc" · 最多删一个字符 · 先照常向中间走, 第一次失配时再分叉',
     "分叉: 删 s[l] -> 检查 s[l+1..r];  删 s[r] -> 检查 s[l..r-1]; 只要有一个是回文就行"],
     ("状态 (绿 = 已配对, 红 = 被删的那个)", "判断 -> 动作"), rows,
-    ["答案: return True  (删掉 s[4] = 'c', 剩下 \"cbbc\" 是回文)"],
+    ["答案: return True  (删掉 s[3] = 'c', 剩下 \"cbbc\" 是回文)"],
     [("new", "已配对"), ("gone", "被删"), ("other", "待配"), ("ring", "检查范围的两端")], cw=40, notes_x=350)
 
 # ----------------------------------------------------------------------------

@@ -1,56 +1,56 @@
-<svg width="100%" viewBox="0 0 680 290" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Remove Duplicates 核心</title><desc>去重区</desc><defs><marker id="arG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<svg width="100%" viewBox="0 0 680 312" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Remove Duplicates 核心</title><desc>去重区</desc><defs><marker id="arG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">sorted -&gt; 重复的值一定挨在一起, 所以只要和"最后一个保留的" nums[w-1] 比</text>
 <text x="40" y="38" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">某一刻 (示意): w = 2, r = 4  -&gt;  nums[:2] = [0, 1] 是 "已读部分去重后的结果"</text>
-<path d="M273.0 74 C 273.0 50, 117.0 50, 117.0 76" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arG)"/>
+<path d="M273.0 88 C 273.0 52, 117.0 52, 117.0 88" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arG)"/>
 <text x="195.0" y="52" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">nums[r] 和 nums[w-1] 比</text>
-<text x="66.0" y="76" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">0</text>
-<rect x="40" y="84" width="50" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="65.0" y="99.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">0</text>
-<text x="118.0" y="76" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">1</text>
-<rect x="92" y="84" width="50" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="117.0" y="99.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">1</text>
-<text x="170.0" y="76" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">2</text>
-<rect x="144" y="84" width="50" height="30" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
-<text x="169.0" y="99.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#712B13">1</text>
-<text x="222.0" y="76" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">3</text>
-<rect x="196" y="84" width="50" height="30" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
-<text x="221.0" y="99.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#712B13">1</text>
-<text x="274.0" y="76" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">4</text>
-<rect x="248" y="84" width="50" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
-<text x="273.0" y="99.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">2</text>
-<rect x="245" y="81" width="56" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="326.0" y="76" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">5</text>
-<rect x="300" y="84" width="50" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
-<text x="325.0" y="99.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">2</text>
-<text x="378.0" y="76" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">6</text>
-<rect x="352" y="84" width="50" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
-<text x="377.0" y="99.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">3</text>
-<path d="M169.0 117 L164.0 125 L174.0 125 Z" fill="#0B0B0B"/>
-<text x="169.0" y="134" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">w</text>
-<path d="M273.0 117 L268.0 125 L278.0 125 Z" fill="#0B0B0B"/>
-<text x="273.0" y="134" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">r</text>
-<line x1="40" y1="150" x2="142" y2="150" stroke="#085041" stroke-width="2"/>
-<line x1="40" y1="145" x2="40" y2="150" stroke="#085041" stroke-width="2"/>
-<line x1="142" y1="145" x2="142" y2="150" stroke="#085041" stroke-width="2"/>
-<text x="91.0" y="166" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#085041">[0, w): 去重后的结果</text>
-<line x1="144" y1="150" x2="246" y2="150" stroke="#712B13" stroke-width="2"/>
-<line x1="144" y1="145" x2="144" y2="150" stroke="#712B13" stroke-width="2"/>
-<line x1="246" y1="145" x2="246" y2="150" stroke="#712B13" stroke-width="2"/>
-<text x="195.0" y="166" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#712B13">[w, r): 残留 (没用)</text>
-<line x1="248" y1="150" x2="402" y2="150" stroke="#52514E" stroke-width="2"/>
-<line x1="248" y1="145" x2="248" y2="150" stroke="#52514E" stroke-width="2"/>
-<line x1="402" y1="145" x2="402" y2="150" stroke="#52514E" stroke-width="2"/>
-<text x="325.0" y="166" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">[r, n) 还没读</text>
-<text x="40" y="190" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">nums[r] = 2 != nums[w-1] = 1  -&gt;  新值: nums[w] = 2, w += 1</text>
-<text x="40" y="212" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">nums[r] == nums[w-1]  -&gt;  重复, 什么都不做。</text>
-<text x="40" y="234" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">Remove Duplicates II (每个值最多 2 个): 只改比较的位置, 改成和 nums[w-2] 比。</text>
-<rect x="40" y="259" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="62" y="266" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">答案区</text>
-<rect x="119" y="259" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
-<text x="141" y="266" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">残留区</text>
-<rect x="198" y="259" width="14" height="14" rx="3" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
-<text x="220" y="266" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">未读</text>
-<rect x="264" y="259" width="14" height="14" rx="3" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
-<rect x="261" y="256" width="20" height="20" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="286" y="266" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">r = 当前读到</text>
+<text x="66.0" y="98" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">0</text>
+<rect x="40" y="106" width="50" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="65.0" y="121.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">0</text>
+<text x="118.0" y="98" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">1</text>
+<rect x="92" y="106" width="50" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="117.0" y="121.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">1</text>
+<text x="170.0" y="98" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">2</text>
+<rect x="144" y="106" width="50" height="30" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="169.0" y="121.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#712B13">1</text>
+<text x="222.0" y="98" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">3</text>
+<rect x="196" y="106" width="50" height="30" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="221.0" y="121.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#712B13">1</text>
+<text x="274.0" y="98" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">4</text>
+<rect x="248" y="106" width="50" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<text x="273.0" y="121.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">2</text>
+<rect x="245" y="103" width="56" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="326.0" y="98" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">5</text>
+<rect x="300" y="106" width="50" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<text x="325.0" y="121.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">2</text>
+<text x="378.0" y="98" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">6</text>
+<rect x="352" y="106" width="50" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<text x="377.0" y="121.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">3</text>
+<path d="M169.0 139 L164.0 147 L174.0 147 Z" fill="#0B0B0B"/>
+<text x="169.0" y="156" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">w</text>
+<path d="M273.0 139 L268.0 147 L278.0 147 Z" fill="#0B0B0B"/>
+<text x="273.0" y="156" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">r</text>
+<line x1="40" y1="172" x2="142" y2="172" stroke="#085041" stroke-width="2"/>
+<line x1="40" y1="167" x2="40" y2="172" stroke="#085041" stroke-width="2"/>
+<line x1="142" y1="167" x2="142" y2="172" stroke="#085041" stroke-width="2"/>
+<text x="91.0" y="188" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#085041">[0, w)</text>
+<line x1="144" y1="172" x2="246" y2="172" stroke="#712B13" stroke-width="2"/>
+<line x1="144" y1="167" x2="144" y2="172" stroke="#712B13" stroke-width="2"/>
+<line x1="246" y1="167" x2="246" y2="172" stroke="#712B13" stroke-width="2"/>
+<text x="195.0" y="188" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#712B13">[w, r)</text>
+<line x1="248" y1="172" x2="402" y2="172" stroke="#52514E" stroke-width="2"/>
+<line x1="248" y1="167" x2="248" y2="172" stroke="#52514E" stroke-width="2"/>
+<line x1="402" y1="167" x2="402" y2="172" stroke="#52514E" stroke-width="2"/>
+<text x="325.0" y="188" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">[r, n)</text>
+<text x="40" y="212" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">nums[r] = 2 != nums[w-1] = 1  -&gt;  新值: nums[w] = 2, w += 1</text>
+<text x="40" y="234" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">nums[r] == nums[w-1]  -&gt;  重复, 什么都不做。</text>
+<text x="40" y="256" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">Remove Duplicates II (每个值最多 2 个): 只改比较的位置, 改成和 nums[w-2] 比。</text>
+<rect x="40" y="281" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="62" y="288" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">[0, w) 去重后的结果</text>
+<rect x="249" y="281" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="271" y="288" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">[w, r) 残留 (没用)</text>
+<rect x="471" y="281" width="14" height="14" rx="3" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<text x="493" y="288" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">[r, n) 没读</text>
+<rect x="628" y="281" width="14" height="14" rx="3" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="625" y="278" width="20" height="20" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="650" y="288" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">r</text>
 </svg>

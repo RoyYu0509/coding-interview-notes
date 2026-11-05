@@ -177,6 +177,30 @@ def solve_n_queens(n):
     return res
 '''
 
+import re as _re
+
+
+def _tidy(code):
+    """把每行的注释对齐到该代码块里最长的代码行之后 (缩短横向宽度)。"""
+    lines = code.strip("\n").split("\n")
+    parts = []
+    for l in lines:
+        m = _re.search(r"\s{2,}# ", l)
+        if m:
+            parts.append((l[:m.start()].rstrip(), l[m.start():].strip()))
+        else:
+            parts.append((l, None))
+    width = max(len(c) for c, cm in parts if cm) + 2
+    out = []
+    for c, cm in parts:
+        out.append(c.ljust(width) + cm if cm else c)
+    return "\n" + "\n".join(out) + "\n"
+
+
+for _k in list(SRC):
+    if _k != "template":
+        SRC[_k] = _tidy(SRC[_k])
+
 NS = {}
 for _k, _v in SRC.items():
     if _k == "template":
