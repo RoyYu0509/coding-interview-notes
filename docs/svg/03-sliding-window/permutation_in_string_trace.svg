@@ -1,0 +1,217 @@
+<svg width="100%" viewBox="0 0 680 588" xmlns="http://www.w3.org/2000/svg" role="img" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Permutation in String trace</title><defs><marker id="arr_52514E" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_898781" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_D85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">s1 = &quot;ab&quot; (m = 2), s2 = &quot;eidbaoo&quot; · 每一步: 右边进一个 → 满了 m+1 个就左边出一个 → win == need ?</text>
+<text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">window 长度固定 = m = 2, 不需要 while; need = s1 里每个字母的个数, win = window 里每个字母的个数</text>
+<text x="40" y="72" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">当前输入</text>
+<text x="112" y="72" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">右边进一个之后</text>
+<text x="294" y="72" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">左边出一个之后</text>
+<text x="476" y="72" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">比较</text>
+<line x1="40" y1="82" x2="640" y2="82" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="104" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">right = 0</text>
+<text x="40" y="124" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">ch = &#x27;e&#x27;</text>
+<rect x="112" y="92" width="22" height="26" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="123.0" y="106.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">e</text>
+<rect x="134" y="92" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="145.0" y="106.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">i</text>
+<rect x="156" y="92" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="167.0" y="106.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">d</text>
+<rect x="178" y="92" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="189.0" y="106.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">b</text>
+<rect x="200" y="92" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="211.0" y="106.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">a</text>
+<rect x="222" y="92" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="233.0" y="106.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">o</text>
+<rect x="244" y="92" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="255.0" y="106.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">o</text>
+<text x="123.0" y="132" font-size="12" fill="#52514E" text-anchor="middle" font-weight="500" dominant-baseline="central">L=R</text>
+<text x="112" y="150" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">win: e:1</text>
+<rect x="294" y="92" width="22" height="26" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="305.0" y="106.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">e</text>
+<rect x="316" y="92" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="327.0" y="106.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">i</text>
+<rect x="338" y="92" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="349.0" y="106.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">d</text>
+<rect x="360" y="92" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="371.0" y="106.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">b</text>
+<rect x="382" y="92" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="393.0" y="106.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">a</text>
+<rect x="404" y="92" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="415.0" y="106.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">o</text>
+<rect x="426" y="92" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="437.0" y="106.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">o</text>
+<text x="305.0" y="132" font-size="12" fill="#52514E" text-anchor="middle" font-weight="500" dominant-baseline="central">L=R</text>
+<text x="294" y="150" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">win: e:1 (还没满 m)</text>
+<text x="476" y="102" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">need: a:1 b:1</text>
+<text x="476" y="122" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">win:  e:1</text>
+<text x="476" y="142" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">win == need ? 否</text>
+<line x1="40" y1="166" x2="640" y2="166" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="192" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">right = 1</text>
+<text x="40" y="212" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">ch = &#x27;i&#x27;</text>
+<rect x="112" y="180" width="22" height="26" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="123.0" y="194.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">e</text>
+<rect x="134" y="180" width="22" height="26" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="145.0" y="194.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">i</text>
+<rect x="156" y="180" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="167.0" y="194.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">d</text>
+<rect x="178" y="180" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="189.0" y="194.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">b</text>
+<rect x="200" y="180" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="211.0" y="194.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">a</text>
+<rect x="222" y="180" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="233.0" y="194.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">o</text>
+<rect x="244" y="180" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="255.0" y="194.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">o</text>
+<text x="123.0" y="220" font-size="12" fill="#52514E" text-anchor="middle" font-weight="500" dominant-baseline="central">L</text>
+<text x="145.0" y="220" font-size="12" fill="#52514E" text-anchor="middle" font-weight="500" dominant-baseline="central">R</text>
+<text x="112" y="238" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">win: e:1 i:1</text>
+<rect x="294" y="180" width="22" height="26" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="305.0" y="194.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">e</text>
+<rect x="316" y="180" width="22" height="26" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="327.0" y="194.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">i</text>
+<rect x="338" y="180" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="349.0" y="194.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">d</text>
+<rect x="360" y="180" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="371.0" y="194.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">b</text>
+<rect x="382" y="180" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="393.0" y="194.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">a</text>
+<rect x="404" y="180" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="415.0" y="194.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">o</text>
+<rect x="426" y="180" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="437.0" y="194.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">o</text>
+<text x="305.0" y="220" font-size="12" fill="#52514E" text-anchor="middle" font-weight="500" dominant-baseline="central">L</text>
+<text x="327.0" y="220" font-size="12" fill="#52514E" text-anchor="middle" font-weight="500" dominant-baseline="central">R</text>
+<text x="294" y="238" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">win: e:1 i:1 (还没满 m)</text>
+<text x="476" y="190" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">need: a:1 b:1</text>
+<text x="476" y="210" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">win:  e:1 i:1</text>
+<text x="476" y="230" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">win == need ? 否</text>
+<line x1="40" y1="254" x2="640" y2="254" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="280" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">right = 2</text>
+<text x="40" y="300" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">ch = &#x27;d&#x27;</text>
+<rect x="112" y="268" width="22" height="26" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="123.0" y="282.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">e</text>
+<rect x="134" y="268" width="22" height="26" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="145.0" y="282.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">i</text>
+<rect x="156" y="268" width="22" height="26" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="167.0" y="282.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">d</text>
+<rect x="178" y="268" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="189.0" y="282.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">b</text>
+<rect x="200" y="268" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="211.0" y="282.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">a</text>
+<rect x="222" y="268" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="233.0" y="282.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">o</text>
+<rect x="244" y="268" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="255.0" y="282.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">o</text>
+<text x="123.0" y="308" font-size="12" fill="#52514E" text-anchor="middle" font-weight="500" dominant-baseline="central">L</text>
+<text x="167.0" y="308" font-size="12" fill="#52514E" text-anchor="middle" font-weight="500" dominant-baseline="central">R</text>
+<text x="112" y="326" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">win: d:1 e:1 i:1</text>
+<rect x="294" y="268" width="22" height="26" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/>
+<text x="305.0" y="282.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central">e</text>
+<rect x="316" y="268" width="22" height="26" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="327.0" y="282.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">i</text>
+<rect x="338" y="268" width="22" height="26" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="349.0" y="282.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">d</text>
+<rect x="360" y="268" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="371.0" y="282.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">b</text>
+<rect x="382" y="268" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="393.0" y="282.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">a</text>
+<rect x="404" y="268" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="415.0" y="282.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">o</text>
+<rect x="426" y="268" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="437.0" y="282.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">o</text>
+<text x="327.0" y="308" font-size="12" fill="#52514E" text-anchor="middle" font-weight="500" dominant-baseline="central">L</text>
+<text x="349.0" y="308" font-size="12" fill="#52514E" text-anchor="middle" font-weight="500" dominant-baseline="central">R</text>
+<text x="294" y="326" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">pop e → win: d:1 i:1</text>
+<text x="476" y="278" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">need: a:1 b:1</text>
+<text x="476" y="298" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">win:  d:1 i:1</text>
+<text x="476" y="318" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">win == need ? 否</text>
+<line x1="40" y1="342" x2="640" y2="342" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="368" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">right = 3</text>
+<text x="40" y="388" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">ch = &#x27;b&#x27;</text>
+<rect x="112" y="356" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="123.0" y="370.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">e</text>
+<rect x="134" y="356" width="22" height="26" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="145.0" y="370.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">i</text>
+<rect x="156" y="356" width="22" height="26" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="167.0" y="370.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">d</text>
+<rect x="178" y="356" width="22" height="26" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="189.0" y="370.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">b</text>
+<rect x="200" y="356" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="211.0" y="370.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">a</text>
+<rect x="222" y="356" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="233.0" y="370.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">o</text>
+<rect x="244" y="356" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="255.0" y="370.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">o</text>
+<text x="145.0" y="396" font-size="12" fill="#52514E" text-anchor="middle" font-weight="500" dominant-baseline="central">L</text>
+<text x="189.0" y="396" font-size="12" fill="#52514E" text-anchor="middle" font-weight="500" dominant-baseline="central">R</text>
+<text x="112" y="414" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">win: b:1 d:1 i:1</text>
+<rect x="294" y="356" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="305.0" y="370.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">e</text>
+<rect x="316" y="356" width="22" height="26" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/>
+<text x="327.0" y="370.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central">i</text>
+<rect x="338" y="356" width="22" height="26" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="349.0" y="370.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">d</text>
+<rect x="360" y="356" width="22" height="26" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="371.0" y="370.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">b</text>
+<rect x="382" y="356" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="393.0" y="370.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">a</text>
+<rect x="404" y="356" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="415.0" y="370.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">o</text>
+<rect x="426" y="356" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="437.0" y="370.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">o</text>
+<text x="349.0" y="396" font-size="12" fill="#52514E" text-anchor="middle" font-weight="500" dominant-baseline="central">L</text>
+<text x="371.0" y="396" font-size="12" fill="#52514E" text-anchor="middle" font-weight="500" dominant-baseline="central">R</text>
+<text x="294" y="414" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">pop i → win: b:1 d:1</text>
+<text x="476" y="366" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">need: a:1 b:1</text>
+<text x="476" y="386" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">win:  b:1 d:1</text>
+<text x="476" y="406" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">win == need ? 否</text>
+<line x1="40" y1="430" x2="640" y2="430" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="456" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">right = 4</text>
+<text x="40" y="476" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">ch = &#x27;a&#x27;</text>
+<rect x="112" y="444" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="123.0" y="458.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">e</text>
+<rect x="134" y="444" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="145.0" y="458.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">i</text>
+<rect x="156" y="444" width="22" height="26" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="167.0" y="458.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">d</text>
+<rect x="178" y="444" width="22" height="26" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="189.0" y="458.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">b</text>
+<rect x="200" y="444" width="22" height="26" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="211.0" y="458.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">a</text>
+<rect x="222" y="444" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="233.0" y="458.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">o</text>
+<rect x="244" y="444" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="255.0" y="458.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">o</text>
+<text x="167.0" y="484" font-size="12" fill="#52514E" text-anchor="middle" font-weight="500" dominant-baseline="central">L</text>
+<text x="211.0" y="484" font-size="12" fill="#52514E" text-anchor="middle" font-weight="500" dominant-baseline="central">R</text>
+<text x="112" y="502" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">win: a:1 b:1 d:1</text>
+<rect x="294" y="444" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="305.0" y="458.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">e</text>
+<rect x="316" y="444" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="327.0" y="458.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">i</text>
+<rect x="338" y="444" width="22" height="26" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/>
+<text x="349.0" y="458.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central">d</text>
+<rect x="360" y="444" width="22" height="26" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="371.0" y="458.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">b</text>
+<rect x="382" y="444" width="22" height="26" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="393.0" y="458.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">a</text>
+<rect x="404" y="444" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="415.0" y="458.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">o</text>
+<rect x="426" y="444" width="22" height="26" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="437.0" y="458.0" font-size="14" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">o</text>
+<rect x="357" y="441" width="50" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="371.0" y="484" font-size="12" fill="#52514E" text-anchor="middle" font-weight="500" dominant-baseline="central">L</text>
+<text x="393.0" y="484" font-size="12" fill="#52514E" text-anchor="middle" font-weight="500" dominant-baseline="central">R</text>
+<text x="294" y="502" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">pop d → win: a:1 b:1</text>
+<text x="476" y="454" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">need: a:1 b:1</text>
+<text x="476" y="474" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">win:  a:1 b:1</text>
+<text x="476" y="494" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">win == need ? 是</text>
+<line x1="40" y1="518" x2="640" y2="518" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="536" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">答案: right = 4 时 win == need → return True (window = s2[3..4] = &quot;ba&quot;)</text>
+<rect x="33" y="559" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="54" y="566" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">新进 window 的</text>
+<rect x="157.8" y="559" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/>
+<text x="178.8" y="566" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">移出 window 的</text>
+<rect x="282.6" y="559" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="303.6" y="566" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">window 里其他的</text>
+<rect x="412.8" y="559" width="14" height="14" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="433.8" y="566" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">window 外</text>
+<rect x="507.0" y="559" width="14" height="14" rx="3" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="528.0" y="566" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">当前最优 window</text></svg>
