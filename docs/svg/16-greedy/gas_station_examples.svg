@@ -1,0 +1,43 @@
+<svg width="100%" viewBox="0 0 680 312" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Gas Station examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">环形公路上 n 个加油站。在站 i 能加 gas[i] 升, 从 i 开到 i+1 要 cost[i] 升。油箱一开始是空的。从哪一站出发能绕一圈? 没有就 -1</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  gas = [1,2,3,4,5], cost = [3,4,5,1,2]  →  3</text>
+<text x="40" y="103" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">gas</text>
+<rect x="104" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="138" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="155.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="172" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="189.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="206" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="223.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="240" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="257.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<text x="40" y="149" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">cost</text>
+<rect x="104" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="138" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="155.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="172" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="189.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<rect x="206" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="223.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="240" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="257.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="40" y="195" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">gas-cost</text>
+<rect x="104" y="180" width="34" height="30" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
+<text x="121.0" y="196.0" font-size="15" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">-2</text>
+<rect x="138" y="180" width="34" height="30" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
+<text x="155.0" y="196.0" font-size="15" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">-2</text>
+<rect x="172" y="180" width="34" height="30" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
+<text x="189.0" y="196.0" font-size="15" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">-2</text>
+<rect x="206" y="180" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="223.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="240" y="180" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="257.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="40" y="226" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">从站 3 出发: 油箱 3 → 6 → 4 → 2 → 0, 一直不是负数, 能绕回站 3</text>
+<text x="40" y="244" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">从站 0 出发: 加 1 升, 要花 3 升, 第一段就开不过去</text>
+<line x1="40" y1="268" x2="640" y2="268" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="283" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="290" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">净赚油</text>
+<rect x="109" y="283" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
+<text x="130" y="290" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">净亏油</text></svg>

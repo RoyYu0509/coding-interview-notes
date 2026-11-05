@@ -1,0 +1,26 @@
+<svg width="100%" viewBox="0 0 680 236" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Stock II examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">可以交易任意多次 (但手里最多一股, 买之前要先卖掉)。最大总利润</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  prices = [7,1,5,3,6,4]  →  7</text>
+<rect x="40" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">7</text>
+<text x="57.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="91.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="91.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="108" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="125.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<text x="125.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="142" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="159.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="159.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="176" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="193.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">6</text>
+<text x="193.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="210" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="227.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<text x="227.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">5</text>
+<text x="40" y="150" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">第 1 天买 1, 第 2 天卖 5 (+4);  第 3 天买 3, 第 4 天卖 6 (+3)  → 7</text>
+<text x="40" y="168" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">只交易一次的话最多是 6 - 1 = 5, 不如分两次</text>
+<line x1="40" y1="192" x2="640" y2="192" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="207" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="214" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">两次交易</text></svg>

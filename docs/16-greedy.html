@@ -24,14 +24,15 @@ figure svg{width:100%;height:auto;display:block}
 figcaption{color:#52514e;font-size:14px;padding:4px 6px 0}
 table{border-collapse:collapse;margin:10px 0;font-size:15px}
 td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
+details{margin:12px 0;border:1px dashed var(--box);border-radius:6px;padding:4px 12px}
+summary{cursor:pointer;color:var(--sub);font-size:15px}
+ol,ul{padding-left:24px}li{margin:4px 0}
 </style></head><body><article contenteditable="true">
 <h1>16 · Greedy</h1>
-<p class="main">主线: greedy = 每一步只做当前看起来最好的选择, 永不回头; 前提是你能证明'最优解里一定可以含这个选择' (exchange argument)。题型上基本只有三种手法: 维护一个汇总量一遍扫 (max_reach / tank / end), 两遍扫描满足左右约束, 自定义排序。</p>
-<p class="main">概念链: Jump Game (max_reach) → Jump Game II (BFS 分层: cur_end / farthest) → Gas Station (tank &lt; 0 就重置起点) → Stock II (所有上涨都吃) → Candy (两遍扫描) → Largest Number (自定义比较 a+b vs b+a) → Partition Labels (last occurrence 当边界)。</p>
-<h2>0. 第一性原理: greedy 在省什么, 什么时候不能用</h2>
-<p>Brute force 是'每一步试所有选择, 再看哪条路最好'。以 Jump Game 为例: 从 i 可以跳 1..nums[i] 步, DFS 把每个选择都走一遍, O(2^n); 加 memo 后 O(n^2)。它在浪费的是: <b>明明有些选择一定不会比另一个选择差, 却还要把它们都走完</b>。</p>
-<p>Greedy 的做法: 每一步只留下那个'一定不会更差'的选择, 其余直接丢掉, 于是不用分叉, 也不用记 dp 表, 往往 O(n) 或 O(n log n) (多出来的 log 来自排序)。关键不在于'选最大/最小', 而在于<b>能说清楚为什么这一步选择不会错过全局最优</b>。证明套路叫 exchange argument:</p>
-<p>假设有一个最优解没用我这步选择。把它里面的某一部分换成我的选择, 如果换完<b>不比原来差</b>, 就说明'含我这步选择'的最优解一定存在, greedy 这一步安全。下图左边 (硬币 1/5/10/25) 换得动, 右边 (coins=[1,3,4]) 换不动, 这就是 greedy 和 DP 的分界线。</p>
+<h2>这篇讲什么</h2>
+<p><b>Greedy</b> (贪心) 的意思是: 每一步都做<b>当前看起来最好</b>的选择, 不回头, 不考虑以后。</p>
+<p>它很快 (通常扫一遍 <code>O(n)</code>, 或者排序后扫一遍 <code>O(n log n)</code>), 但不一定对。greedy 题的难点从来不是代码, 而是<b>说明为什么"每步选最好的"不会错过全局最优</b>。</p>
+<p>先看一个反例, 理解什么时候 greedy 会错:</p>
 <figure><svg width="100%" viewBox="0 0 680 504" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'>
 <title>Greedy 的 exchange argument 与反例</title><desc>coins [1,5,10,25] 可以把最优解换成含 25 的解; coins [1,3,4] 换不了, greedy 失败。</desc>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowo" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
@@ -87,17 +88,73 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <line x1="20" y1="462" x2="660" y2="462" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
 <text x="20" y="486" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="400">判断口诀: 能说清&#x27;最优解里一定可以含我这步选择&#x27;才用 greedy; 说不清、或者举得出反例 → DP。</text>
 </svg>
-<figcaption>同样是 Coin Change 先拿最大面额: [1,5,10,25] 能换所以 greedy 对; [1,3,4] 换不了所以必须 DP。</figcaption></figure>
-<p>反例要用 DP 解 (试每一种最后一枚硬币, 不赌最大的):</p>
+<figcaption>同样是 Coin Change 先拿最大面额: [1,5,10,25] 可以, 因为大面额总能被换掉; [1,3,4] 凑 6 时先拿 4 得到 3 枚, 但 3 + 3 只要 2 枚。</figcaption></figure>
+<p>证明 greedy 正确的常用方法叫 <b>exchange argument</b> (交换论证): 假设有一个最优解, 它在某一步没有按 greedy 选; 把那一步换成 greedy 的选择, 证明结果不会变差。那么 greedy 的结果也是最优的。</p>
+<p>面试里不需要写严格的证明, 但要能用一两句话说出"为什么这样选不会吃亏"。说不出来, 或者能找到反例, 就换成 DP (14)。</p>
+<details><summary>代码: Coin Change 的 DP 解法, 以及 greedy 的一般形式</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">coin_change_dp</span>(coins, amount):</span><span class="l">    INF = <span class="t">float</span>(<span class="s">&quot;inf&quot;</span>)</span><span class="l">    dp = [0] + [INF] * amount  <span class="c"># dp[a] = 凑出 a 的最少枚数</span></span><span class="l">    <span class="k">for</span> a <span class="k">in</span> <span class="t">range</span>(1, amount + 1):</span><span class="l">        <span class="k">for</span> c <span class="k">in</span> coins:        <span class="c"># 试每一种最后一枚, 而不是只赌最大的</span></span><span class="l">            <span class="k">if</span> c &lt;= a:</span><span class="l">                dp[a] = <span class="t">min</span>(dp[a], dp[a - c] + 1)</span><span class="l">    <span class="r">return</span> dp[amount] <span class="k">if</span> dp[amount] &lt; INF <span class="k">else</span> -1</span></div>
-<p>所以遇到'求最少/最多'的题: 先试着说一句 '最优解里一定可以含我这步选择, 因为换掉别的东西不会变差'。说得出来 → greedy; 举得出反例 → DP。面试里最稳的做法是: 先写 2-3 个小例子手算, 看 greedy 有没有被打脸。</p>
-<p>通用模板 (本文每道题都是它的变体):</p>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">greedy</span>(items):</span><span class="l">    items.<span class="f">sort</span>(key=...)  <span class="c"># 1) 有些题需要先排序 (Largest Number / interval 按 end)</span></span><span class="l">    state = 初始值          <span class="c"># 2) 一个(或两个)汇总量: max_reach / tank / end ...</span></span><span class="l">    <span class="k">for</span> x <span class="k">in</span> items:      <span class="c"># 3) 一遍扫描, 每步只看 x 和 state, 不回头</span></span><span class="l">        做局部最优的选择, 更新 state</span><span class="l">    <span class="r">return</span> 答案</span></div>
-<p>顺带: 区间题 (最多不重叠区间 / 射气球 / 合并) 的 greedy 是'按 end 排序再扫', 见 10 doc; 需要反复取当前最大/最小再做决定的 greedy (Task Scheduler, Reorganize String) 要配 heap, 见 09 doc。本文只讲不需要这两样的 greedy。</p>
-<h2>1. Jump Game: 只维护一个数 max_reach</h2>
-<p>题目: <code>nums[i]</code> 是在 i 最多能往前跳几步, 从 0 出发, 能否到最后一格? 例: <code>[2,3,1,1,4]</code> 可以, <code>[3,2,1,0,4]</code> 不行 (卡在下标 3 的 0)。</p>
-<p>Brute force: DFS 或 DP, 对每个 i 试 1..nums[i] 种跳法, O(n^2)。浪费在: 能到 i 之后, 从 i 起跳的所有落点都要单独记一遍, 但其实<b>只有'最远能到哪'才重要</b>。</p>
-<p>关键观察: 若 i 可达, 那么从 i 起跳能落到 i+1 ... i+nums[i] 任意一格, 没有洞。所以可达集合永远是前缀 [0, max_reach], 一个数就描述了全部状态。</p>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">greedy</span>(items):</span><span class="l">    <span class="c"># 1) 有些题需要先排序 (Largest Number / interval 按 end)</span></span><span class="l">    items.<span class="f">sort</span>(key=...)</span><span class="l">    state = 初始值          <span class="c"># 2) 一个(或两个)汇总量: max_reach / tank / end ...</span></span><span class="l">    <span class="k">for</span> x <span class="k">in</span> items:      <span class="c"># 3) 一遍扫描, 每步只看 x 和 state, 不回头</span></span><span class="l">        做局部最优的选择, 更新 state</span><span class="l">    <span class="r">return</span> 答案</span></div>
+</details>
+<table><tr><th>#</th><th>题目</th><th>考过的公司数</th><th>greedy 的选择</th></tr><tr><td>1</td><td>Jump Game</td><td>31</td><td>只记"最远能到哪"</td></tr><tr><td>2</td><td>Jump Game II</td><td>28</td><td>同上, 再按层数跳了几次</td></tr><tr><td>3</td><td>Gas Station</td><td>27</td><td>油箱变负就换起点</td></tr><tr><td>4</td><td>Best Time to Buy and Sell Stock II</td><td>26</td><td>所有上涨都吃掉</td></tr><tr><td>5</td><td>Candy</td><td>17</td><td>两个方向的约束, 分两遍扫</td></tr><tr><td>6</td><td>Largest Number</td><td>17</td><td>自定义排序</td></tr><tr><td>7</td><td>Partition Labels</td><td>8</td><td>用每个字母最后出现的位置当边界</td></tr></table>
+<p>每道题的顺序: <b>题目在问什么 → 看例子 → brute force → intuition → 算法 → 手动走一遍 → 复杂度</b>。代码放在最后, 默认折叠。</p>
+<p>另外两类常见的 greedy 在别的篇: 区间按 end 排序 (10 · Intervals), greedy + heap (09 · Heap)。</p>
+<h2>1. Jump Game</h2>
+<h3>题目在问什么</h3>
+<p><code>nums[i]</code> 表示在位置 i 时<b>最多</b>能往前跳几格 (可以跳 1 到 nums[i] 格中的任意一个)。从 index 0 出发, 能不能到达最后一格?</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 342" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Jump Game examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">nums[i] 是在位置 i 最多能往前跳几格。从 index 0 出发, 能不能跳到最后一格</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  nums = [2,3,1,1,4]  →  True</text>
+<rect x="40" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="57.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="57.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="91.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="91.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="108" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="125.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="142" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="159.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="159.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="176" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="193.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<text x="193.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
+<text x="234" y="103" font-size="14" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">0 → 1 → 4</text>
+<line x1="40" y1="150" x2="640" y2="150" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="170" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  nums = [3,2,1,0,4]  →  False</text>
+<rect x="40" y="212" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="228.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="57.0" y="254" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="212" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="91.0" y="228.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="91.0" y="254" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="108" y="212" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.0" y="228.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="125.0" y="254" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="142" y="212" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="159.0" y="228.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">0</text>
+<text x="159.0" y="254" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="176" y="212" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="193.0" y="228.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<text x="193.0" y="254" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
+<path d="M145 204 L145 196 L173 196 L173 204" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="234" y="198" font-size="12" fill="#712B13" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">不管怎么跳, 都会停在这个 0 上</text>
+<text x="40" y="274" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">从 0、1、2 出发最远都只能到 index 3, 而 index 3 一步都跳不了</text>
+<line x1="40" y1="298" x2="640" y2="298" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="313" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="320" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">一种跳法</text>
+<rect x="121" y="313" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
+<text x="142" y="320" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">卡住的地方</text></svg>
+<figcaption>两个例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>recursion: 从位置 i 出发, 试每一种跳法。指数级。加 memo 变成 DP: <code>can[i]</code> = 从 i 能不能到终点, 每个 i 要看 nums[i] 个后继, <code>O(n²)</code>。</p>
+<h3>Intuition: 只记"最远能到哪"</h3>
+<p>关键观察: 如果能到达位置 x, 那 0 到 x 之间的每个位置都能到达 (跳的时候可以少跳几格)。所以"能到达的位置"永远是一个从 0 开始的连续区间 <code>[0, max_reach]</code>。</p>
+<p>不需要知道具体怎么跳的, 只要维护 max_reach 这一个数: 从左往右扫, 每到一个能到达的位置 i, 就更新 <code>max_reach = max(max_reach, i + nums[i])</code>。</p>
+<p>如果扫到的 i 已经超过了 max_reach, 说明 i 根本到不了, 后面也到不了, 返回 False。</p>
+<h3>算法</h3>
+<ol><li><code>max_reach = 0</code>。</li><li>i 从 0 到 n-1: 如果 <code>i > max_reach</code>, 返回 False。否则 <code>max_reach = max(max_reach, i + nums[i])</code>。</li><li>返回 True。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 394" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'>
 <title>Jump Game 的 invariant</title><desc>可达集合永远是前缀 [0, max_reach], 所以只需要维护 max_reach 一个数</desc>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowo" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
@@ -150,7 +207,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <line x1="20" y1="352" x2="660" y2="352" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
 <text x="20" y="376" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">greedy 选择 = &#x27;每个格子都尽量往远处记&#x27;: 只留最远的一个数, 比 DFS 记录每个可达位置省掉所有重复探索。</text>
 </svg>
-<figcaption>invariant: 0..max_reach 全部可达。失败 = 扫到的 i 超过 max_reach。</figcaption></figure>
+<figcaption>invariant: 0..max_reach 全部可达。失败 = 扫到的 i 超过了 max_reach。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 420" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'>
 <title>Jump Game trace</title><desc>nums=[2,3,1,1,4] 每一步的 max_reach</desc>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowo" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
@@ -245,14 +303,50 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="292.88" y="402" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">目前不可达</text>
 <text x="500" y="400" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">金色圈 = 当前 i</text>
 </svg>
-<figcaption>[2,3,1,1,4]: i=0 时 max_reach=2, i=1 时推到 4, 之后一直 ≤ 4, 没卡住。</figcaption></figure>
+<figcaption>[2,3,1,1,4]: i = 0 时 max_reach = 2, i = 1 时推到 4, 之后一直够得着。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n)</code>, Space <code>O(1)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">can_jump</span>(nums):</span><span class="l">    max_reach = 0                             <span class="c"># invariant: 0..max_reach 全部可达</span></span><span class="l">    <span class="k">for</span> i, step <span class="k">in</span> <span class="t">enumerate</span>(nums):</span><span class="l">        <span class="k">if</span> i &gt; max_reach:                     <span class="c"># 连 i 都够不到 -&gt; 后面全都够不到</span></span><span class="l">            <span class="r">return</span> <span class="k">False</span></span><span class="l">        max_reach = <span class="t">max</span>(max_reach, i + step)  <span class="c"># 从 i 起跳最远到 i + step</span></span><span class="l">    <span class="r">return</span> <span class="k">True</span></span></div>
-<p>Time O(n) (一遍扫); Space O(1) (只有 max_reach)。</p>
-<p class="note"><b>记:</b>Jump Game = 扫描 + max_reach = max(max_reach, i + nums[i]);i &gt; max_reach 就失败。</p>
-<h2>2. Jump Game II: 同一个 max_reach, 加上 BFS 分层</h2>
-<p>题目: 保证能到终点, 问<b>最少</b>跳几次。例: <code>[2,3,1,1,4]</code> → 2。相比上一题: 多出来的条件是'要数层数', 所以把 max_reach 拆成两个量: 当前层的边界 <code>cur_end</code> 和下一层的边界 <code>farthest</code>。</p>
-<p>Brute force: BFS (每个下标是节点, i → i+1..i+nums[i] 是边), O(n^2) 条边。浪费在: 同一层里的下标跳出去的区间是连续、互相重叠的, 不需要逐个节点入队, 只要知道这一层最右能到哪。</p>
-<p>关键观察: BFS 第 j 层 = 跳 j 步能到的下标区间 (连续)。扫当前层时用 farthest 收集'下一层最右到哪'; 扫到当前层末尾 (i == cur_end) 就是 BFS 换层, jumps += 1。</p>
+</details>
+<p class="note"><b>记:</b>能到达的位置是一个连续区间时, 只维护它的右端点 max_reach。</p>
+<h2>2. Jump Game II</h2>
+<h3>题目在问什么</h3>
+<p>和第 1 题一样的规则, 这次保证一定能到最后一格。问<b>最少</b>跳几次。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 218" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Jump Game II examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">同上, 保证能跳到最后。问最少跳几次</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  nums = [2,3,1,1,4]  →  2</text>
+<rect x="40" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="57.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="57.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="91.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="91.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="108" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="125.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="142" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="159.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="159.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="176" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="193.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<text x="193.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
+<text x="234" y="103" font-size="14" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">0 → 1 → 4, 跳 2 次</text>
+<text x="40" y="150" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">0 → 2 → 3 → 4 也能到, 但要 3 次</text>
+<line x1="40" y1="174" x2="640" y2="174" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="189" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="196" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">最少的跳法</text></svg>
+<figcaption>例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>DP: <code>dp[i]</code> = 到达 i 最少几步, 每个 i 往前看所有能跳到它的位置, <code>O(n²)</code>。或者把它当图, 用 BFS (12) 求最少步数。</p>
+<h3>Intuition: 按"跳几次能到"分层, 和 BFS 一样</h3>
+<p>想象 BFS: 第 0 层是 index 0; 第 1 层是跳 1 次能到的所有位置; 第 2 层是跳 2 次能到的……由第 1 题的观察, 每一层都是一段<b>连续</b>的区间。</p>
+<p>所以不需要真的用 queue, 只要两个数:</p>
+<ul><li><code>cur_end</code>: 当前这一层的右端点。</li><li><code>farthest</code>: 扫描当前这一层时, 能跳到的最远位置, 也就是下一层的右端点。</li></ul>
+<p>从左往右扫, 每个位置都更新 farthest。扫到 <code>i == cur_end</code> 时, 当前这一层结束了, 必须再跳一次: <code>jumps += 1</code>, <code>cur_end = farthest</code>。</p>
+<h3>算法</h3>
+<ol><li><code>jumps = cur_end = farthest = 0</code>。</li><li>i 从 0 到 n-2 (到了最后一格就不用再跳): <code>farthest = max(farthest, i + nums[i])</code>。如果 <code>i == cur_end</code>: jumps += 1, cur_end = farthest。</li><li>返回 jumps。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 382" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'>
 <title>Jump Game II BFS 分层</title><desc>每一层 = 跳 j 步能到的下标区间</desc>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowo" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
@@ -290,7 +384,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="20" y="344" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">所以下一层只由右端点 farthest 决定, 且层 j 的下标一定比层 j+1 靠前 → 第一次覆盖到终点的层数就是最少步数。</text>
 <text x="20" y="364" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">i == cur_end 表示当前层扫完了, 必须再跳一次 (jumps += 1), 并把边界推到 farthest。</text>
 </svg>
-<figcaption>每一层是一个连续区间; cur_end 是它的右端, farthest 是扫这一层时算出的下一层右端。</figcaption></figure>
+<figcaption>每一层是一段连续区间; cur_end 是它的右端, farthest 是扫这一层时算出的下一层右端。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 528" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'>
 <title>Jump Game II trace</title><desc>nums=[2,3,1,1,2,4,1]</desc>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowo" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
@@ -435,14 +530,71 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="533.12" y="490" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">还够不到</text>
 <text x="20" y="510" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">绿色小三角 = cur_end (当前层右边界)</text>
 </svg>
-<figcaption>[2,3,1,1,2,4,1]: i=0,2,4 三次走到层尾, jumps = 3; farthest 在 i=4 时已 ≥ 终点 6。</figcaption></figure>
+<figcaption>[2,3,1,1,2,4,1]: 在 i = 0, 2, 4 三次走到层尾, jumps = 3。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n)</code>, Space <code>O(1)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">jump</span>(nums):</span><span class="l">    jumps = 0</span><span class="l">    cur_end = 0                     <span class="c"># 当前层 (跳 jumps 步能到的区间) 的右边界</span></span><span class="l">    farthest = 0                    <span class="c"># 扫完当前层后, 下一层的右边界</span></span><span class="l">    <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(<span class="t">len</span>(nums) - 1):  <span class="c"># 最后一格不用再跳, 所以到 n-2</span></span><span class="l">        farthest = <span class="t">max</span>(farthest, i + nums[i])</span><span class="l">        <span class="k">if</span> i == cur_end:            <span class="c"># 当前层扫完 -&gt; 必须再跳一次</span></span><span class="l">            jumps += 1</span><span class="l">            cur_end = farthest      <span class="c"># 下一层边界 = 这一层能到的最远处</span></span><span class="l">    <span class="r">return</span> jumps                    <span class="c"># 题目保证一定能到终点</span></span></div>
-<p>Time O(n); Space O(1)。和上一题相比只多了 <code>cur_end</code> 和 <code>jumps</code> 两个变量, 循环范围到 n-2 (最后一格不用再跳)。</p>
-<p class="note"><b>记:</b>Jump Game II = max_reach 拆成 cur_end (本层边界) + farthest (下一层边界);i == cur_end 时 jumps += 1。</p>
-<h2>3. Gas Station: 累计量变负, 就把起点重置到下一站</h2>
-<p>题目: 环形路, 站 i 加油 <code>gas[i]</code>, 开到下一站耗 <code>cost[i]</code>, 找出发点让你能绕一圈, 无解返回 -1。例: <code>gas=[2,1,1,5,1,2]</code>, <code>cost=[1,3,2,2,2,2]</code> → 3。</p>
-<p>Brute force: 每个起点模拟一圈, O(n^2)。浪费在: 起点 s 在 j 失败, 但我们对 s+1, s+2, ... 又重新模拟了一遍同样的路段。</p>
-<p>关键观察 (两句话): (1) 从 s 出发在 j 失败, 则 s+1..j 作起点全部也失败: 从 s 走到那些站时 tank 都 ≥ 0 (否则早就在那之前失败了), 那笔'剩余油'相当于补贴, 换成从中途出发就没有这笔补贴, 只会更差。所以下一个候选直接跳到 j+1。(2) 如果 sum(gas) ≥ sum(cost), 一定有解, 且就是最后留下的 start。</p>
+</details>
+<p class="note"><b>记:</b>最少几步 + 每一层是连续区间: 用 cur_end 和 farthest 模拟 BFS 分层, 不需要 queue。</p>
+<h2>3. Gas Station</h2>
+<h3>题目在问什么</h3>
+<p>环形公路上有 n 个加油站。在站 i 可以加 <code>gas[i]</code> 升油, 从站 i 开到站 i+1 要花 <code>cost[i]</code> 升。油箱一开始是空的, 容量无限。从哪一站出发能绕一整圈回来? 有解的话答案唯一, 没有就返回 -1。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 312" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Gas Station examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">环形公路上 n 个加油站。在站 i 能加 gas[i] 升, 从 i 开到 i+1 要 cost[i] 升。油箱一开始是空的。从哪一站出发能绕一圈? 没有就 -1</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  gas = [1,2,3,4,5], cost = [3,4,5,1,2]  →  3</text>
+<text x="40" y="103" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">gas</text>
+<rect x="104" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="138" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="155.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="172" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="189.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="206" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="223.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="240" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="257.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<text x="40" y="149" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">cost</text>
+<rect x="104" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="138" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="155.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="172" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="189.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<rect x="206" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="223.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="240" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="257.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="40" y="195" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">gas-cost</text>
+<rect x="104" y="180" width="34" height="30" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
+<text x="121.0" y="196.0" font-size="15" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">-2</text>
+<rect x="138" y="180" width="34" height="30" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
+<text x="155.0" y="196.0" font-size="15" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">-2</text>
+<rect x="172" y="180" width="34" height="30" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
+<text x="189.0" y="196.0" font-size="15" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">-2</text>
+<rect x="206" y="180" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="223.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="240" y="180" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="257.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="40" y="226" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">从站 3 出发: 油箱 3 → 6 → 4 → 2 → 0, 一直不是负数, 能绕回站 3</text>
+<text x="40" y="244" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">从站 0 出发: 加 1 升, 要花 3 升, 第一段就开不过去</text>
+<line x1="40" y1="268" x2="640" y2="268" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="283" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="290" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">净赚油</text>
+<rect x="109" y="283" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
+<text x="130" y="290" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">净亏油</text></svg>
+<figcaption>例子。</figcaption></figure>
+<p>每一站的净收益是 <code>gas[i] - cost[i]</code>。从某站出发, 一路累加净收益, 中途任何时候都不能变成负数。</p>
+<h3>Brute force</h3>
+<p>每一站都试一次当起点, 模拟绕一圈。<code>O(n²)</code>。</p>
+<h3>Intuition: 在哪里失败, 就从下一站重新开始</h3>
+<p>两个观察:</p>
+<ol><li><b>有没有解</b>: 如果所有站的净收益加起来 <code>total < 0</code>, 油总量不够, 从哪里出发都不行。反过来, total ≥ 0 就一定有解。</li><li><b>从哪里出发</b>: 假设从 start 出发, 开到站 i 时油箱变负了。那么 start 到 i 之间的任何一站当起点, 也都到不了 i+1。</li></ol>
+<p>为什么第 2 点成立? 从 start 出发, 到达中间某站 k 时油箱是 ≥ 0 的 (还没失败)。如果直接从 k 出发, 油箱是 0, 只会比"从 start 出发到达 k"更少。连多带了油的都过不去, 空着油箱的更过不去。</p>
+<p>所以一失败, 直接把起点跳到 <code>i + 1</code>, 油箱清零。扫一遍就够了。</p>
+<h3>算法</h3>
+<ol><li><code>total = tank = start = 0</code>。</li><li>i 从 0 到 n-1: <code>diff = gas[i] - cost[i]</code>, total 和 tank 都加上 diff。如果 <code>tank < 0</code>: <code>start = i + 1</code>, <code>tank = 0</code>。</li><li>返回 <code>start if total >= 0 else -1</code>。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 468" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'>
 <title>Gas Station 为什么从失败点的下一个开始</title><desc>起点 s 在 j 失败, 则 s..j 之间任何起点都失败</desc>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowo" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
@@ -499,7 +651,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="20" y="422" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="400">所以 start 到失败点之间的起点全部作废, 下一个候选 = 失败点 + 1。</text>
 <text x="20" y="448" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">全局: total = sum(net) = 2+1-5+3+1 = 2 ≥ 0 → 一定有解, 且就是最后留下的 start。</text>
 </svg>
-<figcaption>net=[2,1,-5,3,1]: 起点 0,1,2 都失败, 只有起点 3 走得完。</figcaption></figure>
+<figcaption>net = [2,1,-5,3,1]: 起点 0、1、2 都会失败, 只有起点 3 走得完。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 458" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'>
 <title>Gas Station trace</title><desc>gas=[2,1,1,5,1,2] cost=[1,3,2,2,2,2]</desc>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowo" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
@@ -571,14 +724,52 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="175.68" y="429" width="16" height="16" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
 <text x="197.68" y="442" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">tank &lt; 0, 重置起点</text>
 </svg>
-<figcaption>i=1,2 时 tank 变负, start 依次被推到 2, 3; 之后 tank 不再变负, total=0 ≥ 0, 答案 3。</figcaption></figure>
+<figcaption>i = 1、2 时 tank 变负, start 依次被推到 2、3; 之后 tank 不再变负, total = 0 ≥ 0, 答案 3。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n)</code>, Space <code>O(1)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">can_complete_circuit</span>(gas, cost):</span><span class="l">    total = 0                           <span class="c"># 全局 sum(gas - cost), 决定有没有解</span></span><span class="l">    tank = 0                            <span class="c"># 从 start 出发到现在的油量</span></span><span class="l">    start = 0</span><span class="l">    <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(<span class="t">len</span>(gas)):</span><span class="l">        net = gas[i] - cost[i]</span><span class="l">        total += net</span><span class="l">        tank += net</span><span class="l">        <span class="k">if</span> tank &lt; 0:                    <span class="c"># start..i 任何起点都到不了 i+1</span></span><span class="l">            start = i + 1               <span class="c"># 下一个候选: 失败点的下一站</span></span><span class="l">            tank = 0</span><span class="l">    <span class="r">return</span> start <span class="k">if</span> total &gt;= 0 <span class="k">else</span> -1  <span class="c"># total &gt;= 0 保证最后留下的 start 可行</span></span></div>
-<p>Time O(n) (每个站只看一次); Space O(1)。注意 tank 会清零而 total 不会: tank 回答'从 start 出发能不能走到 i', total 回答'整圈够不够'。</p>
-<p class="note"><b>记:</b>Gas Station = 两个累计量:tank &lt; 0 就 start = i+1 并清零;total ≥ 0 才有解。</p>
-<h2>4. Best Time to Buy and Sell Stock II: 所有上涨段都吃掉</h2>
-<p>题目: 可以买卖任意多次 (同一时刻最多持有一股), 求最大利润。例: <code>[7,1,5,3,6,4]</code> → 7 (买 1 卖 5, 买 3 卖 6)。</p>
-<p>Brute force: 枚举所有买卖组合, 指数级 (DP 记录'持有/不持有'是 O(n), 但 greedy 更短)。浪费在: 想去找'真正的买点和卖点', 其实不用找。</p>
-<p>关键观察: 任何一段上涨 a → b 都可以拆成逐日上涨的和 (b - a = (p1 - a) + (p2 - p1) + ...), 逐日上涨的收益和一次性买卖相同; 下跌的日子不碰就好。所以答案 = 所有正的 diff 之和。</p>
+</details>
+<p class="note"><b>记:</b>累计量变负就重置起点: 失败点之前的任何一个起点都不会更好。</p>
+<h2>4. Best Time to Buy and Sell Stock II</h2>
+<h3>题目在问什么</h3>
+<p><code>prices[i]</code> 是第 i 天的股价。可以交易<b>任意多次</b>, 但手里最多只能有一股 (买之前必须先卖掉)。最大总利润是多少?</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 236" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Stock II examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">可以交易任意多次 (但手里最多一股, 买之前要先卖掉)。最大总利润</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  prices = [7,1,5,3,6,4]  →  7</text>
+<rect x="40" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">7</text>
+<text x="57.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="91.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="91.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="108" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="125.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<text x="125.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="142" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="159.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="159.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="176" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="193.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">6</text>
+<text x="193.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="210" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="227.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<text x="227.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">5</text>
+<text x="40" y="150" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">第 1 天买 1, 第 2 天卖 5 (+4);  第 3 天买 3, 第 4 天卖 6 (+3)  → 7</text>
+<text x="40" y="168" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">只交易一次的话最多是 6 - 1 = 5, 不如分两次</text>
+<line x1="40" y1="192" x2="640" y2="192" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="207" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="214" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">两次交易</text></svg>
+<figcaption>例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>枚举所有买卖方案, 指数级。或者用 14 里的 hold / cash 状态机 DP, <code>O(n)</code>。</p>
+<h3>Intuition: 每一段上涨都吃掉</h3>
+<p>把价格曲线画出来, 它是一段一段的上涨和下跌。</p>
+<p>任何一次"第 i 天买、第 j 天卖"的利润 <code>prices[j] - prices[i]</code>, 都等于中间每一天的涨跌加起来。其中下跌的那几天只会减少利润。</p>
+<p>既然可以交易任意多次, 就只在上涨的那几天持有: <b>每一个 <code>prices[i] > prices[i-1]</code> 的地方, 都把这个差价赚到</b>。这等价于在每段上涨的底部买、顶部卖。</p>
+<h3>算法</h3>
+<ol><li><code>profit = 0</code>。</li><li>i 从 1 到 n-1: <code>profit += max(0, prices[i] - prices[i-1])</code>。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 404" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'>
 <title>Stock II core</title><desc>总利润 = 所有上涨段之和</desc>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowo" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
@@ -619,7 +810,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="20" y="366" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">每个相邻差 p[i] - p[i-1] 只有两种: 正的拿 (相当于当天买第二天卖), 负的跳过 (相当于空仓)。</text>
 <text x="20" y="386" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">多个上涨段首尾相连时: (5-1) + (6-5) = 6-1, 逐天拿和一次拿到的总利润一样, 所以不用找&#x27;真正的买卖点&#x27;。</text>
 </svg>
-<figcaption>绿色是上涨段 (+4, +3), 虚线橙色是下跌段 (-6, -2, -2)。长持有 1→6 只有 5。</figcaption></figure>
+<figcaption>绿色是上涨段 (+4, +3), 橙色虚线是下跌段。一直持有 1 → 6 只赚 5。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 408" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'>
 <title>Stock II trace</title><desc>prices=[7,1,5,3,6,4]</desc>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowo" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
@@ -740,13 +932,61 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="325.76" y="392" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">还没走到</text>
 </svg>
 <figcaption>每天只看和昨天的差: -6, +4, -2, +3, -2。profit 只在 +4 和 +3 时增加。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n)</code>, Space <code>O(1)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">max_profit</span>(prices):</span><span class="l">    profit = 0</span><span class="l">    <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(1, <span class="t">len</span>(prices)):</span><span class="l">        diff = prices[i] - prices[i - 1]</span><span class="l">        <span class="k">if</span> diff &gt; 0:  <span class="c"># 每一段上涨都吃掉; 下跌段 = 空仓</span></span><span class="l">            profit += diff</span><span class="l">    <span class="r">return</span> profit</span></div>
-<p>Time O(n); Space O(1)。对比 Stock I (只能买卖一次): 那题要维护 min_price, 不能把每段上涨都加起来。</p>
-<p class="note"><b>记:</b>Stock II = 相邻差为正就加进 profit,不需要找买卖点。</p>
-<h2>5. Candy: 两个方向的约束, 拆成两遍扫描</h2>
-<p>题目: 孩子排成一行, 每人至少 1 颗糖, rating 比邻居高的孩子要比该邻居多糖, 求最少总糖数。例: <code>ratings=[1,0,2,3,1]</code> → 9。</p>
-<p>Brute force: 反复修补直到没有违反 (像 brute_candy 那样循环), 最坏 O(n^2)。一遍扫不行: 扫到 rating=0 的孩子, 它比左邻居低, 可是它要几颗糖取决于<b>右边</b>还没看到的孩子。</p>
-<p>关键观察: 约束分成两种, 各自只依赖一边。'比左邻居高'只需要从左往右看一遍; '比右邻居高'只需要从右往左看一遍。每遍各自给出满足这类约束的最少糖数, 最后每个人取两者的 max, 两个约束就同时满足, 而且 max 已经是最小值。</p>
+</details>
+<p class="note"><b>记:</b>可以交易任意多次: 所有正的相邻差价加起来。</p>
+<h2>5. Candy</h2>
+<h3>题目在问什么</h3>
+<p>一排孩子, <code>ratings[i]</code> 是第 i 个孩子的评分。分糖果: 每个孩子至少 1 颗; 评分比<b>相邻</b>孩子高的, 必须比那个孩子拿得多。最少要准备几颗糖?</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 378" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Candy examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">一排孩子, ratings 是评分。每人至少 1 颗糖; 评分比&lt;相邻&gt;的孩子高, 就要比他多拿。最少要几颗糖</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  ratings = [1,0,2]  →  5</text>
+<text x="40" y="103" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">ratings</text>
+<rect x="104" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="138" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="155.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="172" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="189.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="40" y="149" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">糖</text>
+<rect x="104" y="134" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="121.0" y="150.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="138" y="134" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="155.0" y="150.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="172" y="134" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="189.0" y="150.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="40" y="180" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">index 0 比右边高, 要比它多; index 2 比左边高, 也要多</text>
+<line x1="40" y1="204" x2="640" y2="204" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="224" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  ratings = [1,2,2]  →  4</text>
+<text x="40" y="265" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">ratings</text>
+<rect x="104" y="250" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="266.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="138" y="250" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="155.0" y="266.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="172" y="250" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="189.0" y="266.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="40" y="311" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">糖</text>
+<rect x="104" y="296" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="121.0" y="312.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="138" y="296" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="155.0" y="312.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="172" y="296" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="189.0" y="312.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="40" y="342" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">两个 2 评分相同, 没有要求, 最后一个只给 1 颗</text>
+<line x1="40" y1="366" x2="640" y2="366" stroke="#B4B2A9" stroke-dasharray="4 4"/></svg>
+<figcaption>两个例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>先每人 1 颗, 然后反复扫, 发现不满足条件的就加 1, 直到所有条件都满足。最坏 <code>O(n²)</code>。</p>
+<h3>Intuition: 左右两个约束, 分开处理</h3>
+<p>每个孩子有两个约束: 和左边比, 和右边比。同时考虑两边很乱, 那就<b>分开</b>:</p>
+<ol><li>从左往右扫一遍, 只管左边的约束: 比左边评分高, 就 <code>left[i] = left[i-1] + 1</code>, 否则 1。</li><li>从右往左扫一遍, 只管右边的约束: 比右边评分高, 就 <code>right[i] = right[i+1] + 1</code>, 否则 1。</li><li>每个孩子要同时满足两个约束, 取 <code>max(left[i], right[i])</code>。</li></ol>
+<p>为什么取 max 就够了, 而且是最少的? 每个值都是满足那一侧约束的最小值, 取 max 刚好两边都满足, 没有多给。</p>
+<h3>算法</h3>
+<ol><li><code>left</code> 从左往右填, <code>right</code> 从右往左填。</li><li>返回 <code>sum(max(left[i], right[i]))</code>。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 366" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'>
 <title>Candy 两遍扫描</title><desc>左约束和右约束分开处理, 最后取 max</desc>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowo" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
@@ -814,7 +1054,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="20" y="328" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">为什么 max 不浪费: 每条约束单独要求的最小值就是 left[i] / right[i], 同时满足的最小值就是两者较大者。</text>
 <text x="20" y="348" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">一遍扫不行: 扫到 i=1 (rating 0) 时, 它比左邻居低, 但它比谁多要看后面 i=2 才知道 → 所以倒着再扫一次。</text>
 </svg>
-<figcaption>left 管左约束, right 管右约束, 逐格取 max 就是答案: 2+1+2+3+1 = 9。</figcaption></figure>
+<figcaption>left 管左边的约束, right 管右边的约束, 逐个取 max 就是答案: 2 + 1 + 2 + 3 + 1 = 9。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 796" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'>
 <title>Candy trace</title><desc>ratings=[1,0,2,3,1]</desc>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowo" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
@@ -981,13 +1222,46 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="243.92" y="780" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">还没填</text>
 </svg>
 <figcaption>A 段从左到右填 left, B 段从右到左填 right, C 段取 max 求和。</figcaption></figure>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">candy</span>(ratings):</span><span class="l">    n = <span class="t">len</span>(ratings)</span><span class="l">    left = [1] * n                                      <span class="c"># left[i]: 只管左约束的最少糖</span></span><span class="l">    <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(1, n):</span><span class="l">        <span class="k">if</span> ratings[i] &gt; ratings[i - 1]:</span><span class="l">            left[i] = left[i - 1] + 1</span><span class="l">    right = [1] * n                                     <span class="c"># right[i]: 只管右约束的最少糖</span></span><span class="l">    <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(n - 2, -1, -1):</span><span class="l">        <span class="k">if</span> ratings[i] &gt; ratings[i + 1]:</span><span class="l">            right[i] = right[i + 1] + 1</span><span class="l">    <span class="r">return</span> <span class="t">sum</span>(<span class="t">max</span>(l, r) <span class="k">for</span> l, r <span class="k">in</span> <span class="t">zip</span>(left, right))  <span class="c"># 两条约束同时满足</span></span></div>
-<p>Time O(n) (三次线性扫描); Space O(n) (left 和 right)。另有 O(1) 空间的'上坡/下坡'写法, 面试用这个两遍版本即可。</p>
-<p class="note"><b>记:</b>Candy = 约束有左右两个方向:从左扫一遍、从右扫一遍,每格取 max。</p>
-<h2>6. Largest Number: 自定义排序, 比较 a+b 和 b+a</h2>
-<p>题目: 把非负整数列表拼成最大的数, 返回字符串。例: <code>[3,30,34,5,9]</code> → <code>"9534330"</code>。</p>
-<p>Brute force: 枚举所有排列取最大, O(n! · n)。浪费在: 排列的好坏其实只由<b>相邻两个</b>谁在前决定, 不需要看整体。</p>
-<p>关键观察: 对任意两个数 a, b, 只有两种拼法 a+b 和 b+a (字符串拼接), 谁大谁在前。这个比较关系可以传递, 所以直接用它当 comparator 排序即可。普通字典序会错: "3" 和 "30" 里 "30" 更大, 但 330 &gt; 303。</p>
+<h3>复杂度</h3>
+<p>Time <code>O(n)</code>, Space <code>O(n)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">candy</span>(ratings):</span><span class="l">    n = <span class="t">len</span>(ratings)</span><span class="l">    <span class="c"># left[i]: 只管左约束的最少糖</span></span><span class="l">    left = [1] * n</span><span class="l">    <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(1, n):</span><span class="l">        <span class="k">if</span> ratings[i] &gt; ratings[i - 1]:</span><span class="l">            left[i] = left[i - 1] + 1</span><span class="l">    <span class="c"># right[i]: 只管右约束的最少糖</span></span><span class="l">    right = [1] * n</span><span class="l">    <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(n - 2, -1, -1):</span><span class="l">        <span class="k">if</span> ratings[i] &gt; ratings[i + 1]:</span><span class="l">            right[i] = right[i + 1] + 1</span><span class="l">    <span class="r">return</span> <span class="t">sum</span>(<span class="t">max</span>(l, r) <span class="k">for</span> l, r <span class="k">in</span> <span class="t">zip</span>(left, right))  <span class="c"># 两条约束同时满足</span></span></div>
+</details>
+<p class="note"><b>记:</b>每个元素同时受左右两边约束: 从左扫一遍、从右扫一遍, 再合并 (取 max)。</p>
+<h2>6. Largest Number</h2>
+<h3>题目在问什么</h3>
+<p>给一组非负整数, 把它们重新排列后拼接成一个字符串, 让这个数最大。返回字符串。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 266" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Largest Number examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">把一组非负整数拼成一个字符串, 让它表示的数最大</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  [10,2]  →  &quot;210&quot;</text>
+<text x="40" y="82" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">2 放前面: &quot;210&quot; &gt; &quot;102&quot;</text>
+<line x1="40" y1="106" x2="640" y2="106" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="126" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  [3,30,34,5,9]  →  &quot;9534330&quot;</text>
+<rect x="40" y="152" width="50" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="65.0" y="168.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">9</text>
+<rect x="90" y="152" width="50" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="115.0" y="168.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<rect x="140" y="152" width="50" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="165.0" y="168.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">34</text>
+<rect x="190" y="152" width="50" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="215.0" y="168.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="240" y="152" width="50" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="265.0" y="168.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">30</text>
+<text x="40" y="198" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">3 要放在 30 前面: &quot;330&quot; &gt; &quot;303&quot;。按字符串字典序排的话 30 会在 3 前面, 是错的</text>
+<line x1="40" y1="222" x2="640" y2="222" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="237" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="244" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">拼接顺序</text></svg>
+<figcaption>两个例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>试所有排列, 拼起来比大小。<code>O(n! · n)</code>。</p>
+<h3>Intuition: 两个数谁放前面, 拼一下比一比</h3>
+<p>直觉是"大的放前面", 但按数值排不对 (10 和 2, 应该是 2 在前); 按字符串字典序排也不对 (3 和 30, 字典序是 30 > 3, 但 "330" > "303", 应该 3 在前)。</p>
+<p>正确的比较方法: 对两个数 a 和 b, 直接比较 <code>a + b</code> 和 <code>b + a</code> (字符串拼接)。<code>a + b</code> 更大, a 就放前面。</p>
+<p>为什么这样排出来的就是最优? 用交换论证: 如果最优解里有相邻的两个 x, y 满足 <code>y + x > x + y</code>, 交换它们, 拼出来的数会更大, 矛盾。所以最优解里每一对相邻的都满足这个顺序, 也就是按这个规则排好序的结果。</p>
+<p>Python 里用 <code>functools.cmp_to_key</code> 把比较函数变成排序的 key。最后注意全是 0 的情况, 要返回 "0" 而不是 "000"。</p>
+<h3>算法</h3>
+<ol><li>转成字符串。</li><li>按比较规则排序: a + b > b + a 的 a 排前面。</li><li>拼接; 如果第一个是 "0", 返回 "0"。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 336" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'>
 <title>Largest Number 比较器</title><desc>a+b vs b+a</desc>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowo" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
@@ -1014,7 +1288,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <line x1="20" y1="294" x2="660" y2="294" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
 <text x="20" y="318" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="400">代码里: sorted(strs, key=cmp_to_key(lambda a, b: -1 if a + b &gt; b + a else 1))</text>
 </svg>
-<figcaption>字典序给出 303, a+b vs b+a 给出 330。最优解里每个相邻对都必须满足 x+y ≥ y+x。</figcaption></figure>
+<figcaption>字典序会得到 303, 比较 a + b 和 b + a 得到 330。最优解里每一对相邻的都满足 x + y ≥ y + x。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 418" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'>
 <title>Largest Number trace</title><desc>nums=[3,30,34,5,9] 逐个插入</desc>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowo" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
@@ -1080,14 +1355,84 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="120.96" y="389" width="16" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="142.95999999999998" y="402" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">list 里已有的</text>
 </svg>
-<figcaption>逐个插入: 30 排在 3 后面 (303 < 330), 34 插到 3 前面 (343 > 334), 5 和 9 一路插到最前。结果 9534330。</figcaption></figure>
+<figcaption>逐个插入: 30 排在 3 后面 (303 < 330), 34 插到 3 前面 (343 > 334), 5 和 9 一路插到最前。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n log n · L)</code>, L 是数字的位数。Space <code>O(n · L)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">from</span> <span class="t">functools</span> <span class="k">import</span> cmp_to_key</span><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">largest_number</span>(nums):</span><span class="l">    strs = [<span class="t">str</span>(x) <span class="k">for</span> x <span class="k">in</span> nums]</span><span class="l">    <span class="c"># a 排在 b 前面 &lt;=&gt; a+b &gt; b+a (字符串拼接, 不是字典序)</span></span><span class="l">    strs.<span class="f">sort</span>(key=<span class="f">cmp_to_key</span>(<span class="k">lambda</span> a, b: -1 <span class="k">if</span> a + b &gt; b + a <span class="k">else</span> 1))</span><span class="l">    res = <span class="s">&quot;&quot;</span>.<span class="f">join</span>(strs)</span><span class="l">    <span class="r">return</span> <span class="s">&quot;0&quot;</span> <span class="k">if</span> res[0] == <span class="s">&quot;0&quot;</span> <span class="k">else</span> res   <span class="c"># [0, 0] 这类全零要返回 &quot;0&quot;</span></span></div>
-<p>Time O(n log n · L) (L 是数字位数, 每次比较拼接要 O(L)); Space O(n)。</p>
-<p class="note"><b>记:</b>Largest Number = 自定义 comparator:a 在前 ⇔ a+b &gt; b+a;全零要返回 "0"。</p>
-<h2>7. Partition Labels: 用 last occurrence 当边界</h2>
-<p>题目: 把字符串切成尽量多的段, 使每个字母只出现在一段里, 返回每段长度。例: <code>"abacbdefe"</code> → <code>[5,1,3]</code>。</p>
-<p>Brute force: 对每个切点检查'左右两边有没有共同字母', O(n^2) 或更差。浪费在: 每次都重新查集合, 其实一个字母'必须延伸到哪'是固定的, 就是它的最后一次出现。</p>
-<p>关键观察: 当前这段里出现过的每个字母 c, 这段至少要延伸到 last[c]。所以 end = 段内所有字母 last 的最大值 (随扫描只增不减)。当 i == end 时, 段内所有字母都已出现完, 此刻切最早, 段数最多。这和 Jump Game II 是同一个形状: 一个只增不减的边界, 扫到边界就切。</p>
+</details>
+<p class="note"><b>记:</b>"排列成最优": 找出两个元素之间的比较规则 (常用 a+b vs b+a), 自定义排序。</p>
+<h2>7. Partition Labels</h2>
+<h3>题目在问什么</h3>
+<p>把字符串 s 切成<b>尽量多</b>的段, 要求每个字母只出现在其中一段里。返回每一段的长度。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 202" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Partition Labels examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">把字符串切成尽量多的段, 要求每个字母只出现在其中一段里。返回每段的长度</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  s = &quot;ababcbacadefegdehijhklij&quot;  →  [9,7,8]</text>
+<rect x="40" y="88" width="24" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="52.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">a</text>
+<rect x="64" y="88" width="24" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="76.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">b</text>
+<rect x="88" y="88" width="24" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="100.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">a</text>
+<rect x="112" y="88" width="24" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="124.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">b</text>
+<rect x="136" y="88" width="24" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="148.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">c</text>
+<rect x="160" y="88" width="24" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="172.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">b</text>
+<rect x="184" y="88" width="24" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="196.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">a</text>
+<rect x="208" y="88" width="24" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="220.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">c</text>
+<rect x="232" y="88" width="24" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="244.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">a</text>
+<rect x="256" y="88" width="24" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="268.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">d</text>
+<rect x="280" y="88" width="24" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="292.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">e</text>
+<rect x="304" y="88" width="24" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="316.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">f</text>
+<rect x="328" y="88" width="24" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="340.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">e</text>
+<rect x="352" y="88" width="24" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="364.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">g</text>
+<rect x="376" y="88" width="24" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="388.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">d</text>
+<rect x="400" y="88" width="24" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="412.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">e</text>
+<rect x="424" y="88" width="24" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="436.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">h</text>
+<rect x="448" y="88" width="24" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="460.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">i</text>
+<rect x="472" y="88" width="24" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="484.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">j</text>
+<rect x="496" y="88" width="24" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="508.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">h</text>
+<rect x="520" y="88" width="24" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="532.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">k</text>
+<rect x="544" y="88" width="24" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="556.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">l</text>
+<rect x="568" y="88" width="24" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="580.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">i</text>
+<rect x="592" y="88" width="24" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="604.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">j</text>
+<rect x="37" y="85" width="222" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="253" y="85" width="174" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="421" y="85" width="198" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="40" y="134" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">&quot;ababcbaca&quot; | &quot;defegde&quot; | &quot;hijhklij&quot;: a 只在第一段, d 和 e 只在第二段, ...</text>
+<line x1="40" y1="158" x2="640" y2="158" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="173" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="180" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">每一段</text></svg>
+<figcaption>例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>试所有切法, 检查每个字母是否只在一段里。指数级。</p>
+<h3>Intuition: 一段至少要延伸到它里面每个字母最后出现的位置</h3>
+<p>第一段从 index 0 开始。第一个字母是 a, 那 a 所有出现的地方都必须在这一段里, 所以这一段至少要到 a <b>最后一次出现</b>的位置。</p>
+<p>但在这个范围里, 又出现了别的字母 (比如 b), b 最后出现的位置可能更远, 那这一段就要延伸到那里。一直这样延伸, 直到扫到的位置 i 正好等于当前要求的右边界 end, 说明这一段里所有字母都不会再出现了, 在这里切一刀, 段数最多。</p>
+<p>所以先扫一遍, 记下每个字母最后出现的位置 <code>last[c]</code>。</p>
+<h3>算法</h3>
+<ol><li><code>last = {c: i for i, c in enumerate(s)}</code>。</li><li><code>start = end = 0</code>。i 从 0 到 n-1: <code>end = max(end, last[s[i]])</code>。如果 <code>i == end</code>: 记录长度 <code>end - start + 1</code>, <code>start = i + 1</code>。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 318" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'>
 <title>Partition Labels invariant</title><desc>每段的右边界 = 段内字母 last occurrence 的最大值</desc>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowo" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
@@ -1134,7 +1479,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="20" y="264" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">切得越早越好 (greedy): 第一次满足 i == end 就切, 再往后拖只会把后面的字母拉进来、段更长, 段数不会更多。</text>
 <text x="20" y="300" font-size="16" fill="#085041" text-anchor="start" font-weight="600">答案 = [5, 1, 3]</text>
 </svg>
-<figcaption>a 的 last=2, b 的 last=4: 第一段至少到 4。每一段的右边界由段内字母的 last 最大值决定。</figcaption></figure>
+<figcaption>a 的 last = 2, b 的 last = 4: 第一段至少到 4。每段的右边界由段里所有字母的 last 决定。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 572" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'>
 <title>Partition Labels trace</title><desc>s=abacbdefe</desc>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowo" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
@@ -1282,23 +1628,16 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="352.24" y="543" width="16" height="16" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
 <text x="374.24" y="556" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">没扫到</text>
 </svg>
-<figcaption>i=0..4 时 end 从 2 推到 4, 在 i=4 切 (长度 5); i=5 单独成段; i=6,7 把 end 推到 8, i=8 切 (长度 3)。</figcaption></figure>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">partition_labels</span>(s):</span><span class="l">    last = {c: i <span class="k">for</span> i, c <span class="k">in</span> <span class="t">enumerate</span>(s)}  <span class="c"># 每个字母最后一次出现的位置</span></span><span class="l">    res = []</span><span class="l">    start = end = 0</span><span class="l">    <span class="k">for</span> i, c <span class="k">in</span> <span class="t">enumerate</span>(s):</span><span class="l">        end = <span class="t">max</span>(end, last[c])             <span class="c"># 这段至少要延伸到 c 的最后一次出现</span></span><span class="l">        <span class="k">if</span> i == end:                        <span class="c"># 段内所有字母都已最后一次出现 -&gt; 可以切</span></span><span class="l">            res.<span class="f">append</span>(i - start + 1)</span><span class="l">            start = i + 1</span><span class="l">    <span class="r">return</span> res</span></div>
-<p>Time O(n) (建 last 一遍, 扫描一遍); Space O(1) (字母表大小固定)。</p>
-<p class="note"><b>记:</b>Partition Labels = 先记每个字母的 last,再扫描 end = max(end, last[c]),i == end 就切。</p>
-<h2>8. 识别信号: 看到什么 → 试什么</h2>
-<table>
-<tr><th>题目特征</th><th>做法</th><th>complexity</th></tr>
-<tr><td>问'能不能到 / 最少几步到', 每格有跳跃上限</td><td>扫描维护 max_reach; 数最少步时加 cur_end / farthest 分层</td><td>O(n^2) DP/BFS → O(n)</td></tr>
-<tr><td>环形路 / 累计量, 一旦变负当前起点就作废</td><td>tank &lt; 0 就重置起点到 i+1; 另用 total 判断有无解</td><td>O(n^2) → O(n)</td></tr>
-<tr><td>可以无限次交易 / 每个正的增量都能拿</td><td>把序列拆成相邻差, 正的全加</td><td>指数 / DP → O(n)</td></tr>
-<tr><td>每个元素受左邻居和右邻居两个方向的约束</td><td>从左一遍 + 从右一遍, 最后取 max (或 min)</td><td>反复修补 O(n^2) → O(n)</td></tr>
-<tr><td>拼接 / 排队, 只看相邻两项就能比谁先谁后</td><td>自定义 comparator 排序 (交换相邻对不会更差)</td><td>O(n!) → O(n log n)</td></tr>
-<tr><td>切段 / 分组, 每个元素有"最晚必须到哪"</td><td>先记 last occurrence, 扫描时维护 end, i == end 就切</td><td>O(n^2) → O(n)</td></tr>
-<tr><td>区间选最多 / 合并 / 射气球</td><td>按 end (或 start) 排序再扫, 见 10 doc</td><td>指数 → O(n log n)</td></tr>
-<tr><td>每步要取当前最大/最小再决定 (Task Scheduler)</td><td>greedy + heap, 见 09 doc</td><td>O(n^2) → O(n log n)</td></tr>
-<tr><td>举得出反例 (如 coins=[1,3,4]) / 选择之间互相影响</td><td>不是 greedy, 用 DP</td><td>-</td></tr>
-</table>
-<p class="note"><b>记:</b>看到'求最少/最多'先想 exchange argument:能说清最优解里一定可以含我这步选择就 greedy,举得出反例就 DP。</p>
-<p>以后再学 (一行): Huffman 编码、Dijkstra (greedy + heap 的图版本)、matroid 理论; 面试里基本不会展开。</p>
+<figcaption>end 一路被推远, i 追上 end 的时候切一刀。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n)</code>, Space <code>O(26)</code>。这和 10 里的 Merge Intervals 是一回事: 每个字母对应一个区间 [第一次出现, 最后一次出现], 合并重叠的区间。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">partition_labels</span>(s):</span><span class="l">    last = {c: i <span class="k">for</span> i, c <span class="k">in</span> <span class="t">enumerate</span>(s)}  <span class="c"># 每个字母最后一次出现的位置</span></span><span class="l">    res = []</span><span class="l">    start = end = 0</span><span class="l">    <span class="k">for</span> i, c <span class="k">in</span> <span class="t">enumerate</span>(s):</span><span class="l">        end = <span class="t">max</span>(end, last[c])             <span class="c"># 这段至少要延伸到 c 的最后一次出现</span></span><span class="l">        <span class="c"># 段内所有字母都已最后一次出现 -&gt; 可以切</span></span><span class="l">        <span class="k">if</span> i == end:</span><span class="l">            res.<span class="f">append</span>(i - start + 1)</span><span class="l">            start = i + 1</span><span class="l">    <span class="r">return</span> res</span></div>
+</details>
+<p class="note"><b>记:</b>每个元素必须在同一段: 记下最后出现的位置, 边扫边延伸右边界, 追上了就切。</p>
+<h2>8. 识别信号: 看到什么, 就想到 greedy</h2>
+<table><tr><th>题目特征</th><th>做法</th><th>complexity</th></tr><tr><td>能不能到达 / 能到达的范围是连续的</td><td>只维护 max_reach</td><td><code>O(n²)</code> → <code>O(n)</code></td></tr><tr><td>最少几步, 每一层是连续区间</td><td>cur_end + farthest 模拟 BFS 分层</td><td><code>O(n²)</code> → <code>O(n)</code></td></tr><tr><td>环形, 累计量不能为负</td><td>变负就把起点重置到下一个; total 判断有没有解</td><td><code>O(n²)</code> → <code>O(n)</code></td></tr><tr><td>可以交易任意多次</td><td>所有正的差价加起来</td><td><code>O(n)</code></td></tr><tr><td>每个元素受左右两边约束</td><td>左扫一遍、右扫一遍, 再合并</td><td><code>O(n²)</code> → <code>O(n)</code></td></tr><tr><td>"排列成最大 / 最小"</td><td>找两两比较的规则, 自定义排序</td><td><code>O(n!)</code> → <code>O(n log n)</code></td></tr><tr><td>切成尽量多的段, 某种元素不能跨段</td><td>记 last, 边扫边延伸右边界</td><td><code>O(n)</code></td></tr><tr><td>区间: 最多保留几个不重叠</td><td>按 end 排序 → 10</td><td><code>O(n log n)</code></td></tr><tr><td>每一步选"当前最优", 候选会变化</td><td>greedy + heap → 09</td><td><code>O(n log n)</code></td></tr></table>
+<p>用 greedy 之前, 先试着找反例。找不到反例, 并且能说出一句"为什么这样选不会吃亏", 才用。否则用 DP。</p>
+<h2>以后再学</h2>
+<p>Huffman 编码、Dijkstra (本质也是 greedy, 见 12)、matroid 理论 (什么时候 greedy 一定对)。</p>
 </article></body></html>

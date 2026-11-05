@@ -1,0 +1,20 @@
+<svg width="100%" viewBox="0 0 680 266" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Largest Number examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">把一组非负整数拼成一个字符串, 让它表示的数最大</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  [10,2]  →  &quot;210&quot;</text>
+<text x="40" y="82" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">2 放前面: &quot;210&quot; &gt; &quot;102&quot;</text>
+<line x1="40" y1="106" x2="640" y2="106" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="126" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  [3,30,34,5,9]  →  &quot;9534330&quot;</text>
+<rect x="40" y="152" width="50" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="65.0" y="168.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">9</text>
+<rect x="90" y="152" width="50" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="115.0" y="168.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<rect x="140" y="152" width="50" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="165.0" y="168.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">34</text>
+<rect x="190" y="152" width="50" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="215.0" y="168.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="240" y="152" width="50" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="265.0" y="168.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">30</text>
+<text x="40" y="198" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">3 要放在 30 前面: &quot;330&quot; &gt; &quot;303&quot;。按字符串字典序排的话 30 会在 3 前面, 是错的</text>
+<line x1="40" y1="222" x2="640" y2="222" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="237" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="244" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">拼接顺序</text></svg>
