@@ -1389,7 +1389,7 @@ def fig_uf_trace():
     return s.out("uf_trace.svg")
 
 # ------------------------------------------------------------ Dijkstra
-DJ_POS = {1: (60, 115), 2: (200, 62), 3: (200, 168), 4: (340, 115), 5: (480, 115)}
+DJ_POS = {1: (60, 123), 2: (200, 72), 3: (200, 176), 4: (340, 123), 5: (480, 123)}
 INF = float("inf")
 
 
@@ -1498,10 +1498,10 @@ def heap_tree(s, cx, y0, heap, key=True):
 def fig_dijkstra_trace():
     steps = sim_dijkstra()
     rh = 104
-    top = 232
+    top = 262
     H = top + rh * len(steps) + 110
     s = Svg(H, "Network Delay Time (Dijkstra) 运行流程")
-    head(s, "k = 1 · heap 里存 (dist, node) · pop 最小的 → 过期就 skip → 否则对每条出边 relax: nd = d + w, nd < dist[v] 才更新并 push",
+    head(s, "k = 1 · heap 存 (dist, node) · pop 最小的 → 过期就 skip → 否则 relax 每条出边: nd = d + w, nd < dist[v] 才更新并 push",
          "图: u → v 边上的数字 = 耗时 w")
     pos = DJ_POS
     for u, v, w in DJ_TIMES:
@@ -1514,7 +1514,7 @@ def fig_dijkstra_trace():
     s.text(540, 82, "times =", 12, SUB)
     for i, t in enumerate(DJ_TIMES):
         s.text(540 + (i % 2) * 52, 100 + (i // 2) * 18, str(t).replace(" ", ""), 12, SUB)
-    y0 = 196
+    y0 = 208
     s.text(40, y0, "pop (d, u)", 12, SUB)
     s.text(160, y0, "dist 表 [1..5]", 12, SUB)
     s.text(340, y0, "heap (tree, 顶 = 最小)", 12, SUB)
@@ -1593,5 +1593,195 @@ def build_figs():
     return F
 
 
+
+
+# ------------------------------------------------------------ the document
+def build_doc(F):
+    doc = d.Doc("12 · Graph: BFS / DFS / Topological Sort / Union-Find / Dijkstra")
+    doc.main("主线: graph 遍历 = 从已知的点出发, 用 visited 保证每个点只处理一次 → O(V + E)。"
+             "BFS 按层扩 = 无权最短路; 入度归零 = 拓扑序; Union-Find 回答\"连没连通\"; heap 贪心 = 带权最短路。")
+    doc.main("概念链: Number of Islands (grid DFS) → Rotting Oranges (multi-source BFS) → "
+             "Word Ladder (隐式图 BFS 最短路) → Course Schedule (Kahn 拓扑排序) → Course Schedule II (拓扑顺序 + 有环) → "
+             "Clone Graph (DFS + Hash Table) → Number of Provinces (Union-Find) → Network Delay Time (Dijkstra)")
+
+    # ---------------------------------------------------------------- 0
+    doc.h2("0. 第一性原理: 不记 visited, 就是在重复劳动")
+    doc.p("<b>Brute force:</b> 从 start 出发, 对每个邻居递归 (或入队), 不记走过哪里。"
+          "图里有环 → 永远走不完; 即使没有环, 多条路汇合到同一个点时, 那个点和它后面的整片区域会被重复处理。"
+          "上图: 两层 diamond 就有 13 次处理, 每多一层翻一倍 → $O(2^k)$。")
+    doc.p("<b>浪费在哪:</b> 同一个点被处理多次。点的结果只和\"它是谁\"有关, 和\"从哪条路来的\"无关, 第二次处理是白做。")
+    doc.p("<b>消掉它:</b> 一个 visited 集合。点第一次出现就标记, 之后看到就跳过 → 每个点只处理一次, 每条边只检查一次 → $O(V + E)$。"
+          "grid 是隐式 graph: 格子是点, 上下左右是边, 邻居靠 <code>(dr, dc)</code> 现算, 不用建邻接表。")
+    doc.svg(F["first"], "没有 visited: 汇合点被重复处理, 13 次 vs 7 次; 有 visited: 每个点 1 次, 重复到达的边被红虚线挡掉。")
+    doc.p("<b>BFS vs DFS 怎么选:</b> 只要\"最少几步 / 最短路 (边权相同)\" 就用 BFS: queue 里永远只有相邻两层, "
+          "第 k 层的点离起点正好 k 条边, 第一次碰到目标就是最短。"
+          "只要\"有没有 / 有几块 / 复制 / 收集\" 两个都行, DFS 写起来更短。")
+    doc.code(CODE["template"])
+    doc.note("visited 是 graph 题的第一反应。BFS 在<b>入队时</b>标记, DFS 在<b>进入时</b>标记。点数 V, 边数 E, 总是 O(V + E)。")
+
+    # ---------------------------------------------------------------- 1
+    doc.h2("1. Number of Islands: grid DFS flood fill, 进来先 sink")
+    doc.p("<b>题目:</b> grid 里 \"1\" 是陆地, \"0\" 是水, 上下左右相连的陆地算一个 island, 数有几个。"
+          "例: <code>[\"11000\",\"10010\",\"00110\",\"00001\"]</code> → 3。")
+    doc.p("<b>Brute force:</b> 对每个陆地格子各跑一次搜索, 各自找出它的连通块, 再给连通块去重 → 最坏 $O((mn)^2)$。"
+          "<b>浪费:</b> 同一个 island 里的每个格子都把整块 island 重新搜一遍。")
+    doc.p("<b>关键观察:</b> 搜过的格子就不会再有新信息。让所有搜索<b>共享一份 visited</b> (直接把 \"1\" 改成 \"0\"), "
+          "那么扫描时遇到的 \"1\" 一定属于一个没见过的 island, 一次 dfs 把整块吃掉。")
+    doc.svg(F["isl_core"], "grid 的 4 个方向就是 4 条边; dfs 入口的三道防线里, \"已 sink\"就是 visited 检查。")
+    doc.svg(F["isl_tr"], "每次扫描遇到 1 → count += 1 → dfs 把整块 sink; 3 次触发 = 3 个 island。")
+    doc.code(CODE["islands"])
+    doc.p("<b>Time</b> $O(mn)$: 外层扫描每格一次; dfs 每个陆地格只会\"真正展开\"一次 (进入即 sink), 每格检查 4 个邻居。"
+          "<b>Space</b> $O(mn)$: 整个 grid 是一个 island 时递归栈最深 $mn$。"
+          "Python 默认递归深度 1000, grid 很大时换成显式 stack 或 BFS, 逻辑不变。")
+    doc.p("<b>变体 Max Area of Island:</b> 同样的 dfs, 让它返回\"这块有多少格\", 外层取 max。只改一行:")
+    doc.code(CODE["maxarea"])
+    doc.note("grid 连通块 = 外层扫描 + dfs 原地标记。数块数: 触发次数; 求面积: dfs 返回格数。")
+
+    # ---------------------------------------------------------------- 2
+    doc.h2("2. Rotting Oranges: multi-source BFS, 所有源点一起入队")
+    doc.p("<b>题目:</b> 0 空, 1 新鲜, 2 烂。每分钟烂橘子把上下左右的新鲜橘子变烂。问全部变烂要几分钟, 不可能返回 -1。"
+          "和上一题的区别: 起点不止一个, 而且要\"最短时间\"。")
+    doc.p("<b>Brute force:</b> 每分钟把整个 grid 扫一遍, 让烂橘子感染邻居, 直到没变化 → 每分钟 $O(mn)$, 最多 $mn$ 分钟 → $O((mn)^2)$。"
+          "<b>浪费:</b> 每分钟都重新扫所有格子, 但真正会传染的只有\"刚变烂的\"那一圈, 烂了很久的早就没有新鲜邻居了。")
+    doc.p("<b>关键观察:</b> 只保留\"刚变烂的那一圈\" = BFS 的一层。每一层 = 1 分钟, <code>len(q)</code> 就是这一层的大小。"
+          "多个源点怎么办? 想象一个虚拟起点连到所有烂橘子, 距离 0 → 实际上就是<b>把所有初始烂橘子一起放进 queue</b> 当作第 0 层。")
+    doc.svg(F["rot_core"], "multi-source BFS = 虚拟源点 S* 连到所有源点; 层与层之间正好差 1 分钟。")
+    doc.svg(F["rot_tr"], "每一行 = 一分钟: popleft 一整层, 新烂的 push 进 queue, fresh 减去新烂的个数。")
+    doc.code(CODE["rotting"])
+    doc.p("<b>Time</b> $O(mn)$: 每个橘子变烂时入队一次、出队一次。<b>Space</b> $O(mn)$: queue 最大是一层的大小。")
+    doc.note("\"离最近的 X 有多远\" / \"同时扩散\" → 所有源点一起入队。层数 = 距离。分层写法: <code>for _ in range(len(q))</code>。")
+
+    # ---------------------------------------------------------------- 3
+    doc.h2("3. Word Ladder: 隐式图上的 BFS 最短路")
+    doc.p("<b>题目:</b> 每次只能改一个字母, 且改完的词必须在词典里。求 beginWord 变到 endWord 的最短序列长度 (单词个数)。"
+          "例: hit → cog, 词典 [hot, dot, dog, lot, log, cog] → 5 (hit → hot → dot → dog → cog)。"
+          "和上一题的区别: 没有 grid, 点是单词, 邻居\"改一个字母\"要自己生成。")
+    doc.p("<b>Brute force:</b> DFS 枚举所有变换路径取最短 → 指数级。或者先两两比较建 graph, $O(N^2 L)$, 再 BFS。"
+          "<b>浪费:</b> 枚举路径是在重复探索同一个词; 两两比较则为了建一张只用一次的图付了 $N^2$。")
+    doc.p("<b>关键观察:</b> 无权最短路 → BFS。邻居不用预先建图: 对当前词的每一位换 26 个字母, 在不在词典里直接查 set, 一个词有 $26L$ 个候选。"
+          "把 <code>words</code> 当作\"没访问过的词\", 找到一个就 remove → remove 就是 visited。")
+    doc.svg(F["lad_core"], "隐式图按层展开: 层号 = 路径上的单词数; 同层之间的边 (灰虚线) 两端都已 visited, 不会走。")
+    doc.svg(F["lad_tr"], "每一行 = 一层: popleft 整层, 找到的新词从 words 里 remove 并入队; cog 在 level 5 被取出。")
+    doc.code(CODE["ladder"])
+    doc.p("<b>Time</b> $O(N \\cdot L \\cdot 26 \\cdot L)$: 每个词最多出队一次 (入队前已 remove), 每个词 $26L$ 个候选, 每个候选拼字符串 + 查 set 是 $O(L)$。"
+          "<b>Space</b> $O(NL)$。")
+    doc.p("<b>变体 Open the Lock:</b> 点 = 4 位数字串 \"0000\"..\"9999\", 邻居 = 某一位 ±1 (8 个), deadends 一开始就放进 visited。其余和这题一模一样。")
+    doc.note("状态本身当节点 (单词 / 密码锁 / 位置+钥匙) + 无权最短路 → 隐式图 BFS。邻居现算, visited 存状态, 层数 = 答案。")
+
+    # ---------------------------------------------------------------- 4
+    doc.h2("4. Course Schedule: 拓扑排序 (Kahn), indegree 归零才入队")
+    doc.p("<b>题目:</b> numCourses 门课, <code>[a, b]</code> 表示上 a 之前必须先上 b。问能不能全部上完 (有环就不行)。"
+          "例: n = 6, prerequisites = [[2,0],[2,1],[3,2],[4,2],[5,3],[5,4]] → True。"
+          "和上一题的区别: 边有方向, 问的是\"依赖是否满足\", 不是最短路。")
+    doc.p("<b>Brute force:</b> 每一轮扫描所有课, 找\"前置课都上完了\"的课去上, 直到没有可上的 → 每轮 $O(V + E)$, 最多 $V$ 轮 → $O(V(V+E))$。"
+          "<b>浪费:</b> 每轮都在重新数每门课还差几门前置课, 而上完一门课只会影响它的后继。")
+    doc.p("<b>关键观察:</b> 维护 <code>indegree[v]</code> = v 还没上完的前置课数。上完 u 时, 只给 u 的后继 −1; 减到 0 就入队。"
+          "每条边恰好减一次 → $O(V + E)$。")
+    doc.svg(F["cs_core"], "indegree[2] 从 2 减到 0 的过程: 0 和 1 都 pop 之后, 2 的前置课才算全部上完, 它才可以入队。")
+    doc.svg(F["cs_tr"], "每一行: pop u → 对 u 的后继 indegree 减 1 → 变 0 的 push → order 追加 u。6 门课全部 pop = 无环。")
+    doc.code(CODE["canfinish"])
+    doc.p("<b>Time</b> $O(V + E)$: 建图 $O(V + E)$, 每个点入队一次, 每条边减一次。<b>Space</b> $O(V + E)$: 邻接表 + indegree + queue。")
+    doc.note("有依赖顺序 / 能不能完成 / 编译顺序 → 拓扑排序。入度为 0 的先入队, 每 pop 一个就把后继的入度减 1。")
+
+    # ---------------------------------------------------------------- 5
+    doc.h2("5. Course Schedule II: 同一个模板, 记下 pop 的顺序")
+    doc.p("<b>题目:</b> 和上一题一样, 但要返回一个合法的上课顺序; 有环返回 <code>[]</code>。"
+          "<b>改哪里:</b> 把 <code>done</code> 计数换成 <code>order</code> 列表, 最后检查 <code>len(order) == numCourses</code>。")
+    doc.p("<b>Brute force:</b> 枚举 $V!$ 种排列逐个检查依赖 → 指数级。"
+          "<b>关键观察:</b> Kahn 里每个点\"入队 ⇔ 所有前置课都已经在 order 里\", 所以 pop 的顺序本身就是合法顺序, 不用额外生成。"
+          "有环时, 环上的点互相等对方, indegree 永远减不到 0, 永远进不了 queue → order 不够长。")
+    doc.svg(F["fo_core"], "环 1 ⇄ 2: 两个点的 indegree 都是 1, 谁也等不到对方先上 → 卡住; order 只有 3 个。")
+    doc.svg(F["fo_tr"], "0 → 3 → 4 顺利 pop; queue 空了, 1 和 2 的 indegree 还是 1 (红), len(order) = 3 < 5 → 返回 []。")
+    doc.code(CODE["findorder"])
+    doc.p("<b>Time</b> $O(V + E)$, <b>Space</b> $O(V + E)$。")
+    doc.p("<b>同模板的题:</b> Alien Dictionary — 先比较相邻两个单词, 第一个不同的字母给出一条边 a → b, 再对字母图跑 Kahn。"
+          "另一种有环检测: DFS 三色标记 (未访问 / 访问中 / 已完成), 走到\"访问中\"的点就是有环。")
+    doc.note("Kahn 的 pop 顺序 = 拓扑序; <code>len(order) &lt; n</code> = 有环。要字典序最小就把 queue 换成 heap。")
+
+    # ---------------------------------------------------------------- 6
+    doc.h2("6. Clone Graph: DFS + Hash Table (old → new)")
+    doc.p("<b>题目:</b> 给一个无向连通图的一个节点 (有 <code>.val</code> 和 <code>.neighbors</code>), 返回整个图的深拷贝。"
+          "和前面的区别: 遍历的同时要<b>构造</b>一个新图, 还需要记住\"这个旧节点对应哪个新节点\"。")
+    doc.p("<b>Brute force:</b> 走到哪就 <code>Node(old.val)</code> 新建一个, 再递归复制 neighbors, 不记录。"
+          "环 → 无限递归; 就算没有死循环, 同一个旧节点被不同的邻居走到时会生成多个副本, 图的结构就错了。"
+          "<b>浪费 / 丢掉的信息:</b> 没记住\"这个旧节点已经有副本了, 副本是谁\"。")
+    doc.p("<b>关键观察:</b> Hash Table <code>old2new</code> 同时扮演两个角色: visited (有没有复制过) + 副本查找 (它的副本是谁)。"
+          "关键顺序: <b>先登记, 再递归 neighbors</b>。")
+    doc.svg(F["cl_core"], "先登记再递归: 绕一圈回到 1 时已在 old2new, 直接返回 1', 环被切断; 先递归后登记会无限递归。")
+    doc.svg(F["cl_tr"], "9 次 dfs 调用: 4 次 miss (新建 + 登记 + 递归), 5 次 hit (直接返回已有副本); old2new 最终 4 项。")
+    doc.code(CODE["clone"])
+    doc.p("<b>Time</b> $O(V + E)$: 每个节点复制一次, 每条边 (neighbors 列表项) 处理一次。<b>Space</b> $O(V)$: old2new + 递归栈。")
+    doc.note("复制 / 序列化带环的结构 → <code>old2new</code> 字典, 创建后<b>立刻</b>登记, 再递归。同样适用于 Copy List with Random Pointer。")
+
+    # ---------------------------------------------------------------- 7
+    doc.h2("7. Number of Provinces: Union-Find (path compression + union by size)")
+    doc.p("<b>题目:</b> n 个城市, <code>isConnected[i][j] == 1</code> 表示直接相连 (相连关系可以传递)。问有几个 province (连通块)。"
+          "例 (trace): n = 7, 边 (0,1) (2,3) (0,2) (4,5) (3,5) → 2 个 (0..5 一块, 6 一块)。")
+    doc.p("<b>Brute force:</b> 这一题用 DFS/BFS 数连通块一次就是 $O(V + E)$, 没问题。"
+          "但如果<b>边是一条条加进来、随时问\"a 和 b 连通吗\"</b>, 每次问都重新 BFS 就是 $O(V + E)$ 一次。"
+          "<b>浪费:</b> 上一次已经算出的连通信息没有保存。")
+    doc.p("<b>关键观察:</b> 只需要保存\"谁和谁在同一个集合\": 每个集合选一个 root, 每个点存 <code>parent</code>, 顺着 parent 走到 root。"
+          "<code>find(a) == find(b)</code> 就是连通。两个优化让它几乎 $O(1)$: "
+          "<b>union by size</b> (小树挂大树, 树高 ≤ $\\log n$), <b>path compression</b> (find 时把路径上的点直接挂到 root)。")
+    doc.svg(F["uf_core"], "无优化: 链, find 要 O(n); union by size 让树变矮; path compression 把走过的路径拍平。")
+    doc.svg(F["uf_tr"], "5 次 union: 前 4 次是合并; 第 5 次 find(3) 顺手压缩 parent[3] 2→0; count 7 → 2。")
+    doc.code(CODE["dsu"])
+    doc.code(CODE["provinces"])
+    doc.p("<b>Time</b> $O(n^2 \\cdot \\alpha(n))$ (要读完整个矩阵 $n^2$; 若输入是边列表则是 $O((n + E)\\,\\alpha(n))$, $\\alpha$ 是反 Ackermann, 实际 ≤ 4)。"
+          "<b>Space</b> $O(n)$。")
+    doc.p("<b>变体 Accounts Merge:</b> 点 = account 下标, 两个 account 共用一个 email 就 union; 最后按 root 把 email 归并、排序。"
+          "只多了一个 <code>email → 第一次见到它的 account</code> 的字典:")
+    doc.code(CODE["accounts"])
+    doc.note("\"连通块 / 合并集合 / 动态加边问连不连通 / 无向图有没有环\" → Union-Find。"
+             "<code>union</code> 返回 False = 这条边的两端早已连通 = 成环 (Graph Valid Tree)。")
+
+    # ---------------------------------------------------------------- 8
+    doc.h2("8. Network Delay Time: Dijkstra (heap)")
+    doc.p("<b>题目:</b> n 个点, <code>times[i] = [u, v, w]</code> 表示 u → v 耗时 w。从 k 发信号, 问所有点都收到至少要多久, 收不到返回 -1。"
+          "例: n = 5, k = 1, 6 条边 (见图) → 7。"
+          "和前面的区别: 边有<b>权重</b>, BFS 的\"层数\"不再等于距离。")
+    doc.p("<b>Brute force:</b> Bellman-Ford: 对所有边重复松弛 $V - 1$ 轮 → $O(VE)$。"
+          "<b>浪费:</b> 每一轮都把所有边再松弛一遍, 但绝大多数边的起点 dist 这一轮根本没变。")
+    doc.p("<b>关键观察 (贪心):</b> 所有候选距离里<b>最小的那个一定已经是最终答案</b> (边权 ≥ 0, 绕路只会更长)。"
+          "所以用 min-heap 每次取出当前最近的点, 只对它的出边松弛一次。"
+          "heap 里的旧记录不删, 弹出时发现 <code>d &gt; dist[u]</code> 就跳过 (lazy deletion)。")
+    doc.svg(F["dj_core"], "已确定区域 {1, 3}; heap 顶 (3, 2) 是最小候选, 任何别的路径出了这个区域都至少 3, 所以 dist[2] = 3 是最终值。")
+    doc.svg(F["dj_tr"], "8 行: 6 次有效弹出 + 2 次过期记录 (4,2) 和 (6,4) 被 skip; dist 最终 [0, 3, 1, 4, 7] → 答案 7。")
+    doc.code(CODE["dijkstra"])
+    doc.p("<b>Time</b> $O(E \\log V)$: 每条边最多 push 一次, heap 操作 $O(\\log)$。<b>Space</b> $O(V + E)$。")
+    doc.p("<b>变体 Cheapest Flights Within K Stops:</b> 限制最多 k 次中转 = 最多 k+1 条边。"
+          "Dijkstra 的\"最小的就是最终\"在有边数限制时不成立 (便宜但绕远的路可能把边数用光), "
+          "改用 <b>Bellman-Ford 只松弛 k+1 轮</b> (或 BFS, 状态带\"已用边数\"):")
+    doc.code(CODE["flights"])
+    doc.note("边权不同 + 非负 → Dijkstra: heap 存 (dist, node), 弹出时过期就 skip, 对出边 relax。边权全 1 → 普通 BFS 就够。有边数限制 → Bellman-Ford 跑 k+1 轮。")
+
+    # ---------------------------------------------------------------- signals
+    doc.h2("9. 识别信号: 看到什么 → 试什么")
+    rows = [
+        ("grid / 矩阵 + 连通区域 (数块数、面积、sink)", "grid DFS (或 BFS) + 原地标记 visited", "每格被重复搜索 O((mn)²) → O(mn)"),
+        ("最少步 / 最短路, 边权相同 (grid 最短路、单词变换、开锁)", "BFS 按层, 层数 = 距离", "枚举所有路径 指数 → O(V + E)"),
+        ("同时从多个源点扩散 / 离最近的 X 多远", "multi-source BFS: 所有源点一起入队", "每个源点各跑一次 O(k(V + E)) → O(V + E)"),
+        ("状态本身是节点 (词、密码锁、(位置, 钥匙))", "隐式图 BFS: 邻居现算, visited 存状态", "预先建整张图 O(N²) → 按需生成邻居"),
+        ("先后依赖 / 排课 / 编译顺序 / 有没有环", "拓扑排序 Kahn: indegree + queue", "每轮重扫找可上的课 O(V(V + E)) → O(V + E)"),
+        ("复制 / 序列化带环的图", "DFS + old2new Hash Table, 先登记再递归", "无限递归 / 重复副本 → O(V + E)"),
+        ("连通块 / 合并集合 / 动态加边问连通 / 无向图判环", "Union-Find (path compression + union by size)", "每次查询 BFS O(V + E) → 近 O(1)"),
+        ("非负权重最短路", "Dijkstra: min-heap 存 (dist, node)", "Bellman-Ford O(VE) → O(E log V)"),
+        ("最短路 + 最多 k 次中转 / 带边数限制", "Bellman-Ford 跑 k+1 轮, 或 BFS 状态带层数", "Dijkstra 不再适用; O(k·E)"),
+        ("有负权边", "Bellman-Ford (不能用 Dijkstra)", "O(VE)"),
+    ]
+    t = ['<table><tr><th>特征</th><th>做法</th><th>complexity 从 → 到</th></tr>']
+    for a, b, c in rows:
+        t.append("<tr><td>%s</td><td>%s</td><td>%s</td></tr>" % (a, b, c))
+    t.append("</table>")
+    doc.raw("".join(t))
+    doc.note("先问三件事: 边有没有权重? 要不要最短? 有没有方向 / 依赖? "
+             "无权最短 → BFS; 有权 → Dijkstra; 有依赖 → 拓扑; 只问连不连通 → DFS 或 Union-Find。")
+
+    doc.h2("以后再学")
+    doc.p("Tarjan SCC / 桥; Floyd-Warshall (全源最短路); MST (Kruskal 用本篇的 Union-Find, Prim 用 heap); "
+          "Hierholzer 欧拉路径 (Reconstruct Itinerary); 双向 BFS; A*; 二分图染色 (BFS/DFS 两种颜色交替)。")
+    doc.write("docs/%s.html" % SLUG)
+
+
 if __name__ == "__main__":
-    print(build_figs())
+    build_doc(build_figs())
