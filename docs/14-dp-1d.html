@@ -24,14 +24,46 @@ figure svg{width:100%;height:auto;display:block}
 figcaption{color:#52514e;font-size:14px;padding:4px 6px 0}
 table{border-collapse:collapse;margin:10px 0;font-size:15px}
 td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
+details{margin:12px 0;border:1px dashed var(--box);border-radius:6px;padding:4px 12px}
+summary{cursor:pointer;color:var(--sub);font-size:15px}
+ol,ul{padding-left:24px}li{margin:4px 0}
 </style></head><body><article contenteditable="true">
 <h1>14 · Dynamic Programming (1): 1D DP / Knapsack</h1>
-<p class="main">主线: DP = 带记忆的递归。大问题拆成少数几个更小的子问题, 同一个子问题只算一次。1D DP 的全部变化只有两处: state 怎么定义, transition 怎么写。</p>
-<p class="main">概念链: Climbing Stairs (dp[i-1] + dp[i-2]) → House Robber (选 / 不选) → House Robber II (环 = 两次线性) → Maximum Subarray (state = 以 i 结尾) → Maximum Product Subarray (同时维护 max 和 min) → Best Time to Buy and Sell Stock (到目前为止的最小值 / 状态机) → Coin Change (unbounded, 求最少个数) → Coin Change II (unbounded, 数组合: 外层 coin) → Partition Equal Subset Sum (0/1, 倒序) → Word Break (dp[i] = 前 i 个字符) → Longest Increasing Subsequence (往回看所有 j)</p>
-<h2>0. 第一性原理: 递归在重复算同一件事, DP 让每个子问题只算一次</h2>
-<p>从最朴素的写法开始。Climbing Stairs: 每次走 1 阶或 2 阶, 到第 n 阶有几种走法? 最后一步只有两种 (从 n-1 走 1 阶, 或从 n-2 走 2 阶), 所以 <code>f(n) = f(n-1) + f(n-2)</code>。直接写成递归:</p>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">f</span>(n):                           <span class="c"># f(n) = 走到第 n 阶的方法数</span></span><span class="l">    <span class="k">if</span> n &lt;= 1:</span><span class="l">        <span class="r">return</span> 1                    <span class="c"># base case: f(0) = f(1) = 1</span></span><span class="l">    <span class="c"># 最后一步: 从 n-1 走 1 阶, 或从 n-2 走 2 阶</span></span><span class="l">    <span class="r">return</span> <span class="f">f</span>(n - 1) + <span class="f">f</span>(n - 2)</span></div>
-<p>Brute force 的 complexity 是 O(2ⁿ): 每次调用拆成两个调用。浪费在哪里? 看递归树 (下图): f3 被展开了 2 次, f2 被展开了 3 次, f1 被展开了 5 次。<b>不同的子问题只有 n+1 个</b> (f0 … fn), 但调用次数是指数级。每个 f(k) 的值只取决于 k, 重复算只是在浪费。</p>
+<h2>这篇讲什么</h2>
+<p>DP (dynamic programming, 动态规划) 用来解决这样的问题: 一个大问题可以拆成<b>几个更小的同类问题</b>, 而且这些小问题会被<b>反复用到</b>。</p>
+<p>最直接的写法是 recursion: 大问题调用小问题, 小问题再调用更小的。问题是同一个小问题会被算很多很多遍, 时间是指数级的。DP 的想法很简单: <b>每个小问题只算一次, 把答案存起来, 下次直接用</b>。</p>
+<p>所有 DP 题都按同样的四步来想:</p>
+<ol><li><b>state</b>: <code>dp[i]</code> 表示什么? (一定要用一句话说清楚)</li><li><b>transition</b>: <code>dp[i]</code> 怎么由更小的 dp 算出来? 通常是想"最后一步做了什么"。</li><li><b>base case</b>: 最小的那几个 dp 是多少?</li><li><b>计算顺序</b>: 从小往大填, 保证用到的值都已经算好。</li></ol>
+<p>这篇讲 1D DP: state 只需要一个下标 (第 i 个位置、金额 a、容量 c)。需要两个下标的 (两个字符串、grid) 在 15。</p>
+<table><tr><th>#</th><th>题目</th><th>考过的公司数</th><th>state 的形状 / 相比上一题多了什么</th></tr><tr><td>1</td><td>Climbing Stairs</td><td>33</td><td>模板题: 前 i 个</td></tr><tr><td>2</td><td>House Robber</td><td>35</td><td>每一步"选 / 不选"</td></tr><tr><td>3</td><td>House Robber II</td><td>16</td><td>环 = 两次线性</td></tr><tr><td>4</td><td>Maximum Subarray</td><td>56</td><td>新的 state: 以 i 结尾</td></tr><tr><td>5</td><td>Maximum Product Subarray</td><td>22</td><td>要同时记最大和最小</td></tr><tr><td>6</td><td>Best Time to Buy and Sell Stock</td><td>81</td><td>到目前为止的最小值</td></tr><tr><td>7</td><td>Coin Change</td><td>35</td><td>新的 state: 金额 a (unbounded knapsack)</td></tr><tr><td>8</td><td>Coin Change II</td><td>12</td><td>数组合个数, 循环顺序很关键</td></tr><tr><td>9</td><td>Partition Equal Subset Sum</td><td>14</td><td>每个数只能用一次 (0/1 knapsack)</td></tr><tr><td>10</td><td>Word Break</td><td>26</td><td>前 i 个字符能不能切</td></tr><tr><td>11</td><td>Longest Increasing Subsequence</td><td>25</td><td>以 i 结尾, 往回看所有 j</td></tr></table>
+<p>每道题的顺序: <b>题目在问什么 → 看例子 → brute force → intuition → 算法 → 手动走一遍 → 复杂度</b>。代码放在最后, 默认折叠。</p>
+<h2>1. Climbing Stairs</h2>
+<h3>题目在问什么</h3>
+<p>要爬 n 级台阶, 每次可以爬 1 级或者 2 级。问: 爬到顶一共有多少种不同的方法? 顺序不同算不同的方法。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 294" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Climbing Stairs examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">爬 n 级台阶, 每次可以爬 1 级或 2 级。一共有多少种不同的爬法</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  n = 2  →  2</text>
+<rect x="40" y="88" width="60" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="70.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1+1</text>
+<rect x="100" y="88" width="60" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="130.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<line x1="40" y1="134" x2="640" y2="134" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="154" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  n = 3  →  3</text>
+<rect x="40" y="180" width="70" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="75.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1+1+1</text>
+<rect x="110" y="180" width="70" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="145.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1+2</text>
+<rect x="180" y="180" width="70" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="215.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2+1</text>
+<text x="40" y="226" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">1+2 和 2+1 是两种不同的爬法 (顺序不同)</text>
+<line x1="40" y1="250" x2="640" y2="250" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="265" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="272" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">每一种爬法</text></svg>
+<figcaption>两个例子。</figcaption></figure>
+<h3>Brute force: recursion</h3>
+<p>想"最后一步": 到达第 n 级, 最后一步要么是从第 n-1 级爬 1 级上来, 要么是从第 n-2 级爬 2 级上来。所以 <code>ways(n) = ways(n-1) + ways(n-2)</code>。</p>
+<p>直接写成 recursion 是对的, 但是很慢。画出 recursion tree 就能看到原因:</p>
 <figure><svg width="100%" viewBox="0 0 680 428" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>递归树里的重复子问题与 DP table</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">f(n) = 走到第 n 阶的方法数 = f(n-1) + f(n-2) · f(0) = f(1) = 1</text>
 <text x="40" y="38" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">左: 朴素递归树里同一个 f(k) 被反复展开 (红 = 已经算过一次的重复子问题) · 右: 每个 f(k) 只算一次</text>
@@ -122,25 +154,15 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="350.76" y="393" width="28" height="22" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="389.76" y="404" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">dp[5] 依赖的格子</text>
 </svg>
-<figcaption>左: 递归树里红色节点是已经算过的重复子问题; 右: 同一个递归关系填成表, 每格只算一次, dp[5] 只读 dp[4] 和 dp[3]。</figcaption></figure>
-<p>消掉浪费有三步, 每一步都是上一步的小改动:</p>
-<h3>① memoization: 加 @cache</h3>
-<div class="code"><span class="l"><span class="k">from</span> <span class="t">functools</span> <span class="k">import</span> <span class="t">cache</span></span><span class="l"></span><span class="l">@<span class="t">cache</span>                              <span class="c"># 同一个 n 只算一次, 第二次直接查表</span></span><span class="l"><span class="k">def</span> <span class="f">f</span>(n):</span><span class="l">    <span class="k">if</span> n &lt;= 1:</span><span class="l">        <span class="r">return</span> 1</span><span class="l">    <span class="r">return</span> <span class="f">f</span>(n - 1) + <span class="f">f</span>(n - 2)      <span class="c"># 函数体一个字没改, 只加了 @cache</span></span></div>
-<p>第一次算 f(k) 时把结果存起来, 之后直接查。不同的 k 只有 n+1 个, 每个 O(1) → O(n) time, O(n) space (cache + 递归栈)。</p>
-<h3>② bottom-up table: 把递归改写成循环</h3>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">f</span>(n):</span><span class="l">    <span class="c"># dp[i] 就是 f(i); base: dp[0] = dp[1] = 1</span></span><span class="l">    dp = [1] * (n + 1)</span><span class="l">    <span class="c"># 计算顺序: i 从小到大, 依赖的格子一定已经填好</span></span><span class="l">    <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(2, n + 1):</span><span class="l">        dp[i] = dp[i - 1] + dp[i - 2]</span><span class="l">    <span class="r">return</span> dp[n]</span></div>
-<p>memo 的递归其实是在 "从大 n 往小 n 要答案"; 改成从小到大先把依赖的格子填好, 就不需要递归栈了。这就是 DP 四步:</p>
-<p><b>state</b> (dp[i] 代表什么) → <b>transition</b> (dp[i] 怎么由更小的 dp 得到) → <b>base case</b> (最小的格子是多少) → <b>计算顺序</b> (保证依赖的格子先填好)。写 DP 前先把这四句话说出来, 代码是自然的。</p>
-<h3>③ 滚动变量: 只依赖前几个值时 O(1) space</h3>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">f</span>(n):</span><span class="l">    <span class="c"># a = dp[i-2], b = dp[i-1]; transition 只看前两格</span></span><span class="l">    a, b = 1, 1</span><span class="l">    <span class="k">for</span> _ <span class="k">in</span> <span class="t">range</span>(2, n + 1):</span><span class="l">        <span class="c"># 算出 dp[i], 窗口右移一格; 其余格子再也用不到</span></span><span class="l">        a, b = b, a + b</span><span class="l">    <span class="r">return</span> b                        <span class="c"># O(1) space</span></span></div>
-<p>dp[i] 只读 dp[i-1] 和 dp[i-2], 更早的格子永远不会再被读 → 用两个变量滚动。这个优化在本文里反复出现 (Robber, Kadane, Stock)。</p>
-<h3>1D DP 的 state 常见三种形状</h3>
-<table><tr><th>state 形状</th><th>含义</th><th>本文的题</th></tr><tr><td><code>dp[i]</code> = 前 i 个 / 到 i 为止的最优</td><td>到第 i 个为止, 不要求用到第 i 个</td><td>Climbing Stairs, House Robber, Word Break</td></tr><tr><td><code>dp[i]</code> = 以 i 结尾的最优</td><td>必须包含第 i 个, 这样才能接上前面</td><td>Kadane, Max Product, LIS</td></tr><tr><td><code>dp[a]</code> = 容量 / 金额 a 下的答案</td><td>下标不是位置, 是 "还剩多少额度"</td><td>Coin Change (I, II), Partition (knapsack)</td></tr></table>
-<p class="note"><b>记:</b>DP = 递归树里有重复子问题 + 子问题的个数是多项式。先写 recursion, 找出 state, 再决定 memo 还是 table, 最后看能不能滚动。</p>
-<h2>1. Climbing Stairs: dp[i] = dp[i-1] + dp[i-2]</h2>
-<p>题目: 一次走 1 或 2 阶, 到第 n 阶有几种走法? 例: n = 5 → 8。</p>
-<p>Brute force: 递归, O(2ⁿ), 浪费在重复子问题 (见第 0 节)。</p>
-<p>关键观察: 到第 i 阶的最后一步只有两种, 互斥且穷尽, 所以方法数相加。state 是 "到第 i 阶的方法数", 只依赖前两格。</p>
+<figcaption>左: recursion tree 里同一个子问题 (同色) 被算了很多遍。右: 每个子问题只算一次, 按顺序填表。</figcaption></figure>
+<p><code>ways(3)</code> 被算了 2 次, <code>ways(2)</code> 被算了 3 次……n 越大, 重复越多, 时间是 <code>O(2ⁿ)</code>。</p>
+<h3>Intuition: 每个子问题只算一次</h3>
+<p>有两种办法消掉重复:</p>
+<ul><li><b>memoization</b> (top-down): recursion 不变, 只是第一次算完 <code>ways(i)</code> 就存进 dict, 下次直接返回。Python 里加一行 <code>@cache</code>。</li><li><b>tabulation</b> (bottom-up): 不用 recursion, 直接从小到大填一个数组: <code>dp[0], dp[1], dp[2], ...</code>, 每一格只用到前面已经填好的格子。</li></ul>
+<p>再进一步: 填 <code>dp[i]</code> 只需要前两格, 更早的格子再也用不到了。所以不需要整个数组, 两个变量滚动就够了, 空间从 <code>O(n)</code> 降到 <code>O(1)</code>。</p>
+<p>用四步来说: state <code>dp[i]</code> = 爬到第 i 级的方法数; transition <code>dp[i] = dp[i-1] + dp[i-2]</code>; base case <code>dp[0] = 1, dp[1] = 1</code>; 顺序是 i 从小到大。</p>
+<h3>算法</h3>
+<ol><li><code>a, b = 1, 1</code> (分别是 dp[i-2] 和 dp[i-1])。</li><li>循环 n - 1 次: <code>a, b = b, a + b</code>。</li><li>返回 b。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 386" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>Climbing Stairs 的 transition 与滚动变量</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">到第 i 阶的最后一步只有两种, 互斥且穷尽 → 方法数直接相加</text>
 <text x="40" y="38" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">dp[i] = 走到第 i 阶的方法数</text>
@@ -175,7 +197,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="125" y="351" width="28" height="22" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="164" y="362" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">被依赖的</text>
 </svg>
-<figcaption>最后一步只有两种, 直接相加; 只读前两格, 所以两个变量滚动。</figcaption></figure>
+<figcaption>最后一步只有两种, 直接相加; 只读前两格, 所以两个变量滚动就够。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 578" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>n = 5 · dp[i] = 走到第 i 阶的方法数 (最后一步走 1 阶或 2 阶)</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">n = 5 · dp[i] = 走到第 i 阶的方法数 (最后一步走 1 阶或 2 阶)</text>
 <text x="40" y="38" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">每一步: 填 dp[i] = dp[i-1] + dp[i-2]; 填完后 dp[i-2] 再也不会被用到</text>
@@ -288,14 +311,80 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="437.68" y="546" width="22" height="16" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
 <text x="467.68" y="554" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">还没算</text>
 </svg>
-<figcaption>n = 5 的 trace: base 两格, 之后每一格 = 前两格相加, 最后 dp[5] = 8。</figcaption></figure>
+<figcaption>n = 5: base 两格, 之后每一格 = 前两格相加, 最后 dp[5] = 8。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n)</code>, Space <code>O(1)</code>。</p>
+<details><summary>代码: recursion → memo → 表格 → 两个变量, 四个版本对比</summary>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">f</span>(n):                           <span class="c"># f(n) = 走到第 n 阶的方法数</span></span><span class="l">    <span class="k">if</span> n &lt;= 1:</span><span class="l">        <span class="r">return</span> 1                    <span class="c"># base case: f(0) = f(1) = 1</span></span><span class="l">    <span class="c"># 最后一步: 从 n-1 走 1 阶, 或从 n-2 走 2 阶</span></span><span class="l">    <span class="r">return</span> <span class="f">f</span>(n - 1) + <span class="f">f</span>(n - 2)</span></div>
+<div class="code"><span class="l"><span class="k">from</span> <span class="t">functools</span> <span class="k">import</span> <span class="t">cache</span></span><span class="l"></span><span class="l">@<span class="t">cache</span>                              <span class="c"># 同一个 n 只算一次, 第二次直接查表</span></span><span class="l"><span class="k">def</span> <span class="f">f</span>(n):</span><span class="l">    <span class="k">if</span> n &lt;= 1:</span><span class="l">        <span class="r">return</span> 1</span><span class="l">    <span class="r">return</span> <span class="f">f</span>(n - 1) + <span class="f">f</span>(n - 2)      <span class="c"># 函数体一个字没改, 只加了 @cache</span></span></div>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">f</span>(n):</span><span class="l">    <span class="c"># dp[i] 就是 f(i); base: dp[0] = dp[1] = 1</span></span><span class="l">    dp = [1] * (n + 1)</span><span class="l">    <span class="c"># 计算顺序: i 从小到大, 依赖的格子一定已经填好</span></span><span class="l">    <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(2, n + 1):</span><span class="l">        dp[i] = dp[i - 1] + dp[i - 2]</span><span class="l">    <span class="r">return</span> dp[n]</span></div>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">f</span>(n):</span><span class="l">    <span class="c"># a = dp[i-2], b = dp[i-1]; transition 只看前两格</span></span><span class="l">    a, b = 1, 1</span><span class="l">    <span class="k">for</span> _ <span class="k">in</span> <span class="t">range</span>(2, n + 1):</span><span class="l">        <span class="c"># 算出 dp[i], 窗口右移一格; 其余格子再也用不到</span></span><span class="l">        a, b = b, a + b</span><span class="l">    <span class="r">return</span> b                        <span class="c"># O(1) space</span></span></div>
+</details>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">climbStairs</span>(n):</span><span class="l">    a, b = 1, 1                     <span class="c"># a = dp[i-2], b = dp[i-1]</span></span><span class="l">    <span class="k">for</span> _ <span class="k">in</span> <span class="t">range</span>(2, n + 1):</span><span class="l">        a, b = b, a + b             <span class="c"># dp[i] = dp[i-1] + dp[i-2]</span></span><span class="l">    <span class="r">return</span> b</span></div>
-<p>Time O(n): 循环 n-1 次。Space O(1): 只有 a, b 两个变量。</p>
-<p class="note"><b>记:</b>相加型 transition: 最后一步有 k 种 (互斥且穷尽) → dp[i] = 各个来源之和。依赖前 k 个 → k 个变量滚动。</p>
-<h2>2. House Robber: 每一步 "选 / 不选"</h2>
-<p>题目: 一排房子, 相邻的房子不能同时偷, 最多偷到多少钱? 例: nums = [2, 3, 9, 3, 1] → 12 (2 + 9 + 1)。</p>
-<p>Brute force: 每间房子偷 / 不偷, 2ⁿ 种, 检查相邻 → O(2ⁿ)。浪费: 决定了前面几间之后, 后面的最优和 "前面具体偷了哪几间" 无关, 只和 "最后停在哪" 有关, 却被重复求。</p>
-<p>相比上一题: transition 从 "相加" 变成 "取较大者 max", 多了一个选择。看第 i 间: 不偷就是 dp[i-1]; 偷就必须跳过 i-1, 接在 dp[i-2] 后面。</p>
+</details>
+<p class="note"><b>记:</b>DP = recursion + 不重复算。先写出"最后一步"的 recursion, 再加 memo 或改成从小到大填表; 只依赖前几格就用变量滚动。</p>
+<h2>把第 1 题抽象一下: 怎么想 DP</h2>
+<p>第 1 题的思路可以用在所有 DP 题上:</p>
+<ol><li>先写出 brute force 的 recursion, 想清楚"<b>最后一步有哪几种选择</b>"。每种选择会留下一个更小的问题。</li><li>看 recursion 的参数: 有几个参数在变, dp 就是几维的。这篇都是一个参数。</li><li>把 recursion 改成从小到大填表。</li></ol>
+<p>state 常见的三种形状: <b>前 i 个</b> (第 1、2、10 题)、<b>以 i 结尾</b> (第 4、5、11 题)、<b>金额 / 容量</b> (第 7、8、9 题)。看到一道新题, 先试这三种。</p>
+<p class="note"><b>记:</b>DP 四步: state (dp[i] 是什么) / transition (最后一步) / base case / 计算顺序。</p>
+<h2>2. House Robber</h2>
+<h3>题目在问什么</h3>
+<p>一排房子, <code>nums[i]</code> 是第 i 间里的钱。不能偷<b>相邻</b>的两间 (会触发警报)。问最多能偷多少钱。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 318" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>House Robber examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">一排房子, nums[i] 是第 i 间的钱。不能偷相邻的两间 (会触发警报)。最多能偷多少</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  nums = [1,2,3,1]  →  4</text>
+<rect x="40" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="57.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="57.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="91.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="91.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="108" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="125.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="125.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="142" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="159.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="159.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="200" y="103" font-size="14" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">偷 0 和 2: 1 + 3 = 4</text>
+<line x1="40" y1="150" x2="640" y2="150" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="170" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  nums = [2,7,9,3,1]  →  12</text>
+<rect x="40" y="212" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="57.0" y="228.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="57.0" y="254" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="212" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="91.0" y="228.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">7</text>
+<text x="91.0" y="254" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="108" y="212" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="125.0" y="228.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">9</text>
+<text x="125.0" y="254" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="142" y="212" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="159.0" y="228.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="159.0" y="254" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="176" y="212" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="193.0" y="228.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="193.0" y="254" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
+<path d="M77 204 L77 196 L105 196 L105 204" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="234" y="198" font-size="12" fill="#712B13" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">7 最大, 但偷了 7 就不能偷 2 和 9</text>
+<text x="234" y="227" font-size="14" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">偷 0, 2, 4: 2 + 9 + 1 = 12</text>
+<line x1="40" y1="274" x2="640" y2="274" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="289" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="296" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">偷的房子</text>
+<rect x="121" y="289" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
+<text x="142" y="296" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">看起来像, 但不对</text></svg>
+<figcaption>两个例子。</figcaption></figure>
+<p>Example 2 说明, 每次挑最大的 (贪心) 是不对的。</p>
+<h3>Brute force</h3>
+<p>每间房子偷或不偷, 枚举所有不相邻的组合, <code>O(2ⁿ)</code>。</p>
+<h3>Intuition: 最后一间偷不偷</h3>
+<p>看前 i 间房子 (0 到 i), 只考虑最后一间 i:</p>
+<ul><li><b>不偷</b> i: 那就是前 i-1 间能偷的最多, 也就是 <code>dp[i-1]</code>。</li><li><b>偷</b> i: 那 i-1 就不能偷, 只能加上前 i-2 间的最多: <code>dp[i-2] + nums[i]</code>。</li></ul>
+<p>两个里取大的: <code>dp[i] = max(dp[i-1], dp[i-2] + nums[i])</code>。</p>
+<p>这就是 DP 里最常见的"<b>选 / 不选</b>"结构。又是只依赖前两格, 可以两个变量滚动。</p>
+<h3>算法</h3>
+<ol><li><code>prev2 = prev1 = 0</code>。</li><li>对每个 x: <code>prev2, prev1 = prev1, max(prev1, prev2 + x)</code>。</li><li>返回 prev1。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 396" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>House Robber 选或不选</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">dp[i] = 只看 nums[0..i] 时的最大金额 · 对第 i 间房子只有两个选择</text>
 <text x="40" y="38" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">例: nums = [2, 3, 9] → dp[0] = 2, dp[1] = 3, 现在算 dp[2]</text>
@@ -325,7 +414,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="166.76" y="361" width="28" height="22" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="205.76" y="372" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">两个候选依赖的格子</text>
 </svg>
-<figcaption>dp[2] = max(dp[1], dp[0] + nums[2]) = max(3, 2 + 9) = 11: 两个选择覆盖了全部最优方案。</figcaption></figure>
+<figcaption>dp[2] = max(dp[1], dp[0] + nums[2]) = max(3, 2 + 9) = 11: 两个选择覆盖了所有可能。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 546" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>nums = [2, 3, 9, 3, 1] · dp[i] = 只看前 i+1 间房子 (nums[0..i]) 时的最大金额</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">nums = [2, 3, 9, 3, 1] · dp[i] = 只看前 i+1 间房子 (nums[0..i]) 时的最大金额</text>
 <text x="40" y="38" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">每一步: 不偷 i 就继承 dp[i-1]; 偷 i 就是 dp[i-2] + nums[i]; 取较大者</text>
@@ -427,14 +517,43 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="437.68" y="514" width="22" height="16" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
 <text x="467.68" y="522" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">还没算</text>
 </svg>
-<figcaption>nums = [2, 3, 9, 3, 1] 的 trace: 每一格的算式都写出来, 橙色 ring 是它读取的两个格子。</figcaption></figure>
+<figcaption>nums = [2,3,9,3,1]: 每一格的算式都写出来了, 橙色圈是它读取的两格。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n)</code>, Space <code>O(1)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">rob</span>(nums):</span><span class="l">    <span class="c"># dp[i] = 只看 nums[0..i] 时能偷到的最大金额</span></span><span class="l">    <span class="c"># dp[i] = max(dp[i-1],              不偷 i: 直接继承</span></span><span class="l">    <span class="c">#             dp[i-2] + nums[i])    偷 i: i-1 不能偷, 接在 dp[i-2] 后面</span></span><span class="l">    <span class="c"># dp[i-2], dp[i-1]; 把 dp[-2] = dp[-1] = 0 当 base</span></span><span class="l">    prev2, prev1 = 0, 0</span><span class="l">    <span class="k">for</span> x <span class="k">in</span> nums:</span><span class="l">        prev2, prev1 = prev1, <span class="t">max</span>(prev1, prev2 + x)</span><span class="l">    <span class="r">return</span> prev1</span></div>
-<p>Time O(n), Space O(1) (两个滚动变量)。</p>
-<p class="note"><b>记:</b>选 / 不选 型: dp[i] = max(不选 i → dp[i-1], 选 i → dp[i-2] + 收益)。"选了 i 就不能选 i-1" 体现在跳到 i-2。</p>
-<h2>3. House Robber II: 环 = 两次线性</h2>
-<p>题目: 房子排成一圈, 第一间和最后一间也相邻。例: nums = [2, 3, 9, 3, 1] → 11。</p>
-<p>Brute force: 2ⁿ。相比上一题只多了一个条件: 首尾不能同时偷。</p>
-<p>关键观察: 首尾至少有一个不偷。不偷最后一间 → 线性问题 nums[:-1]; 不偷第一间 → 线性问题 nums[1:]。两个都是上一题, 取较大者。改动只有一行: 调用两次 rob。</p>
+</details>
+<p class="note"><b>记:</b>每个元素"选 / 不选", 而且选了会影响邻居: dp[i] = max(不选, 选 + 前面能接上的)。</p>
+<h2>3. House Robber II</h2>
+<h3>题目在问什么</h3>
+<p>和第 2 题一样, 但房子<b>围成一圈</b>: 第一间和最后一间也算相邻。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 210" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>House Robber II examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">同上, 但房子围成一圈: 第一间和最后一间也算相邻</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  nums = [2,3,2]  →  3</text>
+<rect x="40" y="104" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="57.0" y="146" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="104" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="91.0" y="120.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="91.0" y="146" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="108" y="104" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="125.0" y="146" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<path d="M43 96 L43 88 L139 88 L139 96" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="166" y="90" font-size="12" fill="#712B13" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">2 + 2 = 4, 但首尾相邻 ✗</text>
+<text x="166" y="119" font-size="14" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">只能偷 3</text>
+<line x1="40" y1="166" x2="640" y2="166" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="181" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="188" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">偷的房子</text>
+<rect x="121" y="181" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
+<text x="142" y="188" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">不允许</text></svg>
+<figcaption>例子。</figcaption></figure>
+<h3>Intuition: 把环拆成两条线</h3>
+<p>首尾不能同时偷。那就分两种情况: <b>不偷最后一间</b> (只看 nums[0..n-2]), 或者<b>不偷第一间</b> (只看 nums[1..n-1])。每种情况都是一条线, 直接用第 2 题。答案是两者里大的。</p>
+<p>只有一间房子时要特判, 直接返回 nums[0]。</p>
+<h3>算法</h3>
+<ol><li>n == 1 返回 nums[0]。</li><li>返回 <code>max(rob(nums[:-1]), rob(nums[1:]))</code>。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 346" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>House Robber II 把环拆成两个线性问题</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">环: nums[0] 和 nums[4] 相邻 → 它们至少有一个不偷</text>
 <text x="40" y="38" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">把 &quot;环&quot; 拆成两个线性问题: 每个都是 House Robber, 最后取较大者</text>
@@ -484,6 +603,7 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="269.84000000000003" y="322" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">被排除 (不偷) 的那间</text>
 </svg>
 <figcaption>把环切成两个线性问题: 红色的是这一轮不偷的那间。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 794" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>nums = [2, 3, 9, 3, 1] 排成一圈 · nums[0] 和 nums[4] 相邻, 不能同时偷</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">nums = [2, 3, 9, 3, 1] 排成一圈 · nums[0] 和 nums[4] 相邻, 不能同时偷</text>
 <text x="40" y="38" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">做两次和 House Robber 完全一样的线性 DP, 答案取较大者</text>
@@ -613,13 +733,80 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="467.68" y="770" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">还没算</text>
 </svg>
 <figcaption>两次线性 DP: A = 11, B = 10, 答案 11。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n)</code>, Space <code>O(1)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">rob2</span>(nums):</span><span class="l">    <span class="k">if</span> <span class="t">len</span>(nums) == 1:              <span class="c"># 只有一间: 两种切法都是空的, 特判</span></span><span class="l">        <span class="r">return</span> nums[0]</span><span class="l">    <span class="c"># 环: nums[0] 和 nums[-1] 相邻, 不能同时偷 -&gt; 至少有一个不偷</span></span><span class="l">    <span class="c"># 不偷最后一间 = 线性 nums[:-1]; 不偷第一间 = 线性 nums[1:]</span></span><span class="l">    <span class="r">return</span> <span class="t">max</span>(<span class="f">rob</span>(nums[:-1]), <span class="f">rob</span>(nums[1:]))</span></div>
-<p>Time O(n) (两次扫描), Space O(1) (切片会拷贝 O(n), 想省的话传下标范围)。</p>
-<p class="note"><b>记:</b>环 / 首尾相邻 → 拆成两个线性问题, 各排除一端, 取 max。不要去改 DP 本身。</p>
-<h2>4. Maximum Subarray (Kadane): state = 以 i 结尾</h2>
-<p>题目: 连续 subarray 的最大和。例: nums = [-2, 1, -3, 4, -1, 2, 1, -5, 4] → 6 ([4, -1, 2, 1])。</p>
-<p>Brute force: 枚举所有 (i, j), 用 prefix sum 求和 → O(n²)。浪费: 以 j 结尾的各个 subarray 之间有大量重叠, 每次都从头加。</p>
-<p>关键观察: 如果规定 subarray <b>必须以 i 结尾</b>, 那它只有两种形状: 只有 nums[i] 自己 (重开), 或者接在以 i-1 结尾的最优 subarray 后面。和上一题不同: state 不是 "前 i 个的最优", 而是 "以 i 结尾的最优", 因为 subarray 必须连续, 没有 "结尾" 就接不上。答案要对所有 i 取最大。</p>
+</details>
+<p class="note"><b>记:</b>环形的问题: 拆成几种线性的情况分别做 (通常是"不选第一个"和"不选最后一个")。</p>
+<h2>4. Maximum Subarray (Kadane)</h2>
+<h3>题目在问什么</h3>
+<p>找一段<b>连续</b>的 subarray (至少包含一个数), 让它的和最大。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 326" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Maximum Subarray examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">找一段连续的 subarray (至少一个数), 和最大</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  nums = [-2,1,-3,4,-1,2,1,-5,4]  →  6</text>
+<rect x="40" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">-2</text>
+<text x="57.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="91.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="91.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="108" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">-3</text>
+<text x="125.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="142" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="159.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<text x="159.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="176" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="193.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">-1</text>
+<text x="193.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="210" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="227.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="227.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">5</text>
+<rect x="244" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="261.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="261.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">6</text>
+<rect x="278" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="295.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">-5</text>
+<text x="295.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">7</text>
+<rect x="312" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="329.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<text x="329.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">8</text>
+<rect x="139" y="85" width="142" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="370" y="103" font-size="14" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">4 - 1 + 2 + 1 = 6</text>
+<text x="40" y="150" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">中间有 -1 也值得带上, 因为后面的 2 + 1 能补回来</text>
+<line x1="40" y1="174" x2="640" y2="174" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="194" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  nums = [-3,-1,-2]  →  -1</text>
+<rect x="40" y="220" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="236.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">-3</text>
+<text x="57.0" y="262" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="220" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="91.0" y="236.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">-1</text>
+<text x="91.0" y="262" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="108" y="220" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.0" y="236.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">-2</text>
+<text x="125.0" y="262" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="71" y="217" width="40" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="166" y="235" font-size="14" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">全是负数, 选最大的一个</text>
+<line x1="40" y1="282" x2="640" y2="282" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="297" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="304" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">答案</text>
+<rect x="97" y="297" width="14" height="14" rx="3" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="118" y="304" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">答案的范围</text>
+<rect x="197" y="297" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
+<text x="218" y="304" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">看起来像, 但不对</text></svg>
+<figcaption>两个例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>枚举所有 (起点, 终点), 用 prefix sum 算和, <code>O(n²)</code>。</p>
+<h3>Intuition: state 换成"以 i 结尾"</h3>
+<p>如果用"前 i 个数里的最大 subarray"当 state, 很难写 transition: 不知道最好的那段在哪, 新加的 nums[i] 能不能接上去。</p>
+<p>换一个 state: <code>cur[i]</code> = <b>必须以 i 结尾</b>的 subarray 里, 最大的和。这样 transition 就很清楚了。以 i 结尾的 subarray 只有两种:</p>
+<ul><li><b>接在前面</b>: 以 i-1 结尾的最好的那段, 再加上 nums[i]: <code>cur[i-1] + nums[i]</code>。</li><li><b>从 i 重新开始</b>: 只有 nums[i] 自己。</li></ul>
+<p><code>cur[i] = max(cur[i-1] + nums[i], nums[i])</code>。直觉: 前面那段的和如果是负的, 接上它只会拖后腿, 不如重新开始。</p>
+<p>最终答案是所有 cur[i] 里最大的, 因为最好的那段总要在某个位置结尾。</p>
+<h3>算法</h3>
+<ol><li><code>cur = best = nums[0]</code>。</li><li>对后面每个 x: <code>cur = max(cur + x, x)</code>, <code>best = max(best, cur)</code>。</li><li>返回 best。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 358" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>Kadane: 以 i 结尾的 state</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">cur[i] = 以 nums[i] 结尾 (必须包含 nums[i]) 的最大 subarray sum · 答案 = 所有 cur[i] 的最大值</text>
 <text x="40" y="38" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">为什么要 &quot;以 i 结尾&quot;: 一旦规定了结尾, 到 i 为止只剩两种形状, 状态才接得上</text>
@@ -671,7 +858,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="154.76" y="323" width="28" height="22" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="193.76" y="334" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">被依赖的 cur[2]</text>
 </svg>
-<figcaption>cur[3]: 接在 cur[2] = -2 后面只有 2, 重开是 4 → 取 4。</figcaption></figure>
+<figcaption>cur[3]: 接在 cur[2] = -2 后面只有 2, 重新开始是 4, 取 4。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 910" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>nums = [-2, 1, -3, 4, -1, 2, 1, -5, 4] · cur[i] = 以 nums[i] 结尾的最大 subarray sum</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">nums = [-2, 1, -3, 4, -1, 2, 1, -5, 4] · cur[i] = 以 nums[i] 结尾的最大 subarray sum</text>
 <text x="40" y="38" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">每一步: cur[i] = max(x, cur[i-1] + x) (x = nums[i]); best = 所有 cur 里最大的</text>
@@ -897,14 +1085,64 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="437.68" y="878" width="22" height="16" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
 <text x="467.68" y="886" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">还没算</text>
 </svg>
-<figcaption>9 个数的完整 trace: cur 数组每步一格, best 记录出现过的最大值。</figcaption></figure>
+<figcaption>9 个数的完整过程: cur 每步一格, best 记录出现过的最大值。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n)</code>, Space <code>O(1)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">maxSubArray</span>(nums):</span><span class="l">    <span class="c"># cur = 以 nums[i] 结尾 的最大 subarray sum</span></span><span class="l">    cur = best = nums[0]</span><span class="l">    <span class="k">for</span> x <span class="k">in</span> nums[1:]:</span><span class="l">        <span class="c"># 重新开始 (只取 x), 或接在 cur 后面; cur &lt; 0 时重开更好</span></span><span class="l">        cur = <span class="t">max</span>(x, cur + x)</span><span class="l">        <span class="c"># 最优 subarray 一定在某个 i 结束 -&gt; 答案是所有 cur 的最大值</span></span><span class="l">        best = <span class="t">max</span>(best, cur)</span><span class="l">    <span class="r">return</span> best</span></div>
-<p>Time O(n), Space O(1)。</p>
-<p class="note"><b>记:</b>连续 subarray + 求最优 → state = "以 i 结尾", 要么接上, 要么重开; 答案是所有 i 里的最大, 不是最后一个。</p>
-<h2>5. Maximum Product Subarray: 同时维护 max 和 min</h2>
-<p>题目: 连续 subarray 的最大乘积。例: nums = [2, -3, -2, 4] → 48 (整个数组)。</p>
-<p>Brute force: O(n²)。相比 Kadane: 把 + 换成 ×, 但乘法有个新问题 — 负数会翻转大小。</p>
-<p>关键观察: 以 i 结尾的最大乘积, 可能来自 "以 i-1 结尾的最<b>小</b>乘积" × 负数 x。所以 state 要两个: mx (以 i 结尾的最大) 和 mn (最小)。改动: Kadane 的一个 cur 变成 (mx, mn); 候选从 2 个变成 3 个 (x, mx × x, mn × x)。</p>
+</details>
+<p class="note"><b>记:</b>连续 subarray 的最值: state 用"以 i 结尾", 选择是"接上前面"还是"从这里重新开始"。答案是所有 i 里最大的。</p>
+<h2>5. Maximum Product Subarray</h2>
+<h3>题目在问什么</h3>
+<p>找一段连续的 subarray, 让它的<b>乘积</b>最大。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 326" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Maximum Product Subarray examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">找一段连续的 subarray, 乘积最大</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  nums = [2,3,-2,4]  →  6</text>
+<rect x="40" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="57.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="57.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="91.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="91.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="108" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">-2</text>
+<text x="125.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="142" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="159.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<text x="159.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="37" y="85" width="74" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="200" y="103" font-size="14" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">2 × 3 = 6</text>
+<line x1="40" y1="150" x2="640" y2="150" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="170" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  nums = [-2,3,-4]  →  24</text>
+<rect x="40" y="196" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="57.0" y="212.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">-2</text>
+<text x="57.0" y="238" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="196" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="91.0" y="212.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="91.0" y="238" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="108" y="196" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="125.0" y="212.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">-4</text>
+<text x="125.0" y="238" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="37" y="193" width="108" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="166" y="211" font-size="14" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">(-2) × 3 × (-4) = 24</text>
+<text x="40" y="258" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">两个负数相乘变正。所以一个很小的负数, 乘上下一个负数, 可能变成最大的</text>
+<line x1="40" y1="282" x2="640" y2="282" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="297" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="304" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">答案</text>
+<rect x="97" y="297" width="14" height="14" rx="3" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="118" y="304" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">答案的范围</text>
+<rect x="197" y="297" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
+<text x="218" y="304" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">看起来像, 但不对</text></svg>
+<figcaption>两个例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>枚举所有 (起点, 终点), <code>O(n²)</code>。</p>
+<h3>Intuition: 负数会把最小的变成最大的</h3>
+<p>先试试照搬第 4 题: <code>mx[i] = max(mx[i-1] × nums[i], nums[i])</code>。在 Example 2 里会出错: 到 -4 时, 前面最好的是 3, 3 × (-4) = -12, 可是真正的答案是 (-2) × 3 × (-4) = 24。</p>
+<p>问题在于, 乘一个负数会让大小颠倒: 前面<b>最小</b>的那个 (-6, 一个很负的数), 乘上 -4 反而变成最大。</p>
+<p>所以要<b>同时记住以 i 结尾的最大乘积 mx 和最小乘积 mn</b>。新的 mx 和 mn 都从这三个候选里选: <code>nums[i]</code>、<code>mx × nums[i]</code>、<code>mn × nums[i]</code>。</p>
+<h3>算法</h3>
+<ol><li><code>mx = mn = best = nums[0]</code>。</li><li>对后面每个 x: 三个候选 <code>(x, mx·x, mn·x)</code>, <code>mx = max(...)</code>, <code>mn = min(...)</code> (要用更新前的 mx 和 mn)。<code>best = max(best, mx)</code>。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 384" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>Maximum Product Subarray 同时维护 max 和 min</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">mx / mn = 以 nums[i] 结尾的最大 / 最小 product · 乘负数会让最小变最大</text>
 <text x="40" y="38" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">新 mx, mn 都是从旧 (mx, mn) 乘 x 得到; 箭头表示 &quot;哪个旧值乘 x 得到哪个新值&quot;</text>
@@ -943,7 +1181,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="202.64" y="352" width="22" height="16" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
 <text x="232.64" y="360" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">这一格的 (mx, mn)</text>
 </svg>
-<figcaption>x < 0 时 mx 和 mn 交叉: 旧的 mn 乘负数变成新的 mx。</figcaption></figure>
+<figcaption>x < 0 时 mx 和 mn 交叉: 旧的 mn 乘上负数变成新的 mx。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 574" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>nums = [2, -3, -2, 4] · mx[i] / mn[i] = 以 nums[i] 结尾的最大 / 最小 product</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">nums = [2, -3, -2, 4] · mx[i] / mn[i] = 以 nums[i] 结尾的最大 / 最小 product</text>
 <text x="40" y="38" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">每一步: 候选 = x, mx[i-1]×x, mn[i-1]×x; mx 取最大, mn 取最小 (两个都用上一格的旧值)</text>
@@ -1061,14 +1300,73 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="437.68" y="542" width="22" height="16" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
 <text x="467.68" y="550" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">还没算</text>
 </svg>
-<figcaption>每一步写出三个候选, mx 取最大, mn 取最小; 两个数组都用上一格的旧值。</figcaption></figure>
+<figcaption>每一步写出三个候选, mx 取最大, mn 取最小; 两者都用上一格的旧值算。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n)</code>, Space <code>O(1)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">maxProduct</span>(nums):</span><span class="l">    <span class="c"># mx / mn = 以 nums[i] 结尾的最大 / 最小 product</span></span><span class="l">    mx = mn = best = nums[0]</span><span class="l">    <span class="k">for</span> x <span class="k">in</span> nums[1:]:</span><span class="l">        <span class="c"># 重开, 接在 max 后, 接在 min 后 (x &lt; 0 时 min 乘 x 会变 max)</span></span><span class="l">        cands = (x, mx * x, mn * x)</span><span class="l">        <span class="c"># 两个都用 旧的 mx, mn 算, 所以先算 cands</span></span><span class="l">        mx, mn = <span class="t">max</span>(cands), <span class="t">min</span>(cands)</span><span class="l">        best = <span class="t">max</span>(best, mx)</span><span class="l">    <span class="r">return</span> best</span></div>
-<p>Time O(n), Space O(1)。遇到 0: 候选里有 x 本身 (重开), mx, mn 都会被重置成 0, 不需要特判。</p>
-<p class="note"><b>记:</b>乘法 / 有符号的 DP: 最大值依赖最小值 → 同时维护 max 和 min。</p>
-<h2>6. Best Time to Buy and Sell Stock: 到目前为止的最小值</h2>
-<p>题目: 买一次、卖一次 (先买后卖), 最大利润。例: prices = [7, 1, 5, 3, 6, 4] → 5 (1 买, 6 卖)。</p>
-<p>Brute force: 所有 (买日 i, 卖日 j > i) 对 → O(n²)。浪费: 对每个卖日 j, 最佳买日就是 j 之前最便宜的那天; 这个最小值每次都重新扫一遍。</p>
-<p>关键观察: "j 之前的最小值" 是 prefix min, 一路带着走即可。这也是 "以 j 结尾" 型: best[j] = max(best[j-1], prices[j] - lo)。</p>
+</details>
+<p class="note"><b>记:</b>乘法 / 符号会翻转的问题: 同时记最大和最小两个 state。</p>
+<h2>6. Best Time to Buy and Sell Stock</h2>
+<h3>题目在问什么</h3>
+<p><code>prices[i]</code> 是第 i 天的股价。选某一天买, 之后的某一天卖, 只交易一次。最大利润是多少? 赚不到钱就返回 0。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 342" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Best Time to Buy and Sell Stock examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">prices[i] 是第 i 天的股价。选一天买、之后的某一天卖 (只能交易一次)。最大利润是多少, 赚不到就是 0</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  prices = [7,1,5,3,6,4]  →  5</text>
+<rect x="40" y="104" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">7</text>
+<text x="57.0" y="146" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="104" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="91.0" y="120.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="91.0" y="146" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="108" y="104" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<text x="125.0" y="146" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="142" y="104" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="159.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="159.0" y="146" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="176" y="104" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="193.0" y="120.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">6</text>
+<text x="193.0" y="146" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="210" y="104" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="227.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<text x="227.0" y="146" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">5</text>
+<path d="M43 96 L43 88 L105 88 L105 96" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="268" y="90" font-size="12" fill="#712B13" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">7 - 1 = 6 更大, 但这是先卖后买 ✗</text>
+<text x="268" y="119" font-size="14" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">第 1 天买 1, 第 4 天卖 6</text>
+<line x1="40" y1="166" x2="640" y2="166" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="186" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  prices = [7,6,4,3,1]  →  0</text>
+<rect x="40" y="212" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="228.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">7</text>
+<text x="57.0" y="254" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="212" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="91.0" y="228.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">6</text>
+<text x="91.0" y="254" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="108" y="212" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.0" y="228.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<text x="125.0" y="254" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="142" y="212" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="159.0" y="228.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="159.0" y="254" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="176" y="212" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="193.0" y="228.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="193.0" y="254" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
+<text x="40" y="274" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">一直在跌, 不交易</text>
+<line x1="40" y1="298" x2="640" y2="298" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="313" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="320" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">买和卖</text>
+<rect x="109" y="313" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
+<text x="130" y="320" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">看起来像, 但不对</text></svg>
+<figcaption>两个例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>枚举所有 (买入日, 卖出日), 买入在前。<code>O(n²)</code>。</p>
+<h3>Intuition: 固定卖出日, 最好的买入日就是之前的最低价</h3>
+<p>假设第 i 天卖。要让利润最大, 买入价越低越好, 而且必须在 i 之前。所以最好的买入价就是 <code>prices[0..i-1]</code> 里的<b>最小值</b>。</p>
+<p>从左往右扫, 一边走一边记录"到目前为止的最低价" lo。每一天算一下"今天卖能赚多少" (<code>prices[i] - lo</code>), 取最大值。</p>
+<p>也可以看成一个两状态的 DP: 每天结束时, 要么手里有股票 (hold), 要么没有 (cash)。<code>hold = max(hold, -price)</code> (继续拿着, 或者今天买); <code>cash = max(cash, hold + price)</code> (继续空仓, 或者今天卖)。这个写法能推广到可以交易多次、有冷却期、有手续费的变体。</p>
+<h3>算法</h3>
+<ol><li><code>lo = inf</code>, <code>best = 0</code>。</li><li>每个 p: <code>lo = min(lo, p)</code>, <code>best = max(best, p - lo)</code>。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 334" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>Best Time to Buy and Sell Stock 的 prefix min 与状态机</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">每个 j 天卖出, 最佳买入日 = j 之前价格最低的那天 → 只需维护 lo = 到目前为止的最低价</text>
 <text x="40" y="38" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">prices = [7, 1, 5, 3, 6, 4]</text>
@@ -1114,7 +1412,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="178.76" y="299" width="28" height="22" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="217.76" y="310" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">卖出日</text>
 </svg>
-<figcaption>左: 卖出日 6, 最佳买入就是之前的最低价 1; 右: 同一个问题的状态机写法 (hold / cash)。</figcaption></figure>
+<figcaption>左: 第 4 天卖, 最好的买入就是之前的最低价 1。右: 同一个问题的状态机写法。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 750" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>prices = [7, 1, 5, 3, 6, 4] · lo[i] = 到第 i 天为止的最低价 · best[i] = 到第 i 天为止的最大利润</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">prices = [7, 1, 5, 3, 6, 4] · lo[i] = 到第 i 天为止的最低价 · best[i] = 到第 i 天为止的最大利润</text>
 <text x="40" y="38" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">每一步: 先用昨天的 lo 算今天卖的 profit 更新 best, 再更新 lo</text>
@@ -1318,16 +1617,53 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="437.68" y="718" width="22" height="16" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
 <text x="467.68" y="726" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">还没算</text>
 </svg>
-<figcaption>lo 和 best 两个数组随 i 推进, 每步先用昨天的 lo 算今天卖的利润。</figcaption></figure>
+<figcaption>lo 和 best 随着 i 推进, 每一步先用到昨天为止的 lo 算今天卖的利润。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n)</code>, Space <code>O(1)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">maxProfit</span>(prices):</span><span class="l">    <span class="c"># lo = 到目前为止的最低价, best = 到目前为止的最大利润</span></span><span class="l">    lo, best = prices[0], 0</span><span class="l">    <span class="k">for</span> p <span class="k">in</span> prices[1:]:</span><span class="l">        <span class="c"># 今天卖: 最佳买入日 = 之前的最低价, 不用再扫描</span></span><span class="l">        best = <span class="t">max</span>(best, p - lo)</span><span class="l">        lo = <span class="t">min</span>(lo, p)</span><span class="l">    <span class="r">return</span> best</span></div>
-<p>状态机写法 (为了以后的变体: 多次交易 / 冷冻期 / 手续费, 只改 transition 即可):</p>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">maxProfit_sm</span>(prices):</span><span class="l">    <span class="c"># hold: 手上有股票时的最大利润; cash: 没有股票时的最大利润</span></span><span class="l">    hold, cash = -prices[0], 0</span><span class="l">    <span class="k">for</span> p <span class="k">in</span> prices[1:]:</span><span class="l">        <span class="c"># 继续拿着, 或今天买入 (只能买一次, 所以是 -p)</span></span><span class="l">        hold = <span class="t">max</span>(hold, -p)</span><span class="l">        cash = <span class="t">max</span>(cash, hold + p)  <span class="c"># 继续空仓, 或今天卖出</span></span><span class="l">    <span class="r">return</span> cash</span></div>
-<p>Time O(n), Space O(1)。</p>
-<p class="note"><b>记:</b>"某个量之前的最小 / 最大" 不用回头扫, 边走边维护。买卖股票类题统一用 hold / cash 状态机, 每个状态一个变量。</p>
-<h2>7. Coin Change: unbounded knapsack, 求最少个数</h2>
-<p>题目: coins 每种有无限枚, 凑出 amount 最少要几枚, 凑不出返回 -1。例: coins = [1, 3, 4], amount = 6 → 2 (3 + 3)。</p>
-<p>Brute force: 递归, 每一步试每种 coin → O(coins^amount) 级别。贪心 (先拿最大的) 是错的: 4 + 1 + 1 = 3 枚 > 3 + 3 = 2 枚。浪费: "凑出 a 还需要最少几枚" 只和 a 有关, 却被不同的路径重复算。</p>
-<p>关键观察: 这里的 state 是<b>金额</b> a (第三种形状)。枚举 "最后一枚是哪种 coin c": 剩下 a - c, 子问题 dp[a-c]。和 Robber 的 max 对应, 这里是 <code>1 + min</code>; 来源数量不是固定的 2 个, 而是 len(coins) 个。</p>
+</details>
+<p class="note"><b>记:</b>"之前的某一个" + "现在": 边扫边维护之前的最优 (最小值), 每一步 O(1) 更新答案。股票变体用 hold / cash 状态机。</p>
+<h2>7. Coin Change</h2>
+<h3>题目在问什么</h3>
+<p><code>coins</code> 是几种硬币的面额, 每种都有无限多个。要凑出总金额 <code>amount</code>, 最少要用几枚硬币? 凑不出来返回 -1。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 358" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Coin Change examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">coins 是硬币面额, 每种无限个。凑出 amount 最少要几枚? 凑不出返回 -1</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  coins = [1,2,5], amount = 11  →  3</text>
+<rect x="40" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="57.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<rect x="74" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="91.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<rect x="108" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="125.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="166" y="103" font-size="14" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">5 + 5 + 1</text>
+<line x1="40" y1="134" x2="640" y2="134" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="154" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  coins = [2], amount = 3  →  -1</text>
+<text x="40" y="174" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">只有 2, 凑不出奇数</text>
+<line x1="40" y1="198" x2="640" y2="198" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="218" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 3:  coins = [1,3,4], amount = 6  →  2</text>
+<rect x="40" y="244" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="57.0" y="260.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="74" y="244" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="91.0" y="260.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="132" y="259" font-size="14" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">3 + 3</text>
+<text x="40" y="290" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">如果先拿最大的 4 (贪心), 得到 4 + 1 + 1 = 3 枚, 不是最少</text>
+<line x1="40" y1="314" x2="640" y2="314" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="329" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="336" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">用的硬币</text></svg>
+<figcaption>三个例子。</figcaption></figure>
+<p>Example 3 说明贪心 (每次拿最大的面额) 不一定对。</p>
+<h3>Brute force</h3>
+<p>recursion: 凑 amount, 最后一枚可以是任何一种硬币 c, 剩下要凑 <code>amount - c</code>。试所有 c, 取最少的。没有 memo 的话, 同一个剩余金额会被算很多次, 指数级。</p>
+<h3>Intuition: state 是金额</h3>
+<p>recursion 里唯一在变的参数是"还要凑多少钱", 所以 state 就是金额: <code>dp[a]</code> = 凑出金额 a 最少要几枚。</p>
+<p>transition 还是想最后一枚: 最后一枚是 c, 那之前要凑出 a - c, 最少 <code>dp[a - c]</code> 枚。<code>dp[a] = min(dp[a - c] + 1)</code>, 对所有 <code>c ≤ a</code> 取最小。</p>
+<p>base case: <code>dp[0] = 0</code> (凑 0 元不用硬币)。其他先设成无穷大, 表示还凑不出。从 a = 1 往上填。</p>
+<p>这类"每种东西可以用无限次, 凑出某个总量"的问题, 叫 <b>unbounded knapsack</b> (完全背包)。</p>
+<h3>算法</h3>
+<ol><li><code>dp = [0] + [inf] * amount</code>。</li><li>a 从 1 到 amount: 对每个 <code>c ≤ a</code>: <code>dp[a] = min(dp[a], dp[a - c] + 1)</code>。</li><li>返回 <code>dp[amount]</code>, 如果是 inf 就返回 -1。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 356" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>Coin Change: 贪心错在哪, dp 试遍最后一枚</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">coins = [1, 3, 4], amount = 6 · dp[a] = 凑出 a 最少要几枚 coin</text>
 <text x="40" y="38" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">为什么要 DP: 贪心 (每次拿最大的) 会错; 要把 &quot;最后一枚拿哪个&quot; 全部试一遍</text>
@@ -1386,7 +1722,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="323.64" y="321" width="28" height="22" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="362.64" y="332" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">候选依赖的格子</text>
 </svg>
-<figcaption>左: 贪心拿 4 会错; 右: dp[6] 试遍 coin 1 / 3 / 4 作为最后一枚, 取最小的 dp[6-c] + 1。</figcaption></figure>
+<figcaption>左: 贪心先拿 4 会错; 右: dp[6] 试遍 1 / 3 / 4 作为最后一枚, 取最小的 dp[6 - c] + 1。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 734" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>coins = [1, 3, 4], amount = 6 · dp[a] = 凑出金额 a 最少要几枚 coin</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">coins = [1, 3, 4], amount = 6 · dp[a] = 凑出金额 a 最少要几枚 coin</text>
 <text x="40" y="38" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">每一步: 枚举最后一枚 coin c (c ≤ a): dp[a] = 1 + min(dp[a - c])</text>
@@ -1545,14 +1882,41 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="437.68" y="702" width="22" height="16" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
 <text x="467.68" y="710" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">还没算</text>
 </svg>
-<figcaption>amount 从 1 填到 6: 每格读的格子数 = 不超过 a 的 coin 种数。</figcaption></figure>
+<figcaption>amount 从 1 填到 6: 每一格读的格子数 = 不超过 a 的硬币种类数。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(amount × 硬币种类)</code>, Space <code>O(amount)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">coinChange</span>(coins, amount):</span><span class="l">    INF = <span class="t">float</span>(<span class="s">&quot;inf&quot;</span>)</span><span class="l">    <span class="c"># dp[a] = 凑出 a 最少要几枚; dp[0] = 0, 其余先当不可达</span></span><span class="l">    dp = [0] + [INF] * amount</span><span class="l">    <span class="k">for</span> a <span class="k">in</span> <span class="t">range</span>(1, amount + 1):  <span class="c"># 计算顺序: a 从小到大</span></span><span class="l">        <span class="k">for</span> c <span class="k">in</span> coins:             <span class="c"># 枚举 &quot;最后一枚&quot; 是哪种 coin</span></span><span class="l">            <span class="k">if</span> c &lt;= a:</span><span class="l">                dp[a] = <span class="t">min</span>(dp[a], dp[a - c] + 1)</span><span class="l">    <span class="r">return</span> dp[amount] <span class="k">if</span> dp[amount] != INF <span class="k">else</span> -1</span></div>
-<p>Time O(amount × len(coins)): 每个 a 试每种 coin。Space O(amount)。同一种 coin 可以重复用, 因为 dp[a-c] 里可能已经用过 c — 这就是 unbounded。</p>
-<p class="note"><b>记:</b>无限件 + 求最小 / 最大个数: dp[amount] = 1 + min(dp[amount - c]); 不可达用 inf; 外层 amount, 内层 coin。</p>
-<h2>8. Coin Change II: 数组合, 为什么外层是 coin</h2>
-<p>题目: 同样的 coins, 凑出 amount 有几种<b>组合</b> (不分顺序)。例: coins = [1, 2, 5], amount = 5 → 4。</p>
-<p>Brute force: 枚举所有组合, 指数级。相比上一题: 从求 min 变成<b>数个数</b>, transition 从 min 变成 +=; 同时 "1+2 和 2+1 是同一种" 会让循环顺序变得重要。</p>
-<p>关键观察: 如果外层循环 amount、内层循环 coin, 每个 amount 都把所有 coin 当作 "最后一枚" → 1+2 和 2+1 被数两次 (数的是排列)。把外层改成 coin: 每种 coin 在一整轮里统一 "加入", 使用顺序固定为 coins 的顺序 → 每个组合只数一次。</p>
+</details>
+<p class="note"><b>记:</b>凑出某个总量, 每种可用无限次, 求最少 / 最多: dp[a] = 最优 (dp[a - c] + 1)。贪心不一定对时就想 DP。</p>
+<h2>8. Coin Change II</h2>
+<h3>题目在问什么</h3>
+<p>同样每种硬币无限多个。这次问: 凑出 amount 一共有多少种<b>组合</b>? 组合不看顺序, 1+2 和 2+1 算同一种。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 202" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Coin Change II examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">coins 每种无限个。凑出 amount 一共有几种&lt;组合&gt; (不看顺序: 1+2 和 2+1 算同一种)</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  amount = 5, coins = [1,2,5]  →  4</text>
+<rect x="40" y="88" width="86" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="83.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<rect x="126" y="88" width="86" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="169.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2+2+1</text>
+<rect x="212" y="88" width="86" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="255.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2+1+1+1</text>
+<rect x="298" y="88" width="86" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="341.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1+1+1+1+1</text>
+<text x="40" y="134" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">2+1+2 和 2+2+1 是同一种组合, 只算一次</text>
+<line x1="40" y1="158" x2="640" y2="158" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="173" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="180" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">每一种组合</text></svg>
+<figcaption>例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>recursion 枚举所有组合。和 13 的 Combination Sum 一样, 用 start index 防止重复。</p>
+<h3>Intuition: 外层循环硬币, 内层循环金额</h3>
+<p>先试试照搬第 7 题: <code>dp[a] = sum(dp[a - c])</code>, 外层循环 a, 内层循环 c。这样算出来的是<b>排列</b>的个数, 1+2 和 2+1 被算成两种: 填 dp[3] 时, "最后一枚是 2" 包含了 1+2, "最后一枚是 1" 包含了 2+1。</p>
+<p>要算组合, 就要规定硬币的使用顺序, 比如"先决定用几个 1, 再决定用几个 2, ……"。写成循环就是: <b>外层循环硬币, 内层循环金额</b>。处理硬币 c 的时候, dp 里只包含用前面那些硬币的组合, 所以 2 永远出现在 1 之后, 不会有 2+1 这种顺序。</p>
+<p><code>dp[a]</code> = 用目前处理过的硬币, 凑出 a 的组合数。处理硬币 c 时: <code>dp[a] += dp[a - c]</code>。base case <code>dp[0] = 1</code> (凑 0 元有一种: 什么都不拿)。</p>
+<h3>算法</h3>
+<ol><li><code>dp = [1] + [0] * amount</code>。</li><li>对每个 c (外层): a 从 c 到 amount (内层, 正序): <code>dp[a] += dp[a - c]</code>。</li><li>返回 <code>dp[amount]</code>。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 420" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>Coin Change II: 为什么外层是 coin</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">coins = [1, 2], amount = 3 · 组合 (combination) 不分顺序: 1+2 和 2+1 是同一种</text>
 <text x="40" y="38" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">外层 for 谁, 决定了 &quot;同一个组合被数几次&quot;</text>
@@ -1603,7 +1967,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="283.68" y="388" width="22" height="16" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
 <text x="313.68" y="396" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">重复数的排列</text>
 </svg>
-<figcaption>coins = [1, 2], amount = 3: 外层 amount 数出 3 (含 1+2 和 2+1), 外层 coin 数出 2。</figcaption></figure>
+<figcaption>coins = [1, 2], amount = 3: 外层循环金额会数出 3 种 (含 1+2 和 2+1), 外层循环硬币数出 2 种。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 512" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>coins = [1, 2, 5], amount = 5 · dp[a] = 凑出金额 a 的组合数 · 外层 for coin, 内层 for a 正序</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">coins = [1, 2, 5], amount = 5 · dp[a] = 凑出金额 a 的组合数 · 外层 for coin, 内层 for a 正序</text>
 <text x="40" y="38" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">每一步: 一整轮处理一种 coin; 本轮改变的格子绿色; 以 dp[5] 为例看算式</text>
@@ -1706,14 +2071,62 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="437.68" y="480" width="22" height="16" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
 <text x="467.68" y="488" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">还没算</text>
 </svg>
-<figcaption>每一行是处理完一种 coin 后的 dp 数组; 以 dp[5] 为例写出算式和对应的组合。</figcaption></figure>
+<figcaption>每一行是处理完一种硬币后的 dp 数组; 以 dp[5] 为例写出了算式。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(amount × 硬币种类)</code>, Space <code>O(amount)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">change</span>(amount, coins):</span><span class="l">    <span class="c"># dp[a] = 凑出 a 的组合数; dp[0] = 1 (什么都不拿算 1 种)</span></span><span class="l">    dp = [1] + [0] * amount</span><span class="l">    <span class="c"># 外层 coin: 每种 coin 只 &quot;加入&quot; 一次 -&gt; 组合不分顺序</span></span><span class="l">    <span class="k">for</span> c <span class="k">in</span> coins:</span><span class="l">        <span class="c"># 内层 正序: 同一种 coin 可以重复用 (unbounded)</span></span><span class="l">        <span class="k">for</span> a <span class="k">in</span> <span class="t">range</span>(c, amount + 1):</span><span class="l">            <span class="c"># 凑 a = (不用 c 的旧 dp[a]) + (至少用一枚 c: dp[a-c])</span></span><span class="l">            dp[a] += dp[a - c]</span><span class="l">    <span class="r">return</span> dp[amount]</span></div>
-<p>Time O(amount × len(coins)), Space O(amount)。内层是正序, 所以同一种 coin 可重复用 (unbounded)。</p>
-<p class="note"><b>记:</b>数 "组合" → 外层 coin; 数 "排列" → 外层 amount。内层正序 = 同一件物品可重复用。</p>
-<h2>9. Partition Equal Subset Sum: 0/1 knapsack, 为什么倒序</h2>
-<p>题目: 能否把数组分成两个和相等的子集? 例: nums = [1, 2, 3, 4] → True ({1, 4} 和 {2, 3})。</p>
-<p>Brute force: 每个数放 A / 放 B, O(2ⁿ)。先化简: 总和 total 是奇数就不可能; 否则问题变成 "能不能挑出一些数, 和恰好 = total/2"。</p>
-<p>关键观察: 这是 0/1 knapsack: 每个数只能用一次。state 是 dp[c] = 当前处理过的数里能不能凑出 c。和 Coin Change II 的结构几乎一样 (外层物品, 内层容量), 唯一的改动: <b>内层改成倒序</b>。</p>
+</details>
+<p class="note"><b>记:</b>数组合 (不看顺序): 外层循环物品, 内层循环金额。数排列 (看顺序): 外层金额, 内层物品。</p>
+<h2>9. Partition Equal Subset Sum</h2>
+<h3>题目在问什么</h3>
+<p>给一个正整数数组。能不能把它分成两组, 让两组的和相等? 每个数只能放进其中一组。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 326" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Partition Equal Subset Sum examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">能不能把数组分成两组, 两组的和相等? (每个数只能放进一组)</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  nums = [1,5,11,5]  →  True</text>
+<rect x="40" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="57.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="57.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="91.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<text x="91.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="108" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">11</text>
+<text x="125.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="142" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="159.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<text x="159.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="200" y="103" font-size="14" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">[1,5,5] 和 [11], 都是 11</text>
+<line x1="40" y1="150" x2="640" y2="150" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="170" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  nums = [1,2,3,5]  →  False</text>
+<rect x="40" y="196" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="212.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="57.0" y="238" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="196" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="91.0" y="212.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="91.0" y="238" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="108" y="196" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.0" y="212.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="125.0" y="238" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="142" y="196" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="159.0" y="212.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<text x="159.0" y="238" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="40" y="258" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">总和 11 是奇数, 不可能分成两个相等的整数</text>
+<line x1="40" y1="282" x2="640" y2="282" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="297" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="304" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">第一组</text></svg>
+<figcaption>两个例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>每个数放第一组或第二组, <code>O(2ⁿ)</code>。</p>
+<h3>Intuition: 变成"能不能凑出 total / 2"</h3>
+<p>两组的和相等, 每组都是 <code>total / 2</code>。所以问题等价于: <b>能不能从数组里选一些数, 和正好是 target = total / 2?</b> (total 是奇数就直接 False。)</p>
+<p>这和第 7、8 题很像, 区别是<b>每个数只能用一次</b>。这叫 <b>0/1 knapsack</b>。</p>
+<p><code>dp[c]</code> = 用目前处理过的数, 能不能凑出 c。处理数 x 时: <code>dp[c] = dp[c] or dp[c - x]</code> (不用 x, 或者用 x)。</p>
+<p>关键细节: 内层循环 c 要<b>从大到小</b>。为什么? 如果从小到大, 算 dp[c] 时读的 dp[c - x] 可能已经是这一轮刚更新过的, 也就是"已经用过 x 了", 再用一次就成了同一个数用两次。从大到小的话, dp[c - x] 一定还是上一轮的值 (没用 x)。</p>
+<p>对比第 8 题: 那里每种硬币可以用无限次, 所以正好要从小到大 (允许重复用)。</p>
+<h3>算法</h3>
+<ol><li>total 是奇数返回 False。<code>target = total // 2</code>, <code>dp = [True] + [False] * target</code>。</li><li>对每个 x: c 从 target <b>倒着</b>到 x: <code>dp[c] = dp[c] or dp[c - x]</code>。</li><li>返回 <code>dp[target]</code>。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 508" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>0/1 knapsack: 为什么倒序遍历 capacity</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">nums = [2], target = 4 · dp[c] = 能不能凑出和 c · 正确答案: 只有一个 2, 凑不出 4 → dp[4] = F</text>
 <text x="40" y="38" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">同一个 x 一轮里只能用一次 (0/1)。顺序决定 dp[c - x] 读到的是旧值还是已用过 x 的新值</text>
@@ -1840,7 +2253,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="270.6" y="473" width="28" height="22" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="309.6" y="484" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">被读取的 dp[c - 2]</text>
 </svg>
-<figcaption>nums = [2], target = 4: 正序会把同一个 2 用两次 (dp[4] 错成 T); 倒序读到的 dp[c-x] 还是旧值。</figcaption></figure>
+<figcaption>nums = [2], target = 4: 正序会把同一个 2 用两次 (dp[4] 错成 True); 倒序读到的都是旧值。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 572" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>nums = [1, 2, 3, 4], total = 10, target = 5 · dp[c] = 处理过的数里能不能凑出和 c</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">nums = [1, 2, 3, 4], total = 10, target = 5 · dp[c] = 处理过的数里能不能凑出和 c</text>
 <text x="40" y="38" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">每个 x: c 从 target 倒着走到 x; dp[c] |= dp[c - x]; 读的 dp[c-x] 都是处理 x 之前的旧值</text>
@@ -1963,14 +2377,48 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="437.68" y="540" width="22" height="16" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
 <text x="467.68" y="548" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">还没算</text>
 </svg>
-<figcaption>nums = [1, 2, 3, 4], target = 5: 每个 x 倒着扫 c, 新变 True 的格子都写出依赖的 dp[c-x]。</figcaption></figure>
+<figcaption>nums = [1,2,3,4], target = 5: 每个 x 倒着扫 c, 新变成 True 的格子都写出了依据。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n × target)</code>, Space <code>O(target)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">canPartition</span>(nums):</span><span class="l">    total = <span class="t">sum</span>(nums)</span><span class="l">    <span class="k">if</span> total % 2:                   <span class="c"># 总和是奇数, 不可能平分</span></span><span class="l">        <span class="r">return</span> <span class="k">False</span></span><span class="l">    <span class="c"># 问题变成: 能不能挑出一些数, 和恰好 = target</span></span><span class="l">    target = total // 2</span><span class="l">    dp = [<span class="k">True</span>] + [<span class="k">False</span>] * target  <span class="c"># dp[c] = 当前处理过的数里, 能不能凑出和 c</span></span><span class="l">    <span class="k">for</span> x <span class="k">in</span> nums:                  <span class="c"># 外层 每个数; 每个数只能用一次 (0/1)</span></span><span class="l">        <span class="c"># 倒序! dp[c - x] 还是 &quot;没用 x&quot; 的旧值</span></span><span class="l">        <span class="k">for</span> c <span class="k">in</span> <span class="t">range</span>(target, x - 1, -1):</span><span class="l">            dp[c] = dp[c] <span class="k">or</span> dp[c - x]</span><span class="l">    <span class="r">return</span> dp[target]</span></div>
-<p>Time O(n × target), Space O(target)。这是 pseudo-polynomial: 和 target 的数值大小成正比, 不是和输入的位数。</p>
-<p class="note"><b>记:</b>每件物品只能用一次 (0/1) → 内层 capacity 倒序; 可无限次 (unbounded) → 内层正序。dp[c - x] 要读 "处理 x 之前" 的旧值。</p>
-<h2>10. Word Break: dp[i] = 前 i 个字符能否切分</h2>
-<p>题目: s 能否切成若干个词典里的词? 例: s = "catsand", words = [cat, cats, and, sand] → True。</p>
-<p>Brute force: 递归, 每个位置试每个前缀词, 一路切下去 → O(2ⁿ)。浪费: 后缀 s[j:] 能不能切, 和前面是怎么切到 j 的无关, 却被重复判断。</p>
-<p>关键观察: state 是前缀 dp[i] (第一种形状), 但 transition 不再是 "前一两格": 枚举<b>最后一个词</b> s[j:i] 的起点 j, 要求前面 dp[j] 为 True 且 s[j:i] 在词典里。来源是任意个 j, 不是固定的 2 个, 所以没法滚动成 O(1) space。</p>
+</details>
+<p class="note"><b>记:</b>每个物品只能用一次 (0/1 knapsack): 一维 dp 时容量要倒序遍历。能用无限次 (unbounded): 正序。</p>
+<h2>10. Word Break</h2>
+<h3>题目在问什么</h3>
+<p>给一个字符串 s 和一个字典 wordDict。能不能把 s 切成若干段, 每一段都是字典里的词? 字典里的词可以重复使用。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 358" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Word Break examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">能不能把 s 切成若干段, 每一段都在字典 wordDict 里? (字典里的词可以重复使用)</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  s = &quot;leetcode&quot;, wordDict = [leet, code]  →  True</text>
+<rect x="40" y="88" width="60" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="70.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">leet</text>
+<rect x="100" y="88" width="60" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="130.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">code</text>
+<line x1="40" y1="134" x2="640" y2="134" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="154" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  s = &quot;applepenapple&quot;, wordDict = [apple, pen]  →  True</text>
+<rect x="40" y="180" width="60" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="70.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">apple</text>
+<rect x="100" y="180" width="60" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="130.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">pen</text>
+<rect x="160" y="180" width="60" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="190.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">apple</text>
+<text x="40" y="226" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">apple 用了两次</text>
+<line x1="40" y1="250" x2="640" y2="250" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="270" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 3:  s = &quot;catsandog&quot;, wordDict = [cats, dog, sand, and, cat]  →  False</text>
+<text x="40" y="290" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">cats + and + og ✗;  cat + sand + og ✗。最后的 og 怎么都切不出来</text>
+<line x1="40" y1="314" x2="640" y2="314" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="329" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="336" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">切出来的段</text></svg>
+<figcaption>三个例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>recursion: 试所有可能的第一段 (是字典里的词), 对剩下的部分递归。没有 memo 时, 同一个后缀会被反复检查, 最坏指数级。</p>
+<h3>Intuition: dp[i] = 前 i 个字符能不能切</h3>
+<p>state: <code>dp[i]</code> = <code>s[:i]</code> (前 i 个字符) 能不能被完整地切分。</p>
+<p>transition 想最后一段: 如果最后一段是 <code>s[j:i]</code>, 那它必须在字典里, 并且前面的 <code>s[:j]</code> 也必须能切, 也就是 <code>dp[j]</code> 为 True。试所有 j, 有一个满足就行。</p>
+<p>base case: <code>dp[0] = True</code> (空字符串什么都不用切)。</p>
+<h3>算法</h3>
+<ol><li><code>words = set(wordDict)</code>, <code>dp = [True] + [False] * n</code>。</li><li>i 从 1 到 n: 对每个 j < i: 如果 <code>dp[j]</code> 并且 <code>s[j:i] in words</code>, <code>dp[i] = True</code>, break。</li><li>返回 <code>dp[n]</code>。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 396" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>Word Break: dp[i] = 前 i 个字符能否切分</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">dp[i] = s 的前 i 个字符 s[:i] 能不能切成词典里的词 · 最后一个词 s[j:i] 的起点 j 全部试一遍</text>
 <text x="40" y="38" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">s = &quot;catsand&quot;, words = {cat, cats, and, sand} · 求 dp[7]</text>
@@ -2021,7 +2469,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="309.72" y="361" width="28" height="22" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="348.72" y="372" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">被依赖的 dp[j]</text>
 </svg>
-<figcaption>dp[7]: 最后一块 "and" 配 dp[4], 或最后一块 "sand" 配 dp[3]; 任一成立即 True。</figcaption></figure>
+<figcaption>dp[7]: 最后一段是 "and" 配 dp[4], 或者最后一段是 "sand" 配 dp[3]; 有一个成立就是 True。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 860" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>s = &quot;catsand&quot;, words = {cat, cats, and, sand} · dp[i] = 前 i 个字符 s[:i] 能不能切成词典里的词</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">s = &quot;catsand&quot;, words = {cat, cats, and, sand} · dp[i] = 前 i 个字符 s[:i] 能不能切成词典里的词</text>
 <text x="40" y="38" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">每一步: 只试 dp[j] = True 的 j, 看最后一块 s[j:i] 在不在词典里; 有一个 ✓ 就是 True</text>
@@ -2212,14 +2661,59 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="437.68" y="828" width="22" height="16" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
 <text x="467.68" y="836" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">还没算</text>
 </svg>
-<figcaption>i 从 1 到 7: 只试 dp[j] 为 True 的 j, 切出的最后一块在不在词典里。</figcaption></figure>
+<figcaption>i 从 1 到 7: 只试 dp[j] 为 True 的 j, 看切出来的最后一段在不在字典里。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n² · L)</code> (切字符串和查表要 <code>O(L)</code>), 可以只试长度不超过最长单词的 j 来加速。Space <code>O(n)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">wordBreak</span>(s, wordDict):</span><span class="l">    <span class="c"># set: 查 s[j:i] 在不在词典里是 O(1) (hash 要 O(长度))</span></span><span class="l">    words = <span class="t">set</span>(wordDict)</span><span class="l">    n = <span class="t">len</span>(s)</span><span class="l">    <span class="c"># dp[i] = s 的前 i 个字符 s[:i] 能不能切成词典里的词; dp[0] = 空串 = True</span></span><span class="l">    dp = [<span class="k">True</span>] + [<span class="k">False</span>] * n</span><span class="l">    <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(1, n + 1):</span><span class="l">        <span class="k">for</span> j <span class="k">in</span> <span class="t">range</span>(i):          <span class="c"># 枚举 &quot;最后一个词&quot; s[j:i] 从哪里开始</span></span><span class="l">            <span class="c"># 前面 s[:j] 能切, 最后一块也是词</span></span><span class="l">            <span class="k">if</span> dp[j] <span class="k">and</span> s[j:i] <span class="k">in</span> words:</span><span class="l">                dp[i] = <span class="k">True</span></span><span class="l">                <span class="k">break</span>               <span class="c"># 一种切法就够了</span></span><span class="l">    <span class="r">return</span> dp[n]</span></div>
-<p>Time O(n²) 个 (j, i) 对, 每次切片 + hash 是 O(n) → O(n³) (限制 j 的范围到最长词长可降到 O(n × L²))。Space O(n) + 词典。</p>
-<p class="note"><b>记:</b>"能否切分 / 划分" → dp[i] = 前 i 个能否; 枚举最后一块的起点 j, 子问题是前缀 dp[j]。</p>
-<h2>11. Longest Increasing Subsequence: 以 i 结尾 + 往回看所有 j</h2>
-<p>题目: 最长严格递增子序列 (不要求连续) 的长度。例: nums = [10, 9, 2, 5, 3, 7, 101, 18] → 4。</p>
-<p>Brute force: 每个元素取 / 不取, 2ⁿ。相比 Kadane: subarray 必须连续, 所以只能接在 i-1 后面 (一个来源); subsequence 不连续, nums[i] 可以接在任何一个更小的 nums[j] 后面 (j 的个数是 i 个)。</p>
-<p>关键观察: 沿用 "以 i 结尾" 的 state: dp[i] = 以 nums[i] 结尾的 LIS 长度。transition: 往回看所有 j < i, 满足 nums[j] < nums[i] 的取 dp[j] 最大的 + 1。</p>
+</details>
+<p class="note"><b>记:</b>字符串能不能切成合法的段: dp[i] = 前 i 个能不能切, 试最后一段 s[j:i]。</p>
+<h2>11. Longest Increasing Subsequence</h2>
+<h3>题目在问什么</h3>
+<p>找最长的<b>严格递增 subsequence</b> 的长度。subsequence (子序列) 可以跳着选元素, 但不能改变它们的先后顺序。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 218" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>LIS examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">找最长的严格递增 subsequence (子序列: 可以跳着选, 但顺序不能变), 返回长度</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  nums = [10,9,2,5,3,7,101,18]  →  4</text>
+<rect x="40" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">10</text>
+<text x="57.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="91.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">9</text>
+<text x="91.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="108" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="125.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="125.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="142" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="159.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<text x="159.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="176" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="193.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="193.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="210" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="227.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">7</text>
+<text x="227.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">5</text>
+<rect x="244" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="261.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">101</text>
+<text x="261.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">6</text>
+<rect x="278" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="295.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">18</text>
+<text x="295.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">7</text>
+<text x="336" y="103" font-size="14" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">2, 5, 7, 101</text>
+<text x="40" y="150" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">也可以是 2, 3, 7, 18。注意是子序列, 不要求连续</text>
+<line x1="40" y1="174" x2="640" y2="174" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="189" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="196" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">选中的数</text></svg>
+<figcaption>例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>枚举所有子序列 (每个元素选或不选), 检查是否递增。<code>O(2ⁿ · n)</code>。</p>
+<h3>Intuition: 以 i 结尾, 往回看所有能接上的 j</h3>
+<p>和第 4 题一样, 用"以 i 结尾"当 state: <code>dp[i]</code> = 以 nums[i] 结尾的最长递增子序列的长度。</p>
+<p>以 nums[i] 结尾的递增子序列, 它前一个元素可以是 i 前面<b>任何一个比 nums[i] 小</b>的 nums[j]。接在它后面, 长度是 <code>dp[j] + 1</code>。所以 <code>dp[i] = 1 + max(dp[j])</code>, 对所有 <code>j < i</code> 且 <code>nums[j] < nums[i]</code>。没有这样的 j 就是 1。</p>
+<p>和第 4 题的区别: Kadane 只看前一个 (因为要连续), 这里要看前面<b>所有</b>的 j (因为可以跳着选), 所以是 <code>O(n²)</code>。</p>
+<p>答案是所有 dp[i] 里最大的。</p>
+<h3>算法</h3>
+<ol><li><code>dp = [1] * n</code>。</li><li>i 从 0 到 n-1, j 从 0 到 i-1: 如果 <code>nums[j] < nums[i]</code>, <code>dp[i] = max(dp[i], dp[j] + 1)</code>。</li><li>返回 <code>max(dp)</code>。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 366" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>LIS: dp[i] = 以 i 结尾, 往回看所有 j</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">dp[i] = 以 nums[i] 结尾的 LIS 长度 · 和 Kadane 一样, 规定 &quot;以 i 结尾&quot; 才能接上前面的子问题</text>
 <text x="40" y="38" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">nums[i] 前面可以接任何 j &lt; i 且 nums[j] &lt; nums[i] 的 LIS → 取 dp[j] 最大的 + 1</text>
@@ -2280,7 +2774,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="166.76" y="331" width="28" height="22" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="205.76" y="342" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">nums[j] &lt; nums[5] 的 dp[j]</text>
 </svg>
-<figcaption>dp[5]: nums[2..4] 都比 7 小, 它们的 dp 是 1, 2, 2 → 取 2, 加 1 = 3。</figcaption></figure>
+<figcaption>dp[5]: nums[2..4] 都比 7 小, 它们的 dp 是 1, 2, 2, 取 2, 加 1 = 3。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 804" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>nums = [10, 9, 2, 5, 3, 7, 101, 18] · dp[i] = 以 nums[i] 结尾的最长递增子序列长度</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">nums = [10, 9, 2, 5, 3, 7, 101, 18] · dp[i] = 以 nums[i] 结尾的最长递增子序列长度</text>
 <text x="40" y="38" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">每一步: 往回看所有 j &lt; i; 满足 nums[j] &lt; nums[i] 的 dp[j] 里取最大 + 1 (箭头只画取最大的那个)</text>
@@ -2480,13 +2975,18 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="437.68" y="772" width="22" height="16" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
 <text x="467.68" y="780" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">还没算</text>
 </svg>
-<figcaption>8 个元素逐个算 dp: 橙色 ring 是满足 nums[j] < nums[i] 的 dp[j], 箭头指向取最大的那个。</figcaption></figure>
+<figcaption>8 个元素逐个算 dp: 橙色圈是满足 nums[j] < nums[i] 的 dp[j], 箭头指向取到最大值的那个。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n²)</code>, Space <code>O(n)</code>。另有 <code>O(n log n)</code> 的做法 (维护一个 tails 数组 + 二分), 代码里附上了, 面试能说出 O(n²) 的 DP 一般就够了。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">lengthOfLIS</span>(nums):</span><span class="l">    <span class="c"># dp[i] = 以 nums[i] 结尾 的最长递增子序列长度; 至少是它自己</span></span><span class="l">    dp = [1] * <span class="t">len</span>(nums)</span><span class="l">    <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(<span class="t">len</span>(nums)):</span><span class="l">        <span class="k">for</span> j <span class="k">in</span> <span class="t">range</span>(i):          <span class="c"># 往回看所有 j &lt; i</span></span><span class="l">            <span class="k">if</span> nums[j] &lt; nums[i]:   <span class="c"># nums[i] 可以接在 nums[j] 后面</span></span><span class="l">                dp[i] = <span class="t">max</span>(dp[i], dp[j] + 1)</span><span class="l">    <span class="c"># 不一定以最后一个结尾 -&gt; 取所有 dp 的最大值</span></span><span class="l">    <span class="r">return</span> <span class="t">max</span>(dp)</span></div>
-<p>Time O(n²): 双层循环。Space O(n)。另有 patience sorting 的 O(n log n) 做法, 一句话: tails[k] 维护 "长度为 k+1 的递增子序列的最小结尾", 对每个 x 用 binary search 找位置替换:</p>
 <div class="code"><span class="l"><span class="k">from</span> <span class="t">bisect</span> <span class="k">import</span> bisect_left</span><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">lengthOfLIS_fast</span>(nums):</span><span class="l">    <span class="c"># tails[k] = 长度为 k+1 的递增子序列里, 最小的结尾值 (tails 恒递增)</span></span><span class="l">    tails = []</span><span class="l">    <span class="k">for</span> x <span class="k">in</span> nums:</span><span class="l">        <span class="c"># 第一个 &gt;= x 的位置: x 能接在 tails[k-1] 后面, 同时把 tails[k] 压得更小</span></span><span class="l">        k = <span class="f">bisect_left</span>(tails, x)</span><span class="l">        <span class="k">if</span> k == <span class="t">len</span>(tails):</span><span class="l">            tails.<span class="f">append</span>(x)</span><span class="l">        <span class="k">else</span>:</span><span class="l">            tails[k] = x</span><span class="l">    <span class="r">return</span> <span class="t">len</span>(tails)</span></div>
-<p class="note"><b>记:</b>子序列 (不连续) + 递增 / 有序关系 → dp[i] = 以 i 结尾, 往回扫所有 j; 想快就用 tails + bisect。</p>
-<h2>识别信号: 看到什么 → 试什么</h2>
-<table><tr><th>特征</th><th>做法</th><th>complexity</th></tr><tr><td>求 最优 / 方法数 / 能不能, 暴力递归的子问题大量重复</td><td>找 state → memo 或 bottom-up table</td><td>O(2ⁿ) → O(state 数 × transition 数)</td></tr><tr><td>dp[i] 只读 dp[i-1], dp[i-2]</td><td>滚动变量</td><td>space O(n) → O(1)</td></tr><tr><td>相邻不能选 / 选或不选</td><td>dp[i] = max(dp[i-1], dp[i-2] + x); 环就切成两次线性</td><td>O(2ⁿ) → O(n)</td></tr><tr><td>连续 subarray 的最优</td><td>state = 以 i 结尾: 接上或重开 (Kadane); 乘法加一个 min</td><td>O(n²) → O(n)</td></tr><tr><td>某个量之前的最小 / 最大 (买卖股票)</td><td>prefix min 一路带着; 多种状态用 hold / cash 状态机</td><td>O(n²) → O(n)</td></tr><tr><td>物品无限次, 求最少个数</td><td>dp[a] = 1 + min(dp[a-c]); 外层 a 内层 coin</td><td>指数 → O(amount × coins)</td></tr><tr><td>物品无限次, 数组合</td><td>外层 coin, 内层 a 正序; 数排列则外层 a</td><td>指数 → O(amount × coins)</td></tr><tr><td>物品只能用一次, 凑目标和 (subset sum)</td><td>外层物品, 内层 capacity 倒序</td><td>O(2ⁿ) → O(n × target)</td></tr><tr><td>字符串 / 数组 能否划分成合法的块</td><td>dp[i] = 前 i 个能否; 枚举最后一块起点 j</td><td>O(2ⁿ) → O(n²)</td></tr><tr><td>不连续的子序列 + 递增 / 有序</td><td>dp[i] = 以 i 结尾, 往回看 j; 更快用 tails + bisect</td><td>O(2ⁿ) → O(n²) → O(n log n)</td></tr></table>
+</details>
+<p class="note"><b>记:</b>子序列 (可以跳着选) 的最优: 以 i 结尾, 往回看所有能接上的 j, O(n²)。</p>
+<h2>12. 识别信号: 看到什么, 就想到 DP</h2>
+<table><tr><th>题目特征</th><th>state</th><th>transition</th></tr><tr><td>"有多少种方法" 走到第 n 步</td><td>dp[i] = 到 i 的方法数</td><td>dp[i-1] + dp[i-2] (最后一步的几种选择)</td></tr><tr><td>每个元素选或不选, 选了影响邻居</td><td>dp[i] = 前 i 个的最优</td><td>max(dp[i-1], dp[i-2] + x)</td></tr><tr><td>环形</td><td>拆成两条线</td><td>两次线性 DP</td></tr><tr><td>连续 subarray 的最大和 / 积</td><td>以 i 结尾</td><td>接上前面, 或重新开始; 乘法要同时记 max 和 min</td></tr><tr><td>买卖股票</td><td>到目前的最小值, 或 hold / cash</td><td>每天更新</td></tr><tr><td>凑总量, 无限次使用, 求最少</td><td>dp[a] = 凑出 a 的最少个数</td><td>min(dp[a - c] + 1)</td></tr><tr><td>凑总量, 求组合个数</td><td>dp[a]</td><td>外层物品, 内层金额 (正序)</td></tr><tr><td>每个物品只能用一次, 能不能凑出</td><td>dp[c]</td><td>容量倒序: dp[c] or dp[c - x]</td></tr><tr><td>字符串能不能切成合法的段</td><td>dp[i] = 前 i 个</td><td>试最后一段 s[j:i]</td></tr><tr><td>最长递增子序列 (可以跳着选)</td><td>以 i 结尾</td><td>往回看所有 j < i</td></tr></table>
+<p>什么时候想到 DP: 题目问<b>最多 / 最少 / 有多少种 / 能不能</b>, 而 brute force 的 recursion 里有<b>重复的子问题</b>。如果题目要的是"列出所有方案", 那是 backtracking (13), 不是 DP。</p>
+<p>贪心看起来可以但不确定时, 找一个反例 (比如 Coin Change 的 [1,3,4], amount = 6), 贪心错了就用 DP。</p>
 <h2>以后再学</h2>
-<p>2D DP (grid, 两个 string: LCS / Edit Distance) 在 15 doc; 带冷冻期 / 手续费 / 最多 k 次的股票题只是状态机多几个状态; bitmask DP、数位 DP、DP 优化 (单调队列 / convex hull) 不常考, 这里不展开。</p>
+<p>股票系列的其他变体 (多次交易、冷却期、手续费, 都用 hold / cash 状态机)、Decode Ways、Perfect Squares、Jump Game 的 DP 写法、LIS 的 O(n log n) patience sorting。</p>
 </article></body></html>
