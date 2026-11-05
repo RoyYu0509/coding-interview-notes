@@ -1,0 +1,1083 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>01 · Hash Table / Counting</title><style>
+:root{--bg:#fff;--fg:#1d1d1f;--sub:#6b6b70;--code:#f3f1ea;--note:#e8f0fe;--line:#4a7de0;
+--row:#f3f3f3;--gutter:#b9b9bd;--gnum:#8a8a90;--kw:#1b3de0;--ty:#2e8bc0;--fn:#7a5a2e;--cm:#2b7a2b;--st:#d12f2f;--rt:#7a1fb8;--box:#e2e2e5}
+@media(prefers-color-scheme:dark){:root{--bg:#16181d;--fg:#e8e8ea;--sub:#9a9aa2;--code:#262932;--note:#1c2a45;
+--row:#23262e;--gutter:#4a4d57;--gnum:#7c7f89;--kw:#6ea1ff;--ty:#4ec9c0;--fn:#d7ba7d;--cm:#6a9955;--st:#ff7b72;--rt:#c792ea;--box:#363a45}}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.8 -apple-system,"PingFang SC",sans-serif}
+article{max-width:820px;margin:0 auto;padding:24px 16px 64px}
+h1{font-size:26px;margin:8px 0 12px}
+h2{font-size:21px;margin:40px 0 8px;border-bottom:1px solid var(--box);padding-bottom:4px}
+h3{font-size:17px;margin:24px 0 6px}
+code{background:var(--code);padding:1px 5px;border-radius:4px;font:0.9em ui-monospace,Menlo,Consolas,monospace}
+.code{counter-reset:ln;border:1px solid var(--box);border-radius:6px;overflow-x:auto;margin:12px 0;padding:4px 0;
+font:14px/1.7 ui-monospace,Menlo,Consolas,monospace;background:var(--bg)}
+.code .l{display:block;position:relative;white-space:pre;min-height:1.7em;padding:0 14px 0 62px;counter-increment:ln;
+background-image:linear-gradient(to right,transparent 48px,var(--gutter) 48px,var(--gutter) 50px,transparent 50px)}
+.code .l:nth-child(odd){background-color:var(--row)}
+.code .l::before{content:counter(ln);position:absolute;left:0;width:38px;text-align:right;color:var(--gnum)}
+.k{color:var(--kw)}.t{color:var(--ty)}.f{color:var(--fn)}.c{color:var(--cm)}.s{color:var(--st)}.r{color:var(--rt)}
+.note{background:var(--note);border-left:4px solid var(--line);padding:6px 12px;border-radius:4px}
+.main{color:var(--sub)}
+figure{margin:14px 0;background:#fff;border:1px solid var(--box);border-radius:8px;padding:8px}
+figure svg{width:100%;height:auto;display:block}
+figcaption{color:#52514e;font-size:14px;padding:4px 6px 0}
+table{border-collapse:collapse;margin:10px 0;font-size:15px}
+td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
+</style></head><body><article contenteditable="true">
+<h1>01 · Hash Table / Counting</h1>
+<p class="main">主线: Hash Table 用 O(n) 空间记住 "见过什么", 把 "内层循环里找一个东西" 换成一次 O(1) 的查表。用法只有四种: 查另一半、数频率、算 key 分组、用 set 查在不在。</p>
+<p class="main">概念链: Two Sum (查 complement) → Contains Duplicate II (dict 记最近下标) → Valid Anagram (频率表, [0]*26) → First Unique Character (先数完再按顺序查) → Group Anagrams (canonical key 分组) → Longest Consecutive Sequence (set 换排序, 只从起点数)</p>
+<h2>0. 第一性原理: brute force 在浪费什么</h2>
+<p>以 Two Sum 为例。brute force 是双层循环: 对每个 <code>x</code>, 把前面所有元素扫一遍, 看有没有 <code>target − x</code>。时间 <code>O(n²)</code>, 空间 <code>O(1)</code>。</p>
+<p>浪费在哪: 内层循环每次都在 <b>重新找同一批东西</b>。第 4 个数扫了前 4 个数, 第 5 个数又把这 4 个数扫了一遍, 前面看过的信息全丢了。Hash Table 的做法: 看过的东西存进 dict, 以后要找 "有没有 y" 就是一次 <code>y in seen</code>, 平均 <code>O(1)</code>。内层循环消失, 时间从 <code>O(n²)</code> 降到 <code>O(n)</code>, 代价是 <code>O(n)</code> 额外空间。</p>
+<figure><svg width="100%" viewBox="0 0 680 372" role="img" xmlns="http://www.w3.org/2000/svg" style="font-family:ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif">
+<title>brute force 内层扫描 vs 一次查表</title><desc>同一个 Two Sum 例子: 左边每个 x 重新扫描前面所有元素, 右边把前面见过的存进 seen, 一次 lookup 找到另一半。</desc>
+<defs><marker id="a_grey" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="a_red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="a_green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">nums = [3, 8, 5, 2, 7] · target = 9 · 现在轮到 i = 4, x = 7, 要找另一半 need = 9 − 7 = 2</text>
+<text x="40" y="52" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">brute force: 内层循环扫描</text>
+<text x="360" y="52" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">Hash Table: 内层循环变成一次查表</text>
+<line x1="340" y1="40" x2="340" y2="300" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="50" y="78" width="40" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="70.0" y="94.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">3</text>
+<text x="70" y="124" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">0</text>
+<rect x="94" y="78" width="40" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="114.0" y="94.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">8</text>
+<text x="114" y="124" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">1</text>
+<rect x="138" y="78" width="40" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="158.0" y="94.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">5</text>
+<text x="158" y="124" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">2</text>
+<rect x="182" y="78" width="40" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="202.0" y="94.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">2</text>
+<text x="202" y="124" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">3</text>
+<rect x="226" y="78" width="40" height="32" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="246.0" y="94.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">7</text>
+<text x="246" y="124" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">4</text>
+<rect x="223" y="75" width="46" height="38" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="370" y="78" width="40" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="390.0" y="94.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">3</text>
+<text x="390" y="124" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">0</text>
+<rect x="414" y="78" width="40" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="434.0" y="94.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">8</text>
+<text x="434" y="124" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">1</text>
+<rect x="458" y="78" width="40" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="478.0" y="94.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">5</text>
+<text x="478" y="124" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">2</text>
+<rect x="502" y="78" width="40" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="522.0" y="94.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">2</text>
+<text x="522" y="124" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">3</text>
+<rect x="546" y="78" width="40" height="32" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="566.0" y="94.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">7</text>
+<text x="566" y="124" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">4</text>
+<rect x="543" y="75" width="46" height="38" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="50" y="152" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">x = 7 要和前面每个数比一次:</text>
+<rect x="50" y="166" width="150" height="20" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="125.0" y="176.0" font-size="12" fill="#712B13" text-anchor="middle" dominant-baseline="central" font-weight="400">7 + 3 = 10 ≠ 9</text>
+<rect x="50" y="190" width="150" height="20" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="125.0" y="200.0" font-size="12" fill="#712B13" text-anchor="middle" dominant-baseline="central" font-weight="400">7 + 8 = 15 ≠ 9</text>
+<rect x="50" y="214" width="150" height="20" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="125.0" y="224.0" font-size="12" fill="#712B13" text-anchor="middle" dominant-baseline="central" font-weight="400">7 + 5 = 12 ≠ 9</text>
+<rect x="50" y="238" width="150" height="20" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="125.0" y="248.0" font-size="12" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="400">7 + 2 = 9 ✓</text>
+<text x="50" y="282" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">每个 x 最多比 n − 1 次</text>
+<text x="50" y="304" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">n × n = O(n²) · 额外空间 O(1)</text>
+<text x="370" y="152" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">seen (值 → 下标), 只装 i 前面的:</text>
+<rect x="370" y="166" width="44" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="392.0" y="180.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">3→0</text>
+<rect x="418" y="166" width="44" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="440.0" y="180.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">8→1</text>
+<rect x="466" y="166" width="44" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="488.0" y="180.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">5→2</text>
+<rect x="514" y="166" width="44" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="536.0" y="180.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">2→3</text>
+<rect x="511" y="163" width="50" height="34" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="370" y="218" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">need = 9 − 7 = 2</text>
+<text x="370" y="240" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">2 in seen?  是 → seen[2] = 3</text>
+<text x="370" y="262" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">只做 1 次 lookup</text>
+<text x="370" y="282" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">每个 x 查 1 次</text>
+<text x="370" y="304" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">n × 1 = O(n) · 额外空间 O(n)</text>
+<line x1="40" y1="322" x2="640" y2="322" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="346" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">本质: 用 O(n) 空间记住 "见过什么", 把内层 "找" 的循环换成一次 O(1) 的查表</text>
+</svg>
+<figcaption>同一个 x = 7: 左边逐个比较 (O(n)), 右边一次查表 (O(1))。</figcaption></figure>
+<p>模板只有 4 种。后面每一题都是其中一种加一个小变化:</p>
+<div class="code"><span class="l"><span class="c"># 模板 A: complement lookup —— 边走边查 &quot;我要的另一半见过没&quot;</span></span><span class="l">seen = {}                          <span class="c"># seen: 已经走过的东西 (key -&gt; 需要的信息, 比如下标)</span></span><span class="l"><span class="k">for</span> i, x <span class="k">in</span> <span class="t">enumerate</span>(nums):</span><span class="l">    need = <span class="f">f</span>(x)                    <span class="c"># 由当前 x 算出 &quot;另一半&quot; 长什么样</span></span><span class="l">    <span class="k">if</span> need <span class="k">in</span> seen:               <span class="c"># O(1) 查表, 取代 O(n) 的内层扫描</span></span><span class="l">        ...                        <span class="c"># 命中: 用 seen[need] 和 i 算答案</span></span><span class="l">    seen[x] = i                    <span class="c"># 查完再存: 保证 seen 里只有 i 之前的元素</span></span><span class="l"></span><span class="l"><span class="c"># 模板 B: 频率表 —— 数一遍, 之后随便问 &quot;x 出现几次&quot;</span></span><span class="l">cnt = <span class="t">Counter</span>(s)                   <span class="c"># 或 [0] * 26 (key 只有小写字母时)</span></span><span class="l"></span><span class="l"><span class="c"># 模板 C: canonical key 分组 —— 同一组的东西算出同一个 key</span></span><span class="l">groups = <span class="t">defaultdict</span>(<span class="t">list</span>)</span><span class="l"><span class="k">for</span> w <span class="k">in</span> words:</span><span class="l">    groups[<span class="f">key</span>(w)].<span class="f">append</span>(w)       <span class="c"># key(w) 必须 hashable: str / tuple, 不能是 list</span></span><span class="l"></span><span class="l"><span class="c"># 模板 D: set 换掉排序 —— 只问 &quot;在不在&quot;, 不关心顺序</span></span><span class="l">s = <span class="t">set</span>(nums)</span><span class="l"><span class="k">if</span> x - 1 <span class="k">in</span> s: ...                 <span class="c"># O(1)</span></span></div>
+<p class="note"><b>记:</b>Hash Table = 拿空间换掉一层循环。看到 "在内层循环里找某个东西" 就问: 能不能把它提前存进 dict / set?</p>
+<h2>1. Two Sum: 边遍历边查 complement</h2>
+<p><b>题目:</b> 数组 <code>nums</code> 和整数 <code>target</code>, 返回和为 target 的两个下标。例: <code>nums = [3, 8, 5, 2, 7]</code>, <code>target = 9</code> → <code>[3, 4]</code> (2 + 7)。</p>
+<p><b>Brute force:</b> 双层循环枚举所有 pair, <code>O(n²)</code> 时间, <code>O(1)</code> 空间。浪费: 对每个 x, 都在重新扫描前面的元素去找 <code>target − x</code>。</p>
+<p><b>关键观察:</b> 一个 pair (j, i) 且 j &lt; i, 只要在轮到 i 时 "往回看" 就能发现。所以只需要保证: 轮到 i 时, <code>seen</code> 里恰好是 <code>nums[0..i−1]</code>, 然后查 <code>target − nums[i]</code> 在不在 seen 里。</p>
+<figure><svg width="100%" viewBox="0 0 680 392" role="img" xmlns="http://www.w3.org/2000/svg" style="font-family:ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif">
+<title>Two Sum: seen 的 invariant 和先查后存</title><desc>进入第 i 轮时 seen 恰好装着 nums[0..i-1]; 先查再存才不会让 x 匹配自己。</desc>
+<defs><marker id="a_grey" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="a_red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="a_green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">nums = [3, 8, 5, 2, 7] · target = 9 · 此刻 i = 4</text>
+<text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">invariant: 进入第 i 轮时, seen 恰好装着 nums[0..i−1]</text>
+<rect x="50" y="62" width="56" height="36" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="78.0" y="80.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">3</text>
+<text x="78" y="112" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">i=0</text>
+<rect x="112" y="62" width="56" height="36" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="140.0" y="80.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">8</text>
+<text x="140" y="112" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">i=1</text>
+<rect x="174" y="62" width="56" height="36" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="202.0" y="80.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">5</text>
+<text x="202" y="112" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">i=2</text>
+<rect x="236" y="62" width="56" height="36" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="264.0" y="80.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">2</text>
+<text x="264" y="112" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">i=3</text>
+<rect x="298" y="62" width="56" height="36" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="326.0" y="80.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">7</text>
+<text x="326" y="112" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">i=4</text>
+<rect x="295" y="59" width="62" height="42" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<path d="M50 126 L50 132 L286 132 L286 126" fill="none" stroke="#5F5E5A" stroke-width="1"/>
+<text x="168" y="148" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">i 前面的 4 个数: 都已经在 seen 里</text>
+<rect x="400" y="56" width="220" height="48" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="510.0" y="72.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">x = 7</text>
+<text x="510.0" y="88.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">need = 9 − 7 = 2</text>
+<path d="M362 80 L398 80" fill="none" stroke="#0F6E56" stroke-width="1.5" marker-end="url(#a_green)"/>
+<rect x="50" y="184" width="44" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72.0" y="198.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">3→0</text>
+<rect x="98" y="184" width="44" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="120.0" y="198.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">8→1</text>
+<rect x="146" y="184" width="44" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="168.0" y="198.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">5→2</text>
+<rect x="194" y="184" width="44" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="216.0" y="198.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">2→3</text>
+<rect x="191" y="181" width="50" height="34" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<path d="M510 106 L510 166 L216.0 166 L216.0 180" fill="none" stroke="#0F6E56" stroke-width="1.5" marker-end="url(#a_green)"/>
+<text x="310" y="198" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">seen[2] = 3  →  答案 [3, 4]</text>
+<text x="540" y="150" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">查 2</text>
+<line x1="40" y1="244" x2="640" y2="244" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="266" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">为什么要先查后存? nums = [3], target = 6</text>
+<rect x="40" y="282" width="280" height="56" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="180.0" y="302.0" font-size="14" fill="#712B13" text-anchor="middle" dominant-baseline="central" font-weight="500">先存后查</text>
+<text x="180.0" y="318.0" font-size="12" fill="#712B13" text-anchor="middle" dominant-baseline="central" font-weight="400">seen = {3→0} → need = 3 → 命中 → [0, 0]</text>
+<rect x="340" y="282" width="300" height="56" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="490.0" y="302.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">先查后存</text>
+<text x="490.0" y="318.0" font-size="12" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="400">seen = {} → need = 3 不在 → 再存 3→0 → 无解</text>
+<text x="40" y="358" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">先存后查会把 x 自己当成另一半, 同一个元素用了两次。</text>
+<text x="40" y="378" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">先查后存: 命中的永远是 i 之前的元素, 所以 nums = [3, 3] 也能得到 [0, 1]。</text>
+</svg>
+<figcaption>invariant: seen 只装 i 前面的元素; 先查后存, x 才不会匹配自己。</figcaption></figure>
+<figure><svg width="100%" viewBox="0 0 680 500" role="img" xmlns="http://www.w3.org/2000/svg" style="font-family:ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif">
+<title>Two Sum 运行流程</title><desc>每步: 算 need, 查 seen, 没找到就把 x 存进 seen, 直到命中。</desc>
+<defs><marker id="a_grey" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="a_red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="a_green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">target = 9 · 每一步: need = target − x → 查 seen → 没命中才把 x→i 存进去</text>
+<text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">seen: 值 → 下标 (只装当前 i 前面的元素)</text>
+<text x="40" y="64" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">当前</text>
+<text x="136" y="64" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">先查</text>
+<text x="380" y="64" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">后存: seen 现在有</text>
+<line x1="40" y1="74" x2="640" y2="74" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="84" width="76" height="48" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="78.0" y="100.0" font-size="12" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="400">i = 0</text>
+<text x="78.0" y="116.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">x = 3</text>
+<path d="M116 108 L134 108" fill="none" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#a_grey)"/>
+<text x="142" y="96" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">need = 9 − 3 = 6</text>
+<text x="142" y="118" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">6 in seen? 否 → 存 3→0</text>
+<rect x="380" y="94" width="44" height="28" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="402.0" y="108.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">3→0</text>
+<line x1="40" y1="140" x2="640" y2="140" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="148" width="76" height="48" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="78.0" y="164.0" font-size="12" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="400">i = 1</text>
+<text x="78.0" y="180.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">x = 8</text>
+<path d="M116 172 L134 172" fill="none" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#a_grey)"/>
+<text x="142" y="160" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">need = 9 − 8 = 1</text>
+<text x="142" y="182" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">1 in seen? 否 → 存 8→1</text>
+<rect x="380" y="158" width="44" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="402.0" y="172.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">3→0</text>
+<rect x="428" y="158" width="44" height="28" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="450.0" y="172.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">8→1</text>
+<line x1="40" y1="204" x2="640" y2="204" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="212" width="76" height="48" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="78.0" y="228.0" font-size="12" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="400">i = 2</text>
+<text x="78.0" y="244.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">x = 5</text>
+<path d="M116 236 L134 236" fill="none" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#a_grey)"/>
+<text x="142" y="224" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">need = 9 − 5 = 4</text>
+<text x="142" y="246" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">4 in seen? 否 → 存 5→2</text>
+<rect x="380" y="222" width="44" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="402.0" y="236.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">3→0</text>
+<rect x="428" y="222" width="44" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="450.0" y="236.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">8→1</text>
+<rect x="476" y="222" width="44" height="28" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="498.0" y="236.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">5→2</text>
+<line x1="40" y1="268" x2="640" y2="268" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="276" width="76" height="48" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="78.0" y="292.0" font-size="12" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="400">i = 3</text>
+<text x="78.0" y="308.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">x = 2</text>
+<path d="M116 300 L134 300" fill="none" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#a_grey)"/>
+<text x="142" y="288" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">need = 9 − 2 = 7</text>
+<text x="142" y="310" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">7 in seen? 否 → 存 2→3</text>
+<rect x="380" y="286" width="44" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="402.0" y="300.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">3→0</text>
+<rect x="428" y="286" width="44" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="450.0" y="300.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">8→1</text>
+<rect x="476" y="286" width="44" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="498.0" y="300.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">5→2</text>
+<rect x="524" y="286" width="44" height="28" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="546.0" y="300.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">2→3</text>
+<line x1="40" y1="332" x2="640" y2="332" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="340" width="76" height="48" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="78.0" y="356.0" font-size="12" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="400">i = 4</text>
+<text x="78.0" y="372.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">x = 7</text>
+<path d="M116 364 L134 364" fill="none" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#a_grey)"/>
+<text x="142" y="352" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">need = 9 − 7 = 2</text>
+<text x="142" y="374" font-size="12" fill="#085041" text-anchor="start" dominant-baseline="central" font-weight="500">2 in seen? 是 → seen[2] = 3</text>
+<rect x="380" y="350" width="44" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="402.0" y="364.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">3→0</text>
+<rect x="428" y="350" width="44" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="450.0" y="364.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">8→1</text>
+<rect x="476" y="350" width="44" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="498.0" y="364.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">5→2</text>
+<rect x="524" y="350" width="44" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="546.0" y="364.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">2→3</text>
+<rect x="521" y="347" width="50" height="34" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="40" y="422" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">答案: return [3, 4]    因为 nums[3] + nums[4] = 2 + 7 = 9</text>
+<text x="40" y="446" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">整个过程 seen 只增不减; 最后一步命中就返回, 所以没有再存 7。</text>
+<rect x="40" y="470" width="16" height="12" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="62" y="476" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">新写入 seen</text>
+<rect x="156.8" y="470" width="16" height="12" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="178.8" y="476" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">seen 里已有的</text>
+<rect x="285" y="470" width="16" height="12" rx="3" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="307.6" y="476" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">命中的另一半</text>
+</svg>
+<figcaption>5 步: 前 4 步都没找到, 只是把 x→i 存进 seen; 第 5 步 need = 2 命中。</figcaption></figure>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">two_sum</span>(nums, target):</span><span class="l">    seen = {}                       <span class="c"># seen: 值 -&gt; 下标, 只装 nums[0..i-1]</span></span><span class="l">    <span class="k">for</span> i, x <span class="k">in</span> <span class="t">enumerate</span>(nums):</span><span class="l">        need = target - x           <span class="c"># 我需要的另一半</span></span><span class="l">        <span class="k">if</span> need <span class="k">in</span> seen:            <span class="c"># 另一半之前见过 -&gt; 答案</span></span><span class="l">            <span class="r">return</span> [seen[need], i]</span><span class="l">        seen[x] = i                 <span class="c"># 先查后存: 否则 x 会把自己当成另一半</span></span><span class="l">    <span class="r">return</span> []</span></div>
+<p><b>Time:</b> <code>O(n)</code>, 一次遍历, 每步 dict 查 / 写平均 <code>O(1)</code>。<b>Space:</b> <code>O(n)</code>, seen 最多存 n − 1 个元素。</p>
+<p class="note"><b>记:</b>complement lookup: 先算出 "我要的另一半", 查表, 没有再把自己存进去。顺序是先查后存。</p>
+<h2>2. Contains Duplicate II: dict 记最近一次的下标</h2>
+<p><b>相比上一题:</b> 不是找 "和为 target", 而是找 "值相同且下标差 ≤ k"。要查的 "另一半" 就是 <b>同一个值</b>, 而且还要知道它在哪儿, 所以 value 存下标 (Two Sum 就是这个形状)。多出来的一行: <b>命中判断加距离条件</b>, 以及 <b>每次都覆盖成最新下标</b>。</p>
+<p><b>题目:</b> <code>nums = [1, 2, 3, 1, 3]</code>, <code>k = 2</code> → <code>True</code> (两个 3, 下标 2 和 4, 差 2)。</p>
+<p><b>Brute force:</b> 每个 i 往后看 k 个位置, <code>O(n·k)</code>; 浪费: 又是在内层循环里找 "同一个值"。(只问 "有没有重复" 的 Contains Duplicate I 更简单: <code>len(set(nums)) &lt; len(nums)</code>。)</p>
+<p><b>关键观察:</b> 对同一个值, 只有 <b>最近的</b> 那次出现可能满足距离 ≤ k, 更老的只会更远。所以 dict 每个值只留一个下标, 且必须覆盖更新。</p>
+<figure><svg width="100%" viewBox="0 0 680 352" role="img" xmlns="http://www.w3.org/2000/svg" style="font-family:ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif">
+<title>Contains Duplicate II: 只记最近一次</title><desc>同一个值只需要比最近一次出现的下标; 老下标只会更远, 所以覆盖即可。</desc>
+<defs><marker id="a_grey" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="a_red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="a_green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">nums = [1, 2, 3, 1, 3] · k = 2 · 要找: 两个相同的值, 下标之差 ≤ k</text>
+<rect x="70" y="110" width="60" height="36" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="100.0" y="128.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">1</text>
+<text x="100" y="160" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">i=0</text>
+<rect x="150" y="110" width="60" height="36" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="180.0" y="128.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">2</text>
+<text x="180" y="160" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">i=1</text>
+<rect x="230" y="110" width="60" height="36" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="260.0" y="128.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">3</text>
+<text x="260" y="160" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">i=2</text>
+<rect x="310" y="110" width="60" height="36" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="340.0" y="128.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">1</text>
+<text x="340" y="160" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">i=3</text>
+<rect x="390" y="110" width="60" height="36" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="420.0" y="128.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">3</text>
+<text x="420" y="160" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">i=4</text>
+<path d="M100 108 C100 62 340 62 340 108" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#a_red)"/>
+<text x="220.0" y="62" font-size="12" fill="#712B13" text-anchor="middle" dominant-baseline="central" font-weight="400">1 和 1: dist = 3 − 0 = 3 &gt; k = 2, 不算</text>
+<path d="M260 174 C260 212 420 212 420 174" fill="none" stroke="#0F6E56" stroke-width="1.5" marker-end="url(#a_green)"/>
+<text x="340.0" y="216" font-size="12" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">3 和 3: dist = 4 − 2 = 2 ≤ k = 2 ✓</text>
+<line x1="40" y1="226" x2="640" y2="226" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="248" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">为什么 last 只存最近一次?</text>
+<text x="40" y="270" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">i = 3 再次看到 1: 旧的 1→0 已经没用 (3 − 0 &gt; k), 以后只会更远; 覆盖成 1→3。</text>
+<rect x="40" y="290" width="44" height="28" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="62.0" y="304.0" font-size="14" fill="#712B13" text-anchor="middle" dominant-baseline="central" font-weight="500">1→0</text>
+<path d="M92 304 L146 304" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#a_red)"/>
+<rect x="150" y="290" width="44" height="28" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="172.0" y="304.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">1→3</text>
+<text x="210" y="304" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">last[1] 覆盖: 后面的 1 只需要和最近的 1 比</text>
+<text x="40" y="336" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">对比 Two Sum: 那里每个值存第一次下标 (任一个都行); 这里存最近一次 (距离最短)。</text>
+</svg>
+<figcaption>两个 3 距离 2 命中; 两个 1 距离 3 不算, 但 last[1] 仍要更新成 3。</figcaption></figure>
+<figure><svg width="100%" viewBox="0 0 680 544" role="img" xmlns="http://www.w3.org/2000/svg" style="font-family:ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif">
+<title>Contains Duplicate II 运行流程</title><desc>last 记录每个值最近一次的下标; 命中条件是 i − last[x] ≤ k; 旧值被覆盖。</desc>
+<defs><marker id="a_grey" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="a_red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="a_green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">k = 2 · 每一步: 查 last[x] → 算 dist = i − last[x] → ≤ k 就返回 True, 否则覆盖成 i</text>
+<text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">last: 值 → 最近一次出现的下标</text>
+<text x="40" y="64" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">当前</text>
+<text x="136" y="64" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">先查</text>
+<text x="444" y="64" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">后存: last 现在有</text>
+<line x1="40" y1="74" x2="640" y2="74" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="88" width="76" height="48" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="78.0" y="104.0" font-size="12" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="400">i = 0</text>
+<text x="78.0" y="120.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">x = 1</text>
+<path d="M116 112 L134 112" fill="none" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#a_grey)"/>
+<text x="142" y="100" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">last 里没有 1</text>
+<text x="142" y="122" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">→ 存 1→0</text>
+<rect x="444" y="98" width="44" height="28" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="466.0" y="112.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">1→0</text>
+<line x1="40" y1="152" x2="640" y2="152" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="160" width="76" height="48" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="78.0" y="176.0" font-size="12" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="400">i = 1</text>
+<text x="78.0" y="192.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">x = 2</text>
+<path d="M116 184 L134 184" fill="none" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#a_grey)"/>
+<text x="142" y="172" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">last 里没有 2</text>
+<text x="142" y="194" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">→ 存 2→1</text>
+<rect x="444" y="170" width="44" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="466.0" y="184.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">1→0</text>
+<rect x="492" y="170" width="44" height="28" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="514.0" y="184.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">2→1</text>
+<line x1="40" y1="224" x2="640" y2="224" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="232" width="76" height="48" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="78.0" y="248.0" font-size="12" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="400">i = 2</text>
+<text x="78.0" y="264.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">x = 3</text>
+<path d="M116 256 L134 256" fill="none" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#a_grey)"/>
+<text x="142" y="244" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">last 里没有 3</text>
+<text x="142" y="266" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">→ 存 3→2</text>
+<rect x="444" y="242" width="44" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="466.0" y="256.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">1→0</text>
+<rect x="492" y="242" width="44" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="514.0" y="256.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">2→1</text>
+<rect x="540" y="242" width="44" height="28" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="562.0" y="256.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">3→2</text>
+<line x1="40" y1="296" x2="640" y2="296" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="304" width="76" height="48" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="78.0" y="320.0" font-size="12" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="400">i = 3</text>
+<text x="78.0" y="336.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">x = 1</text>
+<path d="M116 328 L134 328" fill="none" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#a_grey)"/>
+<text x="142" y="312" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">last[1] = 0</text>
+<text x="142" y="330" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">dist = 3 − 0 = 3 &gt; k = 2</text>
+<text x="142" y="350" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">太远, 不算 → 覆盖 last[1] = 3</text>
+<rect x="444" y="314" width="44" height="28" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="466.0" y="328.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">1→3</text>
+<rect x="352" y="314" width="44" height="28" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="374.0" y="328.0" font-size="14" fill="#712B13" text-anchor="middle" dominant-baseline="central" font-weight="500">1→0</text>
+<path d="M444 328 L402 328" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#a_red)"/>
+<text x="352" y="352" font-size="12" fill="#712B13" text-anchor="start" dominant-baseline="central" font-weight="400">旧值被覆盖</text>
+<rect x="492" y="314" width="44" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="514.0" y="328.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">2→1</text>
+<rect x="540" y="314" width="44" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="562.0" y="328.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">3→2</text>
+<line x1="40" y1="368" x2="640" y2="368" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="376" width="76" height="48" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="78.0" y="392.0" font-size="12" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="400">i = 4</text>
+<text x="78.0" y="408.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">x = 3</text>
+<path d="M116 400 L134 400" fill="none" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#a_grey)"/>
+<text x="142" y="384" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">last[3] = 2</text>
+<text x="142" y="402" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">dist = 4 − 2 = 2 ≤ k = 2</text>
+<text x="142" y="422" font-size="12" fill="#085041" text-anchor="start" dominant-baseline="central" font-weight="500">命中 → return True</text>
+<rect x="444" y="386" width="44" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="466.0" y="400.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">1→3</text>
+<rect x="492" y="386" width="44" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="514.0" y="400.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">2→1</text>
+<rect x="540" y="386" width="44" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="562.0" y="400.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">3→2</text>
+<rect x="537" y="383" width="50" height="34" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="40" y="456" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">答案: return True    nums[2] = nums[4] = 3, 4 − 2 = 2 ≤ k = 2</text>
+<text x="40" y="480" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">i = 3 的 1 距离太远没命中, 但 last[1] 仍然要更新成 3 (为以后的 1 服务)。</text>
+<rect x="40" y="504" width="16" height="12" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="62" y="510" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">新写入 last</text>
+<rect x="156.8" y="504" width="16" height="12" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="178.8" y="510" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">被覆盖的旧值</text>
+<rect x="274.8" y="504" width="16" height="12" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="296.8" y="510" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">last 里已有的</text>
+<rect x="403" y="504" width="16" height="12" rx="3" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="425.6" y="510" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">命中</text>
+</svg>
+<figcaption>5 步: i = 3 没命中但覆盖了旧下标 (旧值虚线扔到左边); i = 4 命中。</figcaption></figure>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">contains_nearby_duplicate</span>(nums, k):</span><span class="l">    last = {}                       <span class="c"># last: 值 -&gt; 它最近一次出现的下标</span></span><span class="l">    <span class="k">for</span> i, x <span class="k">in</span> <span class="t">enumerate</span>(nums):</span><span class="l">        <span class="k">if</span> x <span class="k">in</span> last <span class="k">and</span> i - last[x] &lt;= k:   <span class="c"># 最近的一次都不够近, 更老的更不行</span></span><span class="l">            <span class="r">return</span> <span class="k">True</span></span><span class="l">        last[x] = i                 <span class="c"># 不管有没有命中, 都覆盖成最新下标</span></span><span class="l">    <span class="r">return</span> <span class="k">False</span></span></div>
+<p><b>Time:</b> <code>O(n)</code>。<b>Space:</b> <code>O(n)</code>, last 存所有不同的值。如果把 "最近 k 个" 当滑动窗口, 用 <code>set</code> 装窗口里的值 (i &gt; k 时删掉 <code>nums[i − k − 1]</code>), 空间可以降到 <code>O(k)</code>。</p>
+<p class="note"><b>记:</b>dict 里 value 存 "上次出现的下标", 每步都覆盖成最新的; 距离条件只和最近一次比。</p>
+<h2>3. Valid Anagram: 频率表比较, 小写字母用 [0] * 26</h2>
+<p><b>相比上一题:</b> 不再查 "某个值在不在", 而是 <b>数每个字符出现几次</b>, 再比较两张表。key 只有 26 个小写字母, 所以 dict 可以换成 <code>[0] * 26</code>。</p>
+<p><b>题目:</b> <code>s = "anagram"</code>, <code>t = "nagaram"</code> → <code>True</code>; <code>s = "rat"</code>, <code>t = "car"</code> → <code>False</code>。</p>
+<p><b>Brute force:</b> <code>sorted(s) == sorted(t)</code>, <code>O(n log n)</code>。浪费: 排序把字符排成同样的顺序再逐位比, 可是我们只关心 "每个字符有几个", 顺序是白排的。</p>
+<p><b>关键观察:</b> anagram ⇔ 频率表相同。s 的字符 +1, t 的字符 −1, 全部抵消成 0 就是 anagram, 只用一个数组、两个循环。</p>
+<figure><svg width="100%" viewBox="0 0 680 396" role="img" xmlns="http://www.w3.org/2000/svg" style="font-family:ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif">
+<title>Valid Anagram: anagram 就是频率表相同</title><desc>顺序不重要, 两个字符串映射到同一个频率表; 小写字母时用 26 格数组, 下标就是字母。</desc>
+<defs><marker id="a_grey" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="a_red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="a_green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">anagram: 两个字符串用同样的字符、同样的次数, 顺序可以不同</text>
+<rect x="40" y="40" width="110" height="34" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="95.0" y="57.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">s = "rat"</text>
+<rect x="40" y="90" width="110" height="34" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="95.0" y="107.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">t = "tar"</text>
+<rect x="250" y="38" width="390" height="88" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="445.0" y="74.0" font-size="12" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="400">频率表 (顺序被丢掉了)</text>
+<text x="445.0" y="90.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">a:1   r:1   t:1</text>
+<path d="M150 57 L248 70" fill="none" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#a_grey)"/>
+<path d="M150 107 L248 96" fill="none" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#a_grey)"/>
+<text x="250" y="144" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">两个字符串得到同一张表  ⇔  anagram, 所以不需要 sort 来 "对齐顺序"</text>
+<line x1="40" y1="162" x2="640" y2="162" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="184" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">小写字母: 用 [0] * 26, 字母直接当下标 (不需要 hash)</text>
+<text x="50.5" y="210" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">a</text>
+<rect x="40" y="222" width="21" height="28" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="50.5" y="236.0" font-size="12" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">1</text>
+<text x="73.5" y="210" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">b</text>
+<rect x="63" y="222" width="21" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="73.5" y="236.0" font-size="12" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">0</text>
+<text x="96.5" y="210" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">c</text>
+<rect x="86" y="222" width="21" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="96.5" y="236.0" font-size="12" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">0</text>
+<text x="119.5" y="210" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">d</text>
+<rect x="109" y="222" width="21" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="119.5" y="236.0" font-size="12" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">0</text>
+<text x="142.5" y="210" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">e</text>
+<rect x="132" y="222" width="21" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="142.5" y="236.0" font-size="12" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">0</text>
+<text x="165.5" y="210" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">f</text>
+<rect x="155" y="222" width="21" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="165.5" y="236.0" font-size="12" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">0</text>
+<text x="188.5" y="210" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">g</text>
+<rect x="178" y="222" width="21" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="188.5" y="236.0" font-size="12" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">0</text>
+<text x="211.5" y="210" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">h</text>
+<rect x="201" y="222" width="21" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="211.5" y="236.0" font-size="12" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">0</text>
+<text x="234.5" y="210" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">i</text>
+<rect x="224" y="222" width="21" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="234.5" y="236.0" font-size="12" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">0</text>
+<text x="257.5" y="210" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">j</text>
+<rect x="247" y="222" width="21" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="257.5" y="236.0" font-size="12" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">0</text>
+<text x="280.5" y="210" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">k</text>
+<rect x="270" y="222" width="21" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="280.5" y="236.0" font-size="12" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">0</text>
+<text x="303.5" y="210" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">l</text>
+<rect x="293" y="222" width="21" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="303.5" y="236.0" font-size="12" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">0</text>
+<text x="326.5" y="210" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">m</text>
+<rect x="316" y="222" width="21" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="326.5" y="236.0" font-size="12" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">0</text>
+<text x="349.5" y="210" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">n</text>
+<rect x="339" y="222" width="21" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="349.5" y="236.0" font-size="12" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">0</text>
+<text x="372.5" y="210" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">o</text>
+<rect x="362" y="222" width="21" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="372.5" y="236.0" font-size="12" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">0</text>
+<text x="395.5" y="210" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">p</text>
+<rect x="385" y="222" width="21" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="395.5" y="236.0" font-size="12" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">0</text>
+<text x="418.5" y="210" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">q</text>
+<rect x="408" y="222" width="21" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="418.5" y="236.0" font-size="12" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">0</text>
+<text x="441.5" y="210" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">r</text>
+<rect x="431" y="222" width="21" height="28" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="441.5" y="236.0" font-size="12" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">1</text>
+<text x="464.5" y="210" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">s</text>
+<rect x="454" y="222" width="21" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="464.5" y="236.0" font-size="12" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">0</text>
+<text x="487.5" y="210" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">t</text>
+<rect x="477" y="222" width="21" height="28" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="487.5" y="236.0" font-size="12" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">1</text>
+<text x="510.5" y="210" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">u</text>
+<rect x="500" y="222" width="21" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="510.5" y="236.0" font-size="12" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">0</text>
+<text x="533.5" y="210" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">v</text>
+<rect x="523" y="222" width="21" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="533.5" y="236.0" font-size="12" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">0</text>
+<text x="556.5" y="210" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">w</text>
+<rect x="546" y="222" width="21" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="556.5" y="236.0" font-size="12" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">0</text>
+<text x="579.5" y="210" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">x</text>
+<rect x="569" y="222" width="21" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="579.5" y="236.0" font-size="12" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">0</text>
+<text x="602.5" y="210" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">y</text>
+<rect x="592" y="222" width="21" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="602.5" y="236.0" font-size="12" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">0</text>
+<text x="625.5" y="210" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">z</text>
+<rect x="615" y="222" width="21" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="625.5" y="236.0" font-size="12" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">0</text>
+<text x="40" y="270" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">下标 = ord(ch) − 97:   ord('a') − 97 = 0,   ord('r') − 97 = 17,   ord('t') − 97 = 19</text>
+<line x1="40" y1="288" x2="640" y2="288" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="310" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">sorted(s) == sorted(t)</text>
+<text x="300" y="310" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="400">O(n log n) 时间</text>
+<text x="40" y="334" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">数组计数 cnt</text>
+<text x="300" y="334" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="400">O(n) 时间 · 固定 26 格 = O(1) 空间</text>
+<text x="40" y="366" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">字符集不固定 (Unicode 等): 26 格数组放不下, 换回 dict / Counter, 思路完全一样。</text>
+</svg>
+<figcaption>两个字符串映射到同一张频率表; 26 格数组就是 "下标 = 字母" 的 dict。</figcaption></figure>
+<figure><svg width="100%" viewBox="0 0 680 544" role="img" xmlns="http://www.w3.org/2000/svg" style="font-family:ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif">
+<title>Valid Anagram 运行流程</title><desc>s 的字符让 cnt +1, t 的字符让 cnt −1; 最后看 cnt 是否全 0。</desc>
+<defs><marker id="a_grey" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="a_red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="a_green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">s = "rat", t = "car" · cnt = [0] * 26, 图里只画碰到过的格子 (letter:count)</text>
+<text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">第一个循环: s 的每个字符 cnt +1 · 第二个循环: t 的每个字符 cnt −1</text>
+<text x="40" y="64" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">当前字符</text>
+<text x="146" y="64" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">操作</text>
+<text x="380" y="64" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">cnt 现在是</text>
+<line x1="40" y1="74" x2="640" y2="74" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="88" width="90" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="85.0" y="102.0" font-size="12" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="400">s[0]</text>
+<text x="85.0" y="118.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">'r'</text>
+<path d="M130 110 L144 110" fill="none" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#a_grey)"/>
+<text x="152" y="100" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">cnt['r'] += 1</text>
+<text x="152" y="122" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">0 → 1</text>
+<rect x="380" y="94" width="54" height="28" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="407.0" y="108.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">r:1</text>
+<line x1="40" y1="140" x2="640" y2="140" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="148" width="90" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="85.0" y="162.0" font-size="12" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="400">s[1]</text>
+<text x="85.0" y="178.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">'a'</text>
+<path d="M130 170 L144 170" fill="none" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#a_grey)"/>
+<text x="152" y="160" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">cnt['a'] += 1</text>
+<text x="152" y="182" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">0 → 1</text>
+<rect x="380" y="154" width="54" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="407.0" y="168.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">r:1</text>
+<rect x="438" y="154" width="54" height="28" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="465.0" y="168.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">a:1</text>
+<line x1="40" y1="200" x2="640" y2="200" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="208" width="90" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="85.0" y="222.0" font-size="12" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="400">s[2]</text>
+<text x="85.0" y="238.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">'t'</text>
+<path d="M130 230 L144 230" fill="none" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#a_grey)"/>
+<text x="152" y="220" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">cnt['t'] += 1</text>
+<text x="152" y="242" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">0 → 1</text>
+<rect x="380" y="214" width="54" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="407.0" y="228.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">r:1</text>
+<rect x="438" y="214" width="54" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="465.0" y="228.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">a:1</text>
+<rect x="496" y="214" width="54" height="28" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="523.0" y="228.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">t:1</text>
+<line x1="40" y1="260" x2="640" y2="260" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="268" width="90" height="44" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="85.0" y="282.0" font-size="12" fill="#712B13" text-anchor="middle" dominant-baseline="central" font-weight="400">t[0]</text>
+<text x="85.0" y="298.0" font-size="14" fill="#712B13" text-anchor="middle" dominant-baseline="central" font-weight="500">'c'</text>
+<path d="M130 290 L144 290" fill="none" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#a_grey)"/>
+<text x="152" y="280" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">cnt['c'] -= 1</text>
+<text x="152" y="302" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">0 → -1</text>
+<rect x="380" y="274" width="54" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="407.0" y="288.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">r:1</text>
+<rect x="438" y="274" width="54" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="465.0" y="288.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">a:1</text>
+<rect x="496" y="274" width="54" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="523.0" y="288.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">t:1</text>
+<rect x="554" y="274" width="54" height="28" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="581.0" y="288.0" font-size="14" fill="#712B13" text-anchor="middle" dominant-baseline="central" font-weight="500">c:-1</text>
+<line x1="40" y1="320" x2="640" y2="320" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="328" width="90" height="44" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="85.0" y="342.0" font-size="12" fill="#712B13" text-anchor="middle" dominant-baseline="central" font-weight="400">t[1]</text>
+<text x="85.0" y="358.0" font-size="14" fill="#712B13" text-anchor="middle" dominant-baseline="central" font-weight="500">'a'</text>
+<path d="M130 350 L144 350" fill="none" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#a_grey)"/>
+<text x="152" y="340" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">cnt['a'] -= 1</text>
+<text x="152" y="362" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">1 → 0</text>
+<rect x="380" y="334" width="54" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="407.0" y="348.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">r:1</text>
+<rect x="438" y="334" width="54" height="28" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="465.0" y="348.0" font-size="14" fill="#712B13" text-anchor="middle" dominant-baseline="central" font-weight="500">a:0</text>
+<rect x="496" y="334" width="54" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="523.0" y="348.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">t:1</text>
+<rect x="554" y="334" width="54" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="581.0" y="348.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">c:-1</text>
+<line x1="40" y1="380" x2="640" y2="380" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="388" width="90" height="44" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="85.0" y="402.0" font-size="12" fill="#712B13" text-anchor="middle" dominant-baseline="central" font-weight="400">t[2]</text>
+<text x="85.0" y="418.0" font-size="14" fill="#712B13" text-anchor="middle" dominant-baseline="central" font-weight="500">'r'</text>
+<path d="M130 410 L144 410" fill="none" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#a_grey)"/>
+<text x="152" y="400" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">cnt['r'] -= 1</text>
+<text x="152" y="422" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">1 → 0</text>
+<rect x="380" y="394" width="54" height="28" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="407.0" y="408.0" font-size="14" fill="#712B13" text-anchor="middle" dominant-baseline="central" font-weight="500">r:0</text>
+<rect x="438" y="394" width="54" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="465.0" y="408.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">a:0</text>
+<rect x="496" y="394" width="54" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="523.0" y="408.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">t:1</text>
+<rect x="554" y="394" width="54" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="581.0" y="408.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">c:-1</text>
+<text x="40" y="460" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">最后: cnt 里还有 t:1, c:-1 不是 0  →  any(cnt) 为 True  →  return False</text>
+<text x="40" y="484" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">a、r 刚好抵消成 0; t 多了一个, c 少了一个, 所以 "rat" 和 "car" 不是 anagram。</text>
+<rect x="40" y="508" width="16" height="12" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="62" y="514" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">s 的字符 +1</text>
+<rect x="156.8" y="508" width="16" height="12" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="178.8" y="514" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">t 的字符 −1</text>
+<rect x="273.6" y="508" width="16" height="12" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="295.6" y="514" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">没变的格子</text>
+</svg>
+<figcaption>s = "rat", t = "car": 6 步, 最后 t:1 和 c:−1 没抵消, 返回 False。</figcaption></figure>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">is_anagram</span>(s, t):</span><span class="l">    <span class="k">if</span> <span class="t">len</span>(s) != <span class="t">len</span>(t):            <span class="c"># 长度不同, 一定不是</span></span><span class="l">        <span class="r">return</span> <span class="k">False</span></span><span class="l">    cnt = [0] * 26                  <span class="c"># 小写字母: 下标 = ord(ch) - 97, 不需要 hash</span></span><span class="l">    <span class="k">for</span> ch <span class="k">in</span> s:</span><span class="l">        cnt[<span class="t">ord</span>(ch) - 97] += 1      <span class="c"># s 里的字符 +1</span></span><span class="l">    <span class="k">for</span> ch <span class="k">in</span> t:</span><span class="l">        cnt[<span class="t">ord</span>(ch) - 97] -= 1      <span class="c"># t 里的字符 -1: 同样多就刚好抵消</span></span><span class="l">    <span class="r">return</span> <span class="k">not</span> <span class="t">any</span>(cnt)             <span class="c"># 全部抵消成 0 &lt;=&gt; 频率表相同</span></span><span class="l"></span><span class="l"><span class="c"># 字符集不固定 (Unicode / 任意 hashable): 换成 Counter</span></span><span class="l"><span class="c"># return Counter(s) == Counter(t)</span></span></div>
+<p><b>Time:</b> <code>O(n)</code>。<b>Space:</b> <code>O(1)</code>, 数组固定 26 格, 和 n 无关 (字符集不固定时是 <code>O(字符种类数)</code>)。</p>
+<p class="note"><b>记:</b>频率表比较: 顺序无关的问题 (anagram、multiset 相等) 都用计数代替 sort。key 范围小而固定 → 数组; 否则 Counter。</p>
+<h2>4. First Unique Character: 先数完, 再按原顺序查</h2>
+<p><b>相比上一题:</b> 频率表还是那张表, 但问题变成 "<b>按原顺序</b> 第一个频率为 1 的"。多了一轮: 数完之后, 要回到原串按下标顺序再扫一遍。</p>
+<p><b>题目:</b> <code>s = "aabc"</code> → <code>2</code> (字符 b 只出现一次, 最靠前)。</p>
+<p><b>Brute force:</b> 对每个字符扫整个串数它出现几次, <code>O(n²)</code>。浪费: 同一个字符被重复数了很多次。</p>
+<p><b>关键观察:</b> 一遍扫描回答不了 "这个字符后面还会不会出现"。需要全局信息, 所以拆成两遍: pass 1 数频率, pass 2 按原顺序查表。</p>
+<figure><svg width="100%" viewBox="0 0 680 344" role="img" xmlns="http://www.w3.org/2000/svg" style="font-family:ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif">
+<title>First Unique Character: 先数完再按顺序找</title><desc>一遍扫描不知道后面还会不会出现同一个字符, 所以 pass 1 数全局频率, pass 2 按原顺序找第一个 cnt == 1。</desc>
+<defs><marker id="a_grey" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="a_red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="a_green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">s = "aabc" · 要找第一个只出现一次的字符的下标</text>
+<text x="40" y="50" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">pass 1: 数全局频率 (不管顺序)</text>
+<rect x="50" y="68" width="46" height="34" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="73.0" y="85.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">a</text>
+<rect x="102" y="68" width="46" height="34" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="125.0" y="85.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">a</text>
+<rect x="154" y="68" width="46" height="34" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="177.0" y="85.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">b</text>
+<rect x="206" y="68" width="46" height="34" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="229.0" y="85.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">c</text>
+<text x="330" y="56" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">cnt</text>
+<rect x="330" y="70" width="54" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="357.0" y="84.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">a:2</text>
+<rect x="388" y="70" width="54" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="415.0" y="84.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">b:1</text>
+<rect x="446" y="70" width="54" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="473.0" y="84.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">c:1</text>
+<path d="M262 85 L324 85" fill="none" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#a_grey)"/>
+<line x1="40" y1="122" x2="640" y2="122" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="144" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">pass 2: 按原顺序再扫, 第一个 cnt == 1 的就是答案</text>
+<rect x="50" y="162" width="46" height="34" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="73.0" y="179.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">a</text>
+<text x="73" y="214" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">cnt = 2</text>
+<rect x="102" y="162" width="46" height="34" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="125.0" y="179.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">a</text>
+<text x="125" y="214" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">cnt = 2</text>
+<rect x="154" y="162" width="46" height="34" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="177.0" y="179.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">b</text>
+<rect x="151" y="159" width="52" height="40" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="177" y="214" font-size="12" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">cnt = 1 ✓</text>
+<rect x="206" y="162" width="46" height="34" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="229.0" y="179.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">c</text>
+<text x="229" y="214" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">没扫到</text>
+<text x="330" y="170" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">i = 0, 1: cnt = 2, 跳过</text>
+<text x="330" y="190" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">i = 2: cnt = 1, return 2</text>
+<line x1="40" y1="236" x2="640" y2="236" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="258" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">为什么一遍不够?</text>
+<text x="40" y="280" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">扫到 'b' (i = 2) 时, 一遍扫描回答不了 "后面还会不会再出现 b"。</text>
+<text x="40" y="300" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">答案依赖全局信息 → 先数完 (O(n)), 再按原顺序查表 (O(n)), 合起来仍是 O(n)。</text>
+<text x="40" y="324" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">不能直接遍历 cnt 找 == 1: 要的是 "在原串里最靠前", 不是 cnt 里最靠前 (dict 的顺序是首次出现顺序, 可行但不通用)。</text>
+</svg>
+<figcaption>pass 1 得到全局 cnt, pass 2 用原顺序保证 "第一个"。</figcaption></figure>
+<figure><svg width="100%" viewBox="0 0 680 588" role="img" xmlns="http://www.w3.org/2000/svg" style="font-family:ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif">
+<title>First Unique Character 运行流程</title><desc>pass 1 逐字符计数, pass 2 按原顺序检查 cnt, 遇到第一个 cnt == 1 就返回下标。</desc>
+<defs><marker id="a_grey" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="a_red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="a_green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">s = "aabc" · pass 1: 每个字符 cnt += 1 · pass 2: 按下标顺序看 cnt[ch] 是不是 1</text>
+<text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">cnt: 字符 → 出现次数</text>
+<text x="40" y="64" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">当前字符</text>
+<text x="146" y="64" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">操作 / 判断</text>
+<text x="380" y="64" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">cnt 现在是</text>
+<line x1="40" y1="74" x2="640" y2="74" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="84" width="90" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="85.0" y="98.0" font-size="12" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="400">pass 1</text>
+<text x="85.0" y="114.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">'a'</text>
+<path d="M130 106 L144 106" fill="none" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#a_grey)"/>
+<text x="152" y="98" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">cnt['a'] += 1</text>
+<text x="152" y="118" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">0 → 1</text>
+<rect x="380" y="92" width="54" height="28" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="407.0" y="106.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">a:1</text>
+<line x1="40" y1="133" x2="640" y2="133" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="138" width="90" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="85.0" y="152.0" font-size="12" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="400">pass 1</text>
+<text x="85.0" y="168.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">'a'</text>
+<path d="M130 160 L144 160" fill="none" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#a_grey)"/>
+<text x="152" y="152" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">cnt['a'] += 1</text>
+<text x="152" y="172" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">1 → 2</text>
+<rect x="380" y="146" width="54" height="28" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="407.0" y="160.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">a:2</text>
+<line x1="40" y1="187" x2="640" y2="187" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="192" width="90" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="85.0" y="206.0" font-size="12" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="400">pass 1</text>
+<text x="85.0" y="222.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">'b'</text>
+<path d="M130 214 L144 214" fill="none" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#a_grey)"/>
+<text x="152" y="206" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">cnt['b'] += 1</text>
+<text x="152" y="226" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">0 → 1</text>
+<rect x="380" y="200" width="54" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="407.0" y="214.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">a:2</text>
+<rect x="438" y="200" width="54" height="28" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="465.0" y="214.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">b:1</text>
+<line x1="40" y1="241" x2="640" y2="241" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="246" width="90" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="85.0" y="260.0" font-size="12" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="400">pass 1</text>
+<text x="85.0" y="276.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">'c'</text>
+<path d="M130 268 L144 268" fill="none" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#a_grey)"/>
+<text x="152" y="260" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">cnt['c'] += 1</text>
+<text x="152" y="280" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">0 → 1</text>
+<rect x="380" y="254" width="54" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="407.0" y="268.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">a:2</text>
+<rect x="438" y="254" width="54" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="465.0" y="268.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">b:1</text>
+<rect x="496" y="254" width="54" height="28" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="523.0" y="268.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">c:1</text>
+<text x="40" y="306" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">pass 2: cnt 已经固定, 下面只查表、不再修改</text>
+<line x1="40" y1="322" x2="640" y2="322" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="328" width="90" height="44" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="85.0" y="342.0" font-size="12" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="400">s[0]</text>
+<text x="85.0" y="358.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">'a'</text>
+<path d="M130 350 L144 350" fill="none" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#a_grey)"/>
+<text x="152" y="342" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">cnt['a'] = 2</text>
+<text x="152" y="362" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">≠ 1 → 跳过</text>
+<rect x="380" y="336" width="54" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="407.0" y="350.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">a:2</text>
+<rect x="377" y="333" width="60" height="34" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="438" y="336" width="54" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="465.0" y="350.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">b:1</text>
+<rect x="496" y="336" width="54" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="523.0" y="350.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">c:1</text>
+<line x1="40" y1="377" x2="640" y2="377" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="382" width="90" height="44" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="85.0" y="396.0" font-size="12" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="400">s[1]</text>
+<text x="85.0" y="412.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">'a'</text>
+<path d="M130 404 L144 404" fill="none" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#a_grey)"/>
+<text x="152" y="396" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">cnt['a'] = 2</text>
+<text x="152" y="416" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">≠ 1 → 跳过</text>
+<rect x="380" y="390" width="54" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="407.0" y="404.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">a:2</text>
+<rect x="377" y="387" width="60" height="34" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="438" y="390" width="54" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="465.0" y="404.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">b:1</text>
+<rect x="496" y="390" width="54" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="523.0" y="404.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">c:1</text>
+<line x1="40" y1="431" x2="640" y2="431" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="436" width="90" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="85.0" y="450.0" font-size="12" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="400">s[2]</text>
+<text x="85.0" y="466.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">'b'</text>
+<path d="M130 458 L144 458" fill="none" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#a_grey)"/>
+<text x="152" y="450" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">cnt['b'] = 1</text>
+<text x="152" y="470" font-size="12" fill="#085041" text-anchor="start" dominant-baseline="central" font-weight="500">== 1 → return 2</text>
+<rect x="380" y="444" width="54" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="407.0" y="458.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">a:2</text>
+<rect x="438" y="444" width="54" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="465.0" y="458.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">b:1</text>
+<rect x="435" y="441" width="60" height="34" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="496" y="444" width="54" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="523.0" y="458.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">c:1</text>
+<text x="40" y="504" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">答案: return 2    's[2] = b' 是第一个 cnt == 1 的字符</text>
+<text x="40" y="528" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">'c' 的 cnt 也是 1, 但 pass 2 在 'b' 就返回了, 不会扫到它。</text>
+<rect x="40" y="552" width="16" height="12" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="62" y="558" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">计数 +1 / 命中</text>
+<rect x="175.76" y="552" width="16" height="12" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="197.76" y="558" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">cnt 里已有的</text>
+<rect x="297" y="552" width="16" height="12" rx="3" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="319.6" y="558" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">pass 2 正在检查的</text>
+</svg>
+<figcaption>pass 1 四步建表, pass 2 在 s[2] = 'b' 命中返回。</figcaption></figure>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">first_uniq_char</span>(s):</span><span class="l">    cnt = <span class="t">Counter</span>(s)                <span class="c"># pass 1: 全局频率 (等价于逐字符 cnt[ch] += 1)</span></span><span class="l">    <span class="k">for</span> i, ch <span class="k">in</span> <span class="t">enumerate</span>(s):      <span class="c"># pass 2: 必须按原顺序扫, 才能拿到 &quot;第一个&quot;</span></span><span class="l">        <span class="k">if</span> cnt[ch] == 1:</span><span class="l">            <span class="r">return</span> i</span><span class="l">    <span class="r">return</span> -1</span></div>
+<p><b>Time:</b> <code>O(n)</code>, 两遍线性扫描。<b>Space:</b> <code>O(1)</code> (小写字母最多 26 种; 一般情况 <code>O(字符种类数)</code>)。</p>
+<p class="note"><b>记:</b>"第一个 / 唯一 / 出现次数为 X" 且要保持原顺序: pass 1 建频率表, pass 2 按原顺序查。Ransom Note、Majority Element 也是同一张频率表。</p>
+<h2>5. Group Anagrams: canonical key 分组</h2>
+<p><b>相比上一题:</b> 频率表不是拿来 "问" 的, 而是变成 <b>dict 的 key</b>。多出来的一行: 给每个元素算一个 <code>key(w)</code>, 同组的元素算出同一个 key, <code>groups[key].append(w)</code>。</p>
+<p><b>题目:</b> <code>["eat", "tea", "tan", "ate", "nat", "bat"]</code> → <code>[["eat", "tea", "ate"], ["tan", "nat"], ["bat"]]</code>。</p>
+<p><b>Brute force:</b> 两两比较是不是 anagram, 再用并查集 / 标记合并: <code>O(n² · k log k)</code> (k = 词长)。浪费: 同组的词被反复比较。</p>
+<p><b>关键观察:</b> 与其比较 "两个词是不是同组", 不如给每个词一个 <b>canonical key</b> (规范形式): 同组的词 key 完全一样。key 一样就进同一个 dict 桶, 分组变成一次遍历。常用的 key 有两种: <code>sorted(w)</code>, 或者 26 格计数转成 tuple。</p>
+<figure><svg width="100%" viewBox="0 0 680 414" role="img" xmlns="http://www.w3.org/2000/svg" style="font-family:ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif">
+<title>Group Anagrams: canonical key</title><desc>两两比较要 O(n^2) 次; 给每个词算一个 canonical key, 同组的词 key 相同, 一次遍历用 dict 分桶。</desc>
+<defs><marker id="a_grey" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="a_red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="a_green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">strs = ["eat", "tea", "tan", "ate", "nat", "bat"]</text>
+<text x="40" y="52" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">brute force: 两两比较</text>
+<text x="370" y="52" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">canonical key: 算 key → 放进同一个桶</text>
+<line x1="350" y1="40" x2="350" y2="264" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="82" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">6 个词 → C(6, 2) = 15 对</text>
+<text x="40" y="104" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">每一对都要比一次 (sorted 或 Counter)</text>
+<text x="40" y="126" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">eat vs tea ✓   eat vs tan ✗</text>
+<text x="40" y="146" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">eat vs ate ✓   eat vs nat ✗</text>
+<text x="40" y="166" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">eat vs bat ✗   tea vs tan ✗ ...</text>
+<text x="40" y="210" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">n 个词 → n² 对</text>
+<text x="40" y="232" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">O(n² · k log k)</text>
+<text x="40" y="254" font-size="12" fill="#712B13" text-anchor="start" dominant-baseline="central" font-weight="400">浪费: 同组的词被反复比较</text>
+<rect x="370" y="76" width="56" height="36" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="398.0" y="94.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">aet</text>
+<path d="M428 94 L446 94" fill="none" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#a_grey)"/>
+<rect x="450" y="80" width="44" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="472.0" y="94.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">eat</text>
+<rect x="498" y="80" width="44" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="520.0" y="94.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">tea</text>
+<rect x="546" y="80" width="44" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="568.0" y="94.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">ate</text>
+<rect x="370" y="138" width="56" height="36" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="398.0" y="156.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">ant</text>
+<path d="M428 156 L446 156" fill="none" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#a_grey)"/>
+<rect x="450" y="142" width="44" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="472.0" y="156.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">tan</text>
+<rect x="498" y="142" width="44" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="520.0" y="156.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">nat</text>
+<rect x="370" y="200" width="56" height="36" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="398.0" y="218.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">abt</text>
+<path d="M428 218 L446 218" fill="none" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#a_grey)"/>
+<rect x="450" y="204" width="44" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="472.0" y="218.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">bat</text>
+<text x="370" y="268" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">key = sorted(w): "eat" → "aet", "tea" → "aet"</text>
+<line x1="40" y1="288" x2="640" y2="288" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="310" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">对 key 的要求</text>
+<text x="40" y="332" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">同组 → key 相同;  不同组 → key 不同;  key 必须 hashable (str / tuple, 不能是 list)</text>
+<text x="40" y="356" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">sorted 当 key: O(k log k)</text>
+<text x="300" y="356" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">26 格计数 tuple 当 key: O(k)</text>
+<text x="40" y="380" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">n 个词, 每个词算一次 key + 一次 dict 操作 → 总共 O(n · k log k) 或 O(n · k)</text>
+</svg>
+<figcaption>左: 两两比较 15 对; 右: 每个词算一次 key, 直接进桶。</figcaption></figure>
+<figure><svg width="100%" viewBox="0 0 680 646" role="img" xmlns="http://www.w3.org/2000/svg" style="font-family:ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif">
+<title>Group Anagrams 运行流程</title><desc>每个词算 key = sorted(w), 放进 groups[key]; 没见过的 key 自动新建一个桶。</desc>
+<defs><marker id="a_grey" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="a_red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="a_green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">key = sorted(w) 拼成字符串 · groups[key].append(w)</text>
+<text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">groups: key → 这一组的词</text>
+<text x="40" y="64" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">当前词</text>
+<text x="130" y="64" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">算 key</text>
+<text x="320" y="64" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">groups 现在有</text>
+<line x1="40" y1="74" x2="640" y2="74" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="90" width="70" height="40" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="75.0" y="110.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">eat</text>
+<path d="M110 110 L128 110" fill="none" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#a_grey)"/>
+<text x="136" y="98" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">sorted('eat')</text>
+<text x="136" y="118" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">key = 'aet'</text>
+<text x="136" y="136" font-size="12" fill="#085041" text-anchor="start" dominant-baseline="central" font-weight="400">新 key, 新建桶</text>
+<text x="320" y="104" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">'aet' →</text>
+<rect x="396" y="90" width="44" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="418.0" y="103.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">eat</text>
+<line x1="40" y1="152" x2="640" y2="152" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="162" width="70" height="40" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="75.0" y="182.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">tea</text>
+<path d="M110 182 L128 182" fill="none" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#a_grey)"/>
+<text x="136" y="170" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">sorted('tea')</text>
+<text x="136" y="190" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">key = 'aet'</text>
+<text x="320" y="176" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">'aet' →</text>
+<rect x="396" y="162" width="44" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="418.0" y="175.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">eat</text>
+<rect x="444" y="162" width="44" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="466.0" y="175.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">tea</text>
+<line x1="40" y1="224" x2="640" y2="224" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="234" width="70" height="40" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="75.0" y="254.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">tan</text>
+<path d="M110 254 L128 254" fill="none" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#a_grey)"/>
+<text x="136" y="242" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">sorted('tan')</text>
+<text x="136" y="262" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">key = 'ant'</text>
+<text x="136" y="280" font-size="12" fill="#085041" text-anchor="start" dominant-baseline="central" font-weight="400">新 key, 新建桶</text>
+<text x="320" y="248" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="400">'aet' →</text>
+<rect x="396" y="234" width="44" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="418.0" y="247.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">eat</text>
+<rect x="444" y="234" width="44" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="466.0" y="247.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">tea</text>
+<text x="320" y="278" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">'ant' →</text>
+<rect x="396" y="264" width="44" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="418.0" y="277.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">tan</text>
+<line x1="40" y1="296" x2="640" y2="296" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="306" width="70" height="40" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="75.0" y="326.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">ate</text>
+<path d="M110 326 L128 326" fill="none" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#a_grey)"/>
+<text x="136" y="314" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">sorted('ate')</text>
+<text x="136" y="334" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">key = 'aet'</text>
+<text x="320" y="320" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">'aet' →</text>
+<rect x="396" y="306" width="44" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="418.0" y="319.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">eat</text>
+<rect x="444" y="306" width="44" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="466.0" y="319.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">tea</text>
+<rect x="492" y="306" width="44" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="514.0" y="319.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">ate</text>
+<text x="320" y="350" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="400">'ant' →</text>
+<rect x="396" y="336" width="44" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="418.0" y="349.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">tan</text>
+<line x1="40" y1="368" x2="640" y2="368" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="378" width="70" height="40" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="75.0" y="398.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">nat</text>
+<path d="M110 398 L128 398" fill="none" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#a_grey)"/>
+<text x="136" y="386" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">sorted('nat')</text>
+<text x="136" y="406" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">key = 'ant'</text>
+<text x="320" y="392" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="400">'aet' →</text>
+<rect x="396" y="378" width="44" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="418.0" y="391.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">eat</text>
+<rect x="444" y="378" width="44" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="466.0" y="391.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">tea</text>
+<rect x="492" y="378" width="44" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="514.0" y="391.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">ate</text>
+<text x="320" y="422" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">'ant' →</text>
+<rect x="396" y="408" width="44" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="418.0" y="421.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">tan</text>
+<rect x="444" y="408" width="44" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="466.0" y="421.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">nat</text>
+<line x1="40" y1="440" x2="640" y2="440" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="450" width="70" height="40" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="75.0" y="470.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">bat</text>
+<path d="M110 470 L128 470" fill="none" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#a_grey)"/>
+<text x="136" y="458" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">sorted('bat')</text>
+<text x="136" y="478" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">key = 'abt'</text>
+<text x="136" y="496" font-size="12" fill="#085041" text-anchor="start" dominant-baseline="central" font-weight="400">新 key, 新建桶</text>
+<text x="320" y="464" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="400">'aet' →</text>
+<rect x="396" y="450" width="44" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="418.0" y="463.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">eat</text>
+<rect x="444" y="450" width="44" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="466.0" y="463.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">tea</text>
+<rect x="492" y="450" width="44" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="514.0" y="463.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">ate</text>
+<text x="320" y="494" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="400">'ant' →</text>
+<rect x="396" y="480" width="44" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="418.0" y="493.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">tan</text>
+<rect x="444" y="480" width="44" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="466.0" y="493.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">nat</text>
+<text x="320" y="524" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">'abt' →</text>
+<rect x="396" y="510" width="44" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="418.0" y="523.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">bat</text>
+<text x="40" y="556" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">答案: [eat, tea, ate], [tan, nat], [bat]</text>
+<text x="40" y="580" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">3 个 key → 3 组; 每个词只算一次 key, 没有任何 "两两比较"。</text>
+<rect x="40" y="604" width="16" height="12" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="62" y="610" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">刚放进桶的词</text>
+<rect x="158.0" y="604" width="16" height="12" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="180.0" y="610" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">桶里已有的词</text>
+</svg>
+<figcaption>6 个词 6 步: 'tea' 和 'ate' 的 key 都是 'aet', 进已有的桶; 3 个 key 对应 3 组。</figcaption></figure>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">group_anagrams</span>(strs):</span><span class="l">    groups = <span class="t">defaultdict</span>(<span class="t">list</span>)      <span class="c"># key -&gt; 这一组的所有词</span></span><span class="l">    <span class="k">for</span> w <span class="k">in</span> strs:</span><span class="l">        key = <span class="s">&quot;&quot;</span>.<span class="f">join</span>(<span class="t">sorted</span>(w))    <span class="c"># canonical key: anagram 排序后一定相同</span></span><span class="l">        groups[key].<span class="f">append</span>(w)</span><span class="l">    <span class="r">return</span> <span class="t">list</span>(groups.<span class="f">values</span>())</span><span class="l"></span><span class="l"><span class="c"># key 的另一种写法, O(k) 而不是 O(k log k):</span></span><span class="l"><span class="c">#   cnt = [0] * 26</span></span><span class="l"><span class="c">#   for ch in w: cnt[ord(ch) - 97] += 1</span></span><span class="l"><span class="c">#   key = tuple(cnt)               # list 不能当 key, 转成 tuple</span></span></div>
+<p><b>Time:</b> <code>O(n · k log k)</code> (sorted 当 key), 换成计数 tuple 是 <code>O(n · k)</code>。<b>Space:</b> <code>O(n · k)</code>, 要存下所有词。</p>
+<p class="note"><b>记:</b>"把相同本质的东西分到一组" → 设计 canonical key, 用 defaultdict(list) 分桶。key 必须 hashable: str 或 tuple, 不能是 list。</p>
+<h2>6. Longest Consecutive Sequence: set 换掉排序, 只从起点开始数</h2>
+<p><b>相比上一题:</b> 不分组, 也不数频率, 只问 "某个数在不在", 所以 dict 退化成 <code>set</code>。多出来的一行: <b>只有 x − 1 不在 set 里的 x 才是序列起点</b>, 只有起点才往右数。</p>
+<p><b>题目:</b> <code>nums = [100, 4, 200, 1, 3, 2]</code> → <code>4</code> (序列 1, 2, 3, 4), 要求 <code>O(n)</code>。</p>
+<p><b>Brute force:</b> 先排序再扫一遍是 <code>O(n log n)</code>, 题目要求 <code>O(n)</code>。如果改用 set 但让每个数都往右数, 遇到 <code>1..n</code> 这种输入就是 <code>n + (n−1) + … + 1 = O(n²)</code>。浪费: 序列中间的数重复走了好几遍。</p>
+<p><b>关键观察:</b> 一段连续序列只需要从它的 <b>起点</b> 数一次。判断起点只要一次 O(1) 查询: <code>x − 1 in s</code>。这样每个数最多被数一次, 总共 <code>O(n)</code>。</p>
+<figure><svg width="100%" viewBox="0 0 680 484" role="img" xmlns="http://www.w3.org/2000/svg" style="font-family:ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif">
+<title>Longest Consecutive Sequence: 只从序列起点开始数</title><desc>每个数都往右数会重复走同一段, 总共 O(n^2); 只有 x-1 不在 set 里的数才是起点, 才开始数, 每段只走一遍。</desc>
+<defs><marker id="a_grey" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="a_red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="a_green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">一个序列 {1, 2, 3, 4} (其余数 100, 200 同理, 各是长度 1 的序列)</text>
+<text x="40" y="50" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">每个数都往右数 (set 只当 O(1) 查询用)</text>
+<text x="83" y="74" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">1</text>
+<text x="137" y="74" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">2</text>
+<text x="191" y="74" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">3</text>
+<text x="245" y="74" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">4</text>
+<rect x="60" y="86" width="46" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="83.0" y="99.0" font-size="14" fill="#712B13" text-anchor="middle" dominant-baseline="central" font-weight="500">1</text>
+<rect x="114" y="86" width="46" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="137.0" y="99.0" font-size="14" fill="#712B13" text-anchor="middle" dominant-baseline="central" font-weight="500">2</text>
+<rect x="168" y="86" width="46" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="191.0" y="99.0" font-size="14" fill="#712B13" text-anchor="middle" dominant-baseline="central" font-weight="500">3</text>
+<rect x="222" y="86" width="46" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="245.0" y="99.0" font-size="14" fill="#712B13" text-anchor="middle" dominant-baseline="central" font-weight="500">4</text>
+<text x="286" y="99" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">从 1 出发, 走 4 步</text>
+<rect x="114" y="118" width="46" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="137.0" y="131.0" font-size="14" fill="#712B13" text-anchor="middle" dominant-baseline="central" font-weight="500">2</text>
+<rect x="168" y="118" width="46" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="191.0" y="131.0" font-size="14" fill="#712B13" text-anchor="middle" dominant-baseline="central" font-weight="500">3</text>
+<rect x="222" y="118" width="46" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="245.0" y="131.0" font-size="14" fill="#712B13" text-anchor="middle" dominant-baseline="central" font-weight="500">4</text>
+<text x="286" y="131" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">从 2 出发, 走 3 步</text>
+<rect x="168" y="150" width="46" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="191.0" y="163.0" font-size="14" fill="#712B13" text-anchor="middle" dominant-baseline="central" font-weight="500">3</text>
+<rect x="222" y="150" width="46" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="245.0" y="163.0" font-size="14" fill="#712B13" text-anchor="middle" dominant-baseline="central" font-weight="500">4</text>
+<text x="286" y="163" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">从 3 出发, 走 2 步</text>
+<rect x="222" y="182" width="46" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="245.0" y="195.0" font-size="14" fill="#712B13" text-anchor="middle" dominant-baseline="central" font-weight="500">4</text>
+<text x="286" y="195" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">从 4 出发, 走 1 步</text>
+<text x="40" y="226" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">4 + 3 + 2 + 1 = 10 步, 一般 n 个连续数是 n(n+1)/2 = O(n²)</text>
+<text x="40" y="246" font-size="12" fill="#712B13" text-anchor="start" dominant-baseline="central" font-weight="400">红色格子 = 重复走的路: 2、3、4 被走了好几遍</text>
+<line x1="40" y1="266" x2="640" y2="266" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="288" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">只从起点数: 先问 x − 1 in s?</text>
+<text x="83" y="312" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">1</text>
+<text x="137" y="312" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">2</text>
+<text x="191" y="312" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">3</text>
+<text x="245" y="312" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">4</text>
+<rect x="60" y="322" width="46" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="83.0" y="335.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">1</text>
+<rect x="114" y="322" width="46" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="137.0" y="335.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">2</text>
+<rect x="168" y="322" width="46" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="191.0" y="335.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">3</text>
+<rect x="222" y="322" width="46" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="245.0" y="335.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">4</text>
+<rect x="57" y="319" width="52" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="286" y="335" font-size="12" fill="#085041" text-anchor="start" dominant-baseline="central" font-weight="500">0 不在 s → 起点, 走 4 步</text>
+<rect x="114" y="354" width="46" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="137.0" y="367.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">2</text>
+<text x="286" y="367" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">1 在 s → 不是起点, 跳过</text>
+<rect x="168" y="386" width="46" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="191.0" y="399.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">3</text>
+<text x="286" y="399" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">2 在 s → 不是起点, 跳过</text>
+<rect x="222" y="418" width="46" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="245.0" y="431.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">4</text>
+<text x="286" y="431" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">3 在 s → 不是起点, 跳过</text>
+<text x="40" y="464" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">每个数最多被 "起点" 走一次, 加上每个数一次判断: O(n)</text>
+</svg>
+<figcaption>上: 每个数都出发, 2、3、4 被重复走; 下: 只有起点 1 出发, 其余一次判断就跳过。</figcaption></figure>
+<figure><svg width="100%" viewBox="0 0 680 616" role="img" xmlns="http://www.w3.org/2000/svg" style="font-family:ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif">
+<title>Longest Consecutive Sequence 运行流程</title><desc>遍历 set; x−1 在 set 里就跳过, 否则从 x 往右数; best 记录最长长度。</desc>
+<defs><marker id="a_grey" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="a_red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="a_green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">nums = [100, 4, 200, 1, 3, 2] · s = set(nums), 下面按 Python 遍历 s 的真实顺序</text>
+<text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">每一步: x − 1 in s? 在 → 跳过; 不在 → 是起点, 往右一直数到断开</text>
+<text x="40" y="66" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">s =</text>
+<rect x="70" y="52" width="44" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="92.0" y="65.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">1</text>
+<rect x="118" y="52" width="44" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="140.0" y="65.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">2</text>
+<rect x="166" y="52" width="44" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="188.0" y="65.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">3</text>
+<rect x="214" y="52" width="44" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="236.0" y="65.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">100</text>
+<rect x="262" y="52" width="44" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="284.0" y="65.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">4</text>
+<rect x="310" y="52" width="44" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="332.0" y="65.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">200</text>
+<text x="40" y="92" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">当前</text>
+<text x="130" y="92" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">先问</text>
+<text x="330" y="92" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">往右数 (在 s 里连续的数)</text>
+<text x="590" y="92" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">best</text>
+<line x1="40" y1="102" x2="640" y2="102" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="114" width="62" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="71.0" y="128.0" font-size="12" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="400">x</text>
+<text x="71.0" y="144.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">1</text>
+<path d="M102 136 L120 136" fill="none" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#a_grey)"/>
+<text x="128" y="124" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">1 − 1 = 0</text>
+<text x="128" y="146" font-size="12" fill="#085041" text-anchor="start" dominant-baseline="central" font-weight="500">0 in s? 否 → 起点</text>
+<rect x="330" y="120" width="40" height="28" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="350.0" y="134.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">1</text>
+<rect x="374" y="120" width="40" height="28" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="394.0" y="134.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">2</text>
+<rect x="418" y="120" width="40" height="28" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="438.0" y="134.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">3</text>
+<rect x="462" y="120" width="40" height="28" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="482.0" y="134.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">4</text>
+<text x="330" y="162" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">len = 4  (从 1 数到 4)</text>
+<rect x="327" y="117" width="46" height="34" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="590" y="136" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">4</text>
+<line x1="40" y1="174" x2="640" y2="174" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="182" width="62" height="44" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="71.0" y="196.0" font-size="12" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="400">x</text>
+<text x="71.0" y="212.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">2</text>
+<path d="M102 204 L120 204" fill="none" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#a_grey)"/>
+<text x="128" y="192" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">2 − 1 = 1</text>
+<text x="128" y="214" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">1 in s? 是 → 不是起点, 跳过</text>
+<text x="330" y="204" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">不数</text>
+<text x="590" y="204" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">4</text>
+<line x1="40" y1="242" x2="640" y2="242" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="250" width="62" height="44" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="71.0" y="264.0" font-size="12" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="400">x</text>
+<text x="71.0" y="280.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">3</text>
+<path d="M102 272 L120 272" fill="none" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#a_grey)"/>
+<text x="128" y="260" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">3 − 1 = 2</text>
+<text x="128" y="282" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">2 in s? 是 → 不是起点, 跳过</text>
+<text x="330" y="272" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">不数</text>
+<text x="590" y="272" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">4</text>
+<line x1="40" y1="310" x2="640" y2="310" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="318" width="62" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="71.0" y="332.0" font-size="12" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="400">x</text>
+<text x="71.0" y="348.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">100</text>
+<path d="M102 340 L120 340" fill="none" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#a_grey)"/>
+<text x="128" y="328" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">100 − 1 = 99</text>
+<text x="128" y="350" font-size="12" fill="#085041" text-anchor="start" dominant-baseline="central" font-weight="500">99 in s? 否 → 起点</text>
+<rect x="330" y="324" width="40" height="28" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="350.0" y="338.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">100</text>
+<text x="330" y="366" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">len = 1  (从 100 数到 100)</text>
+<text x="590" y="340" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">4</text>
+<line x1="40" y1="378" x2="640" y2="378" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="386" width="62" height="44" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="71.0" y="400.0" font-size="12" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="400">x</text>
+<text x="71.0" y="416.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">4</text>
+<path d="M102 408 L120 408" fill="none" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#a_grey)"/>
+<text x="128" y="396" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">4 − 1 = 3</text>
+<text x="128" y="418" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">3 in s? 是 → 不是起点, 跳过</text>
+<text x="330" y="408" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">不数</text>
+<text x="590" y="408" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">4</text>
+<line x1="40" y1="446" x2="640" y2="446" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="454" width="62" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="71.0" y="468.0" font-size="12" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="400">x</text>
+<text x="71.0" y="484.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">200</text>
+<path d="M102 476 L120 476" fill="none" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#a_grey)"/>
+<text x="128" y="464" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">200 − 1 = 199</text>
+<text x="128" y="486" font-size="12" fill="#085041" text-anchor="start" dominant-baseline="central" font-weight="500">199 in s? 否 → 起点</text>
+<rect x="330" y="460" width="40" height="28" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="350.0" y="474.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">200</text>
+<text x="330" y="502" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">len = 1  (从 200 数到 200)</text>
+<text x="590" y="476" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">4</text>
+<text x="40" y="530" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">答案: best = 4    序列 1, 2, 3, 4</text>
+<text x="40" y="554" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">往右数的格子总数 = 4 + 1 + 1 = 6 = n: 每个数只被它所在序列的起点数过一次。</text>
+<rect x="40" y="578" width="16" height="12" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="62" y="584" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">起点 / 往右数到的</text>
+<rect x="190.88" y="578" width="16" height="12" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="212.88" y="584" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">set 里的数 / 被跳过</text>
+<rect x="357" y="578" width="16" height="12" rx="3" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="379.59999999999997" y="584" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">最长的一段</text>
+</svg>
+<figcaption>按 set 的真实遍历顺序: 1 是起点数到 4, 2、3、4 跳过, 100 和 200 各是长度 1 的起点。</figcaption></figure>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">longest_consecutive</span>(nums):</span><span class="l">    s = <span class="t">set</span>(nums)                   <span class="c"># O(1) membership, 取代排序</span></span><span class="l">    best = 0</span><span class="l">    <span class="k">for</span> x <span class="k">in</span> s:                     <span class="c"># 遍历 set 去重, 重复的数不会重复起步</span></span><span class="l">        <span class="k">if</span> x - 1 <span class="k">in</span> s:              <span class="c"># x 前面还有数 -&gt; x 不是序列起点, 交给起点去数</span></span><span class="l">            <span class="k">continue</span></span><span class="l">        y = x                       <span class="c"># x 是起点: 一路往右数</span></span><span class="l">        <span class="k">while</span> y + 1 <span class="k">in</span> s:</span><span class="l">            y += 1</span><span class="l">        best = <span class="t">max</span>(best, y - x + 1)</span><span class="l">    <span class="r">return</span> best</span></div>
+<p><b>Time:</b> <code>O(n)</code>。for 循环 n 次判断; while 总共走的步数 = 每个序列只被起点走一遍 = 至多 n。<b>Space:</b> <code>O(n)</code>, set。</p>
+<p class="note"><b>记:</b>set 的价值是 O(1) membership, 用它可以换掉 "排序 + 相邻比较"。加一个 "只从起点出发" 的剪枝, 就能把嵌套循环压成线性。</p>
+<h2>7. 什么时候用 Hash Table 换 Time, 什么时候用数组 [0] * 26</h2>
+<p><b>Hash Table 是拿空间换时间。</b> 前面每一题的 "不用 hash" 版本都是下面几种之一:</p>
+<table><tr><th>题</th><th>不用 hash</th><th>用 hash</th></tr><tr><td>Two Sum</td><td>双层循环 <code>O(n²)</code> 时间, <code>O(1)</code> 空间</td><td><code>O(n)</code> 时间, <code>O(n)</code> 空间</td></tr><tr><td>Valid Anagram</td><td>sort <code>O(n log n)</code></td><td>计数 <code>O(n)</code>, 26 格 <code>O(1)</code> 空间</td></tr><tr><td>Group Anagrams</td><td>两两比较 <code>O(n² · k log k)</code></td><td>算 key + 分桶 <code>O(n · k log k)</code></td></tr><tr><td>Longest Consecutive</td><td>sort <code>O(n log n)</code></td><td>set + 只从起点数 <code>O(n)</code></td></tr></table>
+<p><b>什么时候该用数组 <code>[0] * 26</code> 代替 dict:</b></p>
+<table><tr><th>情况</th><th>用什么</th><th>原因</th></tr><tr><td>key 是小写字母 / 数字 0-9 / ASCII (128)</td><td><code>[0] * 26</code> 等固定数组</td><td>下标直接寻址, 不用算 hash, 常数更小; 空间固定 <code>O(1)</code></td></tr><tr><td>key 是任意整数 / 字符串 / Unicode, 稀疏</td><td><code>dict</code> / <code>Counter</code></td><td>数组放不下, 或者绝大多数格子是空的</td></tr><tr><td>key 范围是 <code>0..n</code> 的下标 / 值域 (如 First Missing Positive)</td><td>原数组本身当 hash</td><td>省掉 <code>O(n)</code> 额外空间, 但会改动输入</td></tr><tr><td>只问 "在不在"</td><td><code>set</code></td><td>不需要 value</td></tr></table>
+<p><b>什么时候别用 Hash Table:</b> 输入已经排序, 找 pair 用 two pointers 是 <code>O(1)</code> 空间; 需要 "最大 / 最小 / 有序" 用 heap 或排序, hash 不保序; 面试官明确限制额外空间时, 退回排序 + two pointers。</p>
+<p><b>Python 里两个常见的坑:</b> 1. <code>defaultdict</code> 读取不存在的 key 会 <b>插入</b> 它 (下面的例子); 只想查用 <code>in</code> 或 <code>.get()</code>。2. dict 的 key 必须 hashable: <code>list</code> 不行, 转成 <code>tuple</code>。</p>
+<div class="code"><span class="l"><span class="k">from</span> <span class="t">collections</span> <span class="k">import</span> <span class="t">defaultdict</span></span><span class="l">d = <span class="t">defaultdict</span>(<span class="t">int</span>)</span><span class="l"><span class="k">if</span> d[<span class="s">&quot;a&quot;</span>] == 0:                     <span class="c"># 只是 &quot;读&quot; 了一下...</span></span><span class="l">    <span class="k">pass</span></span><span class="l"><span class="t">print</span>(<span class="t">len</span>(d))                       <span class="c"># 1: 读取也把 &quot;a&quot; 插进去了!</span></span><span class="l"><span class="c"># 只想查、不想插: 用 &quot;a&quot; in d 或 d.get(&quot;a&quot;)</span></span></div>
+<p class="note"><b>记:</b>key 范围固定又小 → 数组 [0] * K; 其余 → dict。想用空间换时间之前先看: 有没有排序 / 双指针能做到 O(1) 空间。</p>
+<h2>8. 识别信号: 看到什么 → 试什么</h2>
+<table><tr><th>特征</th><th>做法</th><th>complexity</th></tr><tr><td>数组里找两个数满足某关系 (和、差、配对), 不要求有序</td><td>complement lookup: 边遍历边查 <code>target − x</code> (Two Sum)</td><td><code>O(n²)</code> → <code>O(n)</code></td></tr><tr><td>"相同值" + "距离 / 下标范围"</td><td>dict 记最近一次下标, 每步覆盖 (Contains Duplicate II)</td><td><code>O(n·k)</code> → <code>O(n)</code></td></tr><tr><td>"重复 / 出现过吗"</td><td><code>set</code> 一次遍历</td><td><code>O(n log n)</code> 或 <code>O(n²)</code> → <code>O(n)</code></td></tr><tr><td>顺序无关: anagram、multiset 相等、字符够不够用 (Ransom Note)</td><td>频率表 <code>Counter</code> / <code>[0] * 26</code> 比较</td><td><code>O(n log n)</code> → <code>O(n)</code></td></tr><tr><td>"出现次数为 X" / "第一个只出现一次" / "众数"</td><td>pass 1 建频率表, pass 2 按原顺序查</td><td><code>O(n²)</code> → <code>O(n)</code></td></tr><tr><td>要把 "本质相同" 的东西分组</td><td>设计 canonical key + <code>defaultdict(list)</code> (Group Anagrams)</td><td><code>O(n²)</code> 两两比较 → <code>O(n · k)</code></td></tr><tr><td>只要 "某个数在不在", 题目要求 <code>O(n)</code>, 排序太慢</td><td><code>set</code> + 只从起点出发 (Longest Consecutive)</td><td><code>O(n log n)</code> → <code>O(n)</code></td></tr><tr><td>key 是小写字母 / 固定小范围</td><td><code>[0] * 26</code> 代替 dict</td><td>常数更小, 空间 <code>O(1)</code></td></tr></table>
+<p><b>一句话:</b> 在循环里反复 "找" 什么东西, 就把它存进 dict / set; key 是什么, value 存什么, 决定了它是哪一种题。</p>
+<h2>以后再学 (一行)</h2>
+<p>Insert Delete GetRandom O(1) (dict + list 组合) 放到 Design 那一份; Rolling Hash / Rabin-Karp 字符串匹配、Bloom Filter 属于特定方法, 面试不常考。</p>
+</article></body></html>

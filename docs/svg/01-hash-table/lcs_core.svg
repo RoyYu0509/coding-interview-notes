@@ -1,0 +1,62 @@
+<svg width="100%" viewBox="0 0 680 484" role="img" xmlns="http://www.w3.org/2000/svg" style="font-family:ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif">
+<title>Longest Consecutive Sequence: 只从序列起点开始数</title><desc>每个数都往右数会重复走同一段, 总共 O(n^2); 只有 x-1 不在 set 里的数才是起点, 才开始数, 每段只走一遍。</desc>
+<defs><marker id="a_grey" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="a_red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="a_green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">一个序列 {1, 2, 3, 4} (其余数 100, 200 同理, 各是长度 1 的序列)</text>
+<text x="40" y="50" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">每个数都往右数 (set 只当 O(1) 查询用)</text>
+<text x="83" y="74" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">1</text>
+<text x="137" y="74" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">2</text>
+<text x="191" y="74" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">3</text>
+<text x="245" y="74" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">4</text>
+<rect x="60" y="86" width="46" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="83.0" y="99.0" font-size="14" fill="#712B13" text-anchor="middle" dominant-baseline="central" font-weight="500">1</text>
+<rect x="114" y="86" width="46" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="137.0" y="99.0" font-size="14" fill="#712B13" text-anchor="middle" dominant-baseline="central" font-weight="500">2</text>
+<rect x="168" y="86" width="46" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="191.0" y="99.0" font-size="14" fill="#712B13" text-anchor="middle" dominant-baseline="central" font-weight="500">3</text>
+<rect x="222" y="86" width="46" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="245.0" y="99.0" font-size="14" fill="#712B13" text-anchor="middle" dominant-baseline="central" font-weight="500">4</text>
+<text x="286" y="99" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">从 1 出发, 走 4 步</text>
+<rect x="114" y="118" width="46" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="137.0" y="131.0" font-size="14" fill="#712B13" text-anchor="middle" dominant-baseline="central" font-weight="500">2</text>
+<rect x="168" y="118" width="46" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="191.0" y="131.0" font-size="14" fill="#712B13" text-anchor="middle" dominant-baseline="central" font-weight="500">3</text>
+<rect x="222" y="118" width="46" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="245.0" y="131.0" font-size="14" fill="#712B13" text-anchor="middle" dominant-baseline="central" font-weight="500">4</text>
+<text x="286" y="131" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">从 2 出发, 走 3 步</text>
+<rect x="168" y="150" width="46" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="191.0" y="163.0" font-size="14" fill="#712B13" text-anchor="middle" dominant-baseline="central" font-weight="500">3</text>
+<rect x="222" y="150" width="46" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="245.0" y="163.0" font-size="14" fill="#712B13" text-anchor="middle" dominant-baseline="central" font-weight="500">4</text>
+<text x="286" y="163" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">从 3 出发, 走 2 步</text>
+<rect x="222" y="182" width="46" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="245.0" y="195.0" font-size="14" fill="#712B13" text-anchor="middle" dominant-baseline="central" font-weight="500">4</text>
+<text x="286" y="195" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">从 4 出发, 走 1 步</text>
+<text x="40" y="226" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">4 + 3 + 2 + 1 = 10 步, 一般 n 个连续数是 n(n+1)/2 = O(n²)</text>
+<text x="40" y="246" font-size="12" fill="#712B13" text-anchor="start" dominant-baseline="central" font-weight="400">红色格子 = 重复走的路: 2、3、4 被走了好几遍</text>
+<line x1="40" y1="266" x2="640" y2="266" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="288" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">只从起点数: 先问 x − 1 in s?</text>
+<text x="83" y="312" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">1</text>
+<text x="137" y="312" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">2</text>
+<text x="191" y="312" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">3</text>
+<text x="245" y="312" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">4</text>
+<rect x="60" y="322" width="46" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="83.0" y="335.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">1</text>
+<rect x="114" y="322" width="46" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="137.0" y="335.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">2</text>
+<rect x="168" y="322" width="46" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="191.0" y="335.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">3</text>
+<rect x="222" y="322" width="46" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="245.0" y="335.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">4</text>
+<rect x="57" y="319" width="52" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="286" y="335" font-size="12" fill="#085041" text-anchor="start" dominant-baseline="central" font-weight="500">0 不在 s → 起点, 走 4 步</text>
+<rect x="114" y="354" width="46" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="137.0" y="367.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">2</text>
+<text x="286" y="367" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">1 在 s → 不是起点, 跳过</text>
+<rect x="168" y="386" width="46" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="191.0" y="399.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">3</text>
+<text x="286" y="399" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">2 在 s → 不是起点, 跳过</text>
+<rect x="222" y="418" width="46" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="245.0" y="431.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">4</text>
+<text x="286" y="431" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">3 在 s → 不是起点, 跳过</text>
+<text x="40" y="464" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">每个数最多被 "起点" 走一次, 加上每个数一次判断: O(n)</text>
+</svg>

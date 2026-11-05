@@ -1,0 +1,147 @@
+<svg width="100%" viewBox="0 0 680 572" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'>
+<title>Partition Labels trace</title><desc>s=abacbdefe</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowo" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="20" y="26" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="400">s = &quot;abacbdefe&quot; · last = {a: 2, b: 4, c: 3, d: 5, e: 8, f: 7}</text>
+<text x="20" y="46" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">每一步: end = max(end, last[s[i]]) → 若 i == end 就切一刀, 长度 = i - start + 1, start = i + 1。初始 start = 0, end = 0</text>
+<text x="20" y="76" font-size="14" fill="#52514E" text-anchor="start" font-weight="400">i, s[i]</text>
+<text x="100" y="76" font-size="14" fill="#52514E" text-anchor="start" font-weight="400">end 更新</text>
+<text x="340" y="76" font-size="14" fill="#52514E" text-anchor="start" font-weight="400">i == end ?</text>
+<text x="550" y="76" font-size="14" fill="#52514E" text-anchor="start" font-weight="400">字符串 (金圈 = i)</text>
+<line x1="20" y1="86" x2="660" y2="86" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="20" y="120" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="400">i=0  a</text>
+<text x="100" y="120" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="400">max(0, last[a]=2) = 2</text>
+<text x="340" y="120" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">0 ≠ 2 → 不切</text>
+<rect x="550" y="104" width="12" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="562" y="104" width="12" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="574" y="104" width="12" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="586" y="104" width="12" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="598" y="104" width="12" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="610" y="104" width="12" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="622" y="104" width="12" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="634" y="104" width="12" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="646" y="104" width="12" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="548" y="101" width="16" height="32" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<line x1="20" y1="136" x2="660" y2="136" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="20" y="166" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="400">i=1  b</text>
+<text x="100" y="166" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="400">max(2, last[b]=4) = 4</text>
+<text x="340" y="166" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">1 ≠ 4 → 不切</text>
+<rect x="550" y="150" width="12" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="562" y="150" width="12" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="574" y="150" width="12" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="586" y="150" width="12" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="598" y="150" width="12" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="610" y="150" width="12" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="622" y="150" width="12" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="634" y="150" width="12" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="646" y="150" width="12" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="560" y="147" width="16" height="32" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<line x1="20" y1="182" x2="660" y2="182" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="20" y="212" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="400">i=2  a</text>
+<text x="100" y="212" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="400">max(4, last[a]=2) = 4</text>
+<text x="340" y="212" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">2 ≠ 4 → 不切</text>
+<rect x="550" y="196" width="12" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="562" y="196" width="12" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="574" y="196" width="12" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="586" y="196" width="12" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="598" y="196" width="12" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="610" y="196" width="12" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="622" y="196" width="12" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="634" y="196" width="12" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="646" y="196" width="12" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="572" y="193" width="16" height="32" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<line x1="20" y1="228" x2="660" y2="228" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="20" y="258" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="400">i=3  c</text>
+<text x="100" y="258" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="400">max(4, last[c]=3) = 4</text>
+<text x="340" y="258" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">3 ≠ 4 → 不切</text>
+<rect x="550" y="242" width="12" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="562" y="242" width="12" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="574" y="242" width="12" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="586" y="242" width="12" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="598" y="242" width="12" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="610" y="242" width="12" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="622" y="242" width="12" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="634" y="242" width="12" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="646" y="242" width="12" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="584" y="239" width="16" height="32" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<line x1="20" y1="274" x2="660" y2="274" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="20" y="304" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="400">i=4  b</text>
+<text x="100" y="304" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="400">max(4, last[b]=4) = 4</text>
+<text x="340" y="297" font-size="12" fill="#085041" text-anchor="start" font-weight="600">4 == 4 → 切</text>
+<text x="340" y="314" font-size="12" fill="#085041" text-anchor="start" font-weight="400">长度 4 - 0 + 1 = 5</text>
+<rect x="550" y="288" width="12" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="562" y="288" width="12" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="574" y="288" width="12" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="586" y="288" width="12" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="598" y="288" width="12" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="610" y="288" width="12" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="622" y="288" width="12" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="634" y="288" width="12" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="646" y="288" width="12" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="596" y="285" width="16" height="32" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<line x1="20" y1="320" x2="660" y2="320" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="20" y="350" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="400">i=5  d</text>
+<text x="100" y="350" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="400">max(4, last[d]=5) = 5</text>
+<text x="340" y="343" font-size="12" fill="#085041" text-anchor="start" font-weight="600">5 == 5 → 切</text>
+<text x="340" y="360" font-size="12" fill="#085041" text-anchor="start" font-weight="400">长度 5 - 5 + 1 = 1</text>
+<rect x="550" y="334" width="12" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="562" y="334" width="12" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="574" y="334" width="12" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="586" y="334" width="12" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="598" y="334" width="12" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="610" y="334" width="12" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="622" y="334" width="12" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="634" y="334" width="12" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="646" y="334" width="12" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="608" y="331" width="16" height="32" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<line x1="20" y1="366" x2="660" y2="366" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="20" y="396" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="400">i=6  e</text>
+<text x="100" y="396" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="400">max(5, last[e]=8) = 8</text>
+<text x="340" y="396" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">6 ≠ 8 → 不切</text>
+<rect x="550" y="380" width="12" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="562" y="380" width="12" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="574" y="380" width="12" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="586" y="380" width="12" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="598" y="380" width="12" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="610" y="380" width="12" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="622" y="380" width="12" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="634" y="380" width="12" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="646" y="380" width="12" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="620" y="377" width="16" height="32" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<line x1="20" y1="412" x2="660" y2="412" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="20" y="442" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="400">i=7  f</text>
+<text x="100" y="442" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="400">max(8, last[f]=7) = 8</text>
+<text x="340" y="442" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">7 ≠ 8 → 不切</text>
+<rect x="550" y="426" width="12" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="562" y="426" width="12" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="574" y="426" width="12" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="586" y="426" width="12" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="598" y="426" width="12" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="610" y="426" width="12" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="622" y="426" width="12" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="634" y="426" width="12" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="646" y="426" width="12" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="632" y="423" width="16" height="32" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<line x1="20" y1="458" x2="660" y2="458" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="20" y="488" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="400">i=8  e</text>
+<text x="100" y="488" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="400">max(8, last[e]=8) = 8</text>
+<text x="340" y="481" font-size="12" fill="#085041" text-anchor="start" font-weight="600">8 == 8 → 切</text>
+<text x="340" y="498" font-size="12" fill="#085041" text-anchor="start" font-weight="400">长度 8 - 6 + 1 = 3</text>
+<rect x="550" y="472" width="12" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="562" y="472" width="12" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="574" y="472" width="12" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="586" y="472" width="12" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="598" y="472" width="12" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="610" y="472" width="12" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="622" y="472" width="12" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="634" y="472" width="12" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="646" y="472" width="12" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="644" y="469" width="16" height="32" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<line x1="20" y1="504" x2="660" y2="504" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="20" y="524" font-size="16" fill="#085041" text-anchor="start" font-weight="600">答案: 切在 i = 4, 5, 8 → 长度 5, 1, 3 = [5, 1, 3]</text>
+<rect x="20" y="543" width="16" height="16" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="42" y="556" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">这一步切出的一段</text>
+<rect x="169.92000000000002" y="543" width="16" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="191.92000000000002" y="556" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">已扫过 (段内 / 已切)</text>
+<rect x="352.24" y="543" width="16" height="16" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<text x="374.24" y="556" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">没扫到</text>
+</svg>

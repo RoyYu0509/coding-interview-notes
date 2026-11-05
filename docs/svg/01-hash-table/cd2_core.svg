@@ -1,0 +1,34 @@
+<svg width="100%" viewBox="0 0 680 352" role="img" xmlns="http://www.w3.org/2000/svg" style="font-family:ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif">
+<title>Contains Duplicate II: 只记最近一次</title><desc>同一个值只需要比最近一次出现的下标; 老下标只会更远, 所以覆盖即可。</desc>
+<defs><marker id="a_grey" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="a_red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="a_green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">nums = [1, 2, 3, 1, 3] · k = 2 · 要找: 两个相同的值, 下标之差 ≤ k</text>
+<rect x="70" y="110" width="60" height="36" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="100.0" y="128.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">1</text>
+<text x="100" y="160" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">i=0</text>
+<rect x="150" y="110" width="60" height="36" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="180.0" y="128.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">2</text>
+<text x="180" y="160" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">i=1</text>
+<rect x="230" y="110" width="60" height="36" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="260.0" y="128.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">3</text>
+<text x="260" y="160" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">i=2</text>
+<rect x="310" y="110" width="60" height="36" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="340.0" y="128.0" font-size="14" fill="#444441" text-anchor="middle" dominant-baseline="central" font-weight="500">1</text>
+<text x="340" y="160" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">i=3</text>
+<rect x="390" y="110" width="60" height="36" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="420.0" y="128.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">3</text>
+<text x="420" y="160" font-size="12" fill="#52514E" text-anchor="middle" dominant-baseline="central" font-weight="400">i=4</text>
+<path d="M100 108 C100 62 340 62 340 108" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#a_red)"/>
+<text x="220.0" y="62" font-size="12" fill="#712B13" text-anchor="middle" dominant-baseline="central" font-weight="400">1 和 1: dist = 3 − 0 = 3 &gt; k = 2, 不算</text>
+<path d="M260 174 C260 212 420 212 420 174" fill="none" stroke="#0F6E56" stroke-width="1.5" marker-end="url(#a_green)"/>
+<text x="340.0" y="216" font-size="12" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">3 和 3: dist = 4 − 2 = 2 ≤ k = 2 ✓</text>
+<line x1="40" y1="226" x2="640" y2="226" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="248" font-size="14" fill="#0B0B0B" text-anchor="start" dominant-baseline="central" font-weight="500">为什么 last 只存最近一次?</text>
+<text x="40" y="270" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">i = 3 再次看到 1: 旧的 1→0 已经没用 (3 − 0 &gt; k), 以后只会更远; 覆盖成 1→3。</text>
+<rect x="40" y="290" width="44" height="28" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="62.0" y="304.0" font-size="14" fill="#712B13" text-anchor="middle" dominant-baseline="central" font-weight="500">1→0</text>
+<path d="M92 304 L146 304" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#a_red)"/>
+<rect x="150" y="290" width="44" height="28" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="172.0" y="304.0" font-size="14" fill="#085041" text-anchor="middle" dominant-baseline="central" font-weight="500">1→3</text>
+<text x="210" y="304" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">last[1] 覆盖: 后面的 1 只需要和最近的 1 比</text>
+<text x="40" y="336" font-size="12" fill="#52514E" text-anchor="start" dominant-baseline="central" font-weight="400">对比 Two Sum: 那里每个值存第一次下标 (任一个都行); 这里存最近一次 (距离最短)。</text>
+</svg>

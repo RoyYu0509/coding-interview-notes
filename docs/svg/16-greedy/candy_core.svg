@@ -1,0 +1,67 @@
+<svg width="100%" viewBox="0 0 680 366" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'>
+<title>Candy 两遍扫描</title><desc>左约束和右约束分开处理, 最后取 max</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowo" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="20" y="26" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="400">ratings 比左邻居高 → 糖比左邻居多; 比右邻居高 → 糖比右邻居多。两条约束一遍扫不完, 就拆成两遍</text>
+<text x="20" y="46" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">ratings = [1, 0, 2, 3, 1],  每个孩子至少 1 颗</text>
+<text x="174" y="74" font-size="12" fill="#52514E" text-anchor="middle" font-weight="400">i=0</text>
+<text x="226" y="74" font-size="12" fill="#52514E" text-anchor="middle" font-weight="400">i=1</text>
+<text x="278" y="74" font-size="12" fill="#52514E" text-anchor="middle" font-weight="400">i=2</text>
+<text x="330" y="74" font-size="12" fill="#52514E" text-anchor="middle" font-weight="400">i=3</text>
+<text x="382" y="74" font-size="12" fill="#52514E" text-anchor="middle" font-weight="400">i=4</text>
+<text x="20" y="103" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="400">ratings</text>
+<rect x="150" y="82" width="48" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="174.0" y="102.5" font-size="16" fill="#444441" text-anchor="middle" font-weight="400">1</text>
+<rect x="202" y="82" width="48" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="226.0" y="102.5" font-size="16" fill="#444441" text-anchor="middle" font-weight="400">0</text>
+<rect x="254" y="82" width="48" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="278.0" y="102.5" font-size="16" fill="#444441" text-anchor="middle" font-weight="400">2</text>
+<rect x="306" y="82" width="48" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="330.0" y="102.5" font-size="16" fill="#444441" text-anchor="middle" font-weight="400">3</text>
+<rect x="358" y="82" width="48" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="382.0" y="102.5" font-size="16" fill="#444441" text-anchor="middle" font-weight="400">1</text>
+<text x="20" y="153" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="400">left (只管左约束)</text>
+<rect x="150" y="132" width="48" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="174.0" y="152.5" font-size="16" fill="#444441" text-anchor="middle" font-weight="400">1</text>
+<rect x="202" y="132" width="48" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="226.0" y="152.5" font-size="16" fill="#444441" text-anchor="middle" font-weight="400">1</text>
+<rect x="254" y="132" width="48" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="278.0" y="152.5" font-size="16" fill="#444441" text-anchor="middle" font-weight="400">2</text>
+<rect x="306" y="132" width="48" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="330.0" y="152.5" font-size="16" fill="#444441" text-anchor="middle" font-weight="400">3</text>
+<rect x="358" y="132" width="48" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="382.0" y="152.5" font-size="16" fill="#444441" text-anchor="middle" font-weight="400">1</text>
+<text x="416" y="153" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">只看左邻居: 比左高 +1</text>
+<text x="20" y="203" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="400">right (只管右约束)</text>
+<rect x="150" y="182" width="48" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="174.0" y="202.5" font-size="16" fill="#444441" text-anchor="middle" font-weight="400">2</text>
+<rect x="202" y="182" width="48" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="226.0" y="202.5" font-size="16" fill="#444441" text-anchor="middle" font-weight="400">1</text>
+<rect x="254" y="182" width="48" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="278.0" y="202.5" font-size="16" fill="#444441" text-anchor="middle" font-weight="400">1</text>
+<rect x="306" y="182" width="48" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="330.0" y="202.5" font-size="16" fill="#444441" text-anchor="middle" font-weight="400">2</text>
+<rect x="358" y="182" width="48" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="382.0" y="202.5" font-size="16" fill="#444441" text-anchor="middle" font-weight="400">1</text>
+<text x="416" y="203" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">只看右邻居: 比右高 +1</text>
+<path d="M 174 216 L 174 236" fill="none" stroke="#898781" stroke-width="1.2" stroke-dasharray="3 3" marker-end="url(#arrow)"/>
+<path d="M 226 216 L 226 236" fill="none" stroke="#898781" stroke-width="1.2" stroke-dasharray="3 3" marker-end="url(#arrow)"/>
+<path d="M 278 216 L 278 236" fill="none" stroke="#898781" stroke-width="1.2" stroke-dasharray="3 3" marker-end="url(#arrow)"/>
+<path d="M 330 216 L 330 236" fill="none" stroke="#898781" stroke-width="1.2" stroke-dasharray="3 3" marker-end="url(#arrow)"/>
+<path d="M 382 216 L 382 236" fill="none" stroke="#898781" stroke-width="1.2" stroke-dasharray="3 3" marker-end="url(#arrow)"/>
+<text x="20" y="261" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="400">max(left, right)</text>
+<rect x="150" y="240" width="48" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="174.0" y="260.5" font-size="16" fill="#085041" text-anchor="middle" font-weight="400">2</text>
+<rect x="202" y="240" width="48" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="226.0" y="260.5" font-size="16" fill="#085041" text-anchor="middle" font-weight="400">1</text>
+<rect x="254" y="240" width="48" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="278.0" y="260.5" font-size="16" fill="#085041" text-anchor="middle" font-weight="400">2</text>
+<rect x="306" y="240" width="48" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="330.0" y="260.5" font-size="16" fill="#085041" text-anchor="middle" font-weight="400">3</text>
+<rect x="358" y="240" width="48" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="382.0" y="260.5" font-size="16" fill="#085041" text-anchor="middle" font-weight="400">1</text>
+<text x="416" y="261" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">= 糖数</text>
+<line x1="20" y1="284" x2="660" y2="284" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="20" y="308" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">为什么取 max 两条约束同时成立: fin[i] ≥ left[i] 保证比左邻居高的更多; fin[i] ≥ right[i] 保证比右邻居高的更多。</text>
+<text x="20" y="328" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">为什么 max 不浪费: 每条约束单独要求的最小值就是 left[i] / right[i], 同时满足的最小值就是两者较大者。</text>
+<text x="20" y="348" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">一遍扫不行: 扫到 i=1 (rating 0) 时, 它比左邻居低, 但它比谁多要看后面 i=2 才知道 → 所以倒着再扫一次。</text>
+</svg>

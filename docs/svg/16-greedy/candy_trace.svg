@@ -1,0 +1,165 @@
+<svg width="100%" viewBox="0 0 680 796" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'>
+<title>Candy trace</title><desc>ratings=[1,0,2,3,1]</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowo" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="20" y="26" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="400">ratings = [1, 0, 2, 3, 1] · 先从左往右填 left, 再从右往左填 right, 最后逐格取 max 求和</text>
+<text x="20" y="46" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">left[i] = left[i-1] + 1 (若 ratings[i] &gt; ratings[i-1]) 否则 1;  right[i] 同理看右邻居</text>
+<text x="20" y="90" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="600">A. 从左往右 → left</text>
+<rect x="440" y="72" width="32" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<text x="456.0" y="90.5" font-size="14" fill="#52514E" text-anchor="middle" font-weight="400">1</text>
+<rect x="474" y="72" width="32" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<text x="490.0" y="90.5" font-size="14" fill="#52514E" text-anchor="middle" font-weight="400">0</text>
+<rect x="508" y="72" width="32" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<text x="524.0" y="90.5" font-size="14" fill="#52514E" text-anchor="middle" font-weight="400">2</text>
+<rect x="542" y="72" width="32" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<text x="558.0" y="90.5" font-size="14" fill="#52514E" text-anchor="middle" font-weight="400">3</text>
+<rect x="576" y="72" width="32" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<text x="592.0" y="90.5" font-size="14" fill="#52514E" text-anchor="middle" font-weight="400">1</text>
+<text x="434" y="90" font-size="12" fill="#52514E" text-anchor="end" font-weight="400">ratings</text>
+<line x1="20" y1="108" x2="660" y2="108" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="20" y="136" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="400">i=0: left[0] = 1 (起点)</text>
+<rect x="440" y="118" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="437" y="115" width="38" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="456.0" y="138.5" font-size="16" fill="#085041" text-anchor="middle" font-weight="400">1</text>
+<rect x="474" y="118" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="508" y="118" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="542" y="118" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="576" y="118" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<line x1="20" y1="152" x2="660" y2="152" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="20" y="180" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="400">i=1: ratings[1]=0 ≤ ratings[0]=1 → left[1] = 1</text>
+<rect x="440" y="162" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="456.0" y="182.5" font-size="16" fill="#444441" text-anchor="middle" font-weight="400">1</text>
+<rect x="474" y="162" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="471" y="159" width="38" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="490.0" y="182.5" font-size="16" fill="#085041" text-anchor="middle" font-weight="400">1</text>
+<rect x="508" y="162" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="542" y="162" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="576" y="162" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<line x1="20" y1="196" x2="660" y2="196" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="20" y="224" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="400">i=2: ratings[2]=2 &gt; ratings[1]=0 → left[2] = 1 + 1 = 2</text>
+<rect x="440" y="206" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="456.0" y="226.5" font-size="16" fill="#444441" text-anchor="middle" font-weight="400">1</text>
+<rect x="474" y="206" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="490.0" y="226.5" font-size="16" fill="#444441" text-anchor="middle" font-weight="400">1</text>
+<rect x="508" y="206" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="505" y="203" width="38" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="524.0" y="226.5" font-size="16" fill="#085041" text-anchor="middle" font-weight="400">2</text>
+<rect x="542" y="206" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="576" y="206" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<line x1="20" y1="240" x2="660" y2="240" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="20" y="268" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="400">i=3: ratings[3]=3 &gt; ratings[2]=2 → left[3] = 2 + 1 = 3</text>
+<rect x="440" y="250" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="456.0" y="270.5" font-size="16" fill="#444441" text-anchor="middle" font-weight="400">1</text>
+<rect x="474" y="250" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="490.0" y="270.5" font-size="16" fill="#444441" text-anchor="middle" font-weight="400">1</text>
+<rect x="508" y="250" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="524.0" y="270.5" font-size="16" fill="#444441" text-anchor="middle" font-weight="400">2</text>
+<rect x="542" y="250" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="539" y="247" width="38" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="558.0" y="270.5" font-size="16" fill="#085041" text-anchor="middle" font-weight="400">3</text>
+<rect x="576" y="250" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<line x1="20" y1="284" x2="660" y2="284" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="20" y="312" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="400">i=4: ratings[4]=1 ≤ ratings[3]=3 → left[4] = 1</text>
+<rect x="440" y="294" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="456.0" y="314.5" font-size="16" fill="#444441" text-anchor="middle" font-weight="400">1</text>
+<rect x="474" y="294" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="490.0" y="314.5" font-size="16" fill="#444441" text-anchor="middle" font-weight="400">1</text>
+<rect x="508" y="294" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="524.0" y="314.5" font-size="16" fill="#444441" text-anchor="middle" font-weight="400">2</text>
+<rect x="542" y="294" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="558.0" y="314.5" font-size="16" fill="#444441" text-anchor="middle" font-weight="400">3</text>
+<rect x="576" y="294" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="573" y="291" width="38" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="592.0" y="314.5" font-size="16" fill="#085041" text-anchor="middle" font-weight="400">1</text>
+<line x1="20" y1="328" x2="660" y2="328" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="20" y="362" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="600">B. 从右往左 → right</text>
+<rect x="440" y="344" width="32" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<text x="456.0" y="362.5" font-size="14" fill="#52514E" text-anchor="middle" font-weight="400">1</text>
+<rect x="474" y="344" width="32" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<text x="490.0" y="362.5" font-size="14" fill="#52514E" text-anchor="middle" font-weight="400">0</text>
+<rect x="508" y="344" width="32" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<text x="524.0" y="362.5" font-size="14" fill="#52514E" text-anchor="middle" font-weight="400">2</text>
+<rect x="542" y="344" width="32" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<text x="558.0" y="362.5" font-size="14" fill="#52514E" text-anchor="middle" font-weight="400">3</text>
+<rect x="576" y="344" width="32" height="26" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<text x="592.0" y="362.5" font-size="14" fill="#52514E" text-anchor="middle" font-weight="400">1</text>
+<text x="434" y="362" font-size="12" fill="#52514E" text-anchor="end" font-weight="400">ratings</text>
+<line x1="20" y1="378" x2="660" y2="378" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="20" y="406" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="400">i=4: right[4] = 1 (起点)</text>
+<rect x="440" y="388" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="474" y="388" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="508" y="388" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="542" y="388" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="576" y="388" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="573" y="385" width="38" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="592.0" y="408.5" font-size="16" fill="#085041" text-anchor="middle" font-weight="400">1</text>
+<line x1="20" y1="422" x2="660" y2="422" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="20" y="450" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="400">i=3: ratings[3]=3 &gt; ratings[4]=1 → right[3] = 1 + 1 = 2</text>
+<rect x="440" y="432" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="474" y="432" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="508" y="432" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="542" y="432" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="539" y="429" width="38" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="558.0" y="452.5" font-size="16" fill="#085041" text-anchor="middle" font-weight="400">2</text>
+<rect x="576" y="432" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="592.0" y="452.5" font-size="16" fill="#444441" text-anchor="middle" font-weight="400">1</text>
+<line x1="20" y1="466" x2="660" y2="466" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="20" y="494" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="400">i=2: ratings[2]=2 ≤ ratings[3]=3 → right[2] = 1</text>
+<rect x="440" y="476" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="474" y="476" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="508" y="476" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="505" y="473" width="38" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="524.0" y="496.5" font-size="16" fill="#085041" text-anchor="middle" font-weight="400">1</text>
+<rect x="542" y="476" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="558.0" y="496.5" font-size="16" fill="#444441" text-anchor="middle" font-weight="400">2</text>
+<rect x="576" y="476" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="592.0" y="496.5" font-size="16" fill="#444441" text-anchor="middle" font-weight="400">1</text>
+<line x1="20" y1="510" x2="660" y2="510" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="20" y="538" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="400">i=1: ratings[1]=0 ≤ ratings[2]=2 → right[1] = 1</text>
+<rect x="440" y="520" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="474" y="520" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="471" y="517" width="38" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="490.0" y="540.5" font-size="16" fill="#085041" text-anchor="middle" font-weight="400">1</text>
+<rect x="508" y="520" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="524.0" y="540.5" font-size="16" fill="#444441" text-anchor="middle" font-weight="400">1</text>
+<rect x="542" y="520" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="558.0" y="540.5" font-size="16" fill="#444441" text-anchor="middle" font-weight="400">2</text>
+<rect x="576" y="520" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="592.0" y="540.5" font-size="16" fill="#444441" text-anchor="middle" font-weight="400">1</text>
+<line x1="20" y1="554" x2="660" y2="554" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="20" y="582" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="400">i=0: ratings[0]=1 &gt; ratings[1]=0 → right[0] = 1 + 1 = 2</text>
+<rect x="440" y="564" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="437" y="561" width="38" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="456.0" y="584.5" font-size="16" fill="#085041" text-anchor="middle" font-weight="400">2</text>
+<rect x="474" y="564" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="490.0" y="584.5" font-size="16" fill="#444441" text-anchor="middle" font-weight="400">1</text>
+<rect x="508" y="564" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="524.0" y="584.5" font-size="16" fill="#444441" text-anchor="middle" font-weight="400">1</text>
+<rect x="542" y="564" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="558.0" y="584.5" font-size="16" fill="#444441" text-anchor="middle" font-weight="400">2</text>
+<rect x="576" y="564" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="592.0" y="584.5" font-size="16" fill="#444441" text-anchor="middle" font-weight="400">1</text>
+<line x1="20" y1="598" x2="660" y2="598" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="20" y="632" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="600">C. 逐格取 max(left, right)</text>
+<line x1="20" y1="640" x2="660" y2="640" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="20" y="668" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="400">left  = [1, 1, 2, 3, 1]</text>
+<text x="20" y="690" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="400">right = [2, 1, 1, 2, 1]</text>
+<rect x="440" y="650" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="456.0" y="670.5" font-size="16" fill="#085041" text-anchor="middle" font-weight="400">2</text>
+<rect x="474" y="650" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="490.0" y="670.5" font-size="16" fill="#085041" text-anchor="middle" font-weight="400">1</text>
+<rect x="508" y="650" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="524.0" y="670.5" font-size="16" fill="#085041" text-anchor="middle" font-weight="400">2</text>
+<rect x="542" y="650" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="558.0" y="670.5" font-size="16" fill="#085041" text-anchor="middle" font-weight="400">3</text>
+<rect x="576" y="650" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="592.0" y="670.5" font-size="16" fill="#085041" text-anchor="middle" font-weight="400">1</text>
+<text x="612" y="670" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="400"></text>
+<text x="20" y="728" font-size="16" fill="#085041" text-anchor="start" font-weight="600">答案: 2 + 1 + 2 + 3 + 1 = 9</text>
+<text x="20" y="750" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">i=0: max(1,2)=2,  i=1: max(1,1)=1,  i=2: max(2,1)=2,  i=3: max(3,2)=3,  i=4: max(1,1)=1</text>
+<rect x="20" y="767" width="16" height="16" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="42" y="780" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">这一步写入</text>
+<rect x="133.2" y="767" width="16" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="155.2" y="780" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">已填好</text>
+<rect x="221.92" y="767" width="16" height="16" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<text x="243.92" y="780" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">还没填</text>
+</svg>

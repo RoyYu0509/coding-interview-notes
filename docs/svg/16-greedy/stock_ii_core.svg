@@ -1,0 +1,40 @@
+<svg width="100%" viewBox="0 0 680 404" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'>
+<title>Stock II core</title><desc>总利润 = 所有上涨段之和</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowo" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="20" y="26" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="400">能买卖无限次 (但同一时间只能持有一股) → 每一段上涨都吃掉, 下跌段不碰</text>
+<text x="20" y="46" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">prices = [7, 1, 5, 3, 6, 4]</text>
+<line x1="40" y1="260" x2="640" y2="260" stroke="#B4B2A9" stroke-width="1"/>
+<path d="M 60 96 L 160 228" fill="none" stroke="#D85A30" stroke-width="2" stroke-dasharray="5 4"/>
+<path d="M 160 228 L 260 140" fill="none" stroke="#0F6E56" stroke-width="3"/>
+<path d="M 260 140 L 360 184" fill="none" stroke="#D85A30" stroke-width="2" stroke-dasharray="5 4"/>
+<path d="M 360 184 L 460 118" fill="none" stroke="#0F6E56" stroke-width="3"/>
+<path d="M 460 118 L 560 162" fill="none" stroke="#D85A30" stroke-width="2" stroke-dasharray="5 4"/>
+<circle cx="60" cy="96" r="15" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="60" y="101.5" font-size="16" fill="#444441" text-anchor="middle" font-weight="400">7</text>
+<text x="60" y="280" font-size="12" fill="#52514E" text-anchor="middle" font-weight="400">i=0</text>
+<circle cx="160" cy="228" r="15" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="160" y="233.5" font-size="16" fill="#444441" text-anchor="middle" font-weight="400">1</text>
+<text x="160" y="280" font-size="12" fill="#52514E" text-anchor="middle" font-weight="400">i=1</text>
+<circle cx="260" cy="140" r="15" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="260" y="145.5" font-size="16" fill="#444441" text-anchor="middle" font-weight="400">5</text>
+<text x="260" y="280" font-size="12" fill="#52514E" text-anchor="middle" font-weight="400">i=2</text>
+<circle cx="360" cy="184" r="15" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="360" y="189.5" font-size="16" fill="#444441" text-anchor="middle" font-weight="400">3</text>
+<text x="360" y="280" font-size="12" fill="#52514E" text-anchor="middle" font-weight="400">i=3</text>
+<circle cx="460" cy="118" r="15" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="460" y="123.5" font-size="16" fill="#444441" text-anchor="middle" font-weight="400">6</text>
+<text x="460" y="280" font-size="12" fill="#52514E" text-anchor="middle" font-weight="400">i=4</text>
+<circle cx="560" cy="162" r="15" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="560" y="167.5" font-size="16" fill="#444441" text-anchor="middle" font-weight="400">4</text>
+<text x="560" y="280" font-size="12" fill="#52514E" text-anchor="middle" font-weight="400">i=5</text>
+<text x="186" y="188" font-size="14" fill="#085041" text-anchor="middle" font-weight="600">+4</text>
+<text x="392" y="150" font-size="14" fill="#085041" text-anchor="middle" font-weight="600">+3</text>
+<text x="132" y="164" font-size="14" fill="#712B13" text-anchor="middle" font-weight="400">-6</text>
+<text x="296" y="178" font-size="14" fill="#712B13" text-anchor="middle" font-weight="400">-2</text>
+<text x="498" y="160" font-size="14" fill="#712B13" text-anchor="middle" font-weight="400">-2</text>
+<line x1="20" y1="300" x2="660" y2="300" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="20" y="324" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="400">上涨段: 1→5 (+4), 3→6 (+3)。profit = 4 + 3 = 7 = (买1卖5) + (买3卖6)</text>
+<text x="20" y="346" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">对比一次长持有 1 → 6: 6 - 1 = 5 &lt; 7, 因为它把中间 5→3 的下跌也吃进去了。</text>
+<text x="20" y="366" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">每个相邻差 p[i] - p[i-1] 只有两种: 正的拿 (相当于当天买第二天卖), 负的跳过 (相当于空仓)。</text>
+<text x="20" y="386" font-size="12" fill="#52514E" text-anchor="start" font-weight="400">多个上涨段首尾相连时: (5-1) + (6-5) = 6-1, 逐天拿和一次拿到的总利润一样, 所以不用找&#x27;真正的买卖点&#x27;。</text>
+</svg>
