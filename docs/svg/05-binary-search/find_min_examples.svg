@@ -1,0 +1,68 @@
+<svg width="100%" viewBox="0 0 680 434" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Find Minimum in Rotated Sorted Array examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">一个排好序的数组, 被&quot;旋转&quot;过: 把开头的一段剪下来接到最后。元素不重复。找最小值, 要求 O(log n)</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  nums = [3,4,5,1,2]  →  1</text>
+<rect x="40" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="57.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="91.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<text x="91.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="108" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<text x="125.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="142" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="159.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="159.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="176" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="193.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="193.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
+<text x="234" y="103" font-size="14" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">原数组 [1,2,3,4,5], 把 [1,2] 移到最后</text>
+<text x="40" y="150" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">旋转后是两段各自排好序的数组: [3,4,5] 和 [1,2]。最小值就是第二段的开头</text>
+<line x1="40" y1="174" x2="640" y2="174" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="194" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  nums = [4,5,6,7,8,9,1,2,3]  →  1</text>
+<rect x="40" y="220" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="236.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<text x="57.0" y="262" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="220" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="91.0" y="236.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<text x="91.0" y="262" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="108" y="220" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.0" y="236.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">6</text>
+<text x="125.0" y="262" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="142" y="220" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="159.0" y="236.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">7</text>
+<text x="159.0" y="262" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="176" y="220" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="193.0" y="236.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">8</text>
+<text x="193.0" y="262" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="210" y="220" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="227.0" y="236.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">9</text>
+<text x="227.0" y="262" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">5</text>
+<rect x="244" y="220" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="261.0" y="236.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="261.0" y="262" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">6</text>
+<rect x="278" y="220" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="295.0" y="236.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="295.0" y="262" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">7</text>
+<rect x="312" y="220" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="329.0" y="236.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="329.0" y="262" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">8</text>
+<text x="370" y="235" font-size="14" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">两段: [4..9] 和 [1,2,3]</text>
+<line x1="40" y1="282" x2="640" y2="282" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="302" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 3:  nums = [11,13,15,17]  →  11</text>
+<rect x="40" y="328" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="57.0" y="344.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">11</text>
+<text x="57.0" y="370" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="328" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="91.0" y="344.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">13</text>
+<text x="91.0" y="370" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="108" y="328" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.0" y="344.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">15</text>
+<text x="125.0" y="370" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="142" y="328" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="159.0" y="344.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">17</text>
+<text x="159.0" y="370" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="200" y="343" font-size="14" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">转了一整圈, 等于没转</text>
+<line x1="40" y1="390" x2="640" y2="390" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="405" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="412" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">最小值</text></svg>
