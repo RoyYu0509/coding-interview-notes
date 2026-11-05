@@ -137,10 +137,29 @@ def bullets(doc, *lines):
     doc.raw("<ul>%s</ul>" % "".join("<li>%s</li>" % x for x in lines))
 
 
+def _cw(line):
+    return sum(2 if ord(c) > 255 else 1 for c in line)
+
+
+def wrap_code(code, limit=80):
+    """太宽的 "代码  # 注释" 行: 把注释挪到代码上一行 (同缩进)。只影响展示。"""
+    out = []
+    for line in code.split("\n"):
+        if _cw(line) <= limit or "  # " not in line or line.lstrip().startswith("#"):
+            out.append(line)
+            continue
+        i = line.index("  # ")
+        codepart, comment = line[:i].rstrip(), line[i:].strip()
+        pad = " " * (len(codepart) - len(codepart.lstrip()))
+        out.append(pad + comment)
+        out.append(codepart)
+    return "\n".join(out)
+
+
 def solution(doc, *codes, summary="参考代码 (先自己按上面的算法步骤写, 写不出来再展开)"):
     doc.raw('<details><summary>%s</summary>' % summary)
     for c in codes:
-        doc.code(c)
+        doc.code(wrap_code(c))
     doc.raw('</details>')
 
 
