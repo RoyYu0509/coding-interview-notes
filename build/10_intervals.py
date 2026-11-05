@@ -1183,7 +1183,7 @@ def fig_rooms2_sweep_trace():
     LANE = 28
     y_axis = 104
     lanes_y = y_axis + 14
-    chart_top = lanes_y + LANE * len(srt) + 28
+    chart_top = lanes_y + LANE * len(srt) + 40
     unit = 22
     chart_base = chart_top + 3 * unit
     table_y = chart_base + 44
@@ -1444,3 +1444,39 @@ def fig_calendar_trace():
 
 fig_calendar_core()
 fig_calendar_trace()
+
+
+# ====================================================================== 文档里的小例子 (全部实跑)
+assert FN["merge"]["merge"]([[1, 3], [2, 6], [8, 10], [15, 18]]) == [[1, 6], [8, 10], [15, 18]]
+assert FN["merge"]["merge"]([[1, 4], [4, 5]]) == [[1, 5]]
+assert FN["insert"]["insert"]([[1, 3], [6, 9]], [2, 5]) == [[1, 5], [6, 9]]
+assert FN["erase"]["erase_overlap_intervals"]([[1, 2], [2, 3], [3, 4], [1, 3]]) == 1
+assert FN["arrows"]["find_min_arrow_shots"]([[10, 16], [2, 8], [1, 6], [7, 12]]) == 2
+assert FN["rooms1"]["can_attend_meetings"]([[0, 30], [5, 10], [15, 20]]) is False
+assert FN["rooms1"]["can_attend_meetings"]([[7, 10], [2, 4]]) is True
+assert FN["rooms2_heap"]["min_meeting_rooms"]([[0, 30], [5, 10], [15, 20]]) == 2
+assert FN["rooms2_sweep"]["min_meeting_rooms"]([[0, 30], [5, 10], [15, 20]]) == 2
+assert FN["intersect"]["interval_intersection"](
+    [[0, 2], [5, 10], [13, 23], [24, 25]], [[1, 5], [8, 12], [15, 24], [25, 26]]) == \
+    [[1, 2], [5, 5], [8, 10], [15, 23], [24, 24], [25, 25]]
+_c = FN["calendar"]["MyCalendar"]()
+assert [_c.book(*x) for x in CAL_OPS] == [True, False, True, True, False, True]
+# "按 start 排会错" 的反例: A=[1,11] B=[2,4] C=[4,6] D=[6,8]
+_iv = [[1, 11], [2, 4], [4, 6], [6, 8]]
+assert FN["erase"]["erase_overlap_intervals"]([list(x) for x in _iv]) == 1
+
+
+def _erase_by_start(iv):
+    iv = sorted(iv)
+    keep_end, removed = -inf, 0
+    for s_, e_ in iv:
+        if s_ >= keep_end:
+            keep_end = e_
+        else:
+            removed += 1
+    return removed
+
+
+assert _erase_by_start(_iv) == 3
+# Min arrows 和 Non-overlapping 的关系: 闭区间相接算重叠 => 一支箭 = 一个共点的组
+print("doc examples ok")

@@ -950,7 +950,7 @@ def fig_matrix_core():
             s.t(x + 6, y + 14, "i=%d" % i, 12, SUB)
             s.t(x + cw / 2 - 1, y + 35, MAT[r][c], 16, tx, "middle")
     s.t(gx, gy + m * ch + 16, "matrix (3 行 x 4 列)", 12, SUB)
-    fx, fw = 300, 30
+    fx, fw = 290, 29
     s.t(fx, gy + 4, "拼成一维 (只是想象, 不用真建)", 12, SUB)
     for i, v in enumerate(flat):
         s.cell(fx + i * fw - (0), gy + 16 + (0), fw - 2, 30, v, "norm", ring=(i == 5), size=12)
