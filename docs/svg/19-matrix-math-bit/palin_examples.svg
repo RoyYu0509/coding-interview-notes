@@ -1,0 +1,10 @@
+<svg width="100%" viewBox="0 0 680 228" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Palindrome Number examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">判断一个整数正着读和反着读是不是一样。不能转成字符串</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  121  →  True</text>
+<line x1="40" y1="88" x2="640" y2="88" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="108" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  -121  →  False</text>
+<text x="40" y="128" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">反过来读是 121-, 不一样。负数一定不是</text>
+<line x1="40" y1="152" x2="640" y2="152" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="172" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 3:  10  →  False</text>
+<text x="40" y="192" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">反过来是 01, 不一样。末尾是 0 的 (除了 0 本身) 一定不是</text>
+<line x1="40" y1="216" x2="640" y2="216" stroke="#B4B2A9" stroke-dasharray="4 4"/></svg>

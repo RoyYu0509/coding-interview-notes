@@ -1,0 +1,10 @@
+<svg width="100%" viewBox="0 0 680 228" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Pow examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">实现 x 的 n 次方。n 可以是负数, 可以非常大 (到 2³¹)</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  x = 2, n = 10  →  1024</text>
+<line x1="40" y1="88" x2="640" y2="88" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="108" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  x = 2, n = -2  →  0.25</text>
+<text x="40" y="128" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">负数次方 = 1 / 正数次方: 1 / 2² = 0.25</text>
+<line x1="40" y1="152" x2="640" y2="152" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="172" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">难点</text>
+<text x="40" y="192" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">n = 2³¹ 时, 乘 n 次要 20 亿次乘法, 太慢</text>
+<line x1="40" y1="216" x2="640" y2="216" stroke="#B4B2A9" stroke-dasharray="4 4"/></svg>

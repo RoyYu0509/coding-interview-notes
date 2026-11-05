@@ -24,12 +24,13 @@ figure svg{width:100%;height:auto;display:block}
 figcaption{color:#52514e;font-size:14px;padding:4px 6px 0}
 table{border-collapse:collapse;margin:10px 0;font-size:15px}
 td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
+details{margin:12px 0;border:1px dashed var(--box);border-radius:6px;padding:4px 12px}
+summary{cursor:pointer;color:var(--sub);font-size:15px}
+ol,ul{padding-left:24px}li{margin:4px 0}
 </style></head><body><article contenteditable="true">
 <h1>19 · Matrix / Simulation / Math / Bit / Sorting</h1>
-<p class="main">主线: 这类题没有统一的数据结构。共同点是: 暴力解要么多存一份东西, 要么把同一件事重复做; 而题目自带的结构 (边界 / 坐标 / 二进制 / 配对 / 有序) 能直接把浪费消掉。</p>
-<p class="main">概念链: Spiral Matrix (四个边界) → Rotate Image (坐标变换) → Set Matrix Zeroes (矩阵自己当 flag) → Pow(x, n) (二进制拆分) → Palindrome Number (数位) → Single Number / Missing Number (XOR) → Number of 1 Bits (n &amp; (n-1)) → Minimum Absolute Difference (sort 后看相邻 + 自定义排序) → Roman to Integer (查表 + 看右邻)</p>
-<h2>0. 第一性原理: 暴力解在浪费什么</h2>
-<p>这个 doc 里的题看起来互不相干, 但每一题的暴力解都在浪费同一类东西: <b>多存了一份本来就隐含在输入里的信息</b>, 或者 <b>重复做了本来可以复用的计算</b>。每个 pattern 就是找到输入里那个现成的结构。</p>
+<h2>这篇讲什么</h2>
+<p>这一篇是"杂项": 矩阵模拟、数学、位运算、排序。这些题没有一个统一的数据结构, 但思路有共同点: <b>brute force 要么多存了一份输入里本来就有的信息, 要么重复做了可以复用的计算</b>。每道题的关键都是找到输入里现成的结构, 把浪费消掉。</p>
 <figure><svg width="100%" viewBox="0 0 680 390" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>杂项题的共同点</title><desc>四类题,暴力解各自浪费什么,以及用题目自身结构消掉浪费后 complexity 的变化</desc><defs><marker id="f1-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f1-r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f1-n" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f1-o" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#EF9F27" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="390" fill="#fff"/>
 <text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">这个 doc 的题没有统一的数据结构 · 共同点: 暴力解在重复做或多存一份东西,</text>
 <text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">而题目自身的结构 (边界 / 二进制 / 配对 / 有序) 可以把它消掉</text>
@@ -76,14 +77,63 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="161.8" y="361" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
 <text x="181.8" y="368" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">利用结构后</text>
 </svg>
-<figcaption>四类题: 暴力解浪费什么 (灰) → 用什么结构消掉 (绿)</figcaption></figure>
-<p>读完这一份你要有的反射: 看到「原地 / O(1) space」先想<b>能不能借输入自己存信息</b>; 看到「n 很大」先想<b>二进制拆分</b>; 看到「成对 / 配对」想 <b>XOR</b>; 看到「最近 / 最小差」想 <b>sort 之后只看相邻</b>。下面是全文用到的 Python idiom, 先混个眼熟:</p>
-<div class="code"><span class="l"><span class="c"># --- 矩阵: 四个边界 / 原地交换 ---</span></span><span class="l">m, n = 3, 4</span><span class="l">top, bottom, left, right = 0, m - 1, 0, n - 1     <span class="c"># 每走完一条边, 对应边界收缩 1</span></span><span class="l">mat = [[1, 2], [3, 4]]</span><span class="l">mat[0][1], mat[1][0] = mat[1][0], mat[0][1]       <span class="c"># 原地交换 (i, j) &lt;-&gt; (j, i)</span></span><span class="l"></span><span class="l"><span class="c"># --- 数位: 取末位 / 丢末位 / 接到末尾 ---</span></span><span class="l">x, rev = 123, 0</span><span class="l">d = x % 10                                        <span class="c"># 末位</span></span><span class="l">x //= 10                                          <span class="c"># 丢掉末位</span></span><span class="l">rev = rev * 10 + d                                <span class="c"># 接到 rev 末尾</span></span><span class="l"></span><span class="l"><span class="c"># --- bit ---</span></span><span class="l">k = 44                                            <span class="c"># 0b101100</span></span><span class="l">low = k &amp; -k                                      <span class="c"># 只留最低位的 1 → 4</span></span><span class="l">bit2 = (k &gt;&gt; 2) &amp; 1                               <span class="c"># 第 2 位是不是 1</span></span><span class="l">k &amp;= k - 1                                        <span class="c"># 消掉最低位的 1 → 40</span></span><span class="l">same = 7 ^ 7                                      <span class="c"># a ^ a = 0</span></span><span class="l"></span><span class="l"><span class="c"># --- 排序 ---</span></span><span class="l">arr = [(2, <span class="s">&quot;b&quot;</span>), (1, <span class="s">&quot;a&quot;</span>), (2, <span class="s">&quot;a&quot;</span>)]</span><span class="l">arr.<span class="f">sort</span>(key=<span class="k">lambda</span> p: (-p[0], p[1]))             <span class="c"># 多关键字: key 返回 tuple, 降序取负</span></span><span class="l">pairs = [(a, b) <span class="k">for</span> a, b <span class="k">in</span> <span class="t">zip</span>(arr, arr[1:])]    <span class="c"># 排序之后只看相邻</span></span></div>
-<p class="note"><b>记:</b>矩阵题 = 边界或坐标; 数位 = <code>% 10</code> 和 <code>// 10</code>; bit = <code>&amp;</code> <code>&gt;&gt;</code> <code>^</code>; 排序 = 当预处理, 之后只看相邻。</p>
-<h2>1. Spiral Matrix: 四个边界, 每走完一条边收缩一次</h2>
-<p><b>题目:</b> 按顺时针螺旋顺序返回 matrix 的所有元素。例: <code>[[1,2,3,4],[5,6,7,8],[9,10,11,12]]</code> → <code>[1,2,3,4,8,12,11,10,9,5,6,7]</code>。</p>
-<p><b>Brute force:</b> 用 <code>visited[m][n]</code> 加方向数组, 撞墙或撞到走过的格子就右转。time O(mn), 但额外 space O(mn)。浪费在: 每一步都要查「这格走过没」, 用整张表去记一个其实很规则的集合。</p>
-<p><b>关键观察:</b> 走过的格子永远是最外面一圈, 剩下的永远是一个矩形。一个矩形只要 4 个整数 <code>top / bottom / left / right</code> 就能描述, 不需要 visited。</p>
+<figcaption>四类题: brute force 浪费在哪 (灰色) → 用什么结构消掉 (绿色)。</figcaption></figure>
+<p>读完要建立的反射: 看到"原地 / O(1) 空间", 想能不能借输入自己存信息; 看到"n 很大", 想二进制拆分; 看到"成对 / 配对", 想 XOR; 看到"最近 / 最小差", 想排序之后只看相邻。</p>
+<details><summary>本篇用到的 Python 写法</summary>
+<div class="code"><span class="l"><span class="c"># --- 矩阵: 四个边界 / 原地交换 ---</span></span><span class="l">m, n = 3, 4</span><span class="l"><span class="c"># 每走完一条边, 对应边界收缩 1</span></span><span class="l">top, bottom, left, right = 0, m - 1, 0, n - 1</span><span class="l">mat = [[1, 2], [3, 4]]</span><span class="l">mat[0][1], mat[1][0] = mat[1][0], mat[0][1]       <span class="c"># 原地交换 (i, j) &lt;-&gt; (j, i)</span></span><span class="l"></span><span class="l"><span class="c"># --- 数位: 取末位 / 丢末位 / 接到末尾 ---</span></span><span class="l">x, rev = 123, 0</span><span class="l">d = x % 10                                        <span class="c"># 末位</span></span><span class="l">x //= 10                                          <span class="c"># 丢掉末位</span></span><span class="l">rev = rev * 10 + d                                <span class="c"># 接到 rev 末尾</span></span><span class="l"></span><span class="l"><span class="c"># --- bit ---</span></span><span class="l">k = 44                                            <span class="c"># 0b101100</span></span><span class="l">low = k &amp; -k                                      <span class="c"># 只留最低位的 1 → 4</span></span><span class="l">bit2 = (k &gt;&gt; 2) &amp; 1                               <span class="c"># 第 2 位是不是 1</span></span><span class="l">k &amp;= k - 1                                        <span class="c"># 消掉最低位的 1 → 40</span></span><span class="l">same = 7 ^ 7                                      <span class="c"># a ^ a = 0</span></span><span class="l"></span><span class="l"><span class="c"># --- 排序 ---</span></span><span class="l">arr = [(2, <span class="s">&quot;b&quot;</span>), (1, <span class="s">&quot;a&quot;</span>), (2, <span class="s">&quot;a&quot;</span>)]</span><span class="l"><span class="c"># 多关键字: key 返回 tuple, 降序取负</span></span><span class="l">arr.<span class="f">sort</span>(key=<span class="k">lambda</span> p: (-p[0], p[1]))</span><span class="l">pairs = [(a, b) <span class="k">for</span> a, b <span class="k">in</span> <span class="t">zip</span>(arr, arr[1:])]    <span class="c"># 排序之后只看相邻</span></span></div>
+</details>
+<table><tr><th>#</th><th>题目</th><th>考过的公司数</th><th>用到的结构</th></tr><tr><td>1</td><td>Spiral Matrix</td><td>42</td><td>四个边界</td></tr><tr><td>2</td><td>Rotate Image</td><td>32</td><td>坐标变换</td></tr><tr><td>3</td><td>Set Matrix Zeroes</td><td>19</td><td>用矩阵自己当标记</td></tr><tr><td>4</td><td>Pow(x, n)</td><td>21</td><td>n 的二进制</td></tr><tr><td>5</td><td>Palindrome Number</td><td>30</td><td>% 10 和 // 10</td></tr><tr><td>6</td><td>Single Number / Missing Number</td><td>17 / 16</td><td>XOR 抵消</td></tr><tr><td>7</td><td>Number of 1 Bits</td><td>11</td><td>n & (n - 1)</td></tr><tr><td>8</td><td>Minimum Absolute Difference</td><td>16</td><td>排序后只看相邻</td></tr><tr><td>9</td><td>Roman to Integer</td><td>34</td><td>查表 + 看右边</td></tr></table>
+<p>每道题的顺序: <b>题目在问什么 → 看例子 → brute force → intuition → 算法 → 手动走一遍 → 复杂度</b>。代码放在最后, 默认折叠。</p>
+<h2>1. Spiral Matrix</h2>
+<h3>题目在问什么</h3>
+<p>给一个 m × n 的矩阵, 按<b>顺时针螺旋</b>的顺序返回所有元素: 先往右走第一行, 再往下走最后一列, 再往左走最后一行, 再往上走第一列, 然后进入里面一圈, 重复。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 294" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Spiral Matrix examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">按顺时针螺旋的顺序, 返回矩阵的所有元素</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  [[1,2,3,4],[5,6,7,8],[9,10,11,12]]  →  [1,2,3,4,8,12,11,10,9,5,6,7]</text>
+<text x="40" y="103" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">row 0</text>
+<rect x="104" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="121.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="138" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="155.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="172" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="189.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="206" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="223.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<text x="40" y="149" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">row 1</text>
+<rect x="104" y="134" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="121.0" y="150.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<rect x="138" y="134" width="34" height="30" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
+<text x="155.0" y="150.0" font-size="15" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">6</text>
+<rect x="172" y="134" width="34" height="30" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
+<text x="189.0" y="150.0" font-size="15" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">7</text>
+<rect x="206" y="134" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="223.0" y="150.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">8</text>
+<text x="40" y="195" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">row 2</text>
+<rect x="104" y="180" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="121.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">9</text>
+<rect x="138" y="180" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="155.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">10</text>
+<rect x="172" y="180" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="189.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">11</text>
+<rect x="206" y="180" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="223.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">12</text>
+<text x="40" y="226" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">先走最外面一圈 (绿色): 右 1→4, 下 8→12, 左 11→9, 上 5; 再走里面剩下的 6, 7 (红色)</text>
+<line x1="40" y1="250" x2="640" y2="250" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="265" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="272" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">第一圈</text>
+<rect x="109" y="265" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
+<text x="130" y="272" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">第二圈</text></svg>
+<figcaption>例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>模拟一个人在走: 用一个 <code>visited</code> 矩阵记录走过的格子, 加一个方向 (右、下、左、上)。撞到边界或者走过的格子就右转。</p>
+<p>Time <code>O(m·n)</code>, 但多用了 <code>O(m·n)</code> 的 visited。浪费: 用一整张表去记一个其实很规则的集合。</p>
+<h3>Intuition: 还没走的部分永远是一个矩形</h3>
+<p>每走完一条边, 走过的都是最外面的一圈, 剩下没走的永远是一个<b>矩形</b>。一个矩形只要 4 个数就能描述: <code>top</code>、<code>bottom</code>、<code>left</code>、<code>right</code>。</p>
+<p>所以不需要 visited: 走完上面一行, top 加 1; 走完右边一列, right 减 1; 走完下面一行, bottom 减 1; 走完左边一列, left 加 1。</p>
+<p>一个细节: 走"下面一行"和"左边一列"之前, 要先检查矩形是否还存在 (<code>top ≤ bottom</code>、<code>left ≤ right</code>)。比如只剩一行时, 走完上面那一行就没有了, 不能再往回走一遍。</p>
+<h3>算法</h3>
+<ol><li><code>top, bottom, left, right = 0, m-1, 0, n-1</code>。</li><li>当 <code>top ≤ bottom and left ≤ right</code>: 往右走 top 行, top += 1; 往下走 right 列, right -= 1;</li><li>如果 top ≤ bottom: 往左走 bottom 行, bottom -= 1; 如果 left ≤ right: 往上走 left 列, left += 1。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 400" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Spiral Matrix 核心</title><desc>四个边界圈出还没走过的区域,每走完一条边收缩一次;走完一圈后区域缩成内层</desc><defs><marker id="f2-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f2-r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f2-n" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f2-o" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#EF9F27" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="400" fill="#fff"/>
 <text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">top / bottom / left / right 四个边界圈出「还没走过」的区域</text>
 <text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">每走完一条边, 对应的边界向里收缩 1 · 图中数字 = 走的顺序</text>
@@ -143,7 +193,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="161.8" y="379" width="14" height="14" rx="3" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1.0"/>
 <text x="181.8" y="386" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">内层 (后走)</text>
 </svg>
-<figcaption>核心: 四个边界圈出还没走过的矩形, 走完一条边就收缩对应边界</figcaption></figure>
+<figcaption>四个边界圈出还没走过的矩形, 走完一条边就收缩对应的边界。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 700" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Spiral Matrix 运行流程</title><desc>3x4 矩阵,每走一条边画一行:当前矩阵、边界收缩、加入 res 的元素</desc><defs><marker id="f3-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f3-r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f3-n" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f3-o" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#EF9F27" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="700" fill="#fff"/>
 <text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">matrix 3×4 · 每一行 = 走一条边 · 绿色 = 这一步新走过的格子, 灰色 = 之前走过的, 白色 = 还没走</text>
 <text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">每走完一条边, 对应边界收缩 1 · 四个边界始终圈着「还没走过」的区域</text>
@@ -347,15 +398,76 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="232" y="647" width="14" height="14" rx="3" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1.0"/>
 <text x="252" y="654" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">还没走</text>
 </svg>
-<figcaption>trace: 3×4 矩阵, 6 行走完, 每行看得到边界怎么收缩</figcaption></figure>
+<figcaption>3 × 4 矩阵, 6 行走完, 每一行能看到边界怎么收缩。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(m·n)</code>, 额外 Space <code>O(1)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">spiralOrder</span>(matrix):</span><span class="l">    res = []</span><span class="l">    top, bottom = 0, <span class="t">len</span>(matrix) - 1</span><span class="l">    left, right = 0, <span class="t">len</span>(matrix[0]) - 1</span><span class="l">    <span class="k">while</span> top &lt;= bottom <span class="k">and</span> left &lt;= right:   <span class="c"># 区域还没缩没</span></span><span class="l">        <span class="k">for</span> c <span class="k">in</span> <span class="t">range</span>(left, right + 1):     <span class="c"># 1. 走上边 →</span></span><span class="l">            res.<span class="f">append</span>(matrix[top][c])</span><span class="l">        top += 1                             <span class="c"># 上边用完, 上边界下移</span></span><span class="l">        <span class="k">for</span> r <span class="k">in</span> <span class="t">range</span>(top, bottom + 1):     <span class="c"># 2. 走右边 ↓</span></span><span class="l">            res.<span class="f">append</span>(matrix[r][right])</span><span class="l">        right -= 1</span><span class="l">        <span class="k">if</span> top &lt;= bottom:                    <span class="c"># 守卫: 只剩 1 行时不能再倒着走</span></span><span class="l">            <span class="k">for</span> c <span class="k">in</span> <span class="t">range</span>(right, left - 1, -1):   <span class="c"># 3. 走下边 ←</span></span><span class="l">                res.<span class="f">append</span>(matrix[bottom][c])</span><span class="l">            bottom -= 1</span><span class="l">        <span class="k">if</span> left &lt;= right:                    <span class="c"># 守卫: 只剩 1 列时不能再往上走</span></span><span class="l">            <span class="k">for</span> r <span class="k">in</span> <span class="t">range</span>(bottom, top - 1, -1):   <span class="c"># 4. 走左边 ↑</span></span><span class="l">                res.<span class="f">append</span>(matrix[r][left])</span><span class="l">            left += 1</span><span class="l">    <span class="r">return</span> res</span></div>
-<p><b>Complexity:</b> time O(m·n), 每个格子恰好走一次。space O(1) (不算返回的 res), 只有 4 个边界变量。</p>
-<p><b>变体:</b> Spiral Matrix II (按螺旋填 1..n²) 是同一个模板, 把 <code>res.append(...)</code> 换成 <code>matrix[r][c] = k; k += 1</code>。</p>
-<p class="note"><b>记:</b>Spiral = 四个边界 + 每条边走完收缩; 第 3、4 条边前面要 <code>if</code> 守卫, 防止只剩一行 / 一列时重复走。</p>
-<h2>2. Rotate Image: 坐标变换拆成 transpose + reverse</h2>
-<p><b>题目:</b> n×n 矩阵顺时针旋转 90 度, 必须原地。例: <code>[[1,2,3],[4,5,6],[7,8,9]]</code> → <code>[[7,4,1],[8,5,2],[9,6,3]]</code>。</p>
-<p><b>Brute force:</b> 开新矩阵, <code>res[j][n-1-i] = matrix[i][j]</code>。time O(n²), 额外 space O(n²)。浪费在: 多开了一整个矩阵。</p>
-<p><b>关键观察 (相比上一题: 不再是遍历, 而是原地改写):</b> 先写出坐标变换, 顺时针是 <code>(i, j) → (j, n-1-i)</code>。这个变换不能直接原地做 (会覆盖还没读的格子), 但能拆成两个「两两交换」的基本变换: transpose <code>(i, j) → (j, i)</code>, 再每行 reverse <code>(j, i) → (j, n-1-i)</code>。</p>
+</details>
+<p class="note"><b>记:</b>矩阵按圈走: 4 个边界变量代替 visited, 走完一条边收缩一个边界。</p>
+<h2>2. Rotate Image</h2>
+<h3>题目在问什么</h3>
+<p>把一个 n × n 的矩阵顺时针旋转 90 度, 必须<b>原地</b>修改。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 432" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Rotate Image examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">把 n × n 的矩阵顺时针旋转 90 度, 必须原地修改 (不能开新矩阵)</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  [[1,2,3],[4,5,6],[7,8,9]]  →  [[7,4,1],[8,5,2],[9,6,3]]</text>
+<text x="40" y="103" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">之前 r0</text>
+<rect x="104" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="121.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="138" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="155.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="172" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="189.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="40" y="149" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">之前 r1</text>
+<rect x="104" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="138" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="155.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<rect x="172" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="189.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">6</text>
+<text x="40" y="195" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">之前 r2</text>
+<rect x="104" y="180" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="196.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">7</text>
+<rect x="138" y="180" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="155.0" y="196.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">8</text>
+<rect x="172" y="180" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="189.0" y="196.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">9</text>
+<text x="40" y="241" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">之后 r0</text>
+<rect x="104" y="226" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="242.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">7</text>
+<rect x="138" y="226" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="155.0" y="242.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="172" y="226" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="189.0" y="242.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="40" y="287" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">之后 r1</text>
+<rect x="104" y="272" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="288.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">8</text>
+<rect x="138" y="272" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="155.0" y="288.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<rect x="172" y="272" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="189.0" y="288.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="40" y="333" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">之后 r2</text>
+<rect x="104" y="318" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="334.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">9</text>
+<rect x="138" y="318" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="155.0" y="334.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">6</text>
+<rect x="172" y="318" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="189.0" y="334.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="40" y="364" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">原来的第一行 1, 2, 3 变成了最后一列 (从上往下)。例如 1 从左上角转到了右上角</text>
+<line x1="40" y1="388" x2="640" y2="388" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="403" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="410" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">1 的位置</text></svg>
+<figcaption>例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>开一个新矩阵, 把每个元素放到旋转后的位置, 再复制回来。<code>O(n²)</code> 额外空间。</p>
+<h3>Intuition: 先写出坐标怎么变, 再拆成两个简单的操作</h3>
+<p>看例子: 原来在 (i, j) 的元素, 旋转后到了 <code>(j, n-1-i)</code>。比如 1 在 (0, 0), 转到了 (0, 2)。</p>
+<p>直接按这个公式原地挪很难写 (要四个一组地转圈)。但这个变换可以拆成两步, 每一步都很容易原地做:</p>
+<ol><li><b>transpose</b> (沿主对角线翻转): (i, j) → (j, i)。交换 <code>m[i][j]</code> 和 <code>m[j][i]</code> (只对 j > i 做)。</li><li><b>每一行左右反转</b>: (j, i) → (j, n-1-i)。</li></ol>
+<p>两步合起来就是 (i, j) → (j, n-1-i), 正好是顺时针旋转。逆时针的话, 先 transpose 再上下反转 (或者先反转每一行再 transpose)。</p>
+<h3>算法</h3>
+<ol><li>i 从 0 到 n-1, j 从 i+1 到 n-1: 交换 m[i][j] 和 m[j][i]。</li><li>每一行 <code>row.reverse()</code>。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 360" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Rotate Image 核心</title><desc>顺时针旋转 = transpose + 每行 reverse,用坐标变换解释</desc><defs><marker id="f4-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f4-r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f4-n" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f4-o" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#EF9F27" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="360" fill="#fff"/>
 <text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">顺时针 90 度: 原来的 (i, j) 去到 (j, n-1-i)  ·  n = 3</text>
 <text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">拆成两步: transpose (i, j) → (j, i), 再每行 reverse (j, i) → (j, n-1-i)</text>
@@ -438,7 +550,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="181.6" y="331" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
 <text x="201.6" y="338" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">其他</text>
 </svg>
-<figcaption>核心: 跟踪元素 3, (0,2) → (2,0) → (2,2), 正好是 (i,j) → (j, n-1-i)</figcaption></figure>
+<figcaption>坐标变换 (i, j) → (j, n-1-i) 拆成 transpose + 每行反转。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 706" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Rotate Image 运行流程</title><desc>3x3 矩阵:先 transpose 的 3 次 swap,再 3 行 reverse,每步之后的矩阵</desc><defs><marker id="f5-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f5-r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f5-n" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f5-o" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#EF9F27" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="706" fill="#fff"/>
 <text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">n = 3 · 每一行 = 一次操作 · 绿色 = 这一步被改动的格子</text>
 <text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">第一阶段 transpose: 只换上三角的 3 对 (对角线不动) · 第二阶段: 每行 reverse</text>
@@ -590,14 +703,76 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="130" y="647" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
 <text x="150" y="654" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">没变</text>
 </svg>
-<figcaption>trace: 3 次 swap 做 transpose, 再 3 次 reverse</figcaption></figure>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">rotate</span>(matrix):                    <span class="c"># 顺时针 90 度, 原地</span></span><span class="l">    n = <span class="t">len</span>(matrix)</span><span class="l">    <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(n):                 <span class="c"># 第 1 步: transpose, (i, j) → (j, i)</span></span><span class="l">        <span class="k">for</span> j <span class="k">in</span> <span class="t">range</span>(i + 1, n):      <span class="c"># 只走上三角, 每一对只换一次</span></span><span class="l">            matrix[i][j], matrix[j][i] = matrix[j][i], matrix[i][j]</span><span class="l">    <span class="k">for</span> row <span class="k">in</span> matrix:                 <span class="c"># 第 2 步: 每行 reverse, (j, i) → (j, n-1-i)</span></span><span class="l">        row.<span class="f">reverse</span>()</span></div>
-<p><b>Complexity:</b> time O(n²), 每个格子最多被碰 2 次。space O(1)。</p>
-<p class="note"><b>记:</b>顺时针 = transpose + 每行 reverse; 逆时针 = transpose + <code>matrix.reverse()</code> (行的顺序倒过来)。遇到原地变换: 先写坐标公式, 再拆成基本变换。</p>
-<h2>3. Set Matrix Zeroes: 用矩阵自己的第一行 / 第一列当 flag</h2>
-<p><b>题目:</b> 如果某个格子是 0, 把它所在的整行整列都置 0, 原地。例: <code>[[1,2,3,4],[5,0,7,8],[9,10,11,0]]</code> → <code>[[1,0,3,0],[0,0,0,0],[0,0,0,0]]</code>。</p>
-<p><b>Brute force:</b> 边扫边清会出错 (刚清出来的 0 会被当成原本的 0, 连环扩散)。所以要先收集再清: <code>rows = set()</code>, <code>cols = set()</code> 记下哪些行列要清, 第二遍再清。time O(mn), space O(m + n)。浪费在: rows / cols 这两个集合。</p>
-<p><b>关键观察 (相比上一题: 把额外信息存进输入自己):</b> 要记的信息是「第 i 行要不要清」和「第 j 列要不要清」, 恰好和第一列 <code>matrix[i][0]</code>、第一行 <code>matrix[0][j]</code> 一一对应。第一行 / 第一列自己原本有没有 0, 在覆盖它们之前用 <code>row0 / col0</code> 两个 bool 记住。</p>
+<figcaption>3 × 3 矩阵: transpose 之后再逐行反转。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n²)</code>, Space <code>O(1)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">rotate</span>(matrix):                    <span class="c"># 顺时针 90 度, 原地</span></span><span class="l">    n = <span class="t">len</span>(matrix)</span><span class="l">    <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(n):                 <span class="c"># 第 1 步: transpose, (i, j) → (j, i)</span></span><span class="l">        <span class="k">for</span> j <span class="k">in</span> <span class="t">range</span>(i + 1, n):      <span class="c"># 只走上三角, 每一对只换一次</span></span><span class="l">            matrix[i][j], matrix[j][i] = matrix[j][i], matrix[i][j]</span><span class="l">    <span class="c"># 第 2 步: 每行 reverse, (j, i) → (j, n-1-i)</span></span><span class="l">    <span class="k">for</span> row <span class="k">in</span> matrix:</span><span class="l">        row.<span class="f">reverse</span>()</span></div>
+</details>
+<p class="note"><b>记:</b>矩阵旋转: 先写出坐标变换, 再拆成 transpose + 反转。</p>
+<h2>3. Set Matrix Zeroes</h2>
+<h3>题目在问什么</h3>
+<p>如果矩阵里某个格子是 0, 就把它所在的整行和整列都变成 0。原地修改, 最好只用 <code>O(1)</code> 额外空间。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 432" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Set Matrix Zeroes examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">只要某个格子是 0, 就把它所在的整行、整列都变成 0。原地修改</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  [[1,1,1],[1,0,1],[1,1,1]]  →  [[1,0,1],[0,0,0],[1,0,1]]</text>
+<text x="40" y="103" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">之前 r0</text>
+<rect x="104" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="138" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="155.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="172" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="189.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="40" y="149" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">之前 r1</text>
+<rect x="104" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="138" y="134" width="34" height="30" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
+<text x="155.0" y="150.0" font-size="15" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="172" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="189.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="40" y="195" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">之前 r2</text>
+<rect x="104" y="180" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="196.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="138" y="180" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="155.0" y="196.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="172" y="180" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="189.0" y="196.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="40" y="241" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">之后 r0</text>
+<rect x="104" y="226" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="242.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="138" y="226" width="34" height="30" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
+<text x="155.0" y="242.0" font-size="15" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="172" y="226" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="189.0" y="242.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="40" y="287" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">之后 r1</text>
+<rect x="104" y="272" width="34" height="30" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
+<text x="121.0" y="288.0" font-size="15" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="138" y="272" width="34" height="30" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
+<text x="155.0" y="288.0" font-size="15" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="172" y="272" width="34" height="30" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
+<text x="189.0" y="288.0" font-size="15" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">0</text>
+<text x="40" y="333" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">之后 r2</text>
+<rect x="104" y="318" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="334.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="138" y="318" width="34" height="30" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
+<text x="155.0" y="334.0" font-size="15" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="172" y="318" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="189.0" y="334.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="40" y="364" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">中间那个 0, 让第 1 行和第 1 列都变成了 0。注意: 新变成的 0 不能再去影响别的行列</text>
+<line x1="40" y1="388" x2="640" y2="388" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="403" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
+<text x="54" y="410" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text></svg>
+<figcaption>例子。</figcaption></figure>
+<p>难点: 一边扫一边改, 新变成的 0 会被误以为是原来的 0, 又去清别的行列。</p>
+<h3>Brute force</h3>
+<p>先扫一遍, 用两个 set 记下哪些行、哪些列有 0; 再扫一遍, 把这些行列清零。Time <code>O(m·n)</code>, Space <code>O(m + n)</code>。</p>
+<h3>Intuition: 用矩阵自己的第一行、第一列当标记</h3>
+<p>brute force 里的两个 set, 其实就是"每一行一个标记"和"每一列一个标记"。矩阵的第一列正好每行有一个格子, 第一行正好每列有一个格子。所以可以把标记直接写在第一行和第一列上: 如果 (i, j) 是 0, 就把 <code>m[i][0]</code> 和 <code>m[0][j]</code> 设为 0。</p>
+<p>但第一行和第一列自己也可能原本有 0。所以先用两个变量 <code>row0</code>、<code>col0</code> 记下第一行、第一列原本有没有 0。</p>
+<p>处理顺序: 先根据标记清掉内部 (第 1 行以后、第 1 列以后) 的格子, <b>最后</b>再根据 row0 和 col0 处理第一行和第一列。如果先改第一行, 标记就被破坏了。</p>
+<h3>算法</h3>
+<ol><li>记下 row0 = 第一行有没有 0, col0 = 第一列有没有 0。</li><li>扫内部的格子: (i, j) 是 0 就 <code>m[i][0] = m[0][j] = 0</code>。</li><li>再扫内部: <code>m[i][0] == 0 or m[0][j] == 0</code> 就把 (i, j) 设为 0。</li><li>最后按 row0、col0 清第一行、第一列。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 386" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Set Matrix Zeroes 核心</title><desc>第一行当列 flag,第一列当行 flag,三个阶段的顺序</desc><defs><marker id="f6-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f6-r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f6-n" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f6-o" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#EF9F27" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="386" fill="#fff"/>
 <text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">要记「哪些行 / 列要清零」: 开 rows[m] + cols[n] 要 O(m + n) 空间</text>
 <text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">借用矩阵自己的第一行 / 第一列当 flag → O(1)</text>
@@ -646,7 +821,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="236.8" y="357" width="14" height="14" rx="3" fill="#fff" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="256.8" y="364" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">matrix[0][0]</text>
 </svg>
-<figcaption>核心: 第一行 = 列 flag, 第一列 = 行 flag; 顺序是 记 row0/col0 → 留言 → 清内部 → 最后清第一行/列</figcaption></figure>
+<figcaption>第一行 / 第一列当标记, row0 / col0 单独记, 最后处理。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 638" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Set Matrix Zeroes 运行流程</title><desc>3x4 矩阵,两个内部 0 先在第一行第一列留言,再按留言清零</desc><defs><marker id="f7-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f7-r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f7-n" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f7-o" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#EF9F27" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="638" fill="#fff"/>
 <text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">matrix 3×4 · 内部 (i ≥ 1, j ≥ 1) 有两个 0: (1,1) 和 (2,3)</text>
 <text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">绿色 = 这一步写下的留言 · 红色 = 被清零的格子 · 橙圈 = 当前扫到的 0</text>
@@ -816,15 +992,36 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="286" y="579" width="14" height="14" rx="3" fill="#fff" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="306" y="586" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">当前扫到的 0</text>
 </svg>
-<figcaption>trace: 两个内部的 0 先在第一行 / 第一列留言, pass 2 再按留言清零</figcaption></figure>
+<figcaption>标记 → 清内部 → 清第一行和第一列。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(m·n)</code>, Space <code>O(1)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">setZeroes</span>(matrix):</span><span class="l">    m, n = <span class="t">len</span>(matrix), <span class="t">len</span>(matrix[0])</span><span class="l">    <span class="c"># 第一行 / 第一列要拿来当 flag, 先记住它们自己原本有没有 0</span></span><span class="l">    row0 = <span class="t">any</span>(matrix[0][j] == 0 <span class="k">for</span> j <span class="k">in</span> <span class="t">range</span>(n))</span><span class="l">    col0 = <span class="t">any</span>(matrix[i][0] == 0 <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(m))</span><span class="l">    <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(1, m):                <span class="c"># pass 1: 扫内部, 遇到 0 就留言</span></span><span class="l">        <span class="k">for</span> j <span class="k">in</span> <span class="t">range</span>(1, n):</span><span class="l">            <span class="k">if</span> matrix[i][j] == 0:</span><span class="l">                matrix[i][0] = 0         <span class="c"># 留言: 第 i 行要清零</span></span><span class="l">                matrix[0][j] = 0         <span class="c"># 留言: 第 j 列要清零</span></span><span class="l">    <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(1, m):                <span class="c"># pass 2: 内部按留言清零</span></span><span class="l">        <span class="k">for</span> j <span class="k">in</span> <span class="t">range</span>(1, n):            <span class="c"># (留言区这时不能动, 还要读)</span></span><span class="l">            <span class="k">if</span> matrix[i][0] == 0 <span class="k">or</span> matrix[0][j] == 0:</span><span class="l">                matrix[i][j] = 0</span><span class="l">    <span class="k">if</span> row0:                             <span class="c"># 最后才处理留言区本身</span></span><span class="l">        <span class="k">for</span> j <span class="k">in</span> <span class="t">range</span>(n):</span><span class="l">            matrix[0][j] = 0</span><span class="l">    <span class="k">if</span> col0:</span><span class="l">        <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(m):</span><span class="l">            matrix[i][0] = 0</span></div>
-<p><b>Complexity:</b> time O(m·n) (四次扫描, 常数倍)。space O(1), 只有 <code>row0</code> 和 <code>col0</code>。</p>
-<p><b>同一个思想:</b> Find All Duplicates in an Array 用「把 nums[x-1] 变成负数」做标记; Game of Life 用多一个 bit 同时编码新旧状态。</p>
-<p class="note"><b>记:</b>要 O(1) space 又要存「哪些要处理」: 借输入自己的某一行 / 某个符号位; 关键是留言区要最后才处理。</p>
-<h2>4. Pow(x, n): n 的二进制拆分, O(log n)</h2>
-<p><b>题目:</b> 计算 x 的 n 次方, n 可以是负整数, |n| 最大约 2^31。例: <code>x = 2, n = 10</code> → <code>1024</code>。</p>
-<p><b>Brute force:</b> 循环 n 次, <code>res *= x</code>。time O(n), n 到 10^9 就超时。浪费在: x^8 = x^4 × x^4, 暴力每次都从头一个一个乘, 把已经算好的 x^4 又拆开重算。</p>
-<p><b>关键观察 (这里遍历的是 n 的 bit, 不是元素):</b> n 写成二进制, <code>10 = 8 + 2</code>, 所以 <code>x^10 = x^8 × x^2</code>。x^1, x^2, x^4, x^8 每个只要把前一个平方一次就得到; 哪几个要乘进答案, 看 n 的对应 bit 是不是 1。</p>
+</details>
+<p class="note"><b>记:</b>要 O(1) 空间的标记: 借输入的一部分 (第一行 / 第一列) 来存, 注意处理顺序, 别提前破坏标记。</p>
+<h2>4. Pow(x, n)</h2>
+<h3>题目在问什么</h3>
+<p>实现 x 的 n 次方。n 可以是负数, 也可以非常大 (到 2³¹)。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 228" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Pow examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">实现 x 的 n 次方。n 可以是负数, 可以非常大 (到 2³¹)</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  x = 2, n = 10  →  1024</text>
+<line x1="40" y1="88" x2="640" y2="88" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="108" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  x = 2, n = -2  →  0.25</text>
+<text x="40" y="128" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">负数次方 = 1 / 正数次方: 1 / 2² = 0.25</text>
+<line x1="40" y1="152" x2="640" y2="152" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="172" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">难点</text>
+<text x="40" y="192" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">n = 2³¹ 时, 乘 n 次要 20 亿次乘法, 太慢</text>
+<line x1="40" y1="216" x2="640" y2="216" stroke="#B4B2A9" stroke-dasharray="4 4"/></svg>
+<figcaption>例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>把 x 乘 n 次, <code>O(n)</code>。n = 2³¹ 时要 20 亿次乘法, 太慢。</p>
+<h3>Intuition: 把 n 拆成二进制</h3>
+<p>观察: <code>x¹⁰ = x⁸ · x²</code>, 因为 10 的二进制是 1010 (= 8 + 2)。而 x², x⁴, x⁸ 可以不断平方得到: x → x² → x⁴ → x⁸, 每次只要一次乘法。</p>
+<p>所以: 从 n 的最低位开始看, 同时维护当前的 <code>x^(2^k)</code>。这一位是 1, 就把它乘进结果; 然后 x 平方, n 右移一位。n 有 <code>log n</code> 位, 所以只要 <code>O(log n)</code> 次乘法。</p>
+<p>负数次方: 先算 <code>x^|n|</code>, 再取倒数。</p>
+<h3>算法</h3>
+<ol><li>n < 0 时: x = 1/x, n = -n。</li><li><code>res = 1</code>。当 n > 0: 如果 <code>n & 1</code>, <code>res *= x</code>。然后 <code>x *= x</code>, <code>n >>= 1</code>。</li><li>返回 res。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 366" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Pow(x, n) 核心</title><desc>n=10 的二进制拆分:x^10 = x^8 * x^2,每个 bit 对应一个 x 的 2^k 次方</desc><defs><marker id="f8-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f8-r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f8-n" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f8-o" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#EF9F27" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="366" fill="#fff"/>
 <text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">x^10 = 10 个 x 连乘, 9 次乘法 · 但 10 = 8 + 2 (二进制 1010), 所以 x^10 = x^8 × x^2</text>
 <text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">x^1 → x^2 → x^4 → x^8 每个只需把前一个平方一次 · 用哪几个 = n 的哪几个 bit 是 1</text>
@@ -866,7 +1063,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="208.0" y="335" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
 <text x="228.0" y="342" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">该 bit = 0, 跳过</text>
 </svg>
-<figcaption>核心: n = 10 = 8 + 2, bit 为 1 的那几个 x^(2^k) 乘进答案</figcaption></figure>
+<figcaption>n 的二进制决定乘哪几个 x^(2^k)。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 540" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Pow(x, n) 运行流程</title><desc>x=2, n=10:每轮看 n 的最低位,是 1 就乘进 res,然后 x 平方、n 右移</desc><defs><marker id="f9-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f9-r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f9-n" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f9-o" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#EF9F27" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="540" fill="#fff"/>
 <text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">x = 2, n = 10 · 每一轮: 看 n 的最低位 → 是 1 才 res *= x → x 平方 → n 右移一位</text>
 <text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">res 从 1 开始 · 每轮开始时 x = 2^(2^k) (k = 第几轮, 从 0 数)</text>
@@ -952,14 +1150,37 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="325.6" y="511" width="14" height="14" rx="3" fill="#fff" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="345.6" y="518" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">当前看的最低位</text>
 </svg>
-<figcaption>trace: x = 2, n = 10, 4 轮, res = 1 × 4 × 256 = 1024</figcaption></figure>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">myPow</span>(x, n):</span><span class="l">    <span class="k">if</span> n &lt; 0:                  <span class="c"># x^(-n) = (1/x)^n</span></span><span class="l">        x, n = 1 / x, -n</span><span class="l">    res = 1.0</span><span class="l">    <span class="k">while</span> n:                   <span class="c"># 每轮处理 n 的一个 bit, 共 log2(n) 轮</span></span><span class="l">        <span class="k">if</span> n &amp; 1:              <span class="c"># 这一位是 1 → 乘上当前的 x (= 原 x 的 2^k 次方)</span></span><span class="l">            res *= x</span><span class="l">        x *= x                 <span class="c"># x 平方: x^1 → x^2 → x^4 → x^8 ...</span></span><span class="l">        n &gt;&gt;= 1                <span class="c"># 看下一位</span></span><span class="l">    <span class="r">return</span> res</span></div>
-<p><b>Complexity:</b> time O(log n), 循环次数 = n 的二进制位数。space O(1)。递归写法 <code>myPow(x, n // 2) ** 2 × (x if n 为奇数)</code> 同样 O(log n), 但栈深 O(log n)。</p>
-<p class="note"><b>记:</b><code>x ** n</code> 太大 / 重复 n 次同一操作 → 二进制拆分: 每轮 <code>x *= x; n &gt;&gt;= 1</code>, 最低位是 1 才乘进 res。同样的写法用于 modpow 和矩阵快速幂。</p>
-<h2>5. Palindrome Number: 数位处理 % 10 和 // 10</h2>
-<p><b>题目:</b> 判断整数 x 是不是回文, 不转成字符串。例: <code>12321</code> → True, <code>10</code> → False。</p>
-<p><b>Brute force:</b> <code>str(x) == str(x)[::-1]</code>, time O(位数), space O(位数), 题目通常不让。反转整个整数也行, 但位数多时可能溢出 (Reverse Integer 就要处理 32-bit)。浪费在: 回文只需要比较一半, 却把整个数都转了。</p>
-<p><b>关键观察 (这一题是数位处理的基本模板):</b> <code>x % 10</code> 是取末位, <code>x // 10</code> 是丢末位, <code>rev * 10 + d</code> 是把 d 接到末尾。每轮把 x 的末位搬到 rev, 当 <code>rev &gt;= x</code> 就搬完一半了; 偶数位比 <code>x == rev</code>, 奇数位 rev 多了中间那位, 比 <code>x == rev // 10</code>。</p>
+<figcaption>每一行看 n 的一位, x 不断平方。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(log n)</code>, Space <code>O(1)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">myPow</span>(x, n):</span><span class="l">    <span class="k">if</span> n &lt; 0:                  <span class="c"># x^(-n) = (1/x)^n</span></span><span class="l">        x, n = 1 / x, -n</span><span class="l">    res = 1.0</span><span class="l">    <span class="k">while</span> n:                   <span class="c"># 每轮处理 n 的一个 bit, 共 log2(n) 轮</span></span><span class="l">        <span class="c"># 这一位是 1 → 乘上当前的 x (= 原 x 的 2^k 次方)</span></span><span class="l">        <span class="k">if</span> n &amp; 1:</span><span class="l">            res *= x</span><span class="l">        x *= x                 <span class="c"># x 平方: x^1 → x^2 → x^4 → x^8 ...</span></span><span class="l">        n &gt;&gt;= 1                <span class="c"># 看下一位</span></span><span class="l">    <span class="r">return</span> res</span></div>
+</details>
+<p class="note"><b>记:</b>n 很大的重复操作 (幂、矩阵幂): 按 n 的二进制拆, 不断平方, O(log n)。</p>
+<h2>5. Palindrome Number</h2>
+<h3>题目在问什么</h3>
+<p>判断一个整数是不是回文 (正着读和反着读一样)。不转成字符串。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 228" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Palindrome Number examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">判断一个整数正着读和反着读是不是一样。不能转成字符串</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  121  →  True</text>
+<line x1="40" y1="88" x2="640" y2="88" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="108" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  -121  →  False</text>
+<text x="40" y="128" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">反过来读是 121-, 不一样。负数一定不是</text>
+<line x1="40" y1="152" x2="640" y2="152" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="172" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 3:  10  →  False</text>
+<text x="40" y="192" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">反过来是 01, 不一样。末尾是 0 的 (除了 0 本身) 一定不是</text>
+<line x1="40" y1="216" x2="640" y2="216" stroke="#B4B2A9" stroke-dasharray="4 4"/></svg>
+<figcaption>三个例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p><code>str(x) == str(x)[::-1]</code>。可以, 但题目要求不转字符串。</p>
+<h3>Intuition: 用 % 10 和 // 10 拆数字, 只反转一半</h3>
+<p>处理整数的每一位, 只需要两个操作: <code>x % 10</code> 拿到最后一位, <code>x // 10</code> 去掉最后一位。</p>
+<p>把 x 的后半部分反转出来: 每次从 x 末尾拿一位, 接到 rev 后面 (<code>rev = rev * 10 + x % 10</code>), x 去掉这一位。当 <code>rev ≥ x</code> 时, 说明已经处理了一半。</p>
+<p>然后比较: 偶数位时 <code>x == rev</code>; 奇数位时中间那一位跑到了 rev 末尾, 比较 <code>x == rev // 10</code>。</p>
+<p>只反转一半还有一个好处: 不会溢出。特殊情况先排除: 负数不是回文; 末尾是 0 的 (除了 0 本身) 也不是。</p>
+<h3>算法</h3>
+<ol><li>x < 0 或者 (x % 10 == 0 且 x != 0), 返回 False。</li><li><code>rev = 0</code>。当 <code>x > rev</code>: <code>rev = rev * 10 + x % 10</code>, <code>x //= 10</code>。</li><li>返回 <code>x == rev or x == rev // 10</code>。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 392" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Palindrome Number 核心</title><desc>只反转后半部分:x 和 rev 相遇时停,奇数位时 rev 多一位中间数</desc><defs><marker id="f10-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f10-r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f10-n" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f10-o" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#EF9F27" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="392" fill="#fff"/>
 <text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">整个数反转: 位数多时可能溢出 (如 Reverse Integer 要检查 32-bit)· 回文只需要反转「后一半」</text>
 <text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">x % 10 取末位, 接到 rev 的末尾; x // 10 丢掉末位 · 循环到 x &lt;= rev 就是转完一半了</text>
@@ -1026,7 +1247,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="161.8" y="363" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
 <text x="181.8" y="370" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">移进 rev 的后半</text>
 </svg>
-<figcaption>核心: 只反转后半, 停下时奇数位 x == rev // 10, 偶数位 x == rev</figcaption></figure>
+<figcaption>从末尾拆一半, 和前一半比较; 奇数位时去掉中间那一位。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 624" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Palindrome Number 运行流程</title><desc>x=12321 和 x=1221 两个例子,每轮取末位接到 rev、x 丢掉末位</desc><defs><marker id="f11-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f11-r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f11-n" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f11-o" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#EF9F27" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="624" fill="#fff"/>
 <text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">每一轮: 取走 x 的末位 d → 接到 rev 末尾 → x 丢掉末位 · 循环条件 x &gt; rev</text>
 <text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">红色 = x 里被取走的末位 · 绿色 = rev 里新接上的数字</text>
@@ -1159,16 +1381,61 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="295.6" y="595" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
 <text x="315.6" y="602" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">其他</text>
 </svg>
-<figcaption>trace: 12321 (奇数位) 和 1221 (偶数位) 两个例子</figcaption></figure>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">isPalindrome</span>(x):</span><span class="l">    <span class="k">if</span> x &lt; 0 <span class="k">or</span> (x % 10 == 0 <span class="k">and</span> x != 0):   <span class="c"># 负数不是; 末位 0 反过来有前导 0</span></span><span class="l">        <span class="r">return</span> <span class="k">False</span></span><span class="l">    rev = 0</span><span class="l">    <span class="k">while</span> x &gt; rev:             <span class="c"># 只反转后半: rev 追上 x 就停</span></span><span class="l">        rev = rev * 10 + x % 10    <span class="c"># x % 10 取末位, 接到 rev 末尾</span></span><span class="l">        x //= 10                   <span class="c"># x // 10 丢掉末位</span></span><span class="l">    <span class="r">return</span> x == rev <span class="k">or</span> x == rev // 10   <span class="c"># 偶数位: x == rev; 奇数位: rev 多一位中间数</span></span></div>
-<p><b>Complexity:</b> time O(log10 x), 即位数的一半。space O(1)。</p>
-<p><b>同一模板:</b> Reverse Integer = <code>rev = rev * 10 + d</code> 把整个数转完, 外加符号处理和 32-bit 溢出检查 (Python 本身不溢出, 面试要口头说明); Add Digits、Happy Number、Sum of Digits 也都是 <code>% 10</code> / <code>// 10</code>。</p>
-<p class="note"><b>记:</b>数位题: <code>d = x % 10; x //= 10</code> 逐位取, <code>rev = rev * 10 + d</code> 逐位拼。回文只转一半。</p>
-<h2>6. Single Number → Missing Number: XOR 让成对的抵消</h2>
-<p><b>题目:</b> 数组里除了一个数只出现一次, 其余都出现两次, 找出它。例: <code>[4,1,2,1,2]</code> → <code>4</code>。</p>
-<p><b>Brute force:</b> <code>Counter</code> 或 set 记账, time O(n), space O(n); 排序后看相邻 time O(n log n)。浪费在: 为了知道「谁成对」, 给每个数都开了一份账。</p>
-<p><b>关键观察:</b> XOR 有三条性质: <code>a ^ a = 0</code>, <code>a ^ 0 = a</code>, 交换律 + 结合律。所以全部异或起来, 成对的先后顺序无所谓, 各自抵消成 0, 只剩落单的。</p>
-<p><b>变体 Missing Number (相比上一题: 要自己构造出「配对」):</b> <code>0..n</code> 少一个数, nums 长度 n。把下标 <code>0..n-1</code> 和 n 也一起 XOR 进来, 下标和值凑成配对, 只有缺的那个数只出现一次。</p>
+<figcaption>奇数位和偶数位各一个例子。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(位数)</code>, Space <code>O(1)</code>。Reverse Integer 用同样的 % 10 / // 10, 只是要注意溢出。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">isPalindrome</span>(x):</span><span class="l">    <span class="k">if</span> x &lt; 0 <span class="k">or</span> (x % 10 == 0 <span class="k">and</span> x != 0):   <span class="c"># 负数不是; 末位 0 反过来有前导 0</span></span><span class="l">        <span class="r">return</span> <span class="k">False</span></span><span class="l">    rev = 0</span><span class="l">    <span class="k">while</span> x &gt; rev:             <span class="c"># 只反转后半: rev 追上 x 就停</span></span><span class="l">        rev = rev * 10 + x % 10    <span class="c"># x % 10 取末位, 接到 rev 末尾</span></span><span class="l">        x //= 10                   <span class="c"># x // 10 丢掉末位</span></span><span class="l">    <span class="c"># 偶数位: x == rev; 奇数位: rev 多一位中间数</span></span><span class="l">    <span class="r">return</span> x == rev <span class="k">or</span> x == rev // 10</span></div>
+</details>
+<p class="note"><b>记:</b>处理整数的每一位: % 10 取末位, // 10 去末位。</p>
+<h2>6. Single Number → Missing Number</h2>
+<h3>题目在问什么</h3>
+<p><b>Single Number</b>: 数组里每个数都出现两次, 只有一个数出现一次, 找出它。<b>Missing Number</b>: 数组里有 n 个不同的数, 取自 0..n, 少了一个, 找出它。都要求 <code>O(n)</code> 时间、<code>O(1)</code> 空间。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 370" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Single / Missing Number examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">Single Number: 每个数都出现两次, 只有一个出现一次, 找它。Missing Number: 0..n 里少了一个, 找它</text>
+<text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">。都要 O(1) 空间</text>
+<line x1="40" y1="62" x2="640" y2="62" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="82" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Single Number:  [4,1,2,1,2]  →  4</text>
+<rect x="40" y="108" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="57.0" y="124.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<text x="57.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="108" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="91.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="91.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="108" y="108" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="125.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="142" y="108" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="159.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="159.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="176" y="108" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="193.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="193.0" y="150" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
+<text x="40" y="170" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">1 和 2 各出现两次, 4 只出现一次</text>
+<line x1="40" y1="194" x2="640" y2="194" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="214" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Missing Number:  [3,0,1]  →  2</text>
+<rect x="40" y="240" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="256.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="57.0" y="282" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="240" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="91.0" y="256.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">0</text>
+<text x="91.0" y="282" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="108" y="240" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.0" y="256.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="125.0" y="282" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="40" y="302" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">n = 3, 应该有 0, 1, 2, 3, 少了 2</text>
+<line x1="40" y1="326" x2="640" y2="326" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="341" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="348" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">答案</text></svg>
+<figcaption>两道题的例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>用 Counter 或 set (01), <code>O(n)</code> 时间但 <code>O(n)</code> 空间。</p>
+<h3>Intuition: XOR 让成对的数互相抵消</h3>
+<p>XOR (异或, Python 里是 <code>^</code>) 有三个性质: <code>a ^ a = 0</code> (自己和自己抵消); <code>a ^ 0 = a</code>; 而且顺序无所谓 (满足交换律和结合律)。</p>
+<p>所以把所有数 XOR 起来, 出现两次的都抵消成 0, 只剩下出现一次的那个。</p>
+<p>Missing Number 也能这样做: 把"应该有的" 0..n 和"实际有的"数组里的数全部 XOR 在一起。每个出现了的数都出现两次 (一次在 0..n 里, 一次在数组里), 抵消掉; 缺的那个只出现一次, 留了下来。代码里用下标 i 代替 0..n-1, 再补上 n。</p>
+<h3>算法</h3>
+<ol><li>Single Number: <code>res = 0</code>, 对每个 x: <code>res ^= x</code>。</li><li>Missing Number: <code>res = n</code>, 对每个 i: <code>res ^= i ^ nums[i]</code>。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 436" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>XOR 核心</title><desc>a^a=0 让成对出现的数抵消,Single Number 与 Missing Number 都是配对后落单</desc><defs><marker id="f12-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f12-r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f12-n" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f12-o" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#EF9F27" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="436" fill="#fff"/>
 <text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">XOR 三条性质:  a ^ a = 0  ·  a ^ 0 = a  ·  a ^ b = b ^ a (顺序无所谓, 也满足结合律)</text>
 <text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">所以一串数 XOR 起来, 出现两次的互相抵消成 0, 只剩落单的</text>
@@ -1222,7 +1489,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="180.4" y="407" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
 <text x="200.4" y="414" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">落单 = 答案</text>
 </svg>
-<figcaption>核心: 成对抵消成 0, 落单的就是答案 (上: Single Number, 下: Missing Number)</figcaption></figure>
+<figcaption>XOR 把成对的数抵消掉, 只剩下没有配对的那个。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 604" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>XOR 运行流程</title><desc>Single Number [4,1,2,1,2] 和 Missing Number [3,0,1],res 用 3 位二进制画出</desc><defs><marker id="f13-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f13-r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f13-n" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f13-o" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#EF9F27" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="604" fill="#fff"/>
 <text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">res 用 3 位二进制画 (最左 = 4 那一位) · 每一步 res ^= 右边的数: 对应位相同 → 0, 不同 → 1</text>
 <text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">绿色 = 这个数里为 1 的位 (会翻转 res 的对应位)</text>
@@ -1446,14 +1714,61 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="298.0" y="575" width="14" height="14" rx="3" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1.0"/>
 <text x="318.0" y="582" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">为 0 的位</text>
 </svg>
-<figcaption>trace: res 用 3 位二进制画出, 每步只翻转 x 里为 1 的位</figcaption></figure>
+<figcaption>逐个 XOR 的二进制过程。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n)</code>, Space <code>O(1)</code>。Missing Number 也可以用求和公式: <code>n(n+1)/2 - sum(nums)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">singleNumber</span>(nums):</span><span class="l">    res = 0</span><span class="l">    <span class="k">for</span> x <span class="k">in</span> nums:</span><span class="l">        res ^= x        <span class="c"># a^a = 0, a^0 = a, 顺序无所谓 → 成对的全部抵消</span></span><span class="l">    <span class="r">return</span> res</span><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">missingNumber</span>(nums):     <span class="c"># nums 是 0..n 少一个数, 长度 n</span></span><span class="l">    res = <span class="t">len</span>(nums)          <span class="c"># 下标只有 0..n-1, 先把 n 放进来</span></span><span class="l">    <span class="k">for</span> i, x <span class="k">in</span> <span class="t">enumerate</span>(nums):</span><span class="l">        res ^= i ^ x         <span class="c"># 下标 i 和值 x 各一次, 没缺的数都出现两次</span></span><span class="l">    <span class="r">return</span> res</span></div>
-<p><b>Complexity:</b> 两题都是 time O(n), space O(1)。</p>
-<p class="note"><b>记:</b>「除了一个都成对」或「缺一个」→ XOR。XOR 把成对的消掉, 题目没有成对时, 自己构造配对 (下标 ^ 值)。</p>
-<h2>7. Number of 1 Bits: n &amp; (n - 1) 消掉最低位的 1</h2>
-<p><b>题目:</b> 返回 n 的二进制里 1 的个数。例: <code>44 = 0b101100</code> → <code>3</code>。</p>
-<p><b>Brute force:</b> 逐位看: <code>cnt += n &amp; 1; n &gt;&gt;= 1</code>, 32 轮, time O(32)。浪费在: 0 的位也在循环, 其实只关心 1。</p>
-<p><b>关键观察 (相比 Pow: 不再逐位, 而是直接跳到下一个 1):</b> <code>n - 1</code> 会把最低位的 1 变成 0, 它右边的 0 全变成 1, 左边不变。所以 <code>n &amp; (n - 1)</code> 恰好把最低位的那个 1 消掉。消几次 = 有几个 1。</p>
+</details>
+<p class="note"><b>记:</b>成对出现、找落单的: XOR 全部, 成对的抵消。</p>
+<h2>7. Number of 1 Bits</h2>
+<h3>题目在问什么</h3>
+<p>给一个正整数, 返回它的二进制表示里有几个 1。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 270" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Number of 1 Bits examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">一个正整数的二进制表示里有几个 1</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  n = 11  →  3</text>
+<rect x="40" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="57.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="74" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="91.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="108" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="125.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="142" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="159.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="200" y="103" font-size="14" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">11 = 1011 (二进制)</text>
+<line x1="40" y1="134" x2="640" y2="134" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="154" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  n = 128  →  1</text>
+<rect x="40" y="180" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="57.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="74" y="180" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="91.0" y="196.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="108" y="180" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.0" y="196.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="142" y="180" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="159.0" y="196.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="176" y="180" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="193.0" y="196.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="210" y="180" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="227.0" y="196.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="244" y="180" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="261.0" y="196.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="278" y="180" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="295.0" y="196.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">0</text>
+<text x="336" y="195" font-size="14" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">128 = 10000000</text>
+<line x1="40" y1="226" x2="640" y2="226" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="241" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="248" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text></svg>
+<figcaption>两个例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>一位一位看: <code>n & 1</code> 是最低位, 然后 <code>n >>= 1</code>。要看所有 32 位。</p>
+<h3>Intuition: n & (n - 1) 每次正好消掉最低位的 1</h3>
+<p>看 n - 1 的二进制: 它是把 n 最低位的那个 1 变成 0, 并把它右边的 0 全变成 1。比如 n = 1100, n - 1 = 1011。</p>
+<p>所以 <code>n & (n - 1)</code> = 1000: 最低位的 1 被消掉了, 其他位不变。</p>
+<p>每做一次消掉一个 1, 做到 n 变成 0 为止, 做了几次就有几个 1。只需要循环"1 的个数"次, 不用看所有 32 位。</p>
+<p>相关的技巧: <code>n & -n</code> 取出最低位的那个 1; <code>n > 0 and n & (n - 1) == 0</code> 判断 n 是不是 2 的幂 (只有一个 1)。</p>
+<h3>算法</h3>
+<ol><li><code>count = 0</code>。当 n: <code>n &= n - 1</code>, count += 1。</li><li>返回 count。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 388" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>n &amp; (n-1) 核心</title><desc>n-1 把最低位的 1 变 0、右边的 0 变 1,与 n 相与后最低位 1 消失</desc><defs><marker id="f14-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f14-r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f14-n" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f14-o" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#EF9F27" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="388" fill="#fff"/>
 <text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">n - 1 对 n 做了什么: 最低位的那个 1 变 0, 它右边的 0 全变 1, 左边完全不变</text>
 <text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">所以 n &amp; (n-1): 左边相同的位原样保留, 最低位的 1 及右边全是 (1 &amp; 0) 或 (0 &amp; 1) = 0</text>
@@ -1518,7 +1833,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="301.0" y="357" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
 <text x="321.0" y="364" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">不变的 1</text>
 </svg>
-<figcaption>核心: n - 1 翻转最低位的 1 及其右边, 与 n 相与后最低位的 1 消失</figcaption></figure>
+<figcaption>n & (n - 1) 消掉最低位的 1。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 376" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Number of 1 Bits 运行流程</title><desc>n=44 (101100) 三轮 n &amp;= n-1,每轮消掉最低位的 1</desc><defs><marker id="f15-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f15-r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f15-n" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f15-o" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#EF9F27" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="376" fill="#fff"/>
 <text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">n = 44 = 0b101100 · 每一轮: n &amp;= n - 1 (消掉最低位的 1), cnt += 1</text>
 <text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">红色 = n 里最低位的 1 (这一轮要消掉的) · 绿色 = n - 1 里被翻转的位</text>
@@ -1670,14 +1986,41 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="419.8" y="347" width="14" height="14" rx="3" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1.0"/>
 <text x="439.8" y="354" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">0</text>
 </svg>
-<figcaption>trace: n = 44 = 0b101100, 3 轮消完</figcaption></figure>
+<figcaption>每一步消掉一个 1, 直到 n = 0。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(1 的个数)</code>, Space <code>O(1)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">hammingWeight</span>(n):</span><span class="l">    cnt = 0</span><span class="l">    <span class="k">while</span> n:</span><span class="l">        n &amp;= n - 1       <span class="c"># 消掉最低位的 1: 每个 1 恰好被消一次</span></span><span class="l">        cnt += 1</span><span class="l">    <span class="r">return</span> cnt</span></div>
-<p><b>Complexity:</b> time O(k), k 是 1 的个数 (最多 32)。space O(1)。</p>
-<p class="note"><b>记:</b><code>n &amp; (n - 1)</code> 消最低位的 1; <code>n &amp; (n - 1) == 0</code> 判断 2 的幂; <code>n &amp; -n</code> 取最低位的 1。</p>
-<h2>8. Minimum Absolute Difference: 排序当预处理, 只看相邻</h2>
-<p><b>题目:</b> 找出数组中差的绝对值最小的所有 pair, 每个 pair 内升序, 整体按升序返回。例: <code>[8,1,12,5,10,9]</code> → <code>[[8,9],[9,10]]</code>。</p>
-<p><b>Brute force:</b> 双重循环比所有 pair, time O(n²)。浪费在: 大部分 pair 一眼就不可能最优。</p>
-<p><b>关键观察:</b> 排序之后, 若 <code>a &lt; b &lt; c</code>, 则 <code>c - a = (b - a) + (c - b) &gt;= b - a</code>, 跨过中间元素的 pair 不可能比相邻的更近。所以 sort 之后只需要比较相邻的 n - 1 对。这是 <b>sort 作为预处理</b> 的通用思想: 花 O(n log n) 把「谁和谁最近 / 冲突」变成「看相邻」。</p>
+</details>
+<p class="note"><b>记:</b>n & (n - 1) 消掉最低位的 1; n & -n 取出最低位的 1。</p>
+<h2>8. Minimum Absolute Difference (以及排序的用法)</h2>
+<h3>题目在问什么</h3>
+<p>数组里的数互不相同。找出所有差的绝对值最小的 pair, 按从小到大的顺序输出。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 170" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Minimum Absolute Difference examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">数组里的数互不相同。找所有差的绝对值最小的 pair, 按从小到大输出</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  [4,2,1,3]  →  [[1,2],[2,3],[3,4]]</text>
+<text x="40" y="103" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">排序后</text>
+<rect x="104" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="121.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="138" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="155.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="172" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="189.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="206" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="223.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<text x="40" y="134" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">最小的差是 1。排好序之后, 差最小的 pair 一定是相邻的两个</text>
+<line x1="40" y1="158" x2="640" y2="158" stroke="#B4B2A9" stroke-dasharray="4 4"/></svg>
+<figcaption>例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>两两比较算差, <code>O(n²)</code>。</p>
+<h3>Intuition: 排好序之后, 差最小的一定是相邻的</h3>
+<p>排序后, 对任意 i < j < k, 有 <code>a[k] - a[i] ≥ a[j] - a[i]</code>。也就是说, 隔着别的数的 pair, 差一定不会比相邻的更小。所以只需要看相邻的 n - 1 对。</p>
+<p>这是一个很通用的思路: <b>排序当预处理</b>。排完序之后很多问题都只需要看相邻的元素, 比如区间合并 (10)、Meeting Rooms (10)、去重、找最接近的两个数。排序本身 <code>O(n log n)</code>, 往往比 brute force 的 <code>O(n²)</code> 快很多。</p>
+<p>自定义排序: 用 <code>key=</code> (比如 <code>sort(key=lambda x: (x[1], -x[0]))</code> 按第二个元素升序、第一个降序); 需要"两两比较"的规则时用 <code>functools.cmp_to_key</code> (比如 16 里的 Largest Number)。</p>
+<p>什么时候不用通用排序: 只要第 k 个用 quickselect 或 heap (09); 值的范围很小用 counting sort; 值分布均匀用 bucket sort。</p>
+<h3>算法</h3>
+<ol><li>排序。</li><li>算所有相邻的差, 找最小值。</li><li>再扫一遍, 收集差等于最小值的相邻 pair。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 406" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>排序后只看相邻</title><desc>sort 之后任何非相邻的 pair 距离都不小于夹在中间的相邻距离,所以只比较 n-1 对</desc><defs><marker id="f16-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f16-r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f16-n" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f16-o" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#EF9F27" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="406" fill="#fff"/>
 <text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">暴力: 所有 pair 两两比较 = C(6,2) = 15 对, O(n^2)</text>
 <text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">sort 之后: a &lt; b &lt; c 时 c - a = (b - a) + (c - b) &gt;= b - a, 跨过 b 的 pair 永远不比相邻的更近</text>
@@ -1715,7 +2058,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="40" y="375" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
 <text x="60" y="382" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">sort 后的元素</text>
 </svg>
-<figcaption>核心: 非相邻的 pair 距离 = 中间若干段相加, 不可能更小</figcaption></figure>
+<figcaption>排序之后只看相邻: 隔着的 pair 差一定更大。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 496" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Minimum Absolute Difference 运行流程</title><desc>arr=[8,1,12,5,10,9] 排序后扫 5 对相邻,best 和 res 的变化</desc><defs><marker id="f17-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f17-r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f17-n" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f17-o" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#EF9F27" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="496" fill="#fff"/>
 <text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">arr = [8, 1, 12, 5, 10, 9]  →  arr.sort()  →  [1, 5, 8, 9, 10, 12]</text>
 <text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">每一行 = 看一对相邻 (a, b) · diff = b - a · 绿色 = 当前这一对</text>
@@ -1815,19 +2159,60 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="142" y="467" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
 <text x="162" y="474" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">其他元素</text>
 </svg>
-<figcaption>trace: 排序后 5 对相邻, best / res 的 重置、追加、跳过</figcaption></figure>
+<figcaption>排序后逐对计算相邻的差。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n log n)</code>, Space <code>O(n)</code> (排序)。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">minimumAbsDifference</span>(arr):</span><span class="l">    arr.<span class="f">sort</span>()                               <span class="c"># O(n log n): 预处理</span></span><span class="l">    best, res = <span class="t">float</span>(<span class="s">&quot;inf&quot;</span>), []</span><span class="l">    <span class="k">for</span> a, b <span class="k">in</span> <span class="t">zip</span>(arr, arr[1:]):           <span class="c"># 只看相邻: n - 1 对</span></span><span class="l">        diff = b - a</span><span class="l">        <span class="k">if</span> diff &lt; best:                      <span class="c"># 更小: 重置</span></span><span class="l">            best, res = diff, [[a, b]]</span><span class="l">        <span class="k">elif</span> diff == best:                   <span class="c"># 一样小: 追加</span></span><span class="l">            res.<span class="f">append</span>([a, b])</span><span class="l">    <span class="r">return</span> res</span></div>
-<p><b>Complexity:</b> time O(n log n), 由 sort 决定, 之后的扫描只有 O(n)。space: 除返回值外是 sort 的临时空间 (Timsort 最坏 O(n))。</p>
-<p>同一思想: Meeting Rooms 按 start 排序, 只检查相邻两个会不会重叠; Merge Intervals、Valid Triangle Number 也是先 sort。</p>
-<h3>自定义排序: 先想 key, 比较关系依赖两两 pair 才用 cmp_to_key</h3>
-<p>多数情况 <code>key</code> 就够了: 多关键字返回 tuple, 数字降序取负号, 例如 <code>arr.sort(key=lambda p: (-p[1], p[0]))</code>。只有当「谁排前面」取决于<b>两个元素之间的关系</b>、没法给单个元素算出一个 key 时, 才用 <code>cmp_to_key</code>。例: Largest Number, 把数字拼成最大的数。<code>3</code> 和 <code>30</code>: <code>330 &gt; 303</code>, 所以 3 排前面, 这个关系只能两两比。</p>
 <div class="code"><span class="l"><span class="k">from</span> <span class="t">functools</span> <span class="k">import</span> cmp_to_key</span><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">largestNumber</span>(nums):</span><span class="l">    strs = [<span class="t">str</span>(x) <span class="k">for</span> x <span class="k">in</span> nums]</span><span class="l">    <span class="c"># a 排前面当且仅当 a+b &gt; b+a (拼起来更大); 返回负数 = a 排前</span></span><span class="l">    strs.<span class="f">sort</span>(key=<span class="f">cmp_to_key</span>(<span class="k">lambda</span> a, b: -1 <span class="k">if</span> a + b &gt; b + a <span class="k">else</span> 1))</span><span class="l">    ans = <span class="s">&quot;&quot;</span>.<span class="f">join</span>(strs)</span><span class="l">    <span class="r">return</span> <span class="s">&quot;0&quot;</span> <span class="k">if</span> ans[0] == <span class="s">&quot;0&quot;</span> <span class="k">else</span> ans</span></div>
-<p><b>什么时候不用 sort 的 O(n log n):</b> 只要第 k 大 → quickselect, 平均 O(n) (或 heap, O(n log k)); 值域很小 (颜色 0/1/2、年龄、分数 0..100) → counting sort, O(n + 值域); 按频率或按区间分组 → bucket sort (Top K Frequent、Maximum Gap), O(n)。</p>
-<p class="note"><b>记:</b>sort 是预处理: 排完只看相邻。排序规则: 先想 <code>key</code>, 两两关系才 <code>cmp_to_key</code>; 想更快, 看 quickselect / counting / bucket。</p>
-<h2>9. Roman to Integer: 查表 + 左小右大则减</h2>
-<p><b>题目:</b> 罗马数字转整数。例: <code>"MCMXCIV"</code> → <code>1994</code>。</p>
-<p><b>Brute force:</b> 先把 6 种减法组合 (IV IX XL XC CD CM) 单独拿出来, 用 <code>replace</code> 或「先匹配两个字符、再匹配一个」的方式逐段累加。浪费在: 在显式处理「两个字符一组」, 而这个信息其实只在「当前字符 vs 右邻」一次比较里。</p>
-<p><b>关键观察 (相比上一题: 看相邻, 但不用 sort, 因为顺序本身就是输入):</b> 每个字符默认加它的值, 唯一的例外是它比右邻小 (左小右大), 这时它是减。</p>
+</details>
+<p class="note"><b>记:</b>"最近 / 最小差 / 重叠 / 去重": 先排序, 之后只看相邻的。</p>
+<h2>9. Roman to Integer</h2>
+<h3>题目在问什么</h3>
+<p>把罗马数字转成整数。I=1, V=5, X=10, L=50, C=100, D=500, M=1000。一般大的在左、小的在右, 加起来; 但如果小的写在大的<b>左边</b>, 表示相减, 比如 IV = 4, IX = 9, CM = 900。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 338" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Roman to Integer examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">罗马数字转整数。I=1, V=5, X=10, L=50, C=100, D=500, M=1000; 小的写在大的左边表示相减, 比如 IV </text>
+<text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">= 4</text>
+<line x1="40" y1="62" x2="640" y2="62" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="82" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  &quot;LVIII&quot;  →  58</text>
+<rect x="40" y="108" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">L</text>
+<rect x="74" y="108" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="91.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">V</text>
+<rect x="108" y="108" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">I</text>
+<rect x="142" y="108" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="159.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">I</text>
+<rect x="176" y="108" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="193.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">I</text>
+<text x="40" y="154" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">50 + 5 + 1 + 1 + 1</text>
+<line x1="40" y1="178" x2="640" y2="178" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="198" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  &quot;MCMXCIV&quot;  →  1994</text>
+<rect x="40" y="224" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="240.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">M</text>
+<rect x="74" y="224" width="34" height="30" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
+<text x="91.0" y="240.0" font-size="15" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">C</text>
+<rect x="108" y="224" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.0" y="240.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">M</text>
+<rect x="142" y="224" width="34" height="30" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
+<text x="159.0" y="240.0" font-size="15" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">X</text>
+<rect x="176" y="224" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="193.0" y="240.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">C</text>
+<rect x="210" y="224" width="34" height="30" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
+<text x="227.0" y="240.0" font-size="15" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">I</text>
+<rect x="244" y="224" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="261.0" y="240.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">V</text>
+<text x="40" y="270" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">M=1000, CM=900, XC=90, IV=4 → 1994。C、X、I 都比右边的小, 所以是减</text>
+<line x1="40" y1="294" x2="640" y2="294" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="309" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
+<text x="54" y="316" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">要减的</text></svg>
+<figcaption>两个例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>列出所有的减法组合 (IV、IX、XL、XC、CD、CM), 先匹配两个字符, 匹配不上再按一个字符算。可以做, 但规则写起来比较多。</p>
+<h3>Intuition: 只看右边那个字符</h3>
+<p>规则可以简化成一句: <b>一个字符如果比它右边的字符小, 就减去它; 否则加上它</b>。最后一个字符没有右边, 一定是加。</p>
+<h3>算法</h3>
+<ol><li>建一个 dict 存 7 个字符的值。</li><li>从左往右: 如果当前值 < 右边的值, <code>total -= 当前值</code>; 否则 <code>total += 当前值</code>。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 332" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Roman to Integer 核心</title><desc>同一个字符的符号由右邻决定:左小右大则减,否则加</desc><defs><marker id="f18-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f18-r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f18-n" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f18-o" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#EF9F27" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="332" fill="#fff"/>
 <text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">查表 + 一遍扫描: 每个字符先当作加上它的值, 唯一的例外是「左边比右边小」→ 减</text>
 <text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">减法只有 6 种: IV IX XL XC CD CM, 都是「小的紧挨着大的」前面</text>
@@ -1877,7 +2262,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="215.8" y="303" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
 <text x="235.8" y="310" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">字符表</text>
 </svg>
-<figcaption>核心: 同一个字符的符号由右邻决定, VI = 5 + 1 = 6, IV = -1 + 5 = 4</figcaption></figure>
+<figcaption>比右边小就减, 否则加。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 512" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Roman to Integer 运行流程</title><desc>MCMXCIV 逐字符,和右邻比较决定加减,total 的变化</desc><defs><marker id="f19-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f19-r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f19-n" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f19-o" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#EF9F27" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="512" fill="#fff"/>
 <text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">s = "MCMXCIV" · 每一行 = 一个字符 · 和右邻比: val[ch] &lt; val[右邻] ? 减 : 加</text>
 <text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">total 从 0 开始, 每一步把「当前字符的值 (加或减)」写成具体算式</text>
@@ -1971,13 +2357,15 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="148" y="483" width="14" height="14" rx="3" fill="#fff" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="168" y="490" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">当前字符</text>
 </svg>
-<figcaption>trace: MCMXCIV, 7 个字符, total 的变化</figcaption></figure>
+<figcaption>MCMXCIV 逐个字符的加减。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n)</code>, Space <code>O(1)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">romanToInt</span>(s):</span><span class="l">    val = {<span class="s">&quot;I&quot;</span>: 1, <span class="s">&quot;V&quot;</span>: 5, <span class="s">&quot;X&quot;</span>: 10, <span class="s">&quot;L&quot;</span>: 50, <span class="s">&quot;C&quot;</span>: 100, <span class="s">&quot;D&quot;</span>: 500, <span class="s">&quot;M&quot;</span>: 1000}</span><span class="l">    total = 0</span><span class="l">    <span class="k">for</span> i, ch <span class="k">in</span> <span class="t">enumerate</span>(s):</span><span class="l">        <span class="k">if</span> i + 1 &lt; <span class="t">len</span>(s) <span class="k">and</span> val[ch] &lt; val[s[i + 1]]:   <span class="c"># 左小右大 → 减</span></span><span class="l">            total -= val[ch]</span><span class="l">        <span class="k">else</span>:</span><span class="l">            total += val[ch]</span><span class="l">    <span class="r">return</span> total</span></div>
-<p><b>Complexity:</b> time O(len(s)), space O(1) (字典固定 7 项)。反过来 Integer to Roman: 用值从大到小的表 (含 900, 400, 90, 40, 9, 4) 贪心。</p>
-<p class="note"><b>记:</b>一个元素的贡献取决于右邻 → 查表 + 比较 <code>s[i + 1]</code>, 一遍扫描。</p>
-<h2>10. 识别信号: 看到什么 → 试什么</h2>
-<table><tr><th>特征</th><th>做法</th><th>complexity</th></tr><tr><td>螺旋 / 层层剥皮的遍历</td><td>四个边界收缩, 第 3、4 条边加 if 守卫</td><td>space O(mn) 的 visited → O(1)</td></tr><tr><td>原地旋转 / 翻转 / 转置</td><td>先写 (i,j) → (?,?) 坐标变换, 拆成 transpose + reverse</td><td>space O(n²) → O(1)</td></tr><tr><td>原地, 又要记「哪些行 / 列要处理」</td><td>借矩阵第一行 / 第一列当 flag, 留言区最后才处理</td><td>space O(m+n) → O(1)</td></tr><tr><td>x^n, n 很大; 同一个操作重复 n 次</td><td>n 的二进制拆分: 平方 + 看最低位</td><td>time O(n) → O(log n)</td></tr><tr><td>整数不转字符串, 逐位处理 / 回文</td><td><code>% 10</code> 取末位, <code>// 10</code> 丢末位, 回文只转一半</td><td>space O(位数) → O(1)</td></tr><tr><td>除了一个都成对 / 缺一个数</td><td>全部 XOR (Missing: 下标也 XOR 进来)</td><td>space O(n) → O(1)</td></tr><tr><td>数 1 的个数 / 判 2 的幂 / 取最低位</td><td><code>n &amp;= n - 1</code>, <code>n &amp; -n</code></td><td>32 轮 → 1 的个数轮</td></tr><tr><td>最近 / 最小差 / 是否冲突</td><td>先 sort, 只看相邻 (Meeting 类按 start 排)</td><td>time O(n²) → O(n log n)</td></tr><tr><td>排序规则依赖两两关系</td><td><code>cmp_to_key</code>; 否则 <code>key</code> 返回 tuple, 降序取负</td><td>写法问题, time 仍 O(n log n)</td></tr><tr><td>只要第 k 个 / 值域小 / 按频率分组</td><td>quickselect / counting sort / bucket sort</td><td>time O(n log n) → O(n)</td></tr><tr><td>一个元素的含义取决于右邻</td><td>查表 + 比较右邻, 一遍扫描 (Roman)</td><td>time O(n), 不用显式分段</td></tr></table>
-<p class="note"><b>记:</b>先找输入里现成的结构 (边界 / 坐标 / bit / 配对 / 有序), 再问暴力解的哪部分额外存储或重复计算能被它消掉。</p>
+</details>
+<p class="note"><b>记:</b>查表 + 看相邻: 规则如果只取决于相邻两个元素, 扫一遍时看一眼右边。</p>
+<h2>10. 识别信号: 看到什么, 就想到什么</h2>
+<table><tr><th>题目特征</th><th>做法</th><th>complexity</th></tr><tr><td>矩阵按圈 / 螺旋遍历</td><td>4 个边界变量, 走完一条边收缩</td><td>空间 <code>O(m·n)</code> → <code>O(1)</code></td></tr><tr><td>矩阵旋转 / 翻转</td><td>写出坐标变换, 拆成 transpose + 反转</td><td>空间 <code>O(n²)</code> → <code>O(1)</code></td></tr><tr><td>原地 + O(1) 空间的标记</td><td>借输入的一部分存标记 (第一行 / 第一列 / 正负号)</td><td>空间 <code>O(m + n)</code> → <code>O(1)</code></td></tr><tr><td>n 很大的重复操作 (幂)</td><td>按 n 的二进制拆, 不断平方</td><td><code>O(n)</code> → <code>O(log n)</code></td></tr><tr><td>处理整数的每一位</td><td>% 10 取末位, // 10 去末位</td><td>不需要转字符串</td></tr><tr><td>成对出现, 找落单的 / 缺的</td><td>XOR 全部</td><td>空间 <code>O(n)</code> → <code>O(1)</code></td></tr><tr><td>数二进制的 1 / 判断 2 的幂</td><td>n & (n - 1)</td><td><code>O(位数)</code> → <code>O(1 的个数)</code></td></tr><tr><td>最近 / 最小差 / 重叠 / 去重</td><td>排序后只看相邻</td><td><code>O(n²)</code> → <code>O(n log n)</code></td></tr><tr><td>规则只和相邻元素有关</td><td>扫一遍, 看右边一个</td><td><code>O(n)</code></td></tr></table>
 <h2>以后再学</h2>
-<p>Text Justification (逐行贪心的模拟)、Multiply Strings / Add Strings (竖式加 carry)、Game of Life (原地多编码一位状态, 同 Set Zeroes 的思想)、Count Primes (sieve)、Diagonal Traverse (按 <code>i + j</code> 分组)、用 bitmask 枚举子集 (放在 backtracking / DP 里)。</p>
+<p>Game of Life (原地用多个状态值标记)、Sqrt(x) (二分或 Newton 法)、Reverse Bits、Counting Bits (dp[i] = dp[i >> 1] + (i & 1))、Multiply Strings (竖式乘法)。</p>
 </article></body></html>

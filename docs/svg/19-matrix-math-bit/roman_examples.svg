@@ -1,0 +1,35 @@
+<svg width="100%" viewBox="0 0 680 338" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Roman to Integer examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">罗马数字转整数。I=1, V=5, X=10, L=50, C=100, D=500, M=1000; 小的写在大的左边表示相减, 比如 IV </text>
+<text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">= 4</text>
+<line x1="40" y1="62" x2="640" y2="62" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="82" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  &quot;LVIII&quot;  →  58</text>
+<rect x="40" y="108" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">L</text>
+<rect x="74" y="108" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="91.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">V</text>
+<rect x="108" y="108" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">I</text>
+<rect x="142" y="108" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="159.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">I</text>
+<rect x="176" y="108" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="193.0" y="124.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">I</text>
+<text x="40" y="154" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">50 + 5 + 1 + 1 + 1</text>
+<line x1="40" y1="178" x2="640" y2="178" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="198" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  &quot;MCMXCIV&quot;  →  1994</text>
+<rect x="40" y="224" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="240.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">M</text>
+<rect x="74" y="224" width="34" height="30" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
+<text x="91.0" y="240.0" font-size="15" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">C</text>
+<rect x="108" y="224" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.0" y="240.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">M</text>
+<rect x="142" y="224" width="34" height="30" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
+<text x="159.0" y="240.0" font-size="15" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">X</text>
+<rect x="176" y="224" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="193.0" y="240.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">C</text>
+<rect x="210" y="224" width="34" height="30" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
+<text x="227.0" y="240.0" font-size="15" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">I</text>
+<rect x="244" y="224" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="261.0" y="240.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">V</text>
+<text x="40" y="270" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">M=1000, CM=900, XC=90, IV=4 → 1994。C、X、I 都比右边的小, 所以是减</text>
+<line x1="40" y1="294" x2="640" y2="294" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="309" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
+<text x="54" y="316" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">要减的</text></svg>
