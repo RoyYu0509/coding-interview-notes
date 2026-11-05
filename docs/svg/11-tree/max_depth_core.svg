@@ -1,0 +1,25 @@
+<svg width="100%" viewBox="0 0 680 262" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Maximum Depth 的核心: 假设子树已经算好</title><desc>node 只合并两个数</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="20" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">不用想子树里面长什么样: 左、右子树的深度已经是对的数, 当前 node 只做一步合并</text>
+<circle cx="170" cy="78" r="22" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<circle cx="170" cy="78" r="26" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="170" y="78" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">node</text>
+<path d="M105 120 L53 188 L157 188 Z" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.2"/>
+<line x1="108.31243788854374" y1="117.75773435237039" x2="148.46915372446566" y2="92.57472670959248" stroke="#0F6E56" stroke-width="2" marker-end="url(#arrowG)"/>
+<text x="95" y="108" font-size="14" text-anchor="end" fill="#085041" font-weight="600" dominant-baseline="central">2</text>
+<text x="105" y="158" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">左子树 (已算好)</text>
+<text x="105" y="176" font-size="14" text-anchor="middle" fill="#085041" font-weight="600" dominant-baseline="central">深度 = 2</text>
+<path d="M235 120 L183 188 L287 188 Z" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.2"/>
+<line x1="231.68756211145626" y1="117.75773435237039" x2="191.53084627553434" y2="92.57472670959248" stroke="#0F6E56" stroke-width="2" marker-end="url(#arrowG)"/>
+<text x="245" y="108" font-size="14" text-anchor="start" fill="#085041" font-weight="600" dominant-baseline="central">1</text>
+<text x="235" y="158" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">右子树 (已算好)</text>
+<text x="235" y="176" font-size="14" text-anchor="middle" fill="#085041" font-weight="600" dominant-baseline="central">深度 = 1</text>
+<text x="330" y="60" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">当前 node 要做的只有一步:</text>
+<text x="330" y="86" font-size="16" text-anchor="start" fill="#085041" font-weight="600" dominant-baseline="central">depth(node) = 1 + max(2, 1) = 3</text>
+<text x="330" y="112" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">1 = node 自己这一层</text>
+<text x="330" y="134" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">max(2, 1) = 左右两边深的那个</text>
+<text x="330" y="160" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">base case: None → 0 (空树没有层)</text>
+<text x="330" y="182" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">每个 node 恰好算一次 → O(n)</text>
+<line x1="40" y1="204" x2="640" y2="204" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="226" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">这就是 post-order 的全部: 先拿 L、R, 再 return merge(node, L, R)</text>
+<text x="40" y="246" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">以后每一题只是把"摘要"换了 (深度 → 单边链 → 找到的 node), 骨架不变</text>
+</svg>

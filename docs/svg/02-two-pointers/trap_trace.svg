@@ -1,0 +1,230 @@
+<svg width="100%" viewBox="0 0 680 746" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Trapping Rain Water trace</title><desc>双指针 lmax rmax</desc><defs><marker id="arG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">height = [2, 0, 1, 3, 0, 1, 2] · l = 0, r = 6 · lmax = height[0], rmax = height[6]</text>
+<text x="40" y="38" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">每一步: lmax &lt; rmax 就推进 l (水由 lmax 决定), 否则推进 r (水由 rmax 决定); 先更新 max 再累加水</text>
+<text x="40" y="70" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">状态 (绿 = 已经算过水的格子)</text>
+<text x="330" y="70" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">计算 -&gt; 决定</text>
+<line x1="40" y1="80" x2="640" y2="80" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="57.0" y="96" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">0</text>
+<rect x="40" y="104" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="56.0" y="119.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">2</text>
+<rect x="37" y="101" width="38" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="91.0" y="96" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">1</text>
+<rect x="74" y="104" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="90.0" y="119.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">0</text>
+<text x="125.0" y="96" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">2</text>
+<rect x="108" y="104" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="124.0" y="119.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">1</text>
+<text x="159.0" y="96" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">3</text>
+<rect x="142" y="104" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="158.0" y="119.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">3</text>
+<text x="193.0" y="96" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">4</text>
+<rect x="176" y="104" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="192.0" y="119.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">0</text>
+<text x="227.0" y="96" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">5</text>
+<rect x="210" y="104" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="226.0" y="119.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">1</text>
+<text x="261.0" y="96" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">6</text>
+<rect x="244" y="104" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="260.0" y="119.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">2</text>
+<rect x="241" y="101" width="38" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<path d="M56.0 137 L51.0 145 L61.0 145 Z" fill="#0B0B0B"/>
+<text x="56.0" y="154" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">l</text>
+<path d="M260.0 137 L255.0 145 L265.0 145 Z" fill="#0B0B0B"/>
+<text x="260.0" y="154" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">r</text>
+<text x="330" y="111.0" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">开始: lmax = height[0] = 2</text>
+<text x="330" y="129.0" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">rmax = height[6] = 2</text>
+<text x="330" y="147.0" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">water = 0</text>
+<line x1="40" y1="165.0" x2="640" y2="165.0" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="57.0" y="180" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">0</text>
+<rect x="40" y="188" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="56.0" y="203.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">2</text>
+<text x="91.0" y="180" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">1</text>
+<rect x="74" y="188" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="90.0" y="203.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">0</text>
+<text x="125.0" y="180" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">2</text>
+<rect x="108" y="188" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="124.0" y="203.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">1</text>
+<text x="159.0" y="180" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">3</text>
+<rect x="142" y="188" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="158.0" y="203.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">3</text>
+<text x="193.0" y="180" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">4</text>
+<rect x="176" y="188" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="192.0" y="203.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">0</text>
+<text x="227.0" y="180" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">5</text>
+<rect x="210" y="188" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="226.0" y="203.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">1</text>
+<rect x="207" y="185" width="38" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="261.0" y="180" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">6</text>
+<rect x="244" y="188" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="260.0" y="203.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">2</text>
+<path d="M56.0 221 L51.0 229 L61.0 229 Z" fill="#0B0B0B"/>
+<text x="56.0" y="238" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">l</text>
+<path d="M226.0 221 L221.0 229 L231.0 229 Z" fill="#0B0B0B"/>
+<text x="226.0" y="238" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">r</text>
+<text x="330" y="186.0" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">lmax = 2 &gt;= rmax = 2  -&gt;  r -= 1</text>
+<text x="330" y="204.0" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">rmax = max(2, height[5] = 1) = 2</text>
+<text x="330" y="222.0" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">water += 2 - 1 = 1</text>
+<text x="330" y="240.0" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#085041">water = 1</text>
+<line x1="40" y1="249.0" x2="640" y2="249.0" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="57.0" y="264" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">0</text>
+<rect x="40" y="272" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="56.0" y="287.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">2</text>
+<text x="91.0" y="264" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">1</text>
+<rect x="74" y="272" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="90.0" y="287.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">0</text>
+<text x="125.0" y="264" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">2</text>
+<rect x="108" y="272" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="124.0" y="287.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">1</text>
+<text x="159.0" y="264" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">3</text>
+<rect x="142" y="272" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="158.0" y="287.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">3</text>
+<text x="193.0" y="264" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">4</text>
+<rect x="176" y="272" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="192.0" y="287.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">0</text>
+<rect x="173" y="269" width="38" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="227.0" y="264" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">5</text>
+<rect x="210" y="272" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="226.0" y="287.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">1</text>
+<text x="261.0" y="264" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">6</text>
+<rect x="244" y="272" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="260.0" y="287.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">2</text>
+<path d="M56.0 305 L51.0 313 L61.0 313 Z" fill="#0B0B0B"/>
+<text x="56.0" y="322" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">l</text>
+<path d="M192.0 305 L187.0 313 L197.0 313 Z" fill="#0B0B0B"/>
+<text x="192.0" y="322" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">r</text>
+<text x="330" y="270.0" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">lmax = 2 &gt;= rmax = 2  -&gt;  r -= 1</text>
+<text x="330" y="288.0" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">rmax = max(2, height[4] = 0) = 2</text>
+<text x="330" y="306.0" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">water += 2 - 0 = 2</text>
+<text x="330" y="324.0" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#085041">water = 3</text>
+<line x1="40" y1="333.0" x2="640" y2="333.0" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="57.0" y="348" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">0</text>
+<rect x="40" y="356" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="56.0" y="371.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">2</text>
+<text x="91.0" y="348" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">1</text>
+<rect x="74" y="356" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="90.0" y="371.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">0</text>
+<text x="125.0" y="348" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">2</text>
+<rect x="108" y="356" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="124.0" y="371.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">1</text>
+<text x="159.0" y="348" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">3</text>
+<rect x="142" y="356" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="158.0" y="371.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">3</text>
+<rect x="139" y="353" width="38" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="193.0" y="348" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">4</text>
+<rect x="176" y="356" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="192.0" y="371.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">0</text>
+<text x="227.0" y="348" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">5</text>
+<rect x="210" y="356" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="226.0" y="371.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">1</text>
+<text x="261.0" y="348" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">6</text>
+<rect x="244" y="356" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="260.0" y="371.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">2</text>
+<path d="M56.0 389 L51.0 397 L61.0 397 Z" fill="#0B0B0B"/>
+<text x="56.0" y="406" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">l</text>
+<path d="M158.0 389 L153.0 397 L163.0 397 Z" fill="#0B0B0B"/>
+<text x="158.0" y="406" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">r</text>
+<text x="330" y="354.0" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">lmax = 2 &gt;= rmax = 2  -&gt;  r -= 1</text>
+<text x="330" y="372.0" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">rmax = max(2, height[3] = 3) = 3</text>
+<text x="330" y="390.0" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">water += 3 - 3 = 0</text>
+<text x="330" y="408.0" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">water = 3</text>
+<line x1="40" y1="417.0" x2="640" y2="417.0" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="57.0" y="432" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">0</text>
+<rect x="40" y="440" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="56.0" y="455.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">2</text>
+<text x="91.0" y="432" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">1</text>
+<rect x="74" y="440" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="90.0" y="455.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">0</text>
+<rect x="71" y="437" width="38" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="125.0" y="432" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">2</text>
+<rect x="108" y="440" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="124.0" y="455.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">1</text>
+<text x="159.0" y="432" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">3</text>
+<rect x="142" y="440" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="158.0" y="455.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">3</text>
+<text x="193.0" y="432" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">4</text>
+<rect x="176" y="440" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="192.0" y="455.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">0</text>
+<text x="227.0" y="432" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">5</text>
+<rect x="210" y="440" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="226.0" y="455.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">1</text>
+<text x="261.0" y="432" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">6</text>
+<rect x="244" y="440" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="260.0" y="455.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">2</text>
+<path d="M90.0 473 L85.0 481 L95.0 481 Z" fill="#0B0B0B"/>
+<text x="90.0" y="490" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">l</text>
+<path d="M158.0 473 L153.0 481 L163.0 481 Z" fill="#0B0B0B"/>
+<text x="158.0" y="490" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">r</text>
+<text x="330" y="438.0" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">lmax = 2 &lt; rmax = 3  -&gt;  l += 1</text>
+<text x="330" y="456.0" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">lmax = max(2, height[1] = 0) = 2</text>
+<text x="330" y="474.0" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">water += 2 - 0 = 2</text>
+<text x="330" y="492.0" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#085041">water = 5</text>
+<line x1="40" y1="501.0" x2="640" y2="501.0" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="57.0" y="516" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">0</text>
+<rect x="40" y="524" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="56.0" y="539.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">2</text>
+<text x="91.0" y="516" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">1</text>
+<rect x="74" y="524" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="90.0" y="539.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">0</text>
+<text x="125.0" y="516" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">2</text>
+<rect x="108" y="524" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="124.0" y="539.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">1</text>
+<rect x="105" y="521" width="38" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="159.0" y="516" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">3</text>
+<rect x="142" y="524" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="158.0" y="539.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">3</text>
+<text x="193.0" y="516" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">4</text>
+<rect x="176" y="524" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="192.0" y="539.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">0</text>
+<text x="227.0" y="516" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">5</text>
+<rect x="210" y="524" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="226.0" y="539.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">1</text>
+<text x="261.0" y="516" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">6</text>
+<rect x="244" y="524" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="260.0" y="539.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">2</text>
+<path d="M124.0 557 L119.0 565 L129.0 565 Z" fill="#0B0B0B"/>
+<text x="124.0" y="574" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">l</text>
+<path d="M158.0 557 L153.0 565 L163.0 565 Z" fill="#0B0B0B"/>
+<text x="158.0" y="574" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">r</text>
+<text x="330" y="522.0" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">lmax = 2 &lt; rmax = 3  -&gt;  l += 1</text>
+<text x="330" y="540.0" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">lmax = max(2, height[2] = 1) = 2</text>
+<text x="330" y="558.0" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">water += 2 - 1 = 1</text>
+<text x="330" y="576.0" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#085041">water = 6</text>
+<line x1="40" y1="585.0" x2="640" y2="585.0" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="57.0" y="600" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">0</text>
+<rect x="40" y="608" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="56.0" y="623.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">2</text>
+<text x="91.0" y="600" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">1</text>
+<rect x="74" y="608" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="90.0" y="623.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">0</text>
+<text x="125.0" y="600" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">2</text>
+<rect x="108" y="608" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="124.0" y="623.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">1</text>
+<text x="159.0" y="600" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">3</text>
+<rect x="142" y="608" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="158.0" y="623.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">3</text>
+<rect x="139" y="605" width="38" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="193.0" y="600" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">4</text>
+<rect x="176" y="608" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="192.0" y="623.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">0</text>
+<text x="227.0" y="600" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">5</text>
+<rect x="210" y="608" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="226.0" y="623.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">1</text>
+<text x="261.0" y="600" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">6</text>
+<rect x="244" y="608" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="260.0" y="623.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">2</text>
+<path d="M158.0 641 L153.0 649 L163.0 649 Z" fill="#0B0B0B"/>
+<text x="158.0" y="658" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">l,r</text>
+<text x="330" y="606.0" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">lmax = 2 &lt; rmax = 3  -&gt;  l += 1</text>
+<text x="330" y="624.0" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">lmax = max(2, height[3] = 3) = 3</text>
+<text x="330" y="642.0" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">water += 3 - 3 = 0</text>
+<text x="330" y="660.0" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">water = 6</text>
+<line x1="40" y1="669.0" x2="640" y2="669.0" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="40" y="686" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">答案: water = 2 + 1 + 2 + 1 = 6  (空间 O(1), 没有 lmax[], rmax[] 数组)</text>
+<rect x="40" y="715" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="62" y="722" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">还没算的</text>
+<rect x="132" y="715" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="154" y="722" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">算完了</text>
+<rect x="211" y="715" width="14" height="14" rx="3" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="208" y="712" width="20" height="20" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="233" y="722" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">这一步刚算的格子</text>
+</svg>

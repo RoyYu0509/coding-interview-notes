@@ -1,0 +1,98 @@
+<svg width="100%" viewBox="0 0 680 422" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>LCP trace</title><desc>interview/internet/interval/intern 逐列比较</desc>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">c = strs[0][j] · 依次拿 strs[1], strs[2], strs[3] 的 s[j] 和 c 比 · 全相等才 j += 1</text>
+<text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">任何一个不等 (或 s 太短) 就停, 答案 = first[:j]</text>
+<text x="40" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">j</text>
+<text x="152" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">interview</text>
+<text x="222" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">internet</text>
+<text x="292" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">interval</text>
+<text x="362" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">intern</text>
+<text x="410" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">这一列的结果</text>
+<line x1="40" y1="76" x2="640" y2="76" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 3"/>
+<text x="40" y="106" font-size="16" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">0</text>
+<rect x="130" y="90" width="44" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="127" y="87" width="50" height="38" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="152.0" y="106.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">i</text>
+<rect x="200" y="90" width="44" height="32" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="222.0" y="106.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i</text>
+<rect x="270" y="90" width="44" height="32" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="292.0" y="106.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i</text>
+<rect x="340" y="90" width="44" height="32" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="362.0" y="106.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i</text>
+<text x="410" y="98" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">4 个都 == 'i'</text>
+<text x="410" y="116" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">prefix = 'i'</text>
+<line x1="40" y1="128" x2="640" y2="128" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 3"/>
+<text x="40" y="152" font-size="16" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">1</text>
+<rect x="130" y="136" width="44" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="127" y="133" width="50" height="38" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="152.0" y="152.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">n</text>
+<rect x="200" y="136" width="44" height="32" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="222.0" y="152.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">n</text>
+<rect x="270" y="136" width="44" height="32" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="292.0" y="152.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">n</text>
+<rect x="340" y="136" width="44" height="32" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="362.0" y="152.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">n</text>
+<text x="410" y="144" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">4 个都 == 'n'</text>
+<text x="410" y="162" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">prefix = 'in'</text>
+<line x1="40" y1="174" x2="640" y2="174" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 3"/>
+<text x="40" y="198" font-size="16" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">2</text>
+<rect x="130" y="182" width="44" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="127" y="179" width="50" height="38" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="152.0" y="198.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">t</text>
+<rect x="200" y="182" width="44" height="32" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="222.0" y="198.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">t</text>
+<rect x="270" y="182" width="44" height="32" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="292.0" y="198.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">t</text>
+<rect x="340" y="182" width="44" height="32" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="362.0" y="198.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">t</text>
+<text x="410" y="190" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">4 个都 == 't'</text>
+<text x="410" y="208" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">prefix = 'int'</text>
+<line x1="40" y1="220" x2="640" y2="220" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 3"/>
+<text x="40" y="244" font-size="16" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">3</text>
+<rect x="130" y="228" width="44" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="127" y="225" width="50" height="38" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="152.0" y="244.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">e</text>
+<rect x="200" y="228" width="44" height="32" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="222.0" y="244.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">e</text>
+<rect x="270" y="228" width="44" height="32" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="292.0" y="244.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">e</text>
+<rect x="340" y="228" width="44" height="32" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="362.0" y="244.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">e</text>
+<text x="410" y="236" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">4 个都 == 'e'</text>
+<text x="410" y="254" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">prefix = 'inte'</text>
+<line x1="40" y1="266" x2="640" y2="266" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 3"/>
+<text x="40" y="290" font-size="16" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">4</text>
+<rect x="130" y="274" width="44" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="127" y="271" width="50" height="38" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="152.0" y="290.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">r</text>
+<rect x="200" y="274" width="44" height="32" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="222.0" y="290.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">r</text>
+<rect x="270" y="274" width="44" height="32" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="292.0" y="290.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">r</text>
+<rect x="340" y="274" width="44" height="32" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="362.0" y="290.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">r</text>
+<text x="410" y="282" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">4 个都 == 'r'</text>
+<text x="410" y="300" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">prefix = 'inter'</text>
+<line x1="40" y1="312" x2="640" y2="312" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 3"/>
+<text x="40" y="336" font-size="16" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">5</text>
+<rect x="130" y="320" width="44" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="127" y="317" width="50" height="38" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="152.0" y="336.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">v</text>
+<rect x="200" y="320" width="44" height="32" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="222.0" y="336.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">n</text>
+<rect x="270" y="320" width="44" height="32" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 3"/>
+<rect x="340" y="320" width="44" height="32" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="410" y="328" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">strs[1][5] = 'n' ≠ 'v'</text>
+<text x="410" y="346" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">return first[:5]</text>
+<line x1="40" y1="358" x2="640" y2="358" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 3"/>
+<text x="40" y="374" font-size="16" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">答案 = 'inter' (长度 5)</text>
+<circle cx="48" cy="402" r="6" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<circle cx="48" cy="402" r="9.5" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="64" y="402" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">c = strs[0][j] (标准)</text>
+<rect x="222.2" y="395" width="14" height="14" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="242.2" y="402" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">和 c 相同</text>
+<rect x="320.0" y="395" width="14" height="14" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="340.0" y="402" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">和 c 不同 -&gt; 停</text>
+<rect x="456.2" y="395" width="14" height="14" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="476.2" y="402" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">没检查</text>
+</svg>

@@ -1,0 +1,101 @@
+<svg width="100%" viewBox="0 0 680 546" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>nums = [2, 3, 9, 3, 1] · dp[i] = 只看前 i+1 间房子 (nums[0..i]) 时的最大金额</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">nums = [2, 3, 9, 3, 1] · dp[i] = 只看前 i+1 间房子 (nums[0..i]) 时的最大金额</text>
+<text x="40" y="38" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">每一步: 不偷 i 就继承 dp[i-1]; 偷 i 就是 dp[i-2] + nums[i]; 取较大者</text>
+<text x="40" y="72" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">step</text>
+<text x="116" y="72" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">dp 数组</text>
+<text x="350" y="72" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">计算</text>
+<line x1="40" y1="84" x2="640" y2="84" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="40" y="100" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">i</text>
+<text x="138.0" y="100" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">0</text>
+<text x="182.0" y="100" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">1</text>
+<text x="226.0" y="100" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">2</text>
+<text x="270.0" y="100" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">3</text>
+<text x="314.0" y="100" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">4</text>
+<text x="40" y="120" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">nums</text>
+<text x="138.0" y="120" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="middle" dominant-baseline="central">2</text>
+<text x="182.0" y="120" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="middle" dominant-baseline="central">3</text>
+<text x="226.0" y="120" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="middle" dominant-baseline="central">9</text>
+<text x="270.0" y="120" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="middle" dominant-baseline="central">3</text>
+<text x="314.0" y="120" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="middle" dominant-baseline="central">1</text>
+<line x1="40" y1="134" x2="640" y2="134" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="117" y="148" width="42" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="138.0" y="163.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">2</text>
+<rect x="161" y="148" width="42" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="182.0" y="163.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">3</text>
+<rect x="205" y="148" width="42" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="249" y="148" width="42" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="293" y="148" width="42" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="114" y="145" width="48" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<path d="M138.0 180 C138.0 194 178.0 194 178.0 183" fill="none" stroke="#52514E" stroke-width="1.4" marker-end="url(#arr)"/>
+<text x="40" y="155.0" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">base</text>
+<text x="350" y="157" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">dp[0] = nums[0] = 2</text>
+<text x="350" y="175" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">dp[1] = max(2, 3) = 3</text>
+<line x1="40" y1="212" x2="640" y2="212" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="117" y="226" width="42" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="138.0" y="241.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">2</text>
+<rect x="161" y="226" width="42" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="182.0" y="241.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">3</text>
+<rect x="205" y="226" width="42" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="226.0" y="241.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">11</text>
+<rect x="249" y="226" width="42" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="293" y="226" width="42" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="158" y="223" width="48" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="114" y="223" width="48" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<path d="M182.0 258 C182.0 272 222.0 272 222.0 261" fill="none" stroke="#52514E" stroke-width="1.4" marker-end="url(#arr)"/>
+<path d="M138.0 258 C138.0 278 222.0 278 222.0 261" fill="none" stroke="#52514E" stroke-width="1.4" marker-end="url(#arr)"/>
+<text x="40" y="233.0" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">i = 2</text>
+<text x="40" y="250.0" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">nums[2] = 9</text>
+<text x="350" y="235" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">dp[i] = max(dp[i-1], dp[i-2] + nums[i])</text>
+<text x="350" y="253" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">dp[2] = max(3, 2 + 9) = 11</text>
+<text x="350" y="271" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">偷 9: 2 + 9 更大</text>
+<line x1="40" y1="294" x2="640" y2="294" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="117" y="308" width="42" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="138.0" y="323.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">2</text>
+<rect x="161" y="308" width="42" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="182.0" y="323.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">3</text>
+<rect x="205" y="308" width="42" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="226.0" y="323.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">11</text>
+<rect x="249" y="308" width="42" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="270.0" y="323.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">11</text>
+<rect x="293" y="308" width="42" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="202" y="305" width="48" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="158" y="305" width="48" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<path d="M226.0 340 C226.0 354 266.0 354 266.0 343" fill="none" stroke="#52514E" stroke-width="1.4" marker-end="url(#arr)"/>
+<path d="M182.0 340 C182.0 360 266.0 360 266.0 343" fill="none" stroke="#52514E" stroke-width="1.4" marker-end="url(#arr)"/>
+<text x="40" y="315.0" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">i = 3</text>
+<text x="40" y="332.0" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">nums[3] = 3</text>
+<text x="350" y="317" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">dp[i] = max(dp[i-1], dp[i-2] + nums[i])</text>
+<text x="350" y="335" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">dp[3] = max(11, 3 + 3) = 11</text>
+<text x="350" y="353" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">不偷 3: 继承 dp[2] (≥ 偷)</text>
+<line x1="40" y1="376" x2="640" y2="376" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="117" y="390" width="42" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="138.0" y="405.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">2</text>
+<rect x="161" y="390" width="42" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="182.0" y="405.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">3</text>
+<rect x="205" y="390" width="42" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="226.0" y="405.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">11</text>
+<rect x="249" y="390" width="42" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="270.0" y="405.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">11</text>
+<rect x="293" y="390" width="42" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="314.0" y="405.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">12</text>
+<rect x="246" y="387" width="48" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="202" y="387" width="48" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<path d="M270.0 422 C270.0 436 310.0 436 310.0 425" fill="none" stroke="#52514E" stroke-width="1.4" marker-end="url(#arr)"/>
+<path d="M226.0 422 C226.0 442 310.0 442 310.0 425" fill="none" stroke="#52514E" stroke-width="1.4" marker-end="url(#arr)"/>
+<text x="40" y="397.0" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">i = 4</text>
+<text x="40" y="414.0" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">nums[4] = 1</text>
+<text x="350" y="399" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">dp[i] = max(dp[i-1], dp[i-2] + nums[i])</text>
+<text x="350" y="417" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">dp[4] = max(11, 11 + 1) = 12</text>
+<text x="350" y="435" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">偷 1: 11 + 1 更大</text>
+<line x1="40" y1="458" x2="640" y2="458" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="40" y="478" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">答案 = dp[4] = 12</text>
+<rect x="40" y="514" width="22" height="16" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="70" y="522" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">新填的格子</text>
+<rect x="152" y="514" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="182" y="522" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">已有的格子</text>
+<rect x="264" y="514" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="261" y="511" width="28" height="22" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="300" y="522" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">被依赖 (橙色 ring)</text>
+<rect x="437.68" y="514" width="22" height="16" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="467.68" y="522" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">还没算</text>
+</svg>

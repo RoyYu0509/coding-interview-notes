@@ -1,0 +1,32 @@
+<svg width="100%" viewBox="0 0 680 330" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif'><title>stack_core</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">s = ( ( ( ) ) ) · 每个 ')' 要配的 = 左边最近的、还没被配对的 '('</text>
+<text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">最近 = 栈顶 · 后开的先关 (LIFO) ⇔ 括号嵌套</text>
+<rect x="60" y="130" width="38" height="34" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="79.0" y="147.0" font-size="16" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">(</text>
+<rect x="106" y="130" width="38" height="34" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="125.0" y="147.0" font-size="16" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">(</text>
+<rect x="152" y="130" width="38" height="34" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="171.0" y="147.0" font-size="16" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">(</text>
+<rect x="198" y="130" width="38" height="34" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="217.0" y="147.0" font-size="16" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">)</text>
+<rect x="244" y="130" width="38" height="34" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="263.0" y="147.0" font-size="16" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">)</text>
+<rect x="290" y="130" width="38" height="34" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="309.0" y="147.0" font-size="16" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">)</text>
+<path d="M171 130 L171 108 L217 108 L217 130" fill="none" stroke="#0F6E56" stroke-width="1.5"/>
+<path d="M125 130 L125 86 L263 86 L263 130" fill="none" stroke="#0F6E56" stroke-width="1.5"/>
+<path d="M79 130 L79 64 L309 64 L309 130" fill="none" stroke="#0F6E56" stroke-width="1.5"/>
+<text x="60" y="186" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">下标 0 1 2 3 4 5</text>
+<text x="60" y="206" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">弧 = 配对: (2,3) 最内层先配, 最后才是 (0,5)</text>
+<text x="494" y="62" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">读到下标 3 之前的 stack</text>
+<path d="M500 114 L500 210 L610 210 L610 114" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="508" y="182" width="94" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="555.0" y="195.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">下标 0</text>
+<rect x="508" y="152" width="94" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="555.0" y="165.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">下标 1</text>
+<rect x="508" y="122" width="94" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="505" y="119" width="100" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="555.0" y="135.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">下标 2</text>
+<text x="555" y="226" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">栈底</text>
+<text x="40" y="262" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">brute force: 每个 ')' 往左扫, 找最近没用过的 '(' → 每个 O(n), 共 O(n²)</text>
+<text x="40" y="284" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">stack: 栈本身就是 '往左扫会依次碰到的候选', 已按最近优先排好 → pop 一次 O(1), 共 O(n)</text>
+<text x="40" y="306" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶 (橙色 ring) 永远是最近的、还没处理完的那个</text></svg>

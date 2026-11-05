@@ -1,0 +1,53 @@
+<svg width="100%" viewBox="0 0 680 484" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Merge k Sorted Lists: heap holds one head per list</title><desc>three lists, heads in heap</desc><defs><marker id="mc0-ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="mc0-ao" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="484" fill="#FFFFFF"/>
+<text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">heap 里每条 list 只放 1 个: 它当前的 head</text>
+<text x="40" y="88" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">L0</text>
+<circle cx="100" cy="88" r="18" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="100" y="88" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<path d="M120 88 L142 88" fill="none" stroke="#898781" stroke-width="1.2" marker-end="url(#mc0-ag)"/>
+<circle cx="164" cy="88" r="18" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="164" y="88" font-size="16" text-anchor="middle" fill="#52514E" dominant-baseline="central">4</text>
+<path d="M184 88 L206 88" fill="none" stroke="#898781" stroke-width="1.2" marker-end="url(#mc0-ag)"/>
+<circle cx="228" cy="88" r="18" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="228" y="88" font-size="16" text-anchor="middle" fill="#52514E" dominant-baseline="central">5</text>
+<text x="40" y="138" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">L1</text>
+<circle cx="100" cy="138" r="18" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="100" y="138" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<path d="M120 138 L142 138" fill="none" stroke="#898781" stroke-width="1.2" marker-end="url(#mc0-ag)"/>
+<circle cx="164" cy="138" r="18" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="164" y="138" font-size="16" text-anchor="middle" fill="#52514E" dominant-baseline="central">3</text>
+<path d="M184 138 L206 138" fill="none" stroke="#898781" stroke-width="1.2" marker-end="url(#mc0-ag)"/>
+<circle cx="228" cy="138" r="18" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="228" y="138" font-size="16" text-anchor="middle" fill="#52514E" dominant-baseline="central">4</text>
+<text x="40" y="188" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">L2</text>
+<circle cx="100" cy="188" r="18" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="100" y="188" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<path d="M120 188 L142 188" fill="none" stroke="#898781" stroke-width="1.2" marker-end="url(#mc0-ag)"/>
+<circle cx="164" cy="188" r="18" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="164" y="188" font-size="16" text-anchor="middle" fill="#52514E" dominant-baseline="central">6</text>
+<text x="100" y="52" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">head</text>
+<path d="M300 138 L400 138" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#mc0-ag)"/>
+<text x="350" y="120" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">push head</text>
+<line x1="520" y1="96" x2="482" y2="146" stroke="#898781" stroke-width="1.2"/>
+<line x1="520" y1="96" x2="558" y2="146" stroke="#898781" stroke-width="1.2"/>
+<circle cx="520" cy="96" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="520" y="90" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<text x="520" y="104" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L0</text>
+<circle cx="520" cy="96" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="482" cy="146" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="482" y="140" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<text x="482" y="154" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L1</text>
+<circle cx="558" cy="146" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="558" y="140" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<text x="558" y="154" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L2</text>
+<text x="520" y="192" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">min-heap, 大小 = k = 3</text>
+<line x1="40" y1="222" x2="640" y2="222" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="246" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">为什么只要 head</text>
+<text x="40" y="270" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">每条 list 本身有序 → 全局最小的一定是某条 list 的 head</text>
+<text x="40" y="292" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">pop 出它 → 它的 next 成为这条 list 新的 head → push 回去</text>
+<text x="40" y="314" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">heap 里永远 ≤ k 个, 所以 pop / push 都是 O(log k)</text>
+<line x1="40" y1="346" x2="640" y2="346" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="368" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">N = 所有 node 总数</text>
+<text x="40" y="390" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">全部倒出来 sort: O(N log N)</text>
+<text x="40" y="412" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">heap 每个 node 进出各 1 次: O(N log k)</text>
+<text x="40" y="456" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">tuple 里放 i: val 相同时靠 i 决胜负, 不会去比较 ListNode (没有 &lt; )</text>
+</svg>

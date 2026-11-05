@@ -1,0 +1,41 @@
+<svg width="100%" viewBox="0 0 680 366" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Pow(x, n) 核心</title><desc>n=10 的二进制拆分:x^10 = x^8 * x^2,每个 bit 对应一个 x 的 2^k 次方</desc><defs><marker id="f8-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f8-r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f8-n" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f8-o" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#EF9F27" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="366" fill="#fff"/>
+<text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">x^10 = 10 个 x 连乘, 9 次乘法 · 但 10 = 8 + 2 (二进制 1010), 所以 x^10 = x^8 × x^2</text>
+<text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">x^1 → x^2 → x^4 → x^8 每个只需把前一个平方一次 · 用哪几个 = n 的哪几个 bit 是 1</text>
+<text x="40" y="74" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">n 的 bit</text>
+<text x="180" y="74" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">x 的几个相乘 (每格 = 一个 x)</text>
+<text x="40" y="112" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">bit 0 = 0</text>
+<text x="110" y="112" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">x^1</text>
+<rect x="180" y="98" width="16" height="28" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="206" y="112" font-size="12" fill="#444441" text-anchor="start" font-weight="400" dominant-baseline="central">bit = 0 → 跳过</text>
+<text x="40" y="152" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">bit 1 = 1</text>
+<text x="110" y="152" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">x^2</text>
+<rect x="180" y="138" width="16" height="28" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<rect x="198" y="138" width="16" height="28" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<text x="224" y="152" font-size="12" fill="#085041" text-anchor="start" font-weight="400" dominant-baseline="central">bit = 1 → 乘进答案</text>
+<text x="40" y="192" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">bit 2 = 0</text>
+<text x="110" y="192" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">x^4</text>
+<rect x="180" y="178" width="16" height="28" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<rect x="198" y="178" width="16" height="28" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<rect x="216" y="178" width="16" height="28" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<rect x="234" y="178" width="16" height="28" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="260" y="192" font-size="12" fill="#444441" text-anchor="start" font-weight="400" dominant-baseline="central">bit = 0 → 跳过</text>
+<text x="40" y="232" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">bit 3 = 1</text>
+<text x="110" y="232" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">x^8</text>
+<rect x="180" y="218" width="16" height="28" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<rect x="198" y="218" width="16" height="28" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<rect x="216" y="218" width="16" height="28" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<rect x="234" y="218" width="16" height="28" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<rect x="252" y="218" width="16" height="28" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<rect x="270" y="218" width="16" height="28" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<rect x="288" y="218" width="16" height="28" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<rect x="306" y="218" width="16" height="28" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<text x="332" y="232" font-size="12" fill="#085041" text-anchor="start" font-weight="400" dominant-baseline="central">bit = 1 → 乘进答案</text>
+<line x1="40" y1="254" x2="640" y2="254" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="40" y="272" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">n = 10 = 8 + 2  →  x^10 = x^8 × x^2</text>
+<text x="40" y="296" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">平方 4 次 (bit 数 = log2(10) 向上取整 = 4), 乘 2 次 (1 的个数) · 总共 O(log n), 不是 O(n)</text>
+<text x="40" y="314" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">n 是负数: x^(-n) = (1/x)^n, 先把 x 取倒数再把 n 变成正数</text>
+<rect x="40" y="335" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<text x="60" y="342" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">该 bit = 1, 乘进答案</text>
+<rect x="208.0" y="335" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="228.0" y="342" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">该 bit = 0, 跳过</text>
+</svg>

@@ -1,0 +1,122 @@
+<svg width="100%" viewBox="0 0 680 572" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>nums = [1, 2, 3, 4], total = 10, target = 5 · dp[c] = 处理过的数里能不能凑出和 c</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">nums = [1, 2, 3, 4], total = 10, target = 5 · dp[c] = 处理过的数里能不能凑出和 c</text>
+<text x="40" y="38" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">每个 x: c 从 target 倒着走到 x; dp[c] |= dp[c - x]; 读的 dp[c-x] 都是处理 x 之前的旧值</text>
+<text x="40" y="72" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">step</text>
+<text x="108" y="72" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">dp 数组 (每个 x 处理完后)</text>
+<text x="360" y="72" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">计算</text>
+<line x1="40" y1="84" x2="640" y2="84" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="40" y="100" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">c</text>
+<text x="128.0" y="100" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">0</text>
+<text x="168.0" y="100" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">1</text>
+<text x="208.0" y="100" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">2</text>
+<text x="248.0" y="100" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">3</text>
+<text x="288.0" y="100" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">4</text>
+<text x="328.0" y="100" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">5</text>
+<line x1="40" y1="114" x2="640" y2="114" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="109" y="128" width="38" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="128.0" y="143.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">T</text>
+<rect x="149" y="128" width="38" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="168.0" y="143.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">F</text>
+<rect x="189" y="128" width="38" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="208.0" y="143.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">F</text>
+<rect x="229" y="128" width="38" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="248.0" y="143.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">F</text>
+<rect x="269" y="128" width="38" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="288.0" y="143.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">F</text>
+<rect x="309" y="128" width="38" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="328.0" y="143.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">F</text>
+<text x="40" y="135.0" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">base</text>
+<text x="360" y="137" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">dp[0] = True</text>
+<text x="360" y="155" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">空集的和是 0</text>
+<line x1="40" y1="178" x2="640" y2="178" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="109" y="192" width="38" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="128.0" y="207.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">T</text>
+<rect x="149" y="192" width="38" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="168.0" y="207.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">T</text>
+<rect x="189" y="192" width="38" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="208.0" y="207.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">F</text>
+<rect x="229" y="192" width="38" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="248.0" y="207.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">F</text>
+<rect x="269" y="192" width="38" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="288.0" y="207.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">F</text>
+<rect x="309" y="192" width="38" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="328.0" y="207.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">F</text>
+<rect x="106" y="189" width="44" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<path d="M128.0 224 C128.0 238 164.0 238 164.0 227" fill="none" stroke="#52514E" stroke-width="1.4" marker-end="url(#arr)"/>
+<text x="40" y="199.0" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">x = 1</text>
+<text x="40" y="216.0" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">c: 5 → 1</text>
+<text x="360" y="201" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">dp[c] = dp[c] or dp[c - 1]</text>
+<text x="360" y="219" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">dp[1] 变 True: dp[1 - 1] = dp[0] 是 True</text>
+<line x1="40" y1="256" x2="640" y2="256" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="109" y="270" width="38" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="128.0" y="285.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">T</text>
+<rect x="149" y="270" width="38" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="168.0" y="285.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">T</text>
+<rect x="189" y="270" width="38" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="208.0" y="285.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">T</text>
+<rect x="229" y="270" width="38" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="248.0" y="285.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">T</text>
+<rect x="269" y="270" width="38" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="288.0" y="285.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">F</text>
+<rect x="309" y="270" width="38" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="328.0" y="285.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">F</text>
+<rect x="106" y="267" width="44" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="146" y="267" width="44" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<path d="M168.0 302 C168.0 322 244.0 322 244.0 305" fill="none" stroke="#52514E" stroke-width="1.4" marker-end="url(#arr)"/>
+<path d="M128.0 302 C128.0 322 204.0 322 204.0 305" fill="none" stroke="#52514E" stroke-width="1.4" marker-end="url(#arr)"/>
+<text x="40" y="277.0" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">x = 2</text>
+<text x="40" y="294.0" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">c: 5 → 2</text>
+<text x="360" y="279" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">dp[c] = dp[c] or dp[c - 2]</text>
+<text x="360" y="297" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">dp[3] 变 True: dp[3 - 2] = dp[1] 是 True</text>
+<text x="360" y="315" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">dp[2] 变 True: dp[2 - 2] = dp[0] 是 True</text>
+<line x1="40" y1="338" x2="640" y2="338" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="109" y="352" width="38" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="128.0" y="367.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">T</text>
+<rect x="149" y="352" width="38" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="168.0" y="367.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">T</text>
+<rect x="189" y="352" width="38" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="208.0" y="367.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">T</text>
+<rect x="229" y="352" width="38" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="248.0" y="367.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">T</text>
+<rect x="269" y="352" width="38" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="288.0" y="367.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">T</text>
+<rect x="309" y="352" width="38" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="328.0" y="367.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">T</text>
+<rect x="146" y="349" width="44" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="186" y="349" width="44" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<path d="M208.0 384 C208.0 410 324.0 410 324.0 387" fill="none" stroke="#52514E" stroke-width="1.4" marker-end="url(#arr)"/>
+<path d="M168.0 384 C168.0 410 284.0 410 284.0 387" fill="none" stroke="#52514E" stroke-width="1.4" marker-end="url(#arr)"/>
+<text x="40" y="359.0" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">x = 3</text>
+<text x="40" y="376.0" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">c: 5 → 3</text>
+<text x="360" y="361" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">dp[c] = dp[c] or dp[c - 3]</text>
+<text x="360" y="379" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">dp[5] 变 True: dp[5 - 3] = dp[2] 是 True</text>
+<text x="360" y="397" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">dp[4] 变 True: dp[4 - 3] = dp[1] 是 True</text>
+<line x1="40" y1="420" x2="640" y2="420" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="109" y="434" width="38" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="128.0" y="449.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">T</text>
+<rect x="149" y="434" width="38" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="168.0" y="449.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">T</text>
+<rect x="189" y="434" width="38" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="208.0" y="449.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">T</text>
+<rect x="229" y="434" width="38" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="248.0" y="449.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">T</text>
+<rect x="269" y="434" width="38" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="288.0" y="449.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">T</text>
+<rect x="309" y="434" width="38" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="328.0" y="449.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">T</text>
+<text x="40" y="441.0" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">x = 4</text>
+<text x="40" y="458.0" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">c: 5 → 4</text>
+<text x="360" y="443" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">dp[c] = dp[c] or dp[c - 4]</text>
+<text x="360" y="461" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">没有新的 True</text>
+<line x1="40" y1="484" x2="640" y2="484" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="40" y="504" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">答案 = dp[5] = True  ({2,3} 或 {1,4})</text>
+<rect x="40" y="540" width="22" height="16" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="70" y="548" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">新填的格子</text>
+<rect x="152" y="540" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="182" y="548" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">已有的格子</text>
+<rect x="264" y="540" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="261" y="537" width="28" height="22" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="300" y="548" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">被依赖 (橙色 ring)</text>
+<rect x="437.68" y="540" width="22" height="16" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="467.68" y="548" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">还没算</text>
+</svg>

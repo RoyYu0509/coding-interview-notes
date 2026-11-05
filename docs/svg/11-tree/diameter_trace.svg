@@ -1,0 +1,245 @@
+<svg width="100%" viewBox="0 0 680 1124" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Diameter of Binary Tree 的 post-order trace</title><desc>tree [1, 2, 3, 4, 5, None, None, 6, None, None, 7]; 答案 4 = 路径 6-4-2-5-7, 拐点在 node 2</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">L、R = 左、右子树的 height (点数) · best = 目前见过的最长路径 (边数) · 初值 0</text>
+<text x="40" y="38" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">每步: 先更新 best (经过本 node 的路径 = L + R), 再 return 1 + max(L, R) 给父亲</text>
+<text x="40" y="64" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">step</text>
+<text x="100" y="64" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">tree (灰 = 已返回, 橙圈 = 当前)</text>
+<text x="380" y="64" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">当前 node 的合并</text>
+<text x="560" y="64" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">全局</text>
+<line x1="40" y1="74" x2="640" y2="74" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="143.0" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">step 1</text>
+<text x="40" y="161.0" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">node 6</text>
+<line x1="148" y1="170" x2="118" y2="200" stroke="#898781" stroke-width="1.2"/>
+<line x1="178" y1="140" x2="148" y2="170" stroke="#898781" stroke-width="1.2"/>
+<line x1="268" y1="110" x2="178" y2="140" stroke="#898781" stroke-width="1.2"/>
+<line x1="178" y1="140" x2="208" y2="170" stroke="#898781" stroke-width="1.2"/>
+<line x1="208" y1="170" x2="238" y2="200" stroke="#898781" stroke-width="1.2"/>
+<line x1="268" y1="110" x2="298" y2="140" stroke="#898781" stroke-width="1.2"/>
+<circle cx="118" cy="200" r="13" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<circle cx="118" cy="200" r="17" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="118" y="200" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">6</text>
+<text x="102" y="188" font-size="12" text-anchor="end" fill="#085041" font-weight="600" dominant-baseline="central">→1</text>
+<circle cx="148" cy="170" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="148" y="170" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">4</text>
+<circle cx="178" cy="140" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="178" y="140" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<circle cx="208" cy="170" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="208" y="170" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">5</text>
+<circle cx="238" cy="200" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="238" y="200" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">7</text>
+<circle cx="268" cy="110" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="268" y="110" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<circle cx="298" cy="140" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="298" y="140" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<text x="380" y="132.0" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">L = 0, R = 0</text>
+<text x="380" y="152.0" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">best = max(0, 0 + 0) = 0</text>
+<text x="380" y="172.0" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">return 1 + max(0, 0) = 1</text>
+<text x="560" y="152.0" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">best = 0</text>
+<line x1="40" y1="218" x2="640" y2="218" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="279.0" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">step 2</text>
+<text x="40" y="297.0" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">node 4</text>
+<line x1="148" y1="306" x2="118" y2="336" stroke="#898781" stroke-width="1.2"/>
+<line x1="178" y1="276" x2="148" y2="306" stroke="#898781" stroke-width="1.2"/>
+<line x1="268" y1="246" x2="178" y2="276" stroke="#898781" stroke-width="1.2"/>
+<line x1="178" y1="276" x2="208" y2="306" stroke="#898781" stroke-width="1.2"/>
+<line x1="208" y1="306" x2="238" y2="336" stroke="#898781" stroke-width="1.2"/>
+<line x1="268" y1="246" x2="298" y2="276" stroke="#898781" stroke-width="1.2"/>
+<circle cx="118" cy="336" r="13" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="118" y="336" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">6</text>
+<text x="102" y="324" font-size="12" text-anchor="end" fill="#6B6A65" dominant-baseline="central">→1</text>
+<circle cx="148" cy="306" r="13" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<circle cx="148" cy="306" r="17" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="148" y="306" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">4</text>
+<text x="132" y="294" font-size="12" text-anchor="end" fill="#085041" font-weight="600" dominant-baseline="central">→2</text>
+<circle cx="178" cy="276" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="178" y="276" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<circle cx="208" cy="306" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="208" y="306" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">5</text>
+<circle cx="238" cy="336" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="238" y="336" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">7</text>
+<circle cx="268" cy="246" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="268" y="246" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<circle cx="298" cy="276" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="298" y="276" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<text x="380" y="268.0" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">L = 1, R = 0</text>
+<text x="380" y="288.0" font-size="14" text-anchor="start" fill="#085041" font-weight="600" dominant-baseline="central">best = max(0, 1 + 0) = 1</text>
+<text x="380" y="308.0" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">return 1 + max(1, 0) = 2</text>
+<text x="560" y="288.0" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">best = 1</text>
+<line x1="40" y1="354" x2="640" y2="354" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="415.0" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">step 3</text>
+<text x="40" y="433.0" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">node 7</text>
+<line x1="148" y1="442" x2="118" y2="472" stroke="#898781" stroke-width="1.2"/>
+<line x1="178" y1="412" x2="148" y2="442" stroke="#898781" stroke-width="1.2"/>
+<line x1="268" y1="382" x2="178" y2="412" stroke="#898781" stroke-width="1.2"/>
+<line x1="178" y1="412" x2="208" y2="442" stroke="#898781" stroke-width="1.2"/>
+<line x1="208" y1="442" x2="238" y2="472" stroke="#898781" stroke-width="1.2"/>
+<line x1="268" y1="382" x2="298" y2="412" stroke="#898781" stroke-width="1.2"/>
+<circle cx="118" cy="472" r="13" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="118" y="472" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">6</text>
+<text x="102" y="460" font-size="12" text-anchor="end" fill="#6B6A65" dominant-baseline="central">→1</text>
+<circle cx="148" cy="442" r="13" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="148" y="442" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">4</text>
+<text x="132" y="430" font-size="12" text-anchor="end" fill="#6B6A65" dominant-baseline="central">→2</text>
+<circle cx="178" cy="412" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="178" y="412" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<circle cx="208" cy="442" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="208" y="442" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">5</text>
+<circle cx="238" cy="472" r="13" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<circle cx="238" cy="472" r="17" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="238" y="472" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">7</text>
+<text x="254" y="460" font-size="12" text-anchor="start" fill="#085041" font-weight="600" dominant-baseline="central">→1</text>
+<circle cx="268" cy="382" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="268" y="382" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<circle cx="298" cy="412" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="298" y="412" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<text x="380" y="404.0" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">L = 0, R = 0</text>
+<text x="380" y="424.0" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">best = max(1, 0 + 0) = 1</text>
+<text x="380" y="444.0" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">return 1 + max(0, 0) = 1</text>
+<text x="560" y="424.0" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">best = 1</text>
+<line x1="40" y1="490" x2="640" y2="490" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="551.0" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">step 4</text>
+<text x="40" y="569.0" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">node 5</text>
+<line x1="148" y1="578" x2="118" y2="608" stroke="#898781" stroke-width="1.2"/>
+<line x1="178" y1="548" x2="148" y2="578" stroke="#898781" stroke-width="1.2"/>
+<line x1="268" y1="518" x2="178" y2="548" stroke="#898781" stroke-width="1.2"/>
+<line x1="178" y1="548" x2="208" y2="578" stroke="#898781" stroke-width="1.2"/>
+<line x1="208" y1="578" x2="238" y2="608" stroke="#898781" stroke-width="1.2"/>
+<line x1="268" y1="518" x2="298" y2="548" stroke="#898781" stroke-width="1.2"/>
+<circle cx="118" cy="608" r="13" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="118" y="608" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">6</text>
+<text x="102" y="596" font-size="12" text-anchor="end" fill="#6B6A65" dominant-baseline="central">→1</text>
+<circle cx="148" cy="578" r="13" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="148" y="578" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">4</text>
+<text x="132" y="566" font-size="12" text-anchor="end" fill="#6B6A65" dominant-baseline="central">→2</text>
+<circle cx="178" cy="548" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="178" y="548" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<circle cx="208" cy="578" r="13" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<circle cx="208" cy="578" r="17" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="208" y="578" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">5</text>
+<text x="224" y="566" font-size="12" text-anchor="start" fill="#085041" font-weight="600" dominant-baseline="central">→2</text>
+<circle cx="238" cy="608" r="13" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="238" y="608" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">7</text>
+<text x="254" y="596" font-size="12" text-anchor="start" fill="#6B6A65" dominant-baseline="central">→1</text>
+<circle cx="268" cy="518" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="268" y="518" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<circle cx="298" cy="548" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="298" y="548" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<text x="380" y="540.0" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">L = 0, R = 1</text>
+<text x="380" y="560.0" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">best = max(1, 0 + 1) = 1</text>
+<text x="380" y="580.0" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">return 1 + max(0, 1) = 2</text>
+<text x="560" y="560.0" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">best = 1</text>
+<line x1="40" y1="626" x2="640" y2="626" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="687.0" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">step 5</text>
+<text x="40" y="705.0" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">node 2</text>
+<line x1="148" y1="714" x2="118" y2="744" stroke="#898781" stroke-width="1.2"/>
+<line x1="178" y1="684" x2="148" y2="714" stroke="#898781" stroke-width="1.2"/>
+<line x1="268" y1="654" x2="178" y2="684" stroke="#898781" stroke-width="1.2"/>
+<line x1="178" y1="684" x2="208" y2="714" stroke="#898781" stroke-width="1.2"/>
+<line x1="208" y1="714" x2="238" y2="744" stroke="#898781" stroke-width="1.2"/>
+<line x1="268" y1="654" x2="298" y2="684" stroke="#898781" stroke-width="1.2"/>
+<circle cx="118" cy="744" r="13" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="118" y="744" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">6</text>
+<text x="102" y="732" font-size="12" text-anchor="end" fill="#6B6A65" dominant-baseline="central">→1</text>
+<circle cx="148" cy="714" r="13" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="148" y="714" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">4</text>
+<text x="132" y="702" font-size="12" text-anchor="end" fill="#6B6A65" dominant-baseline="central">→2</text>
+<circle cx="178" cy="684" r="13" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<circle cx="178" cy="684" r="17" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="178" y="684" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">2</text>
+<text x="162" y="672" font-size="12" text-anchor="end" fill="#085041" font-weight="600" dominant-baseline="central">→3</text>
+<circle cx="208" cy="714" r="13" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="208" y="714" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">5</text>
+<text x="224" y="702" font-size="12" text-anchor="start" fill="#6B6A65" dominant-baseline="central">→2</text>
+<circle cx="238" cy="744" r="13" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="238" y="744" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">7</text>
+<text x="254" y="732" font-size="12" text-anchor="start" fill="#6B6A65" dominant-baseline="central">→1</text>
+<circle cx="268" cy="654" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="268" y="654" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<circle cx="298" cy="684" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="298" y="684" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<text x="380" y="676.0" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">L = 2, R = 2</text>
+<text x="380" y="696.0" font-size="14" text-anchor="start" fill="#085041" font-weight="600" dominant-baseline="central">best = max(1, 2 + 2) = 4</text>
+<text x="380" y="716.0" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">return 1 + max(2, 2) = 3</text>
+<text x="560" y="696.0" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">best = 4</text>
+<line x1="40" y1="762" x2="640" y2="762" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="823.0" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">step 6</text>
+<text x="40" y="841.0" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">node 3</text>
+<line x1="148" y1="850" x2="118" y2="880" stroke="#898781" stroke-width="1.2"/>
+<line x1="178" y1="820" x2="148" y2="850" stroke="#898781" stroke-width="1.2"/>
+<line x1="268" y1="790" x2="178" y2="820" stroke="#898781" stroke-width="1.2"/>
+<line x1="178" y1="820" x2="208" y2="850" stroke="#898781" stroke-width="1.2"/>
+<line x1="208" y1="850" x2="238" y2="880" stroke="#898781" stroke-width="1.2"/>
+<line x1="268" y1="790" x2="298" y2="820" stroke="#898781" stroke-width="1.2"/>
+<circle cx="118" cy="880" r="13" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="118" y="880" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">6</text>
+<text x="102" y="868" font-size="12" text-anchor="end" fill="#6B6A65" dominant-baseline="central">→1</text>
+<circle cx="148" cy="850" r="13" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="148" y="850" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">4</text>
+<text x="132" y="838" font-size="12" text-anchor="end" fill="#6B6A65" dominant-baseline="central">→2</text>
+<circle cx="178" cy="820" r="13" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="178" y="820" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">2</text>
+<text x="162" y="808" font-size="12" text-anchor="end" fill="#6B6A65" dominant-baseline="central">→3</text>
+<circle cx="208" cy="850" r="13" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="208" y="850" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">5</text>
+<text x="224" y="838" font-size="12" text-anchor="start" fill="#6B6A65" dominant-baseline="central">→2</text>
+<circle cx="238" cy="880" r="13" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="238" y="880" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">7</text>
+<text x="254" y="868" font-size="12" text-anchor="start" fill="#6B6A65" dominant-baseline="central">→1</text>
+<circle cx="268" cy="790" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="268" y="790" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<circle cx="298" cy="820" r="13" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<circle cx="298" cy="820" r="17" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="298" y="820" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">3</text>
+<text x="314" y="808" font-size="12" text-anchor="start" fill="#085041" font-weight="600" dominant-baseline="central">→1</text>
+<text x="380" y="812.0" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">L = 0, R = 0</text>
+<text x="380" y="832.0" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">best = max(4, 0 + 0) = 4</text>
+<text x="380" y="852.0" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">return 1 + max(0, 0) = 1</text>
+<text x="560" y="832.0" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">best = 4</text>
+<line x1="40" y1="898" x2="640" y2="898" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="959.0" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">step 7</text>
+<text x="40" y="977.0" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">node 1</text>
+<line x1="148" y1="986" x2="118" y2="1016" stroke="#898781" stroke-width="1.2"/>
+<line x1="178" y1="956" x2="148" y2="986" stroke="#898781" stroke-width="1.2"/>
+<line x1="268" y1="926" x2="178" y2="956" stroke="#898781" stroke-width="1.2"/>
+<line x1="178" y1="956" x2="208" y2="986" stroke="#898781" stroke-width="1.2"/>
+<line x1="208" y1="986" x2="238" y2="1016" stroke="#898781" stroke-width="1.2"/>
+<line x1="268" y1="926" x2="298" y2="956" stroke="#898781" stroke-width="1.2"/>
+<circle cx="118" cy="1016" r="13" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="118" y="1016" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">6</text>
+<text x="102" y="1004" font-size="12" text-anchor="end" fill="#6B6A65" dominant-baseline="central">→1</text>
+<circle cx="148" cy="986" r="13" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="148" y="986" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">4</text>
+<text x="132" y="974" font-size="12" text-anchor="end" fill="#6B6A65" dominant-baseline="central">→2</text>
+<circle cx="178" cy="956" r="13" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="178" y="956" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">2</text>
+<text x="162" y="944" font-size="12" text-anchor="end" fill="#6B6A65" dominant-baseline="central">→3</text>
+<circle cx="208" cy="986" r="13" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="208" y="986" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">5</text>
+<text x="224" y="974" font-size="12" text-anchor="start" fill="#6B6A65" dominant-baseline="central">→2</text>
+<circle cx="238" cy="1016" r="13" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="238" y="1016" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">7</text>
+<text x="254" y="1004" font-size="12" text-anchor="start" fill="#6B6A65" dominant-baseline="central">→1</text>
+<circle cx="268" cy="926" r="13" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<circle cx="268" cy="926" r="17" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="268" y="926" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">1</text>
+<text x="284" y="914" font-size="12" text-anchor="start" fill="#085041" font-weight="600" dominant-baseline="central">→4</text>
+<circle cx="298" cy="956" r="13" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="298" y="956" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">3</text>
+<text x="314" y="944" font-size="12" text-anchor="start" fill="#6B6A65" dominant-baseline="central">→1</text>
+<text x="380" y="948.0" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">L = 3, R = 1</text>
+<text x="380" y="968.0" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">best = max(4, 3 + 1) = 4</text>
+<text x="380" y="988.0" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">return 1 + max(3, 1) = 4</text>
+<text x="560" y="968.0" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">best = 4</text>
+<line x1="40" y1="1034" x2="640" y2="1034" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="1050" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">答案 = best = 4 (在 step 5 的 node 2 更新, 不是根)</text>
+<text x="40" y="1072" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">根 node 1: L + R = 3 + 1 = 4, 也是 4, 没有超过, best 不变</text>
+<circle cx="48" cy="1102" r="7" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<circle cx="48" cy="1102" r="11" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="48" y="1102" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central"></text>
+<text x="64" y="1102" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">当前 node</text>
+<circle cx="143" cy="1102" r="7" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="143" y="1102" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central"></text>
+<text x="159" y="1102" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">已返回</text>
+<circle cx="216" cy="1102" r="7" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="216" y="1102" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central"></text>
+<text x="232" y="1102" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">还没访问</text>
+</svg>

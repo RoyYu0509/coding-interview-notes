@@ -1,0 +1,52 @@
+<svg width="100%" viewBox="0 0 680 352" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>BST 的 inorder = 排好序</title><desc>左 &lt; node &lt; 右, 所以 左→自己→右 依次读出来是升序</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<line x1="196" y1="158" x2="150" y2="202" stroke="#898781" stroke-width="1.2"/>
+<line x1="242" y1="114" x2="196" y2="158" stroke="#898781" stroke-width="1.2"/>
+<line x1="334" y1="70" x2="242" y2="114" stroke="#898781" stroke-width="1.2"/>
+<line x1="242" y1="114" x2="288" y2="158" stroke="#898781" stroke-width="1.2"/>
+<line x1="334" y1="70" x2="380" y2="114" stroke="#898781" stroke-width="1.2"/>
+<circle cx="150" cy="202" r="14" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="150" y="202" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<circle cx="196" cy="158" r="14" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="196" y="158" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<circle cx="242" cy="114" r="14" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<circle cx="242" cy="114" r="18" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="242" y="114" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">3</text>
+<circle cx="288" cy="158" r="14" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="288" y="158" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">4</text>
+<circle cx="334" cy="70" r="14" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="334" y="70" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">5</text>
+<circle cx="380" cy="114" r="14" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="380" y="114" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">6</text>
+<text x="40" y="20" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">BST: 每个 node 的左子树全部 &lt; node &lt; 右子树全部. inorder = 左 → 自己 → 右</text>
+<text x="40" y="256" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">inorder:</text>
+<line x1="150" y1="217" x2="150" y2="240" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="131" y="242" width="38" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="150.0" y="256.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<line x1="196" y1="173" x2="196" y2="240" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="177" y="242" width="38" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="196.0" y="256.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<line x1="242" y1="129" x2="242" y2="240" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="223" y="242" width="38" height="28" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="220" y="239" width="44" height="34" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="242.0" y="256.0" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">3</text>
+<line x1="288" y1="173" x2="288" y2="240" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="269" y="242" width="38" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="288.0" y="256.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">4</text>
+<line x1="334" y1="85" x2="334" y2="240" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="315" y="242" width="38" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="334.0" y="256.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">5</text>
+<line x1="380" y1="129" x2="380" y2="240" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="361" y="242" width="38" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="380.0" y="256.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">6</text>
+<line x1="131" y1="282" x2="307" y2="282" stroke="#0F6E56" stroke-width="2"/>
+<text x="219.0" y="300" font-size="12" text-anchor="middle" fill="#085041" dominant-baseline="central">5 的左子树: 全部 &lt; 5</text>
+<line x1="361" y1="282" x2="399" y2="282" stroke="#993C1D" stroke-width="2"/>
+<text x="402" y="300" font-size="12" text-anchor="end" fill="#712B13" dominant-baseline="central">右子树: &gt; 5</text>
+<text x="430" y="84" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">k = 3 → 数到第 3 个就停</text>
+<text x="430" y="108" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">橙圈 = 第 3 个 = 3</text>
+<text x="430" y="140" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">暴力: 全部收集 → sort</text>
+<text x="430" y="160" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">O(n log n) 时间, O(n) 空间</text>
+<text x="430" y="190" font-size="12" text-anchor="start" fill="#085041" dominant-baseline="central">利用 BST 性质: 不用 sort</text>
+<text x="430" y="210" font-size="12" text-anchor="start" fill="#085041" dominant-baseline="central">且能提前停: O(h + k)</text>
+<text x="40" y="338" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">node 的虚线 = 它在 inorder 序列里的位置: 画 tree 时按 inorder 排 x 坐标, 同一列就是同一个数</text>
+</svg>

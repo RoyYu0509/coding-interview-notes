@@ -1,0 +1,66 @@
+<svg width="100%" viewBox="0 0 680 392" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Palindrome Number 核心</title><desc>只反转后半部分:x 和 rev 相遇时停,奇数位时 rev 多一位中间数</desc><defs><marker id="f10-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f10-r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f10-n" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f10-o" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#EF9F27" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="392" fill="#fff"/>
+<text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">整个数反转: 位数多时可能溢出 (如 Reverse Integer 要检查 32-bit)· 回文只需要反转「后一半」</text>
+<text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">x % 10 取末位, 接到 rev 的末尾; x // 10 丢掉末位 · 循环到 x &lt;= rev 就是转完一半了</text>
+<text x="40" y="86" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">x = 12321</text>
+<text x="40" y="106" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">奇数位</text>
+<rect x="150" y="70" width="36" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="168.0" y="86.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<rect x="190" y="70" width="36" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="208.0" y="86.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">2</text>
+<rect x="230" y="70" width="36" height="32" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<rect x="227" y="67" width="42" height="38" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="248.0" y="86.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">3</text>
+<rect x="270" y="70" width="36" height="32" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<text x="288.0" y="86.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">2</text>
+<rect x="310" y="70" width="36" height="32" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<text x="328.0" y="86.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<text x="360" y="78" font-size="12" fill="#444441" text-anchor="start" font-weight="400" dominant-baseline="central">前 2 位留在 x</text>
+<text x="360" y="96" font-size="12" fill="#085041" text-anchor="start" font-weight="400" dominant-baseline="central">后 3 位 (含中间的 3) 移进 rev</text>
+<text x="40" y="146" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">停下时:</text>
+<text x="110" y="146" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">x =</text>
+<rect x="150" y="130" width="36" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="168.0" y="146.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<rect x="190" y="130" width="36" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="208.0" y="146.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">2</text>
+<text x="270" y="146" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">rev =</text>
+<rect x="314" y="130" width="36" height="32" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<text x="332.0" y="146.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<rect x="354" y="130" width="36" height="32" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<text x="372.0" y="146.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">2</text>
+<rect x="394" y="130" width="36" height="32" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<text x="412.0" y="146.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">3</text>
+<text x="446" y="138" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">rev 多了中间数 3</text>
+<text x="446" y="156" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">x == rev // 10 → 12 == 12 ✓</text>
+<line x1="40" y1="180" x2="640" y2="180" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="40" y="212" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">x = 1221</text>
+<text x="40" y="232" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">偶数位</text>
+<rect x="150" y="196" width="36" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="168.0" y="212.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<rect x="190" y="196" width="36" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="208.0" y="212.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">2</text>
+<rect x="230" y="196" width="36" height="32" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<text x="248.0" y="212.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">2</text>
+<rect x="270" y="196" width="36" height="32" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<text x="288.0" y="212.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<text x="320" y="204" font-size="12" fill="#444441" text-anchor="start" font-weight="400" dominant-baseline="central">前 2 位留在 x</text>
+<text x="320" y="222" font-size="12" fill="#085041" text-anchor="start" font-weight="400" dominant-baseline="central">后 2 位移进 rev</text>
+<text x="40" y="272" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">停下时:</text>
+<text x="110" y="272" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">x =</text>
+<rect x="150" y="256" width="36" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="168.0" y="272.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<rect x="190" y="256" width="36" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="208.0" y="272.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">2</text>
+<text x="270" y="272" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">rev =</text>
+<rect x="314" y="256" width="36" height="32" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<text x="332.0" y="272.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<rect x="354" y="256" width="36" height="32" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<text x="372.0" y="272.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">2</text>
+<text x="446" y="272" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">x == rev → 12 == 12 ✓</text>
+<line x1="40" y1="306" x2="640" y2="306" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="40" y="322" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">rev 里是后半段倒过来的 · 回文 ⟺ 前半段 == 倒过来的后半段 · 位数一半, 也不会溢出</text>
+<text x="40" y="342" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">边界: 负数不是回文; 末位是 0 的数 (如 10, 120) 反过来会有前导 0, 只有 0 本身是回文</text>
+<rect x="40" y="363" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="60" y="370" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">留在 x 的前半</text>
+<rect x="161.8" y="363" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<text x="181.8" y="370" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">移进 rev 的后半</text>
+</svg>

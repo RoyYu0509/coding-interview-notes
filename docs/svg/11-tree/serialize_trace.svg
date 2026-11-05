@@ -1,0 +1,178 @@
+<svg width="100%" viewBox="0 0 680 702" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Serialize 的 pre-order trace</title><desc>tree [1, 2, 3, None, None, 4, 5]; 绿色 token = 这一步新写进去的</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">pre-order: 先写自己, 再递归左、再递归右 · None 也写一个 "#" · 每行 = 访问一个 node</text>
+<text x="40" y="38" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">out 越写越长, 最后 11 个 token = 5 个 node + 6 个 "#" (n 个 node 恰好有 n + 1 个 None)</text>
+<text x="40" y="64" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">step</text>
+<text x="94" y="64" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">tree</text>
+<text x="262" y="64" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">out (token 序列)</text>
+<line x1="40" y1="74" x2="640" y2="74" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="128.0" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">step 1</text>
+<text x="40" y="146.0" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">node 1</text>
+<line x1="126" y1="110" x2="96" y2="140" stroke="#898781" stroke-width="1.2"/>
+<line x1="186" y1="140" x2="156" y2="170" stroke="#898781" stroke-width="1.2"/>
+<line x1="126" y1="110" x2="186" y2="140" stroke="#898781" stroke-width="1.2"/>
+<line x1="186" y1="140" x2="216" y2="170" stroke="#898781" stroke-width="1.2"/>
+<circle cx="96" cy="140" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="96" y="140" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<circle cx="126" cy="110" r="13" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<circle cx="126" cy="110" r="17" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="126" y="110" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">1</text>
+<circle cx="156" cy="170" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="156" y="170" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">4</text>
+<circle cx="186" cy="140" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="186" y="140" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<circle cx="216" cy="170" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="216" y="170" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">5</text>
+<text x="262" y="103.0" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">out (token 序列)</text>
+<rect x="262" y="117.0" width="26" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="275.0" y="130.0" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">1</text>
+<text x="262" y="159.0" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">visit 1: 写 "1", 然后进左子树</text>
+<line x1="40" y1="188" x2="640" y2="188" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="234.0" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">step 2</text>
+<text x="40" y="252.0" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">node 2</text>
+<line x1="126" y1="216" x2="96" y2="246" stroke="#898781" stroke-width="1.2"/>
+<line x1="186" y1="246" x2="156" y2="276" stroke="#898781" stroke-width="1.2"/>
+<line x1="126" y1="216" x2="186" y2="246" stroke="#898781" stroke-width="1.2"/>
+<line x1="186" y1="246" x2="216" y2="276" stroke="#898781" stroke-width="1.2"/>
+<circle cx="96" cy="246" r="13" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<circle cx="96" cy="246" r="17" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="96" y="246" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">2</text>
+<circle cx="126" cy="216" r="13" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="126" y="216" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">1</text>
+<circle cx="156" cy="276" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="156" y="276" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">4</text>
+<circle cx="186" cy="246" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="186" y="246" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<circle cx="216" cy="276" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="216" y="276" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">5</text>
+<text x="262" y="209.0" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">out (token 序列)</text>
+<rect x="262" y="223.0" width="26" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="275.0" y="236.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<rect x="290" y="223.0" width="26" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="303.0" y="236.0" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">2</text>
+<rect x="318" y="223.0" width="26" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="331.0" y="236.0" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">#</text>
+<rect x="346" y="223.0" width="26" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="359.0" y="236.0" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">#</text>
+<text x="262" y="265.0" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">visit 2: 写 "2"; 左、右都是 None → 写 "#" "#"</text>
+<line x1="40" y1="294" x2="640" y2="294" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="340.0" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">step 3</text>
+<text x="40" y="358.0" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">node 3</text>
+<line x1="126" y1="322" x2="96" y2="352" stroke="#898781" stroke-width="1.2"/>
+<line x1="186" y1="352" x2="156" y2="382" stroke="#898781" stroke-width="1.2"/>
+<line x1="126" y1="322" x2="186" y2="352" stroke="#898781" stroke-width="1.2"/>
+<line x1="186" y1="352" x2="216" y2="382" stroke="#898781" stroke-width="1.2"/>
+<circle cx="96" cy="352" r="13" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="96" y="352" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">2</text>
+<circle cx="126" cy="322" r="13" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="126" y="322" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">1</text>
+<circle cx="156" cy="382" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="156" y="382" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">4</text>
+<circle cx="186" cy="352" r="13" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<circle cx="186" cy="352" r="17" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="186" y="352" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">3</text>
+<circle cx="216" cy="382" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="216" y="382" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">5</text>
+<text x="262" y="315.0" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">out (token 序列)</text>
+<rect x="262" y="329.0" width="26" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="275.0" y="342.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<rect x="290" y="329.0" width="26" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="303.0" y="342.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<rect x="318" y="329.0" width="26" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="331.0" y="342.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">#</text>
+<rect x="346" y="329.0" width="26" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="359.0" y="342.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">#</text>
+<rect x="374" y="329.0" width="26" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="387.0" y="342.0" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">3</text>
+<text x="262" y="371.0" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">visit 3: 写 "3", 然后进左子树 (4)</text>
+<line x1="40" y1="400" x2="640" y2="400" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="446.0" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">step 4</text>
+<text x="40" y="464.0" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">node 4</text>
+<line x1="126" y1="428" x2="96" y2="458" stroke="#898781" stroke-width="1.2"/>
+<line x1="186" y1="458" x2="156" y2="488" stroke="#898781" stroke-width="1.2"/>
+<line x1="126" y1="428" x2="186" y2="458" stroke="#898781" stroke-width="1.2"/>
+<line x1="186" y1="458" x2="216" y2="488" stroke="#898781" stroke-width="1.2"/>
+<circle cx="96" cy="458" r="13" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="96" y="458" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">2</text>
+<circle cx="126" cy="428" r="13" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="126" y="428" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">1</text>
+<circle cx="156" cy="488" r="13" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<circle cx="156" cy="488" r="17" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="156" y="488" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">4</text>
+<circle cx="186" cy="458" r="13" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="186" y="458" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">3</text>
+<circle cx="216" cy="488" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="216" y="488" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">5</text>
+<text x="262" y="421.0" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">out (token 序列)</text>
+<rect x="262" y="435.0" width="26" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="275.0" y="448.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<rect x="290" y="435.0" width="26" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="303.0" y="448.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<rect x="318" y="435.0" width="26" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="331.0" y="448.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">#</text>
+<rect x="346" y="435.0" width="26" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="359.0" y="448.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">#</text>
+<rect x="374" y="435.0" width="26" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="387.0" y="448.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<rect x="402" y="435.0" width="26" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="415.0" y="448.0" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">4</text>
+<rect x="430" y="435.0" width="26" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="443.0" y="448.0" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">#</text>
+<rect x="458" y="435.0" width="26" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="471.0" y="448.0" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">#</text>
+<text x="262" y="477.0" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">visit 4: 写 "4"; 左、右都是 None → 写 "#" "#"</text>
+<line x1="40" y1="506" x2="640" y2="506" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="552.0" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">step 5</text>
+<text x="40" y="570.0" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">node 5</text>
+<line x1="126" y1="534" x2="96" y2="564" stroke="#898781" stroke-width="1.2"/>
+<line x1="186" y1="564" x2="156" y2="594" stroke="#898781" stroke-width="1.2"/>
+<line x1="126" y1="534" x2="186" y2="564" stroke="#898781" stroke-width="1.2"/>
+<line x1="186" y1="564" x2="216" y2="594" stroke="#898781" stroke-width="1.2"/>
+<circle cx="96" cy="564" r="13" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="96" y="564" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">2</text>
+<circle cx="126" cy="534" r="13" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="126" y="534" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">1</text>
+<circle cx="156" cy="594" r="13" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="156" y="594" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">4</text>
+<circle cx="186" cy="564" r="13" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="186" y="564" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">3</text>
+<circle cx="216" cy="594" r="13" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<circle cx="216" cy="594" r="17" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="216" y="594" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">5</text>
+<text x="262" y="527.0" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">out (token 序列)</text>
+<rect x="262" y="541.0" width="26" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="275.0" y="554.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<rect x="290" y="541.0" width="26" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="303.0" y="554.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<rect x="318" y="541.0" width="26" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="331.0" y="554.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">#</text>
+<rect x="346" y="541.0" width="26" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="359.0" y="554.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">#</text>
+<rect x="374" y="541.0" width="26" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="387.0" y="554.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<rect x="402" y="541.0" width="26" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="415.0" y="554.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">4</text>
+<rect x="430" y="541.0" width="26" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="443.0" y="554.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">#</text>
+<rect x="458" y="541.0" width="26" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="471.0" y="554.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">#</text>
+<rect x="486" y="541.0" width="26" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="499.0" y="554.0" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">5</text>
+<rect x="514" y="541.0" width="26" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="527.0" y="554.0" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">#</text>
+<rect x="542" y="541.0" width="26" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="555.0" y="554.0" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">#</text>
+<text x="262" y="583.0" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">visit 5: 写 "5"; 左、右都是 None → 写 "#" "#"</text>
+<line x1="40" y1="612" x2="640" y2="612" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="628" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">serialize = "1,2,#,#,3,4,#,#,5,#,#"  (11 个 token = 5 + 6)</text>
+<text x="40" y="650" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">deserialize: 同样顺序 next() 读 token: 1 → 左 build → 2 → # # 回来 → 右 build ...</text>
+<circle cx="48" cy="680" r="7" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<circle cx="48" cy="680" r="11" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="48" y="680" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central"></text>
+<text x="64" y="680" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">当前 node / 新 token</text>
+<circle cx="219" cy="680" r="7" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="219" y="680" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central"></text>
+<text x="235" y="680" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">已访问</text>
+<circle cx="292" cy="680" r="7" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="292" y="680" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central"></text>
+<text x="308" y="680" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">已写的 token</text>
+</svg>

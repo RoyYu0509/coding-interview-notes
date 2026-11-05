@@ -1,0 +1,111 @@
+<svg width="100%" viewBox="0 0 680 1108" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>Daily Temperatures trace</title><desc>T = [73,74,75,71,69,72,76,73]: for each day pop colder days off a decreasing stack and settle ans.</desc><defs><marker id="dttrace-arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="dttrace-arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">T = [73, 74, 75, 71, 69, 72, 76, 73] · 栈里存 i·T (index·温度), 从底到顶温度递减</text>
+<text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">每一步: 当前 T 和栈顶比 → 栈顶更冷就 pop 并结算 ans = i − j → 最后把 i push 进去</text>
+<text x="40" y="72" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">当前输入</text>
+<text x="118" y="72" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop (扔到左边)</text>
+<text x="350" y="72" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop 后</text>
+<text x="432" y="72" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">push 后</text>
+<text x="514" y="72" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">计算</text>
+<line x1="40" y1="84" x2="640" y2="84" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="115.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="131.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 0</text>
+<text x="72.0" y="149.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">T = 73</text>
+<path d="M350 102 L350 190 L418 190 L418 102" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 102 L432 190 L500 190 L500 102" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="438" y="162.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="174.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">0·73</text><rect x="435" y="159.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="122" y="140.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈空, 不 pop</text>
+<text x="514" y="140.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">(还没有答案)</text>
+<line x1="40" y1="200" x2="640" y2="200" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="231.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="247.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 1</text>
+<text x="72.0" y="265.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">T = 74</text>
+<path d="M350 218 L350 306 L418 306 L418 218" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 218 L432 306 L500 306 L500 218" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="438" y="278.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="290.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">1·74</text><rect x="435" y="275.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="118" y="278.0" width="58" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="147.0" y="290.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">0·73</text>
+<path d="M352 290.0 L180 290.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#dttrace-arrR)"/>
+<text x="186" y="275.0" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">74 &gt; 73, pop</text>
+<text x="514" y="290.0" font-size="12" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">ans[0] = 1 − 0 = 1</text>
+<line x1="40" y1="316" x2="640" y2="316" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="347.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="363.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 2</text>
+<text x="72.0" y="381.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">T = 75</text>
+<path d="M350 334 L350 422 L418 422 L418 334" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 334 L432 422 L500 422 L500 334" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="438" y="394.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="406.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">2·75</text><rect x="435" y="391.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="118" y="394.0" width="58" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="147.0" y="406.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">1·74</text>
+<path d="M352 406.0 L180 406.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#dttrace-arrR)"/>
+<text x="186" y="391.0" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">75 &gt; 74, pop</text>
+<text x="514" y="406.0" font-size="12" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">ans[1] = 2 − 1 = 1</text>
+<line x1="40" y1="432" x2="640" y2="432" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="463.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="479.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 3</text>
+<text x="72.0" y="497.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">T = 71</text>
+<path d="M350 450 L350 538 L418 538 L418 450" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 450 L432 538 L500 538 L500 450" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="356" y="510.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="384.0" y="522.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2·75</text><rect x="353" y="507.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="438" y="510.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="466.0" y="522.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2·75</text>
+<rect x="438" y="482.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="494.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">3·71</text><rect x="435" y="479.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="122" y="488.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">75 &gt; 71, 不 pop</text>
+<text x="514" y="488.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">(还没有答案)</text>
+<line x1="40" y1="548" x2="640" y2="548" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="579.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="595.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 4</text>
+<text x="72.0" y="613.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">T = 69</text>
+<path d="M350 566 L350 654 L418 654 L418 566" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 566 L432 654 L500 654 L500 566" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="356" y="626.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="384.0" y="638.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2·75</text>
+<rect x="356" y="598.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="384.0" y="610.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">3·71</text><rect x="353" y="595.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="438" y="626.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="466.0" y="638.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2·75</text>
+<rect x="438" y="598.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="466.0" y="610.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">3·71</text>
+<rect x="438" y="570.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="582.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">4·69</text><rect x="435" y="567.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="122" y="604.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">71 &gt; 69, 不 pop</text>
+<text x="514" y="604.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">(还没有答案)</text>
+<line x1="40" y1="664" x2="640" y2="664" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="695.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="711.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 5</text>
+<text x="72.0" y="729.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">T = 72</text>
+<path d="M350 682 L350 770 L418 770 L418 682" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 682 L432 770 L500 770 L500 682" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="356" y="742.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="384.0" y="754.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2·75</text><rect x="353" y="739.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="438" y="742.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="466.0" y="754.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2·75</text>
+<rect x="438" y="714.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="726.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">5·72</text><rect x="435" y="711.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="118" y="686.0" width="58" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="147.0" y="698.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">4·69</text>
+<path d="M352 698.0 L180 698.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#dttrace-arrR)"/>
+<text x="186" y="683.0" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">72 &gt; 69, pop</text>
+<text x="514" y="698.0" font-size="12" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">ans[4] = 5 − 4 = 1</text>
+<rect x="118" y="714.0" width="58" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="147.0" y="726.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">3·71</text>
+<path d="M352 726.0 L180 726.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#dttrace-arrR)"/>
+<text x="186" y="711.0" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">72 &gt; 71, pop</text>
+<text x="514" y="726.0" font-size="12" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">ans[3] = 5 − 3 = 2</text>
+<line x1="40" y1="780" x2="640" y2="780" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="811.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="827.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 6</text>
+<text x="72.0" y="845.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">T = 76</text>
+<path d="M350 798 L350 886 L418 886 L418 798" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 798 L432 886 L500 886 L500 798" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="438" y="858.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="870.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">6·76</text><rect x="435" y="855.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="118" y="830.0" width="58" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="147.0" y="842.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">5·72</text>
+<path d="M352 842.0 L180 842.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#dttrace-arrR)"/>
+<text x="186" y="827.0" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">76 &gt; 72, pop</text>
+<text x="514" y="842.0" font-size="12" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">ans[5] = 6 − 5 = 1</text>
+<rect x="118" y="858.0" width="58" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="147.0" y="870.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">2·75</text>
+<path d="M352 870.0 L180 870.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#dttrace-arrR)"/>
+<text x="186" y="855.0" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">76 &gt; 75, pop</text>
+<text x="514" y="870.0" font-size="12" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">ans[2] = 6 − 2 = 4</text>
+<line x1="40" y1="896" x2="640" y2="896" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="927.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="943.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 7</text>
+<text x="72.0" y="961.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">T = 73</text>
+<path d="M350 914 L350 1002 L418 1002 L418 914" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 914 L432 1002 L500 1002 L500 914" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="356" y="974.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="384.0" y="986.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">6·76</text><rect x="353" y="971.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="438" y="974.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="466.0" y="986.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">6·76</text>
+<rect x="438" y="946.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="958.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">7·73</text><rect x="435" y="943.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="122" y="952.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">76 &gt; 73, 不 pop</text>
+<text x="514" y="952.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">(还没有答案)</text>
+<line x1="40" y1="1012" x2="640" y2="1012" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="1034" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里剩 6·76, 7·73: 右边没有更高温 → ans[6] = 0, ans[7] = 0</text>
+<text x="40" y="1058" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">ans = [1, 1, 4, 2, 1, 1, 0, 0]</text>
+<rect x="40" y="1078" width="22" height="16" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="70" y="1086" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">新 push / 当前输入</text><rect x="211.2" y="1078" width="22" height="16" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="241.2" y="1086" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop (虚线扔到左边)</text><rect x="381.6" y="1078" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="411.6" y="1086" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里其他</text><rect x="489.6" y="1078" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="486.6" y="1075" width="28" height="22" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/><text x="519.6" y="1086" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶</text>
+</svg>

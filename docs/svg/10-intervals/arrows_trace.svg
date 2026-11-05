@@ -1,0 +1,203 @@
+<svg width="100%" viewBox="0 0 680 591" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif'><title>Minimum Arrows 运行流程</title><desc>按 end 排序, arrow_x 记录最近一支箭的位置; s 超过 arrow_x 就新射一支, 射在这个气球的 end</desc><defs><marker id="f10-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f10-r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f10-a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#C07A0A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f10-n" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">输入 [10,16] [2,8] [1,6] [15,20] [7,12] → 按 end 排序: [1,6] [2,8] [7,12] [10,16] [15,20]</text>
+<text x="40" y="38" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">每一步: s &gt; arrow_x → arrows += 1, arrow_x = e · 否则这个气球已被射穿</text>
+<text x="40" y="74" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">当前输入</text>
+<text x="150" y="74" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">时间轴 (虚线 = 箭)</text>
+<text x="458" y="74" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">计算</text>
+<line x1="150" y1="102" x2="440" y2="102" stroke="#898781" stroke-width="1"/>
+<line x1="150" y1="102" x2="150" y2="108" stroke="#898781" stroke-width="1"/>
+<text x="150" y="90" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">0</text>
+<line x1="163.8" y1="102" x2="163.8" y2="105" stroke="#898781" stroke-width="1"/>
+<line x1="177.6" y1="102" x2="177.6" y2="108" stroke="#898781" stroke-width="1"/>
+<text x="177.6" y="90" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">2</text>
+<line x1="191.4" y1="102" x2="191.4" y2="105" stroke="#898781" stroke-width="1"/>
+<line x1="205.2" y1="102" x2="205.2" y2="108" stroke="#898781" stroke-width="1"/>
+<text x="205.2" y="90" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">4</text>
+<line x1="219" y1="102" x2="219" y2="105" stroke="#898781" stroke-width="1"/>
+<line x1="232.9" y1="102" x2="232.9" y2="108" stroke="#898781" stroke-width="1"/>
+<text x="232.9" y="90" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">6</text>
+<line x1="246.7" y1="102" x2="246.7" y2="105" stroke="#898781" stroke-width="1"/>
+<line x1="260.5" y1="102" x2="260.5" y2="108" stroke="#898781" stroke-width="1"/>
+<text x="260.5" y="90" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">8</text>
+<line x1="274.3" y1="102" x2="274.3" y2="105" stroke="#898781" stroke-width="1"/>
+<line x1="288.1" y1="102" x2="288.1" y2="108" stroke="#898781" stroke-width="1"/>
+<text x="288.1" y="90" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">10</text>
+<line x1="301.9" y1="102" x2="301.9" y2="105" stroke="#898781" stroke-width="1"/>
+<line x1="315.7" y1="102" x2="315.7" y2="108" stroke="#898781" stroke-width="1"/>
+<text x="315.7" y="90" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">12</text>
+<line x1="329.5" y1="102" x2="329.5" y2="105" stroke="#898781" stroke-width="1"/>
+<line x1="343.3" y1="102" x2="343.3" y2="108" stroke="#898781" stroke-width="1"/>
+<text x="343.3" y="90" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">14</text>
+<line x1="357.1" y1="102" x2="357.1" y2="105" stroke="#898781" stroke-width="1"/>
+<line x1="371" y1="102" x2="371" y2="108" stroke="#898781" stroke-width="1"/>
+<text x="371" y="90" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">16</text>
+<line x1="384.8" y1="102" x2="384.8" y2="105" stroke="#898781" stroke-width="1"/>
+<line x1="398.6" y1="102" x2="398.6" y2="108" stroke="#898781" stroke-width="1"/>
+<text x="398.6" y="90" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">18</text>
+<line x1="412.4" y1="102" x2="412.4" y2="105" stroke="#898781" stroke-width="1"/>
+<line x1="426.2" y1="102" x2="426.2" y2="108" stroke="#898781" stroke-width="1"/>
+<text x="426.2" y="90" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">20</text>
+<line x1="440" y1="102" x2="440" y2="105" stroke="#898781" stroke-width="1"/>
+<line x1="40" y1="110" x2="640" y2="110" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<line x1="150" y1="118" x2="150" y2="187" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="177.6" y1="118" x2="177.6" y2="187" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="205.2" y1="118" x2="205.2" y2="187" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="232.9" y1="118" x2="232.9" y2="187" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="260.5" y1="118" x2="260.5" y2="187" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="288.1" y1="118" x2="288.1" y2="187" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="315.7" y1="118" x2="315.7" y2="187" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="343.3" y1="118" x2="343.3" y2="187" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="371" y1="118" x2="371" y2="187" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="398.6" y1="118" x2="398.6" y2="187" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="426.2" y1="118" x2="426.2" y2="187" stroke="#ECEAE2" stroke-width="1"/>
+<rect x="40" y="129.5" width="66" height="46" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="73" y="144" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">[1,6]</text>
+<text x="73" y="161" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#085041">新箭</text>
+<line x1="232.9" y1="132" x2="232.9" y2="185" stroke="#C07A0A" stroke-width="2" stroke-dasharray="4 3"/>
+<text x="232.9" y="124" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="500" fill="#8A5200">x=6</text>
+<text x="142" y="151" text-anchor="end" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">cur</text>
+<rect x="163.8" y="140" width="69" height="22" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="198.3" y="151" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="500" fill="#085041">1,6</text>
+<text x="458" y="130" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">s = 1 &gt; arrow_x = -inf</text>
+<text x="458" y="149" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">→ 射不到, 新射一支</text>
+<text x="458" y="168" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">arrows = 1 · arrow_x = 6</text>
+<line x1="40" y1="190" x2="640" y2="190" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<line x1="150" y1="193" x2="150" y2="262" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="177.6" y1="193" x2="177.6" y2="262" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="205.2" y1="193" x2="205.2" y2="262" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="232.9" y1="193" x2="232.9" y2="262" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="260.5" y1="193" x2="260.5" y2="262" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="288.1" y1="193" x2="288.1" y2="262" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="315.7" y1="193" x2="315.7" y2="262" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="343.3" y1="193" x2="343.3" y2="262" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="371" y1="193" x2="371" y2="262" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="398.6" y1="193" x2="398.6" y2="262" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="426.2" y1="193" x2="426.2" y2="262" stroke="#ECEAE2" stroke-width="1"/>
+<rect x="40" y="204.5" width="66" height="46" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
+<text x="73" y="219" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#712B13">[2,8]</text>
+<text x="73" y="236" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#712B13">已射穿</text>
+<line x1="232.9" y1="207" x2="232.9" y2="260" stroke="#C07A0A" stroke-width="2" stroke-dasharray="4 3"/>
+<text x="232.9" y="199" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="500" fill="#8A5200">x=6</text>
+<text x="142" y="226" text-anchor="end" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">cur</text>
+<rect x="177.6" y="215" width="82.9" height="22" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="219" y="226" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="500" fill="#712B13">2,8</text>
+<text x="458" y="205" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">s = 2 ≤ arrow_x = 6</text>
+<text x="458" y="224" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#712B13">→ 已被这支箭射穿</text>
+<text x="458" y="243" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">arrows 不变 = 1</text>
+<line x1="40" y1="265" x2="640" y2="265" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<line x1="150" y1="268" x2="150" y2="337" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="177.6" y1="268" x2="177.6" y2="337" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="205.2" y1="268" x2="205.2" y2="337" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="232.9" y1="268" x2="232.9" y2="337" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="260.5" y1="268" x2="260.5" y2="337" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="288.1" y1="268" x2="288.1" y2="337" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="315.7" y1="268" x2="315.7" y2="337" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="343.3" y1="268" x2="343.3" y2="337" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="371" y1="268" x2="371" y2="337" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="398.6" y1="268" x2="398.6" y2="337" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="426.2" y1="268" x2="426.2" y2="337" stroke="#ECEAE2" stroke-width="1"/>
+<rect x="40" y="279.5" width="66" height="46" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="73" y="294" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">[7,12]</text>
+<text x="73" y="311" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#085041">新箭</text>
+<line x1="232.9" y1="282" x2="232.9" y2="335" stroke="#B4B2A9" stroke-width="2" stroke-dasharray="4 3"/>
+<line x1="315.7" y1="282" x2="315.7" y2="335" stroke="#C07A0A" stroke-width="2" stroke-dasharray="4 3"/>
+<text x="315.7" y="274" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="500" fill="#8A5200">x=12</text>
+<text x="142" y="301" text-anchor="end" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">cur</text>
+<rect x="246.7" y="290" width="69" height="22" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="281.2" y="301" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="500" fill="#085041">7,12</text>
+<text x="458" y="280" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">s = 7 &gt; arrow_x = 6</text>
+<text x="458" y="299" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">→ 射不到, 新射一支</text>
+<text x="458" y="318" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">arrows = 2 · arrow_x = 12</text>
+<line x1="40" y1="340" x2="640" y2="340" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<line x1="150" y1="343" x2="150" y2="412" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="177.6" y1="343" x2="177.6" y2="412" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="205.2" y1="343" x2="205.2" y2="412" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="232.9" y1="343" x2="232.9" y2="412" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="260.5" y1="343" x2="260.5" y2="412" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="288.1" y1="343" x2="288.1" y2="412" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="315.7" y1="343" x2="315.7" y2="412" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="343.3" y1="343" x2="343.3" y2="412" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="371" y1="343" x2="371" y2="412" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="398.6" y1="343" x2="398.6" y2="412" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="426.2" y1="343" x2="426.2" y2="412" stroke="#ECEAE2" stroke-width="1"/>
+<rect x="40" y="354.5" width="66" height="46" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
+<text x="73" y="369" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#712B13">[10,16]</text>
+<text x="73" y="386" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#712B13">已射穿</text>
+<line x1="232.9" y1="357" x2="232.9" y2="410" stroke="#B4B2A9" stroke-width="2" stroke-dasharray="4 3"/>
+<line x1="315.7" y1="357" x2="315.7" y2="410" stroke="#C07A0A" stroke-width="2" stroke-dasharray="4 3"/>
+<text x="315.7" y="349" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="500" fill="#8A5200">x=12</text>
+<text x="142" y="376" text-anchor="end" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">cur</text>
+<rect x="288.1" y="365" width="82.9" height="22" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="329.5" y="376" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="500" fill="#712B13">10,16</text>
+<text x="458" y="355" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">s = 10 ≤ arrow_x = 12</text>
+<text x="458" y="374" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#712B13">→ 已被这支箭射穿</text>
+<text x="458" y="393" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">arrows 不变 = 2</text>
+<line x1="40" y1="415" x2="640" y2="415" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<line x1="150" y1="418" x2="150" y2="487" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="177.6" y1="418" x2="177.6" y2="487" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="205.2" y1="418" x2="205.2" y2="487" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="232.9" y1="418" x2="232.9" y2="487" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="260.5" y1="418" x2="260.5" y2="487" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="288.1" y1="418" x2="288.1" y2="487" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="315.7" y1="418" x2="315.7" y2="487" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="343.3" y1="418" x2="343.3" y2="487" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="371" y1="418" x2="371" y2="487" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="398.6" y1="418" x2="398.6" y2="487" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="426.2" y1="418" x2="426.2" y2="487" stroke="#ECEAE2" stroke-width="1"/>
+<rect x="40" y="429.5" width="66" height="46" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="73" y="444" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">[15,20]</text>
+<text x="73" y="461" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#085041">新箭</text>
+<line x1="232.9" y1="432" x2="232.9" y2="485" stroke="#B4B2A9" stroke-width="2" stroke-dasharray="4 3"/>
+<line x1="315.7" y1="432" x2="315.7" y2="485" stroke="#B4B2A9" stroke-width="2" stroke-dasharray="4 3"/>
+<line x1="426.2" y1="432" x2="426.2" y2="485" stroke="#C07A0A" stroke-width="2" stroke-dasharray="4 3"/>
+<text x="426.2" y="424" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="500" fill="#8A5200">x=20</text>
+<text x="142" y="451" text-anchor="end" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">cur</text>
+<rect x="357.1" y="440" width="69" height="22" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="391.7" y="451" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="500" fill="#085041">15,20</text>
+<text x="458" y="430" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">s = 15 &gt; arrow_x = 12</text>
+<text x="458" y="449" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">→ 射不到, 新射一支</text>
+<text x="458" y="468" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">arrows = 3 · arrow_x = 20</text>
+<line x1="40" y1="490" x2="640" y2="490" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<line x1="150" y1="499" x2="440" y2="499" stroke="#898781" stroke-width="1"/>
+<line x1="150" y1="499" x2="150" y2="505" stroke="#898781" stroke-width="1"/>
+<text x="150" y="514" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">0</text>
+<line x1="163.8" y1="499" x2="163.8" y2="502" stroke="#898781" stroke-width="1"/>
+<line x1="177.6" y1="499" x2="177.6" y2="505" stroke="#898781" stroke-width="1"/>
+<text x="177.6" y="514" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">2</text>
+<line x1="191.4" y1="499" x2="191.4" y2="502" stroke="#898781" stroke-width="1"/>
+<line x1="205.2" y1="499" x2="205.2" y2="505" stroke="#898781" stroke-width="1"/>
+<text x="205.2" y="514" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">4</text>
+<line x1="219" y1="499" x2="219" y2="502" stroke="#898781" stroke-width="1"/>
+<line x1="232.9" y1="499" x2="232.9" y2="505" stroke="#898781" stroke-width="1"/>
+<text x="232.9" y="514" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">6</text>
+<line x1="246.7" y1="499" x2="246.7" y2="502" stroke="#898781" stroke-width="1"/>
+<line x1="260.5" y1="499" x2="260.5" y2="505" stroke="#898781" stroke-width="1"/>
+<text x="260.5" y="514" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">8</text>
+<line x1="274.3" y1="499" x2="274.3" y2="502" stroke="#898781" stroke-width="1"/>
+<line x1="288.1" y1="499" x2="288.1" y2="505" stroke="#898781" stroke-width="1"/>
+<text x="288.1" y="514" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">10</text>
+<line x1="301.9" y1="499" x2="301.9" y2="502" stroke="#898781" stroke-width="1"/>
+<line x1="315.7" y1="499" x2="315.7" y2="505" stroke="#898781" stroke-width="1"/>
+<text x="315.7" y="514" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">12</text>
+<line x1="329.5" y1="499" x2="329.5" y2="502" stroke="#898781" stroke-width="1"/>
+<line x1="343.3" y1="499" x2="343.3" y2="505" stroke="#898781" stroke-width="1"/>
+<text x="343.3" y="514" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">14</text>
+<line x1="357.1" y1="499" x2="357.1" y2="502" stroke="#898781" stroke-width="1"/>
+<line x1="371" y1="499" x2="371" y2="505" stroke="#898781" stroke-width="1"/>
+<text x="371" y="514" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">16</text>
+<line x1="384.8" y1="499" x2="384.8" y2="502" stroke="#898781" stroke-width="1"/>
+<line x1="398.6" y1="499" x2="398.6" y2="505" stroke="#898781" stroke-width="1"/>
+<text x="398.6" y="514" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">18</text>
+<line x1="412.4" y1="499" x2="412.4" y2="502" stroke="#898781" stroke-width="1"/>
+<line x1="426.2" y1="499" x2="426.2" y2="505" stroke="#898781" stroke-width="1"/>
+<text x="426.2" y="514" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">20</text>
+<line x1="440" y1="499" x2="440" y2="502" stroke="#898781" stroke-width="1"/>
+<line x1="40" y1="523" x2="640" y2="523" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="40" y="545" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">arrows = 3 · 箭射在 x = 6, 12, 20</text>
+<rect x="40" y="566" width="16" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="62" y="573" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">要新射一支的气球</text>
+<rect x="180.8" y="566" width="16" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="202.8" y="573" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">已被射穿的气球</text>
+<line x1="317" y1="565" x2="317" y2="581" stroke="#C07A0A" stroke-width="2" stroke-dasharray="4 3"/>
+<text x="331" y="573" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">箭的位置 arrow_x</text>
+</svg>

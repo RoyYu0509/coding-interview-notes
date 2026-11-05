@@ -1,0 +1,59 @@
+<svg width="100%" viewBox="0 0 680 400" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Spiral Matrix 核心</title><desc>四个边界圈出还没走过的区域,每走完一条边收缩一次;走完一圈后区域缩成内层</desc><defs><marker id="f2-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f2-r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f2-n" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f2-o" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#EF9F27" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="400" fill="#fff"/>
+<text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">top / bottom / left / right 四个边界圈出「还没走过」的区域</text>
+<text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">每走完一条边, 对应的边界向里收缩 1 · 图中数字 = 走的顺序</text>
+<rect x="110" y="100" width="44" height="36" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<text x="132.0" y="118.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<rect x="154" y="100" width="44" height="36" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<text x="176.0" y="118.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">2</text>
+<rect x="198" y="100" width="44" height="36" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<text x="220.0" y="118.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">3</text>
+<rect x="242" y="100" width="44" height="36" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<text x="264.0" y="118.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">4</text>
+<rect x="110" y="136" width="44" height="36" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<text x="132.0" y="154.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">12</text>
+<rect x="154" y="136" width="44" height="36" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1.0"/>
+<text x="176.0" y="154.0" font-size="14" fill="#52514E" text-anchor="middle" font-weight="500" dominant-baseline="central">13</text>
+<rect x="198" y="136" width="44" height="36" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1.0"/>
+<text x="220.0" y="154.0" font-size="14" fill="#52514E" text-anchor="middle" font-weight="500" dominant-baseline="central">14</text>
+<rect x="242" y="136" width="44" height="36" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<text x="264.0" y="154.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">5</text>
+<rect x="110" y="172" width="44" height="36" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<text x="132.0" y="190.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">11</text>
+<rect x="154" y="172" width="44" height="36" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1.0"/>
+<text x="176.0" y="190.0" font-size="14" fill="#52514E" text-anchor="middle" font-weight="500" dominant-baseline="central">16</text>
+<rect x="198" y="172" width="44" height="36" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1.0"/>
+<text x="220.0" y="190.0" font-size="14" fill="#52514E" text-anchor="middle" font-weight="500" dominant-baseline="central">15</text>
+<rect x="242" y="172" width="44" height="36" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<text x="264.0" y="190.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">6</text>
+<rect x="110" y="208" width="44" height="36" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<text x="132.0" y="226.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">10</text>
+<rect x="154" y="208" width="44" height="36" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<text x="176.0" y="226.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">9</text>
+<rect x="198" y="208" width="44" height="36" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<text x="220.0" y="226.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">8</text>
+<rect x="242" y="208" width="44" height="36" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<text x="264.0" y="226.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">7</text>
+<text x="198" y="86" font-size="12" fill="#0B0B0B" text-anchor="middle" font-weight="500" dominant-baseline="central">top = 0</text>
+<text x="198" y="258" font-size="12" fill="#0B0B0B" text-anchor="middle" font-weight="500" dominant-baseline="central">bottom = 3</text>
+<text x="102" y="172" font-size="12" fill="#0B0B0B" text-anchor="end" font-weight="500" dominant-baseline="central">left = 0</text>
+<text x="294" y="172" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">right = 3</text>
+<rect x="151" y="133" width="94" height="78" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5" stroke-dasharray="6 4"/>
+<text x="198" y="280" font-size="12" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">收缩 4 次后: top=1 bottom=2 left=1 right=2</text>
+<text x="198" y="298" font-size="12" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">(橙色虚线 = 剩下的 2×2, 同样的 4 步再走一圈)</text>
+<text x="380" y="104" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">① → 走上边 matrix[top][left..right]</text>
+<text x="380" y="122" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">走完 top += 1</text>
+<text x="380" y="152" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">② ↓ 走右边 matrix[top..bottom][right]</text>
+<text x="380" y="170" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">走完 right -= 1</text>
+<text x="380" y="200" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">③ ← 走下边 matrix[bottom][right..left]</text>
+<text x="380" y="218" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">先检查 top &lt;= bottom · 走完 bottom -= 1</text>
+<text x="380" y="248" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">④ ↑ 走左边 matrix[bottom..top][left]</text>
+<text x="380" y="266" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">先检查 left &lt;= right · 走完 left += 1</text>
+<line x1="40" y1="288" x2="640" y2="288" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="380" y="306" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">为什么要两个守卫: 走完上边 top += 1 后,</text>
+<text x="380" y="324" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">如果只剩 1 行, top 已经 &gt; bottom,</text>
+<text x="380" y="342" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">再走下边就是把同一行倒着重复一遍</text>
+<rect x="40" y="379" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<text x="60" y="386" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">这一圈 (先走)</text>
+<rect x="161.8" y="379" width="14" height="14" rx="3" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1.0"/>
+<text x="181.8" y="386" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">内层 (后走)</text>
+</svg>

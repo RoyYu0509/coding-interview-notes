@@ -1,0 +1,203 @@
+<svg width="100%" viewBox="0 0 680 750" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>prices = [7, 1, 5, 3, 6, 4] · lo[i] = 到第 i 天为止的最低价 · best[i] = 到第 i 天为止的最大利润</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">prices = [7, 1, 5, 3, 6, 4] · lo[i] = 到第 i 天为止的最低价 · best[i] = 到第 i 天为止的最大利润</text>
+<text x="40" y="38" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">每一步: 先用昨天的 lo 算今天卖的 profit 更新 best, 再更新 lo</text>
+<text x="40" y="72" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">step</text>
+<text x="140" y="72" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">lo / best 数组</text>
+<text x="416" y="72" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">计算</text>
+<line x1="40" y1="84" x2="640" y2="84" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="40" y="100" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">i</text>
+<text x="162.0" y="100" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">0</text>
+<text x="206.0" y="100" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">1</text>
+<text x="250.0" y="100" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">2</text>
+<text x="294.0" y="100" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">3</text>
+<text x="338.0" y="100" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">4</text>
+<text x="382.0" y="100" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">5</text>
+<text x="40" y="120" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">price</text>
+<text x="162.0" y="120" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="middle" dominant-baseline="central">7</text>
+<text x="206.0" y="120" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="middle" dominant-baseline="central">1</text>
+<text x="250.0" y="120" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="middle" dominant-baseline="central">5</text>
+<text x="294.0" y="120" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="middle" dominant-baseline="central">3</text>
+<text x="338.0" y="120" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="middle" dominant-baseline="central">6</text>
+<text x="382.0" y="120" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="middle" dominant-baseline="central">4</text>
+<line x1="40" y1="134" x2="640" y2="134" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="141" y="148" width="42" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="162.0" y="163.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">7</text>
+<rect x="185" y="148" width="42" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="229" y="148" width="42" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="273" y="148" width="42" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="317" y="148" width="42" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="361" y="148" width="42" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="134" y="163.0" font-size="12" font-weight="400" fill="#52514E" text-anchor="end" dominant-baseline="central">lo</text>
+<rect x="141" y="184" width="42" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="162.0" y="199.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">0</text>
+<rect x="185" y="184" width="42" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="229" y="184" width="42" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="273" y="184" width="42" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="317" y="184" width="42" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="361" y="184" width="42" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="134" y="199.0" font-size="12" font-weight="400" fill="#52514E" text-anchor="end" dominant-baseline="central">best</text>
+<text x="40" y="155.0" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">base</text>
+<text x="416" y="157" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">lo = prices[0] = 7</text>
+<text x="416" y="175" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">best = 0 (还没法卖)</text>
+<line x1="40" y1="222" x2="640" y2="222" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="141" y="236" width="42" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="162.0" y="251.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">7</text>
+<rect x="185" y="236" width="42" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="206.0" y="251.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">1</text>
+<rect x="229" y="236" width="42" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="273" y="236" width="42" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="317" y="236" width="42" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="361" y="236" width="42" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="138" y="233" width="48" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="134" y="251.0" font-size="12" font-weight="400" fill="#52514E" text-anchor="end" dominant-baseline="central">lo</text>
+<rect x="141" y="272" width="42" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="162.0" y="287.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">0</text>
+<rect x="185" y="272" width="42" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="206.0" y="287.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">0</text>
+<rect x="229" y="272" width="42" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="273" y="272" width="42" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="317" y="272" width="42" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="361" y="272" width="42" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="138" y="269" width="48" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="134" y="287.0" font-size="12" font-weight="400" fill="#52514E" text-anchor="end" dominant-baseline="central">best</text>
+<text x="40" y="243.0" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">i = 1</text>
+<text x="40" y="260.0" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">price = 1</text>
+<text x="416" y="245" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">今天卖: profit = 1 - 7 = -6</text>
+<text x="416" y="263" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">best = max(0, -6) = 0</text>
+<text x="416" y="281" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">lo = min(7, 1) = 1</text>
+<line x1="40" y1="310" x2="640" y2="310" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="141" y="324" width="42" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="162.0" y="339.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">7</text>
+<rect x="185" y="324" width="42" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="206.0" y="339.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">1</text>
+<rect x="229" y="324" width="42" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="250.0" y="339.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">1</text>
+<rect x="273" y="324" width="42" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="317" y="324" width="42" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="361" y="324" width="42" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="182" y="321" width="48" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="134" y="339.0" font-size="12" font-weight="400" fill="#52514E" text-anchor="end" dominant-baseline="central">lo</text>
+<rect x="141" y="360" width="42" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="162.0" y="375.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">0</text>
+<rect x="185" y="360" width="42" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="206.0" y="375.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">0</text>
+<rect x="229" y="360" width="42" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="250.0" y="375.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">4</text>
+<rect x="273" y="360" width="42" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="317" y="360" width="42" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="361" y="360" width="42" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="182" y="357" width="48" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="134" y="375.0" font-size="12" font-weight="400" fill="#52514E" text-anchor="end" dominant-baseline="central">best</text>
+<text x="40" y="331.0" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">i = 2</text>
+<text x="40" y="348.0" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">price = 5</text>
+<text x="416" y="333" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">今天卖: profit = 5 - 1 = 4</text>
+<text x="416" y="351" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">best = max(0, 4) = 4</text>
+<text x="416" y="369" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">lo = min(1, 5) = 1</text>
+<line x1="40" y1="398" x2="640" y2="398" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="141" y="412" width="42" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="162.0" y="427.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">7</text>
+<rect x="185" y="412" width="42" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="206.0" y="427.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">1</text>
+<rect x="229" y="412" width="42" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="250.0" y="427.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">1</text>
+<rect x="273" y="412" width="42" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="294.0" y="427.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">1</text>
+<rect x="317" y="412" width="42" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="361" y="412" width="42" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="226" y="409" width="48" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="134" y="427.0" font-size="12" font-weight="400" fill="#52514E" text-anchor="end" dominant-baseline="central">lo</text>
+<rect x="141" y="448" width="42" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="162.0" y="463.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">0</text>
+<rect x="185" y="448" width="42" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="206.0" y="463.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">0</text>
+<rect x="229" y="448" width="42" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="250.0" y="463.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">4</text>
+<rect x="273" y="448" width="42" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="294.0" y="463.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">4</text>
+<rect x="317" y="448" width="42" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="361" y="448" width="42" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="226" y="445" width="48" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="134" y="463.0" font-size="12" font-weight="400" fill="#52514E" text-anchor="end" dominant-baseline="central">best</text>
+<text x="40" y="419.0" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">i = 3</text>
+<text x="40" y="436.0" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">price = 3</text>
+<text x="416" y="421" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">今天卖: profit = 3 - 1 = 2</text>
+<text x="416" y="439" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">best = max(4, 2) = 4</text>
+<text x="416" y="457" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">lo = min(1, 3) = 1</text>
+<line x1="40" y1="486" x2="640" y2="486" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="141" y="500" width="42" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="162.0" y="515.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">7</text>
+<rect x="185" y="500" width="42" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="206.0" y="515.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">1</text>
+<rect x="229" y="500" width="42" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="250.0" y="515.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">1</text>
+<rect x="273" y="500" width="42" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="294.0" y="515.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">1</text>
+<rect x="317" y="500" width="42" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="338.0" y="515.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">1</text>
+<rect x="361" y="500" width="42" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="270" y="497" width="48" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="134" y="515.0" font-size="12" font-weight="400" fill="#52514E" text-anchor="end" dominant-baseline="central">lo</text>
+<rect x="141" y="536" width="42" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="162.0" y="551.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">0</text>
+<rect x="185" y="536" width="42" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="206.0" y="551.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">0</text>
+<rect x="229" y="536" width="42" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="250.0" y="551.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">4</text>
+<rect x="273" y="536" width="42" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="294.0" y="551.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">4</text>
+<rect x="317" y="536" width="42" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="338.0" y="551.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">5</text>
+<rect x="361" y="536" width="42" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="270" y="533" width="48" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="134" y="551.0" font-size="12" font-weight="400" fill="#52514E" text-anchor="end" dominant-baseline="central">best</text>
+<text x="40" y="507.0" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">i = 4</text>
+<text x="40" y="524.0" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">price = 6</text>
+<text x="416" y="509" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">今天卖: profit = 6 - 1 = 5</text>
+<text x="416" y="527" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">best = max(4, 5) = 5</text>
+<text x="416" y="545" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">lo = min(1, 6) = 1</text>
+<line x1="40" y1="574" x2="640" y2="574" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="141" y="588" width="42" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="162.0" y="603.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">7</text>
+<rect x="185" y="588" width="42" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="206.0" y="603.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">1</text>
+<rect x="229" y="588" width="42" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="250.0" y="603.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">1</text>
+<rect x="273" y="588" width="42" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="294.0" y="603.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">1</text>
+<rect x="317" y="588" width="42" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="338.0" y="603.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">1</text>
+<rect x="361" y="588" width="42" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="382.0" y="603.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">1</text>
+<rect x="314" y="585" width="48" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="134" y="603.0" font-size="12" font-weight="400" fill="#52514E" text-anchor="end" dominant-baseline="central">lo</text>
+<rect x="141" y="624" width="42" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="162.0" y="639.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">0</text>
+<rect x="185" y="624" width="42" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="206.0" y="639.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">0</text>
+<rect x="229" y="624" width="42" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="250.0" y="639.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">4</text>
+<rect x="273" y="624" width="42" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="294.0" y="639.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">4</text>
+<rect x="317" y="624" width="42" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="338.0" y="639.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">5</text>
+<rect x="361" y="624" width="42" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="382.0" y="639.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">5</text>
+<rect x="314" y="621" width="48" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="134" y="639.0" font-size="12" font-weight="400" fill="#52514E" text-anchor="end" dominant-baseline="central">best</text>
+<text x="40" y="595.0" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">i = 5</text>
+<text x="40" y="612.0" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">price = 4</text>
+<text x="416" y="597" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">今天卖: profit = 4 - 1 = 3</text>
+<text x="416" y="615" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">best = max(5, 3) = 5</text>
+<text x="416" y="633" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">lo = min(1, 4) = 1</text>
+<line x1="40" y1="662" x2="640" y2="662" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="40" y="682" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">答案 = best = 5  (第 1 天买 1, 第 4 天卖 6)</text>
+<rect x="40" y="718" width="22" height="16" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="70" y="726" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">新填的格子</text>
+<rect x="152" y="718" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="182" y="726" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">已有的格子</text>
+<rect x="264" y="718" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="261" y="715" width="28" height="22" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="300" y="726" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">被依赖 (橙色 ring)</text>
+<rect x="437.68" y="718" width="22" height="16" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="467.68" y="726" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">还没算</text>
+</svg>

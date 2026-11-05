@@ -1,0 +1,860 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>07 · Monotonic Stack / Queue</title><style>
+:root{--bg:#fff;--fg:#1d1d1f;--sub:#6b6b70;--code:#f3f1ea;--note:#e8f0fe;--line:#4a7de0;
+--row:#f3f3f3;--gutter:#b9b9bd;--gnum:#8a8a90;--kw:#1b3de0;--ty:#2e8bc0;--fn:#7a5a2e;--cm:#2b7a2b;--st:#d12f2f;--rt:#7a1fb8;--box:#e2e2e5}
+@media(prefers-color-scheme:dark){:root{--bg:#16181d;--fg:#e8e8ea;--sub:#9a9aa2;--code:#262932;--note:#1c2a45;
+--row:#23262e;--gutter:#4a4d57;--gnum:#7c7f89;--kw:#6ea1ff;--ty:#4ec9c0;--fn:#d7ba7d;--cm:#6a9955;--st:#ff7b72;--rt:#c792ea;--box:#363a45}}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.8 -apple-system,"PingFang SC",sans-serif}
+article{max-width:820px;margin:0 auto;padding:24px 16px 64px}
+h1{font-size:26px;margin:8px 0 12px}
+h2{font-size:21px;margin:40px 0 8px;border-bottom:1px solid var(--box);padding-bottom:4px}
+h3{font-size:17px;margin:24px 0 6px}
+code{background:var(--code);padding:1px 5px;border-radius:4px;font:0.9em ui-monospace,Menlo,Consolas,monospace}
+.code{counter-reset:ln;border:1px solid var(--box);border-radius:6px;overflow-x:auto;margin:12px 0;padding:4px 0;
+font:14px/1.7 ui-monospace,Menlo,Consolas,monospace;background:var(--bg)}
+.code .l{display:block;position:relative;white-space:pre;min-height:1.7em;padding:0 14px 0 62px;counter-increment:ln;
+background-image:linear-gradient(to right,transparent 48px,var(--gutter) 48px,var(--gutter) 50px,transparent 50px)}
+.code .l:nth-child(odd){background-color:var(--row)}
+.code .l::before{content:counter(ln);position:absolute;left:0;width:38px;text-align:right;color:var(--gnum)}
+.k{color:var(--kw)}.t{color:var(--ty)}.f{color:var(--fn)}.c{color:var(--cm)}.s{color:var(--st)}.r{color:var(--rt)}
+.note{background:var(--note);border-left:4px solid var(--line);padding:6px 12px;border-radius:4px}
+.main{color:var(--sub)}
+figure{margin:14px 0;background:#fff;border:1px solid var(--box);border-radius:8px;padding:8px}
+figure svg{width:100%;height:auto;display:block}
+figcaption{color:#52514e;font-size:14px;padding:4px 6px 0}
+table{border-collapse:collapse;margin:10px 0;font-size:15px}
+td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
+</style></head><body><article contenteditable="true">
+<h1>07 · Monotonic Stack / Queue</h1>
+<p class="main">主线: 扫一遍数组, 同时维护一个 <b>单调</b> 的容器 (stack 或 deque)。新元素一到, 就把 "从此没用" 的元素弹掉 —— <b>弹出的那一刻, 就是它的答案 / 边界出现的那一刻</b>。每个元素最多进出一次, 把 O(n²) 的反复往右扫降成 O(n)。</p>
+<p class="main">概念链: Next Greater (模板) → Daily Temperatures (存 index, pop 时结算) → Next Greater Element II (循环数组, 走 2n) → Largest Rectangle in Histogram (pop 时左右边界同时确定, 哨兵 0) → Remove K Digits (greedy: 栈就是答案) → Sliding Window Maximum (两头都能 pop 的 deque)</p>
+<h2>0. 第一性原理: 暴力在反复扫什么, stack 怎么消掉</h2>
+<p><b>题目:</b> 数组里每个数, 找它右边第一个比它大的数, 没有就是 −1。例子: <code>[9, 8, 7, 6, 5, 10]</code> → <code>[10, 10, 10, 10, 10, −1]</code>。</p>
+<p><b>Brute force:</b> 每个 i 都从 i+1 往右扫, 直到遇到更大的。最坏 O(n²)。</p>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">next_greater_brute</span>(nums):             <span class="c"># O(n^2)</span></span><span class="l">    n = <span class="t">len</span>(nums)</span><span class="l">    ans = [-1] * n</span><span class="l">    <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(n):</span><span class="l">        <span class="k">for</span> j <span class="k">in</span> <span class="t">range</span>(i + 1, n):         <span class="c"># 每个 i 都从 i+1 重新往右扫</span></span><span class="l">            <span class="k">if</span> nums[j] &gt; nums[i]:</span><span class="l">                ans[i] = nums[j]</span><span class="l">                <span class="k">break</span></span><span class="l">    <span class="r">return</span> ans</span></div>
+<p><b>浪费在哪:</b> 看图左边。8, 7, 6, 5 被 i = 0, 1, 2, 3 各扫了一遍, 但它们其实都在等同一个 10。暴力每个 i 都从头扫, <b>没有记住 "谁还在等答案"</b>。</p>
+<p><b>怎么消掉:</b> 扫的时候只保留 "还没等到更大数" 的元素, 放进 stack。它们一定是 <b>从底到顶递减</b> 的 (如果某个元素比它下面的大, 下面的早就被它结算了)。所以新来的 x 只要和栈顶比: 栈顶更小就 pop 并结算, 直到栈顶 ≥ x 为止, 再往下全 ≥ 栈顶, 不用看。</p>
+<p><b>为什么 pop 掉的元素以后再也用不到:</b> 它已经拿到答案; 栈里还在等的元素都 ≥ 它, 不会拿它当答案; 它右边的新元素只往右找, 它在左边, 看不到。所以每个元素 push 1 次、最多 pop 1 次, 总共 ≤ 2n 次操作, 是 amortized O(n) (一次 pop 好几个没关系, 总数还是 ≤ n)。</p>
+<figure><svg width="100%" viewBox="0 0 680 490" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>Brute force vs monotonic stack</title><desc>Left: brute force rescans to the right O(n^2); right: stack pops every element at most once.</desc><defs><marker id="c0-arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="c0-arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">nums = [9, 8, 7, 6, 5, 10] · 每个数找 "右边第一个更大的数"</text>
+<text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">同一个例子: 左边暴力每个 i 重新往右扫, 右边 stack 每个数只进出一次</text>
+<text x="40" y="70" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">暴力: 每个 i 从 i+1 重新往右扫</text>
+<text x="57" y="92" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">i=0</text>
+<rect x="40" y="102" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="57.0" y="117.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">9</text>
+<text x="97" y="92" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">i=1</text>
+<rect x="80" y="102" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="97.0" y="117.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">8</text>
+<text x="137" y="92" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">i=2</text>
+<rect x="120" y="102" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="137.0" y="117.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">7</text>
+<text x="177" y="92" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">i=3</text>
+<rect x="160" y="102" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="177.0" y="117.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">6</text>
+<text x="217" y="92" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">i=4</text>
+<rect x="200" y="102" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="217.0" y="117.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">5</text>
+<text x="257" y="92" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">i=5</text>
+<rect x="240" y="102" width="34" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="257.0" y="117.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">10</text>
+<circle cx="57" cy="156" r="3" fill="#52514E"/>
+<path d="M57 156 L255 156" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#c0-arrG)"/>
+<text x="264" y="156" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">i=0 比较 5 次</text>
+<circle cx="97" cy="182" r="3" fill="#52514E"/>
+<path d="M97 182 L255 182" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#c0-arrG)"/>
+<text x="264" y="182" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">i=1 比较 4 次</text>
+<circle cx="137" cy="208" r="3" fill="#52514E"/>
+<path d="M137 208 L255 208" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#c0-arrG)"/>
+<text x="264" y="208" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">i=2 比较 3 次</text>
+<circle cx="177" cy="234" r="3" fill="#52514E"/>
+<path d="M177 234 L255 234" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#c0-arrG)"/>
+<text x="264" y="234" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">i=3 比较 2 次</text>
+<circle cx="217" cy="260" r="3" fill="#52514E"/>
+<path d="M217 260 L255 260" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#c0-arrG)"/>
+<text x="264" y="260" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">i=4 比较 1 次</text>
+<text x="40" y="296" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">比较次数 = 5 + 4 + 3 + 2 + 1 = 15 ≈ n²/2</text>
+<text x="40" y="318" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">8, 7, 6, 5 被反复扫: 它们其实都在等同一个 10</text>
+<line x1="352" y1="60" x2="352" y2="330" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="372" y="70" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">stack: 每个数只进出一次</text>
+<path d="M470 172 L470 316 L540 316 L540 172" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="476" y="288" width="58" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="505.0" y="300.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">10</text><rect x="473" y="285" width="64" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="505.0" y="150" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">10 到来 (i = 5)</text>
+<rect x="374" y="288" width="48" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="398.0" y="300.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">9</text>
+<path d="M472 300 L428 300" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#c0-arrR)"/>
+<text x="550" y="300" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">10 &gt; 9, pop</text>
+<rect x="374" y="260" width="48" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="398.0" y="272.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">8</text>
+<path d="M472 272 L428 272" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#c0-arrR)"/>
+<text x="550" y="272" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">10 &gt; 8, pop</text>
+<rect x="374" y="232" width="48" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="398.0" y="244.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">7</text>
+<path d="M472 244 L428 244" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#c0-arrR)"/>
+<text x="550" y="244" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">10 &gt; 7, pop</text>
+<rect x="374" y="204" width="48" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="398.0" y="216.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">6</text>
+<path d="M472 216 L428 216" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#c0-arrR)"/>
+<text x="550" y="216" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">10 &gt; 6, pop</text>
+<rect x="374" y="176" width="48" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="398.0" y="188.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">5</text>
+<path d="M472 188 L428 188" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#c0-arrR)"/>
+<text x="550" y="188" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">10 &gt; 5, pop</text>
+<text x="372" y="332" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">push 6 次 + pop 5 次 = 11 次 ≈ 2n</text>
+<line x1="40" y1="350" x2="640" y2="350" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="364" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">为什么 pop 掉的数以后再也用不到:</text>
+<text x="40" y="388" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">① 栈从底到顶递减: 还在栈里等答案的数都 ≥ 被 pop 的数, 它们不会拿它当答案</text>
+<text x="40" y="408" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">② 它右边的新数只往右找答案, 被 pop 的数在它们左边, 根本看不到</text>
+<text x="40" y="432" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">→ 每个数 push 1 次、最多 pop 1 次 → 总共 ≤ 2n 次操作 = O(n)</text>
+<rect x="40" y="456" width="22" height="16" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="70" y="464" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">新 push / 当前输入</text><rect x="211.2" y="456" width="22" height="16" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="241.2" y="464" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop (虚线扔到左边)</text><rect x="381.6" y="456" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="411.6" y="464" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">数组 / 栈里其他</text><rect x="532.8" y="456" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="529.8" y="453" width="28" height="22" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/><text x="562.8" y="464" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶</text>
+</svg>
+<figcaption>左: 暴力每个 i 重新扫 (15 次比较)。右: 10 一来, 栈里 5 个等答案的数一次性结算, 每个数只进出一次。</figcaption></figure>
+<p>通用模板 (找右边第一个更大 → 递减栈):</p>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">next_greater</span>(nums):                   <span class="c"># O(n)</span></span><span class="l">    ans = [-1] * <span class="t">len</span>(nums)</span><span class="l">    stack = []                            <span class="c"># 存 index; nums[stack[0]] &gt;= nums[stack[1]] &gt;= ... (递减栈)</span></span><span class="l">    <span class="k">for</span> i, x <span class="k">in</span> <span class="t">enumerate</span>(nums):</span><span class="l">        <span class="k">while</span> stack <span class="k">and</span> nums[stack[-1]] &lt; x:   <span class="c"># x 比栈顶大: x 就是栈顶的 next greater</span></span><span class="l">            ans[stack.<span class="f">pop</span>()] = x          <span class="c"># pop 的这一刻结算; 弹出的元素以后再也用不到</span></span><span class="l">        stack.<span class="f">append</span>(i)                   <span class="c"># 栈里全是 &quot;还没等到更大数&quot; 的元素</span></span><span class="l">    <span class="r">return</span> ans</span></div>
+<h3>口诀: 递增栈还是递减栈</h3>
+<table><tr><th>要找</th><th>栈 (底 → 顶)</th><th>while 条件 (pop)</th><th>答案什么时候出现</th></tr><tr><td>右边第一个 <b>更大</b></td><td>递减</td><td><code>nums[stack[-1]] &lt; x</code></td><td>pop 时: 答案 = x</td></tr><tr><td>右边第一个 <b>更小</b></td><td>递增</td><td><code>nums[stack[-1]] &gt; x</code></td><td>pop 时: 答案 = x</td></tr><tr><td>左边第一个 更大</td><td>递减</td><td>同右边更大</td><td>pop 完, push 前: 看栈顶</td></tr><tr><td>左边第一个 更小</td><td>递增</td><td>同右边更小</td><td>pop 完, push 前: 看栈顶</td></tr></table>
+<p>口诀: <b>找更大 → 栈递减</b> (小的在栈里等大的来); <b>找更小 → 栈递增</b>。while 条件永远是 "来了个比栈顶更 '强' 的, 栈顶出去"。右边的答案在 pop 时拿到, 左边的答案在 pop 完后看栈顶。</p>
+<p>同一个循环可以同时拿到左右两个边界 (后面 Largest Rectangle 就靠这个):</p>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">nearest_smaller_both</span>(nums):           <span class="c"># 递增栈: 一次循环同时得到左右两个边界</span></span><span class="l">    n = <span class="t">len</span>(nums)</span><span class="l">    left, right = [-1] * n, [n] * n       <span class="c"># -1 / n 表示那一侧没有更小的</span></span><span class="l">    stack = []</span><span class="l">    <span class="k">for</span> i, x <span class="k">in</span> <span class="t">enumerate</span>(nums):</span><span class="l">        <span class="k">while</span> stack <span class="k">and</span> nums[stack[-1]] &gt; x:</span><span class="l">            right[stack.<span class="f">pop</span>()] = i        <span class="c"># 被 x pop: x 是它右边第一个更小的</span></span><span class="l">        left[i] = stack[-1] <span class="k">if</span> stack <span class="k">else</span> -1   <span class="c"># pop 完剩下的栈顶 = i 左边第一个 &lt;= x 的</span></span><span class="l">        stack.<span class="f">append</span>(i)</span><span class="l">    <span class="r">return</span> left, right</span></div>
+<p>相等怎么办: 条件用 <code>&lt;</code> 还是 <code>&lt;=</code>, 取决于题目要 "严格更大" 还是 "大于等于"。面试里先问清楚, 再决定把哪边的等号放进 while。</p>
+<p class="note"><b>记:</b>单调栈 = 记住 "谁还在等答案"。新元素和栈顶比, 能 pop 就结算; 每个元素最多进出一次, O(n)。找更大用递减栈, 找更小用递增栈。</p>
+<h2>1. Daily Temperatures: 存 index, 在 pop 时结算答案</h2>
+<p><b>题目:</b> 给每日温度 T, 对每一天算出还要等几天才有更高的温度, 没有则 0。例子: <code>T = [73, 74, 75, 71, 69, 72, 76, 73]</code> → <code>[1, 1, 4, 2, 1, 1, 0, 0]</code>。</p>
+<p><b>Brute force:</b> 每天往右扫到第一个更高温, O(n²)。浪费: 和第 0 节一样, 71 和 69 都在等 72, 却各自扫了一遍。</p>
+<p><b>关键观察:</b> 这就是模板, 只改一点: 答案是 <b>距离</b> i − j, 不是值, 所以栈里存 <b>index</b>, 比较时回 T 里取温度。</p>
+<figure><svg width="100%" viewBox="0 0 680 396" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>Daily Temperatures invariant</title><desc>Stack holds days still waiting for a warmer day, temperatures decreasing; pop settles the answer.</desc><defs><marker id="c1-arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="c1-arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">T = [73, 74, 75, 71, 69, 72, 76, 73] · 走到 i = 5 (T = 72) 这一刻</text>
+<text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">invariant: 栈里 = 还没等到更高温的那些天 · 从底到顶温度递减</text>
+<text x="62" y="66" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">i=0</text>
+<rect x="40" y="78" width="44" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/><text x="62.0" y="93.0" font-size="14" fill="#52514E" font-weight="500" text-anchor="middle" dominant-baseline="central">73</text>
+<text x="114" y="66" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">i=1</text>
+<rect x="92" y="78" width="44" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/><text x="114.0" y="93.0" font-size="14" fill="#52514E" font-weight="500" text-anchor="middle" dominant-baseline="central">74</text>
+<text x="166" y="66" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">i=2</text>
+<rect x="144" y="78" width="44" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="166.0" y="93.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">75</text>
+<text x="218" y="66" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">i=3</text>
+<rect x="196" y="78" width="44" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="218.0" y="93.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">71</text>
+<text x="270" y="66" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">i=4</text>
+<rect x="248" y="78" width="44" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="270.0" y="93.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">69</text>
+<text x="322" y="66" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">i=5</text>
+<rect x="300" y="78" width="44" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="322.0" y="93.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">72</text><rect x="297" y="75" width="50" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="374" y="66" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">i=6</text>
+<rect x="352" y="78" width="44" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 2"/><text x="374.0" y="93.0" font-size="14" fill="#52514E" font-weight="500" text-anchor="middle" dominant-baseline="central">76</text>
+<text x="426" y="66" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">i=7</text>
+<rect x="404" y="78" width="44" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 2"/><text x="426.0" y="93.0" font-size="14" fill="#52514E" font-weight="500" text-anchor="middle" dominant-baseline="central">73</text>
+<text x="40" y="128" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">已结算</text>
+<text x="144" y="128" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">在栈里 (还在等)</text>
+<text x="296" y="128" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">当前</text>
+<text x="352" y="128" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">还没看到</text>
+<line x1="40" y1="146" x2="640" y2="146" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M70 214 L70 330 L154 330 L154 214" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/><rect x="76" y="302.0" width="72" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="112.0" y="314.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2·75</text><rect x="76" y="274.0" width="72" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="112.0" y="286.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">3·71</text><rect x="76" y="246.0" width="72" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="112.0" y="258.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">4·69</text><rect x="73" y="243.0" width="78" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="112.0" y="344" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">底</text>
+<text x="112.0" y="168" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">栈 (T 递减: 75 ≥ 71 ≥ 69)</text>
+<text x="230" y="176" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">T = 72 来了: while T[栈顶] &lt; 72</text>
+<text x="230" y="206" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">69 &lt; 72 → pop 4·69, 它等到了: ans[4] = 5 − 4 = 1</text>
+<text x="230" y="230" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">71 &lt; 72 → pop 3·71, 它等到了: ans[3] = 5 − 3 = 2</text>
+<text x="230" y="254" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">75 ≥ 72 → 停. 75 还在等更高温</text>
+<text x="230" y="288" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">然后 push 5·72 → 栈 = [2·75, 5·72], 仍然递减</text>
+<text x="230" y="312" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">为什么停在 75: 栈递减, 75 往下全是 ≥ 75 &gt; 72, 不用再看</text>
+<text x="230" y="336" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">pop 的那一刻就是答案出现的那一刻 → 在 pop 里结算 ans</text>
+<rect x="40" y="364" width="22" height="16" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="70" y="372" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">当前输入</text><rect x="148" y="364" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="178" y="372" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里其他</text><rect x="256" y="364" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="253" y="361" width="28" height="22" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/><text x="286" y="372" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶 / 当前</text>
+</svg>
+<figcaption>i = 5 (T = 72) 到来: 栈里 69、71 都比 72 冷 → pop 并结算; 75 不比 72 冷 → 停。</figcaption></figure>
+<figure><svg width="100%" viewBox="0 0 680 1108" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>Daily Temperatures trace</title><desc>T = [73,74,75,71,69,72,76,73]: for each day pop colder days off a decreasing stack and settle ans.</desc><defs><marker id="dttrace-arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="dttrace-arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">T = [73, 74, 75, 71, 69, 72, 76, 73] · 栈里存 i·T (index·温度), 从底到顶温度递减</text>
+<text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">每一步: 当前 T 和栈顶比 → 栈顶更冷就 pop 并结算 ans = i − j → 最后把 i push 进去</text>
+<text x="40" y="72" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">当前输入</text>
+<text x="118" y="72" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop (扔到左边)</text>
+<text x="350" y="72" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop 后</text>
+<text x="432" y="72" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">push 后</text>
+<text x="514" y="72" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">计算</text>
+<line x1="40" y1="84" x2="640" y2="84" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="115.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="131.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 0</text>
+<text x="72.0" y="149.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">T = 73</text>
+<path d="M350 102 L350 190 L418 190 L418 102" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 102 L432 190 L500 190 L500 102" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="438" y="162.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="174.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">0·73</text><rect x="435" y="159.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="122" y="140.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈空, 不 pop</text>
+<text x="514" y="140.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">(还没有答案)</text>
+<line x1="40" y1="200" x2="640" y2="200" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="231.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="247.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 1</text>
+<text x="72.0" y="265.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">T = 74</text>
+<path d="M350 218 L350 306 L418 306 L418 218" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 218 L432 306 L500 306 L500 218" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="438" y="278.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="290.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">1·74</text><rect x="435" y="275.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="118" y="278.0" width="58" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="147.0" y="290.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">0·73</text>
+<path d="M352 290.0 L180 290.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#dttrace-arrR)"/>
+<text x="186" y="275.0" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">74 &gt; 73, pop</text>
+<text x="514" y="290.0" font-size="12" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">ans[0] = 1 − 0 = 1</text>
+<line x1="40" y1="316" x2="640" y2="316" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="347.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="363.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 2</text>
+<text x="72.0" y="381.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">T = 75</text>
+<path d="M350 334 L350 422 L418 422 L418 334" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 334 L432 422 L500 422 L500 334" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="438" y="394.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="406.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">2·75</text><rect x="435" y="391.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="118" y="394.0" width="58" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="147.0" y="406.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">1·74</text>
+<path d="M352 406.0 L180 406.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#dttrace-arrR)"/>
+<text x="186" y="391.0" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">75 &gt; 74, pop</text>
+<text x="514" y="406.0" font-size="12" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">ans[1] = 2 − 1 = 1</text>
+<line x1="40" y1="432" x2="640" y2="432" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="463.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="479.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 3</text>
+<text x="72.0" y="497.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">T = 71</text>
+<path d="M350 450 L350 538 L418 538 L418 450" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 450 L432 538 L500 538 L500 450" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="356" y="510.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="384.0" y="522.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2·75</text><rect x="353" y="507.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="438" y="510.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="466.0" y="522.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2·75</text>
+<rect x="438" y="482.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="494.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">3·71</text><rect x="435" y="479.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="122" y="488.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">75 &gt; 71, 不 pop</text>
+<text x="514" y="488.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">(还没有答案)</text>
+<line x1="40" y1="548" x2="640" y2="548" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="579.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="595.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 4</text>
+<text x="72.0" y="613.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">T = 69</text>
+<path d="M350 566 L350 654 L418 654 L418 566" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 566 L432 654 L500 654 L500 566" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="356" y="626.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="384.0" y="638.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2·75</text>
+<rect x="356" y="598.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="384.0" y="610.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">3·71</text><rect x="353" y="595.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="438" y="626.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="466.0" y="638.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2·75</text>
+<rect x="438" y="598.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="466.0" y="610.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">3·71</text>
+<rect x="438" y="570.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="582.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">4·69</text><rect x="435" y="567.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="122" y="604.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">71 &gt; 69, 不 pop</text>
+<text x="514" y="604.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">(还没有答案)</text>
+<line x1="40" y1="664" x2="640" y2="664" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="695.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="711.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 5</text>
+<text x="72.0" y="729.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">T = 72</text>
+<path d="M350 682 L350 770 L418 770 L418 682" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 682 L432 770 L500 770 L500 682" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="356" y="742.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="384.0" y="754.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2·75</text><rect x="353" y="739.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="438" y="742.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="466.0" y="754.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2·75</text>
+<rect x="438" y="714.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="726.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">5·72</text><rect x="435" y="711.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="118" y="686.0" width="58" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="147.0" y="698.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">4·69</text>
+<path d="M352 698.0 L180 698.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#dttrace-arrR)"/>
+<text x="186" y="683.0" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">72 &gt; 69, pop</text>
+<text x="514" y="698.0" font-size="12" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">ans[4] = 5 − 4 = 1</text>
+<rect x="118" y="714.0" width="58" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="147.0" y="726.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">3·71</text>
+<path d="M352 726.0 L180 726.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#dttrace-arrR)"/>
+<text x="186" y="711.0" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">72 &gt; 71, pop</text>
+<text x="514" y="726.0" font-size="12" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">ans[3] = 5 − 3 = 2</text>
+<line x1="40" y1="780" x2="640" y2="780" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="811.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="827.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 6</text>
+<text x="72.0" y="845.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">T = 76</text>
+<path d="M350 798 L350 886 L418 886 L418 798" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 798 L432 886 L500 886 L500 798" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="438" y="858.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="870.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">6·76</text><rect x="435" y="855.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="118" y="830.0" width="58" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="147.0" y="842.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">5·72</text>
+<path d="M352 842.0 L180 842.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#dttrace-arrR)"/>
+<text x="186" y="827.0" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">76 &gt; 72, pop</text>
+<text x="514" y="842.0" font-size="12" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">ans[5] = 6 − 5 = 1</text>
+<rect x="118" y="858.0" width="58" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="147.0" y="870.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">2·75</text>
+<path d="M352 870.0 L180 870.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#dttrace-arrR)"/>
+<text x="186" y="855.0" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">76 &gt; 75, pop</text>
+<text x="514" y="870.0" font-size="12" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">ans[2] = 6 − 2 = 4</text>
+<line x1="40" y1="896" x2="640" y2="896" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="927.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="943.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 7</text>
+<text x="72.0" y="961.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">T = 73</text>
+<path d="M350 914 L350 1002 L418 1002 L418 914" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 914 L432 1002 L500 1002 L500 914" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="356" y="974.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="384.0" y="986.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">6·76</text><rect x="353" y="971.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="438" y="974.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="466.0" y="986.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">6·76</text>
+<rect x="438" y="946.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="958.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">7·73</text><rect x="435" y="943.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="122" y="952.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">76 &gt; 73, 不 pop</text>
+<text x="514" y="952.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">(还没有答案)</text>
+<line x1="40" y1="1012" x2="640" y2="1012" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="1034" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里剩 6·76, 7·73: 右边没有更高温 → ans[6] = 0, ans[7] = 0</text>
+<text x="40" y="1058" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">ans = [1, 1, 4, 2, 1, 1, 0, 0]</text>
+<rect x="40" y="1078" width="22" height="16" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="70" y="1086" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">新 push / 当前输入</text><rect x="211.2" y="1078" width="22" height="16" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="241.2" y="1086" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop (虚线扔到左边)</text><rect x="381.6" y="1078" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="411.6" y="1086" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里其他</text><rect x="489.6" y="1078" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="486.6" y="1075" width="28" height="22" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/><text x="519.6" y="1086" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶</text>
+</svg>
+<figcaption>8 天的完整运行。注意 i = 5 一次 pop 两个、i = 6 一次 pop 两个; 每一次 pop 都对应一个 ans 的确定。</figcaption></figure>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">daily_temperatures</span>(T):</span><span class="l">    ans = [0] * <span class="t">len</span>(T)</span><span class="l">    stack = []                            <span class="c"># 存 index (不存温度): 答案是 i - j, 需要位置</span></span><span class="l">    <span class="k">for</span> i, t <span class="k">in</span> <span class="t">enumerate</span>(T):</span><span class="l">        <span class="k">while</span> stack <span class="k">and</span> T[stack[-1]] &lt; t: <span class="c"># t 是栈顶那天等到的第一个更高温</span></span><span class="l">            j = stack.<span class="f">pop</span>()</span><span class="l">            ans[j] = i - j                <span class="c"># 在 pop 时结算 j 的答案</span></span><span class="l">        stack.<span class="f">append</span>(i)</span><span class="l">    <span class="r">return</span> ans                            <span class="c"># 栈里剩下的天没等到更高温, ans 保持 0</span></span></div>
+<p><b>Time:</b> O(n)。每个 index push 1 次, 最多 pop 1 次, while 循环总共执行 ≤ n 次。<b>Space:</b> O(n), 最坏是温度严格递减 (<code>[5, 4, 3, 2, 1]</code>), 全部留在栈里。</p>
+<p>变体: Next Greater Element I (nums1 是 nums2 的子集) 就是模板 + 一个 dict 记 "值 → 它的 next greater"。Final Prices With a Special Discount 是 "右边第一个 ≤ 自己" → 换成递增栈。</p>
+<p class="note"><b>记:</b>存 index; while 栈顶 < 当前: pop, 并在这一刻写 ans[j] = i − j。</p>
+<h2>2. Next Greater Element II: 循环数组, 遍历 2n</h2>
+<p><b>题目:</b> 数组首尾相连 (循环), 对每个元素找它 "往右走" 遇到的第一个更大的数, 可以绕回开头。例子: <code>[2, 3, 1]</code> → <code>[3, −1, 2]</code> (最后的 1 绕回去遇到 2)。</p>
+<p><b>相比上一题:</b> 多了 "绕回"。Brute force 是每个元素往右扫最多 n−1 个 (取模), O(n²)。</p>
+<p><b>关键观察:</b> 把数组虚拟地拼成两份, 取值用 <code>i % n</code>, 就能看到每个元素 "右边" 的全部 n−1 个元素。改两行: <code>range(2 * n)</code> 和只在 <code>i &lt; n</code> 时 push。</p>
+<figure><svg width="100%" viewBox="0 0 680 430" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>Circular array doubled</title><desc>Walk 2n indices with i % n; wrap-around gives elements at the end a second chance.</desc><defs><marker id="c2-arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="c2-arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">nums = [2, 3, 1] · 循环数组: 最后一个元素的 "右边" 要绕回开头</text>
+<text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">把数组虚拟地拼成两份, 取值用 nums[i % n], 不真的拷贝</text>
+<text x="88" y="70" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">i=0</text>
+<rect x="60" y="84" width="56" height="34" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="88.0" y="101.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text>
+<text x="88" y="134" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">idx 0</text>
+<text x="178" y="70" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">i=1</text>
+<rect x="150" y="84" width="56" height="34" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="178.0" y="101.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">3</text>
+<text x="178" y="134" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">idx 1</text>
+<text x="268" y="70" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">i=2</text>
+<rect x="240" y="84" width="56" height="34" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="268.0" y="101.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1</text>
+<text x="268" y="134" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">idx 2</text>
+<text x="358" y="70" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">i=3</text>
+<rect x="330" y="84" width="56" height="34" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 2"/><text x="358.0" y="101.0" font-size="14" fill="#52514E" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text>
+<text x="358" y="134" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">idx 0</text>
+<text x="448" y="70" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">i=4</text>
+<rect x="420" y="84" width="56" height="34" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 2"/><text x="448.0" y="101.0" font-size="14" fill="#52514E" font-weight="500" text-anchor="middle" dominant-baseline="central">3</text>
+<text x="448" y="134" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">idx 1</text>
+<text x="538" y="70" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">i=5</text>
+<rect x="510" y="84" width="56" height="34" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 2"/><text x="538.0" y="101.0" font-size="14" fill="#52514E" font-weight="500" text-anchor="middle" dominant-baseline="central">1</text>
+<text x="538" y="134" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">idx 2</text>
+<text x="60" y="160" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">第 1 圈: 真实数组, 要 push</text>
+<text x="330" y="160" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">第 2 圈: 虚拟拷贝, 不 push</text>
+<line x1="313" y1="62" x2="313" y2="170" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M268 176 C268 216 358 216 358 178" fill="none" stroke="#0F6E56" stroke-width="2" marker-end="url(#c2-arrG)"/>
+<text x="313.0" y="222" font-size="12" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">idx 2 (值 1): 第 1 圈右边没有更大的, 绕回去遇到 2</text>
+<text x="313.0" y="240" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">ans[2] = 2</text>
+<text x="40" y="282" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">idx 1 (值 3): 第 2 圈遇到 3 (不 &gt; 3), 绕一圈也没有更大的 → ans[1] = −1</text>
+<line x1="40" y1="302" x2="640" y2="302" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="326" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">做法: 还是同一个递减栈, i 从 0 走到 2n − 1, x = nums[i % n]</text>
+<text x="40" y="346" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">只在 i &lt; n 时 push: 第 2 圈只是给栈里还没答案的元素 "再找一次"</text>
+<text x="40" y="370" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">2n 次循环, 每个元素最多 push 1 次 / pop 1 次 → 仍是 O(n)</text>
+<rect x="40" y="396" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="70" y="404" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">第 1 圈 (真实)</text><rect x="186.4" y="396" width="22" height="16" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="216.4" y="404" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">答案</text>
+</svg>
+<figcaption>拼成两份后, idx 2 (值 1) 在第 2 圈遇到 2; idx 1 (值 3) 绕一圈都没有更大的。</figcaption></figure>
+<figure><svg width="100%" viewBox="0 0 680 708" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>Next Greater Element II trace</title><desc>nums=[2,3,1] circular: 2n iterations, only push in the first pass.</desc><defs><marker id="ngetrace-arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ngetrace-arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">nums = [2, 3, 1] (循环) · 走 i = 0..5 (共 2n = 6 步), x = nums[i % n]</text>
+<text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里存 idx·值, 从底到顶递减 · 只在第 1 圈 (i &lt; n) push, 第 2 圈只负责结算</text>
+<text x="40" y="72" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">当前输入</text>
+<text x="118" y="72" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop (扔到左边)</text>
+<text x="350" y="72" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop 后</text>
+<text x="432" y="72" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">push 后</text>
+<text x="514" y="72" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">计算</text>
+<line x1="40" y1="84" x2="640" y2="84" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="101.0" width="72" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="76.0" y="117.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 0</text>
+<text x="76.0" y="135.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">x = 2</text>
+<path d="M350 102 L350 162 L418 162 L418 102" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 102 L432 162 L500 162 L500 102" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="438" y="134.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="146.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">0·2</text><rect x="435" y="131.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="122" y="126.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈空, 不 pop</text>
+<line x1="40" y1="172" x2="640" y2="172" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="189.0" width="72" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="76.0" y="205.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 1</text>
+<text x="76.0" y="223.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">x = 3</text>
+<path d="M350 190 L350 250 L418 250 L418 190" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 190 L432 250 L500 250 L500 190" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="438" y="222.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="234.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">1·3</text><rect x="435" y="219.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="118" y="222.0" width="58" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="147.0" y="234.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">0·2</text>
+<path d="M352 234.0 L180 234.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#ngetrace-arrR)"/>
+<text x="186" y="219.0" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">3 &gt; 2, pop</text>
+<text x="514" y="234.0" font-size="12" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">ans[0] = 3</text>
+<line x1="40" y1="260" x2="640" y2="260" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="277.0" width="72" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="76.0" y="293.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 2</text>
+<text x="76.0" y="311.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">x = 1</text>
+<path d="M350 278 L350 338 L418 338 L418 278" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 278 L432 338 L500 338 L500 278" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="356" y="310.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="384.0" y="322.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1·3</text><rect x="353" y="307.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="438" y="310.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="466.0" y="322.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1·3</text>
+<rect x="438" y="282.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="294.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">2·1</text><rect x="435" y="279.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="122" y="302.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶 3 ≥ 1, 不 pop</text>
+<line x1="40" y1="348" x2="640" y2="348" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="365.0" width="72" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="76.0" y="381.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 3 → 0</text>
+<text x="76.0" y="399.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">x = 2</text>
+<path d="M350 366 L350 426 L418 426 L418 366" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 366 L432 426 L500 426 L500 366" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="356" y="398.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="384.0" y="410.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1·3</text><rect x="353" y="395.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="438" y="398.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="466.0" y="410.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1·3</text><rect x="435" y="395.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="118" y="370.0" width="58" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="147.0" y="382.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">2·1</text>
+<path d="M352 382.0 L180 382.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#ngetrace-arrR)"/>
+<text x="186" y="367.0" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">2 &gt; 1, pop</text>
+<text x="514" y="375.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">第 2 圈, 不 push</text>
+<text x="514" y="389.0" font-size="12" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">ans[2] = 2</text>
+<line x1="40" y1="436" x2="640" y2="436" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="453.0" width="72" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="76.0" y="469.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 4 → 1</text>
+<text x="76.0" y="487.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">x = 3</text>
+<path d="M350 454 L350 514 L418 514 L418 454" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 454 L432 514 L500 514 L500 454" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="356" y="486.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="384.0" y="498.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1·3</text><rect x="353" y="483.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="438" y="486.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="466.0" y="498.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1·3</text><rect x="435" y="483.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="122" y="478.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶 3 ≥ 3, 不 pop</text>
+<text x="514" y="478.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">第 2 圈, 不 push</text>
+<line x1="40" y1="524" x2="640" y2="524" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="541.0" width="72" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="76.0" y="557.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 5 → 2</text>
+<text x="76.0" y="575.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">x = 1</text>
+<path d="M350 542 L350 602 L418 602 L418 542" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 542 L432 602 L500 602 L500 542" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="356" y="574.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="384.0" y="586.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1·3</text><rect x="353" y="571.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="438" y="574.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="466.0" y="586.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1·3</text><rect x="435" y="571.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="122" y="566.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶 3 ≥ 1, 不 pop</text>
+<text x="514" y="566.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">第 2 圈, 不 push</text>
+<line x1="40" y1="612" x2="640" y2="612" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="634" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里剩 1·3 (值 3): 绕一圈也没有更大的 → ans[1] = −1</text>
+<text x="40" y="658" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">ans = [3, −1, 2]  (ans[2] = 2: 1 绕回第 2 圈才遇到 2)</text>
+<rect x="40" y="678" width="22" height="16" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="70" y="686" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">新 push / 当前输入</text><rect x="211.2" y="678" width="22" height="16" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="241.2" y="686" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop (虚线扔到左边)</text><rect x="381.6" y="678" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="411.6" y="686" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里其他</text><rect x="489.6" y="678" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="486.6" y="675" width="28" height="22" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/><text x="519.6" y="686" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶</text>
+</svg>
+<figcaption>6 步 (2n)。第 2 圈 (i = 3, 4, 5) 不 push, 只结算: i = 3 把 1 pop 掉并得到 ans[2] = 2。</figcaption></figure>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">next_greater_elements</span>(nums):</span><span class="l">    n = <span class="t">len</span>(nums)</span><span class="l">    ans = [-1] * n</span><span class="l">    stack = []</span><span class="l">    <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(2 * n):                <span class="c"># 走 2 圈: 第 2 圈让 &quot;右边没有&quot; 的元素绕回开头再找</span></span><span class="l">        x = nums[i % n]                   <span class="c"># 用 i % n 取值, 不拷贝数组</span></span><span class="l">        <span class="k">while</span> stack <span class="k">and</span> nums[stack[-1]] &lt; x:</span><span class="l">            ans[stack.<span class="f">pop</span>()] = x</span><span class="l">        <span class="k">if</span> i &lt; n:                         <span class="c"># 只在第 1 圈 push: 第 2 圈只负责结算</span></span><span class="l">            stack.<span class="f">append</span>(i)</span><span class="l">    <span class="r">return</span> ans</span></div>
+<p><b>Time:</b> O(n), 循环 2n 次, 每个元素仍然最多 push 1 次 / pop 1 次。<b>Space:</b> O(n)。</p>
+<p class="note"><b>记:</b>循环数组 = 遍历 2n, 用 i % n 取值; 只在第 1 圈 push, 第 2 圈只结算。</p>
+<h2>3. Largest Rectangle in Histogram: pop 时左右边界同时确定</h2>
+<p><b>题目:</b> 一排宽为 1 的柱子 heights, 求柱状图里最大的矩形面积。例子: <code>[2, 1, 5, 6, 2, 3]</code> → <code>10</code> (高 5, 宽 2)。</p>
+<p><b>Brute force:</b> 对每根柱子, 向左右各扩展到第一根比它矮的, 面积 = 高 × 宽, O(n²)。浪费: 每根柱子都从自己出发重新向两边走, 不知道别人已经走过哪一段。</p>
+<p><b>相比上一题:</b> 不再是 "给每个元素找一个答案", 而是 <b>每根柱子要左右两个边界</b>, 即 "以它为最矮的柱子, 能延伸多远"。这正是第 0 节那个 <code>nearest_smaller_both</code>: 用递增栈, 当柱子被 pop 的那一刻, 右边界 = 当前 i (第一根比它矮的, 才触发 pop), 左边界 = pop 后的新栈顶 (栈递增, 它下面那根就是左边第一根更矮的)。两个边界同时确定, 当场算面积。</p>
+<figure><svg width="100%" viewBox="0 0 680 444" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>Largest rectangle boundaries</title><desc>Bar 5 extends from the first smaller bar on the left to the first smaller bar on the right; both known at pop time.</desc><defs><marker id="c3-arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="c3-arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">heights = [2, 1, 5, 6, 2, 3] · 以每根柱子为 "最矮的那根" 能向左右延伸多远?</text>
+<text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">看高 = 5 的柱子 (idx 2): 它是 i = 4 时被 pop 的</text>
+<rect x="40" y="210" width="56" height="40" rx="2" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="68.0" y="198" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text>
+<text x="68.0" y="266" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">i=0</text>
+<rect x="102" y="230" width="56" height="20" rx="2" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="130.0" y="218" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="middle" dominant-baseline="central">1</text>
+<text x="130.0" y="266" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">i=1</text>
+<rect x="164" y="150" width="56" height="100" rx="2" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="192.0" y="138" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="middle" dominant-baseline="central">5</text>
+<text x="192.0" y="266" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">i=2</text>
+<rect x="226" y="130" width="56" height="120" rx="2" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="254.0" y="118" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="middle" dominant-baseline="central">6</text>
+<text x="254.0" y="266" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">i=3</text>
+<rect x="288" y="210" width="56" height="40" rx="2" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="316.0" y="198" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text>
+<text x="316.0" y="266" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">i=4</text>
+<rect x="350" y="190" width="56" height="60" rx="2" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="378.0" y="178" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="middle" dominant-baseline="central">3</text>
+<text x="378.0" y="266" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">i=5</text>
+<rect x="164" y="150" width="56" height="100" rx="2" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="164" y="150" width="118" height="100" rx="2" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-dasharray="5 3"/>
+<rect x="99" y="227" width="62" height="26" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="285" y="207" width="62" height="46" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="130.0" y="286" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">左边界</text>
+<text x="316.0" y="286" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">右边界</text>
+<text x="168" y="168" font-size="14" fill="#085041" font-weight="500" text-anchor="start" dominant-baseline="central">5 × 2</text>
+<text x="450" y="80" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">以高 5 为最矮:</text>
+<text x="450" y="108" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">往左: 第一根比 5 矮的</text>
+<text x="450" y="126" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">  = idx 1 (h = 1) → 左边界</text>
+<text x="450" y="154" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">往右: 第一根比 5 矮的</text>
+<text x="450" y="172" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">  = idx 4 (h = 2) → 右边界</text>
+<text x="450" y="200" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">宽 = 右 − 左 − 1</text>
+<text x="450" y="218" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">   = 4 − 1 − 1 = 2</text>
+<text x="450" y="244" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">面积 = 5 × 2 = 10</text>
+<line x1="40" y1="308" x2="640" y2="308" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="322" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里从底到顶 h 递增 → 栈里每根柱子下面那根, 就是它左边第一根更矮的</text>
+<text x="40" y="342" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop 时: 右边界 = 当前 i (它是第一个更矮的, 才触发 pop) · 左边界 = pop 之后的新栈顶</text>
+<text x="40" y="362" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">两个边界在同一时刻确定 → 一次 pop 算出一根柱子的最大面积</text>
+<text x="40" y="386" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">哨兵: 在 heights 末尾补一根 0, 最后一步把栈里剩下的柱子全部 pop 出来结算</text>
+<rect x="40" y="410" width="22" height="16" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="70" y="418" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">被结算的柱子及其矩形</text><rect x="220" y="410" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="250" y="418" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">其他柱子</text><rect x="328" y="410" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="325" y="407" width="28" height="22" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/><text x="358" y="418" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">左 / 右边界</text>
+</svg>
+<figcaption>高 5 的柱子在 i = 4 被 pop: 右边界 = 4, 左边界 = 新栈顶 idx 1, 宽 = 4 − 1 − 1 = 2, 面积 10。</figcaption></figure>
+<figure><svg width="100%" viewBox="0 0 680 1220" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>Largest Rectangle in Histogram trace</title><desc>heights=[2,1,5,6,2,3]+[0]: increasing stack, popped bar's width is fixed at pop time.</desc><defs><marker id="lrhtrace-arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="lrhtrace-arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">heights = [2, 1, 5, 6, 2, 3] + [0 哨兵] · 栈里存 i·h, 从底到顶 h 递增</text>
+<text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop 的那一刻: 高 = 被 pop 的 h · 右边界 = i · 左边界 = pop 后的新栈顶 (空则 −1) · w = i − 左 − 1</text>
+<text x="40" y="72" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">当前输入</text>
+<text x="118" y="72" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop (扔到左边)</text>
+<text x="350" y="72" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop 后</text>
+<text x="432" y="72" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">push 后</text>
+<text x="514" y="72" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">面积</text>
+<line x1="40" y1="84" x2="640" y2="84" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="133.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="149.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 0</text>
+<text x="72.0" y="167.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">h = 2</text>
+<path d="M350 102 L350 226 L418 226 L418 102" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 102 L432 226 L500 226 L500 102" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="438" y="192.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="204.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">0·2</text><rect x="435" y="189.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="122" y="158.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈空, 不 pop</text>
+<line x1="40" y1="236" x2="640" y2="236" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="285.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="301.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 1</text>
+<text x="72.0" y="319.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">h = 1</text>
+<path d="M350 254 L350 378 L418 378 L418 254" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 254 L432 378 L500 378 L500 254" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="438" y="344.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="356.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">1·1</text><rect x="435" y="341.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="118" y="344.0" width="58" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="147.0" y="356.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">0·2</text>
+<path d="M352 356.0 L180 356.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#lrhtrace-arrR)"/>
+<text x="186" y="341.0" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">2 &gt; 1, pop</text>
+<text x="514" y="349.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">w = 1 − (−1) − 1 = 1</text>
+<text x="514" y="363.0" font-size="12" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">2 × 1 = 2</text>
+<line x1="40" y1="388" x2="640" y2="388" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="437.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="453.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 2</text>
+<text x="72.0" y="471.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">h = 5</text>
+<path d="M350 406 L350 530 L418 530 L418 406" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 406 L432 530 L500 530 L500 406" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="356" y="496.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="384.0" y="508.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1·1</text><rect x="353" y="493.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="438" y="496.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="466.0" y="508.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1·1</text>
+<rect x="438" y="456.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="468.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">2·5</text><rect x="435" y="453.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="122" y="462.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶 1 ≤ 5, 不 pop</text>
+<line x1="40" y1="540" x2="640" y2="540" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="589.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="605.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 3</text>
+<text x="72.0" y="623.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">h = 6</text>
+<path d="M350 558 L350 682 L418 682 L418 558" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 558 L432 682 L500 682 L500 558" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="356" y="648.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="384.0" y="660.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1·1</text>
+<rect x="356" y="608.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="384.0" y="620.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2·5</text><rect x="353" y="605.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="438" y="648.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="466.0" y="660.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1·1</text>
+<rect x="438" y="608.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="466.0" y="620.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2·5</text>
+<rect x="438" y="568.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="580.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">3·6</text><rect x="435" y="565.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="122" y="614.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶 5 ≤ 6, 不 pop</text>
+<line x1="40" y1="692" x2="640" y2="692" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="741.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="757.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 4</text>
+<text x="72.0" y="775.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">h = 2</text>
+<path d="M350 710 L350 834 L418 834 L418 710" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 710 L432 834 L500 834 L500 710" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="356" y="800.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="384.0" y="812.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1·1</text><rect x="353" y="797.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="438" y="800.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="466.0" y="812.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1·1</text>
+<rect x="438" y="760.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="772.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">4·2</text><rect x="435" y="757.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="118" y="720.0" width="58" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="147.0" y="732.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">3·6</text>
+<path d="M352 732.0 L180 732.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#lrhtrace-arrR)"/>
+<text x="186" y="717.0" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">6 &gt; 2, pop</text>
+<text x="514" y="725.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">w = 4 − 2 − 1 = 1</text>
+<text x="514" y="739.0" font-size="12" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">6 × 1 = 6</text>
+<rect x="118" y="760.0" width="58" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="147.0" y="772.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">2·5</text>
+<path d="M352 772.0 L180 772.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#lrhtrace-arrR)"/>
+<text x="186" y="757.0" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">5 &gt; 2, pop</text>
+<text x="514" y="765.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">w = 4 − 1 − 1 = 2</text>
+<text x="514" y="779.0" font-size="12" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">5 × 2 = 10</text>
+<line x1="40" y1="844" x2="640" y2="844" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="893.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="909.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 5</text>
+<text x="72.0" y="927.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">h = 3</text>
+<path d="M350 862 L350 986 L418 986 L418 862" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 862 L432 986 L500 986 L500 862" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="356" y="952.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="384.0" y="964.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1·1</text>
+<rect x="356" y="912.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="384.0" y="924.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">4·2</text><rect x="353" y="909.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="438" y="952.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="466.0" y="964.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1·1</text>
+<rect x="438" y="912.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="466.0" y="924.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">4·2</text>
+<rect x="438" y="872.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="884.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">5·3</text><rect x="435" y="869.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="122" y="918.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶 2 ≤ 3, 不 pop</text>
+<line x1="40" y1="996" x2="640" y2="996" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="1045.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="1061.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 6</text>
+<text x="72.0" y="1079.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">h = 0 哨兵</text>
+<path d="M350 1014 L350 1138 L418 1138 L418 1014" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 1014 L432 1138 L500 1138 L500 1014" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="438" y="1104.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="1116.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">6·0</text><rect x="435" y="1101.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="118" y="1024.0" width="58" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="147.0" y="1036.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">5·3</text>
+<path d="M352 1036.0 L180 1036.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#lrhtrace-arrR)"/>
+<text x="186" y="1021.0" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">3 &gt; 0, pop</text>
+<text x="514" y="1029.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">w = 6 − 4 − 1 = 1</text>
+<text x="514" y="1043.0" font-size="12" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">3 × 1 = 3</text>
+<rect x="118" y="1064.0" width="58" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="147.0" y="1076.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">4·2</text>
+<path d="M352 1076.0 L180 1076.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#lrhtrace-arrR)"/>
+<text x="186" y="1061.0" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">2 &gt; 0, pop</text>
+<text x="514" y="1069.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">w = 6 − 1 − 1 = 4</text>
+<text x="514" y="1083.0" font-size="12" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">2 × 4 = 8</text>
+<rect x="118" y="1104.0" width="58" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="147.0" y="1116.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">1·1</text>
+<path d="M352 1116.0 L180 1116.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#lrhtrace-arrR)"/>
+<text x="186" y="1101.0" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">1 &gt; 0, pop</text>
+<text x="514" y="1109.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">w = 6 − (−1) − 1 = 6</text>
+<text x="514" y="1123.0" font-size="12" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">1 × 6 = 6</text>
+<line x1="40" y1="1148" x2="640" y2="1148" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="1170" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">pop 过的面积: 2, 6, 10, 3, 8, 6 → best = max = 10 (高 5 × 宽 2, i = 2..3)</text>
+<rect x="40" y="1190" width="22" height="16" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="70" y="1198" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">新 push / 当前输入</text><rect x="211.2" y="1190" width="22" height="16" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="241.2" y="1198" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop (虚线扔到左边)</text><rect x="381.6" y="1190" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="411.6" y="1198" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里其他</text><rect x="489.6" y="1190" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="486.6" y="1187" width="28" height="22" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/><text x="519.6" y="1198" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶</text>
+</svg>
+<figcaption>heights + [0] 共 7 步。每个 pop 都写出 w 和面积, 最后一行哨兵 0 把栈清空。</figcaption></figure>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">largest_rectangle_area</span>(heights):</span><span class="l">    heights = heights + [0]               <span class="c"># 哨兵 0: 最后一步把栈里剩下的柱子全部 pop 出来</span></span><span class="l">    stack = []                            <span class="c"># 存 index; heights 从底到顶递增</span></span><span class="l">    best = 0</span><span class="l">    <span class="k">for</span> i, h <span class="k">in</span> <span class="t">enumerate</span>(heights):</span><span class="l">        <span class="k">while</span> stack <span class="k">and</span> heights[stack[-1]] &gt; h:   <span class="c"># h 比栈顶矮 -&gt; 栈顶的右边界就是 i</span></span><span class="l">            height = heights[stack.<span class="f">pop</span>()]</span><span class="l">            left = stack[-1] <span class="k">if</span> stack <span class="k">else</span> -1     <span class="c"># pop 后的新栈顶 = 左边界 (空 = 左边没有更矮的)</span></span><span class="l">            width = i - left - 1          <span class="c"># 左右边界之间 (不含边界) 的柱子数</span></span><span class="l">            best = <span class="t">max</span>(best, height * width)</span><span class="l">        stack.<span class="f">append</span>(i)                   <span class="c"># 相等的柱子不 pop: 后面那根会把宽度补全</span></span><span class="l">    <span class="r">return</span> best</span></div>
+<p><b>哨兵 0 的作用:</b> 末尾补一根高 0 的柱子, 它比所有柱子都矮, 所以一定把栈里剩下的柱子全部 pop 出来结算, 不用在循环后面再写一段清栈代码。</p>
+<p><b>Time:</b> O(n)。<b>Space:</b> O(n), 最坏是柱子严格递增, 全留在栈里。</p>
+<p><b>Maximal Rectangle</b> 是逐行套用: 矩阵每一行, 把每一列 "到这一行为止往上连续 1 的个数" 当成柱子高度, 这一行就是一个直方图, 直接调用上面的函数。</p>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">maximal_rectangle</span>(matrix):            <span class="c"># 逐行套用 largest_rectangle_area</span></span><span class="l">    <span class="k">if</span> <span class="k">not</span> matrix:</span><span class="l">        <span class="r">return</span> 0</span><span class="l">    heights = [0] * <span class="t">len</span>(matrix[0])</span><span class="l">    best = 0</span><span class="l">    <span class="k">for</span> row <span class="k">in</span> matrix:</span><span class="l">        <span class="k">for</span> j, c <span class="k">in</span> <span class="t">enumerate</span>(row):</span><span class="l">            heights[j] = heights[j] + 1 <span class="k">if</span> c == <span class="s">&quot;1&quot;</span> <span class="k">else</span> 0   <span class="c"># 每列: 到这一行为止往上连续 1 的个数</span></span><span class="l">        best = <span class="t">max</span>(best, <span class="f">largest_rectangle_area</span>(heights))    <span class="c"># 这一行就是一个直方图</span></span><span class="l">    <span class="r">return</span> best</span></div>
+<p>Time O(rows × cols): 每行更新 heights 是 O(cols), 再 O(cols) 的单调栈。同一套 "左右边界" 换成数个数, 就是 Sum of Subarray Minimums (每个数作为最小值贡献 (i − left) × (right − i) 次)。</p>
+<p class="note"><b>记:</b>以每个元素为最值能延伸多远 = 左右边界 = 单调栈。pop 时右边界是 i, 左边界是新栈顶。末尾补哨兵 0 清栈。</p>
+<h2>4. Remove K Digits: greedy + 递增栈, 栈就是答案</h2>
+<p><b>题目:</b> 数字字符串 num, 删掉恰好 k 位, 使剩下的数最小。例子: <code>num = "1432219", k = 3</code> → <code>"1219"</code>。</p>
+<p><b>Brute force:</b> 枚举删哪 k 位, C(n, k) 种, 指数级。稍好一点的 greedy: 每次从头扫找第一个 "比后一位大" 的数字删掉, 重复 k 次, O(nk)。</p>
+<p><b>浪费在哪:</b> 每删一次, 又要从头扫一遍。其实删掉一位后, 只可能让 "紧挨着它左边" 的那一位变成新的 "比后一位大", 前面不会再有。这正是栈: 每次只看栈顶。</p>
+<p><b>相比上一题:</b> 栈里存的不再是 "等答案的元素", 而是 <b>最终结果本身</b>; pop 也不是结算, 而是 <b>真的删掉</b>, 且受 k 个名额限制 (<code>while k and ...</code>)。</p>
+<figure><svg width="100%" viewBox="0 0 680 388" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>Why delete the first bigger digit</title><desc>Deleting the first digit that is larger than its successor gives the smallest number.</desc><defs><marker id="c4-arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="c4-arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">num = "1432", 删 1 位 · 4 种删法, 哪个最小?</text>
+<text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">位数相同 → 先比最高位, 高位越小越好</text>
+<text x="40" y="81" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">删 idx 0</text>
+<rect x="140" y="66" width="34" height="30" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/><text x="157.0" y="81.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">1</text>
+<rect x="180" y="66" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="197.0" y="81.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">4</text>
+<rect x="220" y="66" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="237.0" y="81.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">3</text>
+<rect x="260" y="66" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="277.0" y="81.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text>
+<path d="M310 81 L350 81" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#c4-arrG)"/>
+<rect x="360" y="66" width="64" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="392.0" y="81.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">432</text>
+<text x="40" y="125" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">删 idx 1</text>
+<rect x="140" y="110" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="157.0" y="125.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1</text>
+<rect x="180" y="110" width="34" height="30" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/><text x="197.0" y="125.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">4</text>
+<rect x="220" y="110" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="237.0" y="125.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">3</text>
+<rect x="260" y="110" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="277.0" y="125.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text>
+<path d="M310 125 L350 125" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#c4-arrG)"/>
+<rect x="360" y="110" width="64" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="392.0" y="125.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">132</text><rect x="357" y="107" width="70" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="40" y="169" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">删 idx 2</text>
+<rect x="140" y="154" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="157.0" y="169.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1</text>
+<rect x="180" y="154" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="197.0" y="169.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">4</text>
+<rect x="220" y="154" width="34" height="30" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/><text x="237.0" y="169.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">3</text>
+<rect x="260" y="154" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="277.0" y="169.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text>
+<path d="M310 169 L350 169" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#c4-arrG)"/>
+<rect x="360" y="154" width="64" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="392.0" y="169.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">142</text>
+<text x="40" y="213" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">删 idx 3</text>
+<rect x="140" y="198" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="157.0" y="213.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1</text>
+<rect x="180" y="198" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="197.0" y="213.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">4</text>
+<rect x="220" y="198" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="237.0" y="213.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">3</text>
+<rect x="260" y="198" width="34" height="30" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/><text x="277.0" y="213.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text>
+<path d="M310 213 L350 213" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#c4-arrG)"/>
+<rect x="360" y="198" width="64" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="392.0" y="213.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">143</text>
+<text x="440" y="125" font-size="14" fill="#085041" font-weight="500" text-anchor="start" dominant-baseline="central">← 最小: 删掉 4</text>
+<line x1="40" y1="248" x2="640" y2="248" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="262" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">删 4: 第 2 位从 4 变成 3, 变小了; 删 3: 第 2 位还是 4, 没变小</text>
+<text x="40" y="284" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">从左往右第一个 "比后一位大" 的数字 (4 &gt; 3) 删掉最划算</text>
+<text x="40" y="306" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">= 栈顶 &gt; 当前数字时 pop 栈顶 (k 次这样的操作, 一次扫描完成)</text>
+<text x="40" y="330" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈从底到顶非递减 = 高位尽量小 · 如果整个数字都是递增的, 就删最末尾的 k 位</text>
+<rect x="40" y="354" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="70" y="362" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">保留的数字</text><rect x="160" y="354" width="22" height="16" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="190" y="362" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">删掉的数字</text><rect x="280" y="354" width="22" height="16" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="310" y="362" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">结果最小</text><rect x="388" y="354" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="385" y="351" width="28" height="22" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/><text x="418" y="362" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">答案</text>
+</svg>
+<figcaption>位数相同, 先比高位。"1432" 删 4 得 132 最小: 从左往右第一个比后一位大的数字 (4 &gt; 3) 删掉最划算。</figcaption></figure>
+<figure><svg width="100%" viewBox="0 0 680 1164" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>Remove K Digits trace</title><desc>num='1432219', k=3: increasing stack of digits, pop a bigger previous digit while k&gt;0.</desc><defs><marker id="rkdtrace-arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="rkdtrace-arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">num = "1432219", k = 3 · 栈里存数字, 从底到顶非递减 (高位尽量小)</text>
+<text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">每一步: 前一位 (栈顶) &gt; 当前位 d 且 k &gt; 0 → pop 栈顶 (删掉它, k 减 1) → 把 d push 进去</text>
+<text x="40" y="72" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">当前输入</text>
+<text x="118" y="72" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop (扔到左边)</text>
+<text x="350" y="72" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop 后</text>
+<text x="432" y="72" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">push 后</text>
+<text x="514" y="72" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">计算</text>
+<line x1="40" y1="84" x2="640" y2="84" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="129.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="145.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">d = 1</text>
+<text x="72.0" y="163.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">k = 3</text>
+<path d="M350 102 L350 218 L418 218 L418 102" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 102 L432 218 L500 218 L500 102" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="438" y="190.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="202.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">1</text><rect x="435" y="187.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="122" y="154.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈空, 不 pop</text>
+<line x1="40" y1="228" x2="640" y2="228" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="273.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="289.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">d = 4</text>
+<text x="72.0" y="307.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">k = 3</text>
+<path d="M350 246 L350 362 L418 362 L418 246" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 246 L432 362 L500 362 L500 246" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="356" y="334.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="384.0" y="346.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1</text><rect x="353" y="331.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="438" y="334.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="466.0" y="346.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1</text>
+<rect x="438" y="306.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="318.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">4</text><rect x="435" y="303.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="122" y="298.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">1 ≤ 4, 不 pop</text>
+<line x1="40" y1="372" x2="640" y2="372" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="417.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="433.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">d = 3</text>
+<text x="72.0" y="451.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">k = 3</text>
+<path d="M350 390 L350 506 L418 506 L418 390" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 390 L432 506 L500 506 L500 390" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="356" y="478.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="384.0" y="490.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1</text><rect x="353" y="475.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="438" y="478.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="466.0" y="490.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1</text>
+<rect x="438" y="450.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="462.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">3</text><rect x="435" y="447.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="118" y="450.0" width="58" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="147.0" y="462.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">4</text>
+<path d="M352 462.0 L180 462.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#rkdtrace-arrR)"/>
+<text x="186" y="447.0" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">4 &gt; 3 且 k = 3 &gt; 0</text>
+<text x="514" y="462.0" font-size="12" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">删掉 4, k: 3 → 2</text>
+<line x1="40" y1="516" x2="640" y2="516" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="561.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="577.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">d = 2</text>
+<text x="72.0" y="595.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">k = 2</text>
+<path d="M350 534 L350 650 L418 650 L418 534" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 534 L432 650 L500 650 L500 534" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="356" y="622.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="384.0" y="634.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1</text><rect x="353" y="619.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="438" y="622.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="466.0" y="634.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1</text>
+<rect x="438" y="594.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="606.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text><rect x="435" y="591.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="118" y="594.0" width="58" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="147.0" y="606.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">3</text>
+<path d="M352 606.0 L180 606.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#rkdtrace-arrR)"/>
+<text x="186" y="591.0" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">3 &gt; 2 且 k = 2 &gt; 0</text>
+<text x="514" y="606.0" font-size="12" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">删掉 3, k: 2 → 1</text>
+<line x1="40" y1="660" x2="640" y2="660" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="705.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="721.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">d = 2</text>
+<text x="72.0" y="739.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">k = 1</text>
+<path d="M350 678 L350 794 L418 794 L418 678" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 678 L432 794 L500 794 L500 678" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="356" y="766.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="384.0" y="778.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1</text>
+<rect x="356" y="738.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="384.0" y="750.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text><rect x="353" y="735.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="438" y="766.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="466.0" y="778.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1</text>
+<rect x="438" y="738.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="466.0" y="750.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text>
+<rect x="438" y="710.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="722.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text><rect x="435" y="707.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="122" y="730.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">2 ≤ 2, 不 pop</text>
+<line x1="40" y1="804" x2="640" y2="804" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="849.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="865.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">d = 1</text>
+<text x="72.0" y="883.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">k = 1</text>
+<path d="M350 822 L350 938 L418 938 L418 822" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 822 L432 938 L500 938 L500 822" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="356" y="910.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="384.0" y="922.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1</text>
+<rect x="356" y="882.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="384.0" y="894.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text><rect x="353" y="879.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="438" y="910.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="466.0" y="922.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1</text>
+<rect x="438" y="882.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="466.0" y="894.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text>
+<rect x="438" y="854.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="866.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">1</text><rect x="435" y="851.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="118" y="854.0" width="58" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="147.0" y="866.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text>
+<path d="M352 866.0 L180 866.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#rkdtrace-arrR)"/>
+<text x="186" y="851.0" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">2 &gt; 1 且 k = 1 &gt; 0</text>
+<text x="514" y="866.0" font-size="12" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">删掉 2, k: 1 → 0</text>
+<line x1="40" y1="948" x2="640" y2="948" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="993.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="1009.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">d = 9</text>
+<text x="72.0" y="1027.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">k = 0</text>
+<path d="M350 966 L350 1082 L418 1082 L418 966" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 966 L432 1082 L500 1082 L500 966" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="356" y="1054.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="384.0" y="1066.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1</text>
+<rect x="356" y="1026.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="384.0" y="1038.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text>
+<rect x="356" y="998.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="384.0" y="1010.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1</text><rect x="353" y="995.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="438" y="1054.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="466.0" y="1066.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1</text>
+<rect x="438" y="1026.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="466.0" y="1038.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text>
+<rect x="438" y="998.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="466.0" y="1010.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1</text>
+<rect x="438" y="970.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="982.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">9</text><rect x="435" y="967.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="122" y="1018.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">k = 0, 不能再删</text>
+<line x1="40" y1="1092" x2="640" y2="1092" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="1114" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">k 用完 (k = 0), 栈 = [1, 2, 1, 9] → 结果 "1219"</text>
+<rect x="40" y="1134" width="22" height="16" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="70" y="1142" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">新 push / 当前输入</text><rect x="211.2" y="1134" width="22" height="16" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="241.2" y="1142" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop (虚线扔到左边)</text><rect x="381.6" y="1134" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="411.6" y="1142" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里其他</text><rect x="489.6" y="1134" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="486.6" y="1131" width="28" height="22" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/><text x="519.6" y="1142" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶</text>
+</svg>
+<figcaption>7 个数字。d = 3, 2, 1 各 pop 一个比它大的前一位 (共 3 次, k: 3 → 0); 之后 d = 9 直接 push。</figcaption></figure>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">remove_k_digits</span>(num, k):</span><span class="l">    stack = []                            <span class="c"># 栈就是答案本身 (数字字符), 从底到顶非递减</span></span><span class="l">    <span class="k">for</span> dig <span class="k">in</span> num:</span><span class="l">        <span class="k">while</span> k <span class="k">and</span> stack <span class="k">and</span> stack[-1] &gt; dig:   <span class="c"># 前一位比当前大: 删前一位, 高位变小</span></span><span class="l">            stack.<span class="f">pop</span>()</span><span class="l">            k -= 1                        <span class="c"># pop 一次 = 花掉 1 个删除名额</span></span><span class="l">        stack.<span class="f">append</span>(dig)</span><span class="l">    <span class="k">if</span> k:                                 <span class="c"># 整串都是递增: 名额没花完, 删最末尾的 k 位</span></span><span class="l">        stack = stack[:-k]</span><span class="l">    <span class="r">return</span> <span class="s">&quot;&quot;</span>.<span class="f">join</span>(stack).<span class="f">lstrip</span>(<span class="s">&quot;0&quot;</span>) <span class="k">or</span> <span class="s">&quot;0&quot;</span>   <span class="c"># 去前导零; 全删光时返回 &quot;0&quot;</span></span></div>
+<p>两个收尾: ① 名额没用完 (整串递增, 如 <code>"12345"</code>, k = 2) → 删末尾 k 位; ② 前导零要去掉, 全删光返回 <code>"0"</code>。</p>
+<p><b>Time:</b> O(n), 每个数字 push 1 次 / pop 1 次。<b>Space:</b> O(n)。同一思路: Remove Duplicate Letters (再加一个 "这个字母后面还会不会出现" 的判断), 不展开。</p>
+<p class="note"><b>记:</b>要在保持顺序的前提下删/选若干元素使结果字典序最小: 栈顶比当前 "差" 就 pop (有预算限制), 栈就是答案。</p>
+<h2>5. Sliding Window Maximum: 窗口会过期, 用 deque 两头 pop</h2>
+<p><b>题目:</b> 长度 k 的窗口从左滑到右, 输出每个窗口的最大值。例子: <code>nums = [1, 3, −1, −3, 5, 3, 6, 7], k = 3</code> → <code>[3, 3, 5, 5, 6, 7]</code>。</p>
+<p><b>Brute force:</b> 每个窗口 <code>max(nums[i-k+1:i+1])</code>, O(nk)。浪费: 相邻两个窗口有 k − 1 个元素相同, 却每次重新找最大。(另一个做法: heap, O(n log n), 要惰性删除过期元素。)</p>
+<p><b>相比上一题:</b> 单调栈只在一头 (栈顶) 进出。这里元素会 <b>过期</b> (滑出窗口), 过期的是最老的, 在另一头, 所以改用 deque: <b>队尾</b> 和新元素比 (比 x 小的出队), <b>队头</b> 检查过期 (滑出窗口的出队)。队列里保持 index 递增、值递减, 所以队头永远是窗口最大。</p>
+<figure><svg width="100%" viewBox="0 0 680 410" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>Why drop smaller tail elements</title><desc>Elements smaller than a newcomer and older than it can never be the window maximum again.</desc><defs><marker id="c5-arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="c5-arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">nums = [1, 3, −1, −3, 5, 3, 6, 7], k = 3 · 看 i = 4 (x = 5) 到来的这一刻</text>
+<text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">idx j 在窗口里的时间 = i ∈ [j, j + 2] (窗口 [i − 2, i] 里有 j)</text>
+<text x="180" y="66" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">i = 1</text>
+<text x="250" y="66" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">i = 2</text>
+<text x="320" y="66" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">i = 3</text>
+<text x="390" y="66" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">i = 4</text>
+<text x="460" y="66" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">i = 5</text>
+<text x="530" y="66" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">i = 6</text>
+<text x="600" y="66" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">i = 7</text>
+<text x="40" y="96" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">idx 1 · 值 3</text>
+<rect x="150" y="84" width="60" height="24" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="220" y="84" width="60" height="24" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="290" y="84" width="60" height="24" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="40" y="134" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">idx 2 · 值 −1</text>
+<rect x="220" y="122" width="60" height="24" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="290" y="122" width="60" height="24" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="360" y="122" width="60" height="24" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="40" y="172" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">idx 3 · 值 −3</text>
+<rect x="290" y="160" width="60" height="24" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="360" y="160" width="60" height="24" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<rect x="430" y="160" width="60" height="24" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="40" y="210" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">idx 4 · 值 5</text>
+<rect x="360" y="198" width="60" height="24" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="430" y="198" width="60" height="24" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="500" y="198" width="60" height="24" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<line x1="355" y1="76" x2="355" y2="240" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3"/>
+<text x="355" y="252" font-size="12" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 4: 5 进来</text>
+<text x="362" y="96" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">idx 1 已滑出窗口 [2, 4] → 队头过期</text>
+<text x="504" y="134" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">← −1 &lt; 5</text>
+<text x="504" y="172" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">← −3 &lt; 5</text>
+<line x1="40" y1="270" x2="640" y2="270" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="284" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">红色段: −1、−3 比 5 小, 又比 5 先过期 → 它们还活着的每一刻 5 都在窗口里且更大</text>
+<text x="40" y="304" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">→ 永远当不了最大 → 队尾比 x 小的直接丢 (从尾部 pop)</text>
+<text x="40" y="330" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">留下的 deque 从头到尾递减 → 队头 = 窗口最大 → 取最大 O(1)</text>
+<text x="40" y="350" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">队头最老, 最先过期 → 过期的从头部 popleft · 每个元素最多进出一次 → O(n)</text>
+<rect x="40" y="376" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="70" y="384" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">还在窗口里</text><rect x="160" y="376" width="22" height="16" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="190" y="384" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">被 5 压住 (永远不是最大)</text><rect x="366.4" y="376" width="22" height="16" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="396.4" y="384" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">新来的最大</text>
+</svg>
+<figcaption>i = 4, x = 5 到来: idx 1 滑出窗口 (队头过期); −1、−3 又小又早过期 (队尾被压住), 都不可能再是最大。</figcaption></figure>
+<figure><svg width="100%" viewBox="0 0 680 1084" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>Sliding Window Maximum trace</title><desc>nums=[1,3,-1,-3,5,3,6,7], k=3: monotonic deque, head expires, tail smaller than x dropped.</desc><defs><marker id="swmtrace-arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="swmtrace-arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">nums = [1, 3, −1, −3, 5, 3, 6, 7], k = 3 · deque 存 idx·值, 底 = 队头 (最大), 顶 = 队尾</text>
+<text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">每一步: ① 队头过期就出队 ② 队尾 ≤ x 就出队 ③ push x ④ 窗口满了就输出 nums[队头]</text>
+<text x="40" y="72" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">当前输入</text>
+<text x="118" y="72" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">出队 (扔到左边)</text>
+<text x="350" y="72" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">出队后</text>
+<text x="432" y="72" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">push 后</text>
+<text x="514" y="72" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">窗口 / 答案</text>
+<line x1="40" y1="84" x2="640" y2="84" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="115.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="131.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 0</text>
+<text x="72.0" y="149.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">x = 1</text>
+<path d="M350 102 L350 190 L418 190 L418 102" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 102 L432 190 L500 190 L500 102" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="438" y="162.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="174.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">0·1</text><rect x="435" y="159.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="122" y="140.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">队列空</text>
+<text x="514" y="140.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">窗口还没满 (i &lt; k − 1)</text>
+<line x1="40" y1="200" x2="640" y2="200" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="231.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="247.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 1</text>
+<text x="72.0" y="265.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">x = 3</text>
+<path d="M350 218 L350 306 L418 306 L418 218" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 218 L432 306 L500 306 L500 218" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="438" y="278.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="290.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">1·3</text><rect x="435" y="275.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="118" y="278.0" width="58" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="147.0" y="290.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">0·1</text>
+<path d="M352 290.0 L180 290.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#swmtrace-arrR)"/>
+<text x="186" y="275.0" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">1 ≤ 3, pop 队尾</text>
+<text x="514" y="256.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">窗口还没满 (i &lt; k − 1)</text>
+<line x1="40" y1="316" x2="640" y2="316" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="347.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="363.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 2</text>
+<text x="72.0" y="381.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">x = −1</text>
+<path d="M350 334 L350 422 L418 422 L418 334" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 334 L432 422 L500 422 L500 334" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="356" y="394.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="384.0" y="406.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1·3</text><rect x="353" y="391.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="438" y="394.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="466.0" y="406.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1·3</text><rect x="435" y="391.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="438" y="366.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="378.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">2·−1</text>
+<text x="122" y="372.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">队头未过期, 队尾 &gt; −1</text>
+<text x="514" y="363.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">窗口 [0..2] = 1, 3, −1</text>
+<text x="514" y="380.5" font-size="12" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">max = nums[队头] = 3</text>
+<line x1="40" y1="432" x2="640" y2="432" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="463.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="479.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 3</text>
+<text x="72.0" y="497.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">x = −3</text>
+<path d="M350 450 L350 538 L418 538 L418 450" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 450 L432 538 L500 538 L500 450" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="356" y="510.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="384.0" y="522.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1·3</text><rect x="353" y="507.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="356" y="482.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="384.0" y="494.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2·−1</text>
+<rect x="438" y="510.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="466.0" y="522.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1·3</text><rect x="435" y="507.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="438" y="482.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="466.0" y="494.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2·−1</text>
+<rect x="438" y="454.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="466.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">3·−3</text>
+<text x="122" y="488.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">队头未过期, 队尾 &gt; −3</text>
+<text x="514" y="479.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">窗口 [1..3] = 3, −1, −3</text>
+<text x="514" y="496.5" font-size="12" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">max = nums[队头] = 3</text>
+<line x1="40" y1="548" x2="640" y2="548" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="579.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="595.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 4</text>
+<text x="72.0" y="613.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">x = 5</text>
+<path d="M350 566 L350 654 L418 654 L418 566" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 566 L432 654 L500 654 L500 566" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="438" y="626.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="638.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">4·5</text><rect x="435" y="623.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="118" y="626.0" width="58" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="147.0" y="638.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">1·3</text>
+<path d="M352 638.0 L180 638.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#swmtrace-arrR)"/>
+<text x="186" y="623.0" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">1 ≤ 4 − 3 = 1, 过期</text>
+<rect x="118" y="570.0" width="58" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="147.0" y="582.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">3·−3</text>
+<path d="M352 582.0 L180 582.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#swmtrace-arrR)"/>
+<text x="186" y="567.0" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">−3 ≤ 5, pop 队尾</text>
+<rect x="118" y="598.0" width="58" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="147.0" y="610.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">2·−1</text>
+<path d="M352 610.0 L180 610.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#swmtrace-arrR)"/>
+<text x="186" y="595.0" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">−1 ≤ 5, pop 队尾</text>
+<text x="514" y="595.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">窗口 [2..4] = −1, −3, 5</text>
+<text x="514" y="612.5" font-size="12" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">max = nums[队头] = 5</text>
+<line x1="40" y1="664" x2="640" y2="664" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="695.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="711.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 5</text>
+<text x="72.0" y="729.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">x = 3</text>
+<path d="M350 682 L350 770 L418 770 L418 682" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 682 L432 770 L500 770 L500 682" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="356" y="742.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="384.0" y="754.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">4·5</text><rect x="353" y="739.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="438" y="742.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="466.0" y="754.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">4·5</text><rect x="435" y="739.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="438" y="714.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="726.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">5·3</text>
+<text x="122" y="720.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">队头未过期, 队尾 &gt; 3</text>
+<text x="514" y="711.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">窗口 [3..5] = −3, 5, 3</text>
+<text x="514" y="728.5" font-size="12" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">max = nums[队头] = 5</text>
+<line x1="40" y1="780" x2="640" y2="780" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="811.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="827.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 6</text>
+<text x="72.0" y="845.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">x = 6</text>
+<path d="M350 798 L350 886 L418 886 L418 798" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 798 L432 886 L500 886 L500 798" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="438" y="858.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="870.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">6·6</text><rect x="435" y="855.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="118" y="830.0" width="58" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="147.0" y="842.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">5·3</text>
+<path d="M352 842.0 L180 842.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#swmtrace-arrR)"/>
+<text x="186" y="827.0" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">3 ≤ 6, pop 队尾</text>
+<rect x="118" y="858.0" width="58" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="147.0" y="870.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">4·5</text>
+<path d="M352 870.0 L180 870.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#swmtrace-arrR)"/>
+<text x="186" y="855.0" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">5 ≤ 6, pop 队尾</text>
+<text x="514" y="827.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">窗口 [4..6] = 5, 3, 6</text>
+<text x="514" y="844.5" font-size="12" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">max = nums[队头] = 6</text>
+<line x1="40" y1="896" x2="640" y2="896" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="927.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="943.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 7</text>
+<text x="72.0" y="961.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">x = 7</text>
+<path d="M350 914 L350 1002 L418 1002 L418 914" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 914 L432 1002 L500 1002 L500 914" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="438" y="974.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="986.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">7·7</text><rect x="435" y="971.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="118" y="974.0" width="58" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="147.0" y="986.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">6·6</text>
+<path d="M352 986.0 L180 986.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#swmtrace-arrR)"/>
+<text x="186" y="971.0" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">6 ≤ 7, pop 队尾</text>
+<text x="514" y="943.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">窗口 [5..7] = 3, 6, 7</text>
+<text x="514" y="960.5" font-size="12" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">max = nums[队头] = 7</text>
+<line x1="40" y1="1012" x2="640" y2="1012" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="1034" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">ans = [3, 3, 5, 5, 6, 7]  (i = 2..7 各输出一个, 共 n − k + 1 = 6 个)</text>
+<rect x="40" y="1054" width="22" height="16" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="70" y="1062" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">新 push / 当前输入</text><rect x="211.2" y="1054" width="22" height="16" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="241.2" y="1062" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">出队 (扔到左边)</text><rect x="362.4" y="1054" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="392.4" y="1062" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">deque 里其他</text><rect x="496.79999999999995" y="1054" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="493.79999999999995" y="1051" width="28" height="22" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/><text x="526.8" y="1062" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">队头 = 窗口最大</text>
+</svg>
+<figcaption>8 步, k = 3。i = 4 一次出队 3 个 (队头过期 1 个 + 队尾 2 个); i = 2..7 每步输出 nums[队头]。</figcaption></figure>
+<div class="code"><span class="l"><span class="k">from</span> <span class="t">collections</span> <span class="k">import</span> <span class="t">deque</span></span><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">max_sliding_window</span>(nums, k):</span><span class="l">    dq = <span class="t">deque</span>()                          <span class="c"># 存 index; nums[dq[0]] &gt; nums[dq[1]] &gt; ... , dq[0] = 窗口最大</span></span><span class="l">    ans = []</span><span class="l">    <span class="k">for</span> i, x <span class="k">in</span> <span class="t">enumerate</span>(nums):</span><span class="l">        <span class="k">if</span> dq <span class="k">and</span> dq[0] &lt;= i - k:         <span class="c"># 队头已滑出窗口 [i-k+1, i]: 过期, 从头部出队</span></span><span class="l">            dq.<span class="f">popleft</span>()</span><span class="l">        <span class="k">while</span> dq <span class="k">and</span> nums[dq[-1]] &lt;= x:   <span class="c"># 队尾比 x 小: 比 x 早过期又更小, 永远当不了最大</span></span><span class="l">            dq.<span class="f">pop</span>()</span><span class="l">        dq.<span class="f">append</span>(i)</span><span class="l">        <span class="k">if</span> i &gt;= k - 1:                    <span class="c"># 窗口满了才有答案</span></span><span class="l">            ans.<span class="f">append</span>(nums[dq[0]])       <span class="c"># 队头 = 窗口最大, O(1)</span></span><span class="l">    <span class="r">return</span> ans</span></div>
+<p><b>Time:</b> O(n)。每个 index 进 deque 1 次、出 1 次 (头或尾)。<b>Space:</b> O(k), deque 里最多 k 个。</p>
+<p class="note"><b>记:</b>窗口最大/最小 = 单调 deque。队头过期出队, 队尾比新元素差的出队, 队头 = 答案。</p>
+<h2>6. 识别信号: 看到什么 → 试什么</h2>
+<table><tr><th>题目特征</th><th>做法</th><th>complexity</th></tr><tr><td>每个元素找右 / 左边 <b>第一个更大 / 更小</b> 的数或距离</td><td>单调栈, 存 index, pop 时结算</td><td>O(n²) → O(n)</td></tr><tr><td>数组 <b>循环</b> (首尾相连)</td><td>遍历 2n, <code>i % n</code>, 只在第 1 圈 push</td><td>O(n²) → O(n)</td></tr><tr><td>以每个元素为 <b>最大 / 最小值</b> 能延伸多远 (矩形面积、子数组最小值之和)</td><td>单调栈, pop 时右边界 = i, 左边界 = 新栈顶</td><td>O(n²) → O(n)</td></tr><tr><td>二维 0/1 矩阵里找最大矩形</td><td>逐行压成直方图, 套 Largest Rectangle</td><td>O(rows²·cols²) 以上 → O(rows·cols)</td></tr><tr><td>删 / 选 k 个元素, 使结果 <b>字典序或数值最小</b> (顺序不变)</td><td>greedy + 单调栈, 栈就是答案, pop 受预算 k 限制</td><td>O(nk) 或指数 → O(n)</td></tr><tr><td>固定长度滑动窗口求 <b>max / min</b></td><td>单调 deque: 队头过期出队, 队尾 ≤ x 出队</td><td>O(nk) → O(n)</td></tr><tr><td>"后面有更大的才轮到我" / "被后来者盖住就没用"</td><td>先想: 谁还在等? 谁被 pop 就永远没用?</td><td>反复往右扫 → 每个元素进出 1 次</td></tr></table>
+<p>选栈的方向: <b>找更大 → 递减栈; 找更小 → 递增栈</b>。右边的答案在 pop 时拿, 左边的答案在 pop 完后看栈顶。窗口会过期 (两头都要出) → 换成 deque。</p>
+<p><b>以后再学 (一行):</b> Car Fleet (按位置排序后从后往前, 栈里存 "到达时间")、132 Pattern、Max Chunks To Make Sorted 都是同一套 pop 逻辑的变形, 先把上面六题吃透。</p>
+</article></body></html>

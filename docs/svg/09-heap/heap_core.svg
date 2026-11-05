@@ -1,0 +1,74 @@
+<svg width="100%" viewBox="0 0 680 564" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Heap core: parent &lt;= children, top is the minimum</title><desc>tree and array views of a min-heap, push/pop cost, and comparison with list</desc><defs><marker id="h0-ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="h0-ao" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="564" fill="#FFFFFF"/>
+<text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">min-heap: 每个 parent ≤ 它的两个 children → 最小的永远在 top (index 0)</text>
+<text x="40" y="38" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">tree 只是画法, 底层就是一个 list: index i 的 children = 2i+1, 2i+2</text>
+<line x1="170" y1="90" x2="108" y2="142" stroke="#898781" stroke-width="1.2"/>
+<line x1="170" y1="90" x2="232" y2="142" stroke="#898781" stroke-width="1.2"/>
+<line x1="108" y1="142" x2="78" y2="194" stroke="#898781" stroke-width="1.2"/>
+<line x1="108" y1="142" x2="138" y2="194" stroke="#898781" stroke-width="1.2"/>
+<line x1="232" y1="142" x2="202" y2="194" stroke="#898781" stroke-width="1.2"/>
+<line x1="232" y1="142" x2="262" y2="194" stroke="#898781" stroke-width="1.2"/>
+<circle cx="170" cy="90" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="170" y="90" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<circle cx="170" cy="90" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="108" cy="142" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="108" y="142" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<circle cx="232" cy="142" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="232" y="142" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<circle cx="78" cy="194" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="78" y="194" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">7</text>
+<circle cx="138" cy="194" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="138" y="194" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">4</text>
+<circle cx="202" cy="194" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="202" y="194" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">5</text>
+<circle cx="262" cy="194" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="262" y="194" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">6</text>
+<rect x="30" y="238" width="42" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="26" y="234" width="50" height="40" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="51.0" y="254.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<text x="51" y="286" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">0</text>
+<rect x="72" y="238" width="42" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="93.0" y="254.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<text x="93" y="286" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">1</text>
+<rect x="114" y="238" width="42" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="135.0" y="254.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<text x="135" y="286" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">2</text>
+<rect x="156" y="238" width="42" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="177.0" y="254.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">7</text>
+<text x="177" y="286" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">3</text>
+<rect x="198" y="238" width="42" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="219.0" y="254.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">4</text>
+<text x="219" y="286" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">4</text>
+<rect x="240" y="238" width="42" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="261.0" y="254.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">5</text>
+<text x="261" y="286" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">5</text>
+<rect x="282" y="238" width="42" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="303.0" y="254.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">6</text>
+<text x="303" y="286" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">6</text>
+<text x="30" y="306" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">list = [1, 3, 2, 7, 4, 5, 6]   (heapq 里就是这个 list)</text>
+<text x="360" y="78" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">保证的</text>
+<text x="360" y="100" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">parent ≤ children → top 最小, 看一眼 O(1)</text>
+<text x="360" y="140" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">不保证的</text>
+<text x="360" y="162" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">同一层谁大谁小 (3 vs 2) 没有顺序</text>
+<text x="360" y="184" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">→ 不是全序, 所以比 sort 便宜</text>
+<text x="360" y="218" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">push / pop</text>
+<text x="360" y="240" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">push: 放末尾, 比 parent 小就往上换</text>
+<text x="360" y="262" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">pop: 取走 top, 末尾补到 top, 往下换</text>
+<text x="360" y="284" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">树高 log n → 都是 O(log n)</text>
+<line x1="40" y1="334" x2="640" y2="334" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="358" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">要反复拿最小的, 用什么存?</text>
+<text x="40" y="384" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">结构</text>
+<text x="250" y="384" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">拿最小的</text>
+<text x="380" y="384" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">加一个数</text>
+<text x="40" y="408" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">无序 list</text>
+<text x="250" y="408" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">O(n) 要扫一遍</text>
+<text x="380" y="408" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">O(1)</text>
+<text x="40" y="432" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">有序 list (每次 sort)</text>
+<text x="250" y="432" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">O(1)</text>
+<text x="380" y="432" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">O(n) 要搬位置</text>
+<text x="40" y="456" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">heap</text>
+<text x="250" y="456" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">O(1)</text>
+<text x="380" y="456" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">O(log n)</text>
+<line x1="40" y1="490" x2="640" y2="490" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="512" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">heap 只要 "top", 不要全序: 取前 k 个 O(n log k), sort 是 O(n log n)</text>
+<text x="40" y="534" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">Python heapq 只有 min-heap; max-heap 存 -x, 图里一律画正数 (top = 最大)</text>
+</svg>

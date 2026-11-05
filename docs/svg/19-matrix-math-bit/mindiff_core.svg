@@ -1,0 +1,37 @@
+<svg width="100%" viewBox="0 0 680 406" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>排序后只看相邻</title><desc>sort 之后任何非相邻的 pair 距离都不小于夹在中间的相邻距离,所以只比较 n-1 对</desc><defs><marker id="f16-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f16-r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f16-n" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f16-o" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#EF9F27" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="406" fill="#fff"/>
+<text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">暴力: 所有 pair 两两比较 = C(6,2) = 15 对, O(n^2)</text>
+<text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">sort 之后: a &lt; b &lt; c 时 c - a = (b - a) + (c - b) &gt;= b - a, 跨过 b 的 pair 永远不比相邻的更近</text>
+<line x1="40" y1="190" x2="640" y2="190" stroke="#B4B2A9" stroke-width="1"/>
+<path d="M60.0 174 Q238.1818181818182 94 416.3636363636364 174" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#f16-r)"/>
+<text x="238.1818181818182" y="78" font-size="12" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central">1 → 8:  8 - 1 = 7 = 4 + 3</text>
+<text x="238.1818181818182" y="96" font-size="12" fill="#712B13" text-anchor="middle" font-weight="400" dominant-baseline="central">跨过 5, 一定比 1→5 和 5→8 都长</text>
+<path d="M60.0 206 Q161.8181818181818 236 263.6363636363636 206" fill="none" stroke="#52514E" stroke-width="1.5"/>
+<text x="161.8181818181818" y="240" font-size="12" fill="#52514E" text-anchor="middle" font-weight="500" dominant-baseline="central">4</text>
+<path d="M263.6363636363636 206 Q340.0 236 416.3636363636364 206" fill="none" stroke="#52514E" stroke-width="1.5"/>
+<text x="340.0" y="240" font-size="12" fill="#52514E" text-anchor="middle" font-weight="500" dominant-baseline="central">3</text>
+<path d="M416.3636363636364 206 Q441.81818181818187 236 467.2727272727273 206" fill="none" stroke="#0F6E56" stroke-width="1.5"/>
+<text x="441.81818181818187" y="240" font-size="12" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<path d="M467.2727272727273 206 Q492.72727272727275 236 518.1818181818182 206" fill="none" stroke="#0F6E56" stroke-width="1.5"/>
+<text x="492.72727272727275" y="240" font-size="12" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<path d="M518.1818181818182 206 Q569.0909090909091 236 620.0 206" fill="none" stroke="#52514E" stroke-width="1.5"/>
+<text x="569.0909090909091" y="240" font-size="12" fill="#52514E" text-anchor="middle" font-weight="500" dominant-baseline="central">2</text>
+<rect x="44.0" y="176" width="32" height="28" rx="14" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="60.0" y="190.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<rect x="247.63636363636363" y="176" width="32" height="28" rx="14" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="263.6363636363636" y="190.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">5</text>
+<rect x="400.3636363636364" y="176" width="32" height="28" rx="14" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="416.3636363636364" y="190.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">8</text>
+<rect x="451.2727272727273" y="176" width="32" height="28" rx="14" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="467.2727272727273" y="190.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">9</text>
+<rect x="502.18181818181824" y="176" width="32" height="28" rx="14" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="518.1818181818182" y="190.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">10</text>
+<rect x="604.0" y="176" width="32" height="28" rx="14" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="620.0" y="190.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">12</text>
+<text x="40" y="270" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">相邻距离: 4, 3, 1, 1, 2 · 最小 = 1 (绿色), 有两对</text>
+<line x1="40" y1="288" x2="640" y2="288" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="40" y="310" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">通用思想: sort 作为预处理 · 花 O(n log n) 把「谁和谁最近 / 谁和谁冲突」变成「看相邻」</text>
+<text x="40" y="334" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">Meeting Rooms: 按 start 排序, 只检查 intervals[i].start &lt; intervals[i-1].end</text>
+<text x="40" y="352" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">Merge Intervals / Closest pair / Valid Triangle: 都是先 sort, 再只看相邻 (或双指针)</text>
+<rect x="40" y="375" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="60" y="382" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">sort 后的元素</text>
+</svg>

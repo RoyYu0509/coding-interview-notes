@@ -1,0 +1,49 @@
+<svg width="100%" viewBox="0 0 680 332" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Roman to Integer 核心</title><desc>同一个字符的符号由右邻决定:左小右大则减,否则加</desc><defs><marker id="f18-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f18-r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f18-n" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f18-o" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#EF9F27" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="332" fill="#fff"/>
+<text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">查表 + 一遍扫描: 每个字符先当作加上它的值, 唯一的例外是「左边比右边小」→ 减</text>
+<text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">减法只有 6 种: IV IX XL XC CD CM, 都是「小的紧挨着大的」前面</text>
+<rect x="40" y="56" width="80" height="42" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="80" y="71" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">I</text>
+<text x="80" y="88" font-size="12" fill="#444441" text-anchor="middle" font-weight="400" dominant-baseline="central">1</text>
+<rect x="126" y="56" width="80" height="42" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="166" y="71" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">V</text>
+<text x="166" y="88" font-size="12" fill="#444441" text-anchor="middle" font-weight="400" dominant-baseline="central">5</text>
+<rect x="212" y="56" width="80" height="42" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="252" y="71" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">X</text>
+<text x="252" y="88" font-size="12" fill="#444441" text-anchor="middle" font-weight="400" dominant-baseline="central">10</text>
+<rect x="298" y="56" width="80" height="42" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="338" y="71" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">L</text>
+<text x="338" y="88" font-size="12" fill="#444441" text-anchor="middle" font-weight="400" dominant-baseline="central">50</text>
+<rect x="384" y="56" width="80" height="42" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="424" y="71" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">C</text>
+<text x="424" y="88" font-size="12" fill="#444441" text-anchor="middle" font-weight="400" dominant-baseline="central">100</text>
+<rect x="470" y="56" width="80" height="42" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="510" y="71" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">D</text>
+<text x="510" y="88" font-size="12" fill="#444441" text-anchor="middle" font-weight="400" dominant-baseline="central">500</text>
+<rect x="556" y="56" width="80" height="42" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="596" y="71" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">M</text>
+<text x="596" y="88" font-size="12" fill="#444441" text-anchor="middle" font-weight="400" dominant-baseline="central">1000</text>
+<line x1="40" y1="116" x2="640" y2="116" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="40" y="152" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">VI</text>
+<rect x="100" y="134" width="60" height="36" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<text x="130.0" y="152.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">V  +5</text>
+<rect x="170" y="134" width="60" height="36" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<text x="200.0" y="152.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">I  +1</text>
+<text x="260" y="142" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">V(5) 不比右邻 I(1) 小 → 加</text>
+<text x="260" y="160" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">5 + 1 = 6</text>
+<text x="40" y="206" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">IV</text>
+<rect x="100" y="188" width="60" height="36" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1.0"/>
+<text x="130.0" y="206.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central">I  -1</text>
+<rect x="170" y="188" width="60" height="36" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<text x="200.0" y="206.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">V  +5</text>
+<text x="260" y="196" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">I(1) &lt; 右邻 V(5): 左小右大 → 减</text>
+<text x="260" y="214" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">-1 + 5 = 4</text>
+<line x1="40" y1="242" x2="640" y2="242" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="40" y="262" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">为什么只看右邻一个字符: 罗马数字里减法只出现在相邻两个字符之间 (没有 IIV 这种)</text>
+<text x="40" y="282" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">最后一个字符没有右邻 → 一定是加</text>
+<rect x="40" y="303" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<text x="60" y="310" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">加</text>
+<rect x="94" y="303" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1.0"/>
+<text x="114" y="310" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">减 (左小右大)</text>
+<rect x="215.8" y="303" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="235.8" y="310" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">字符表</text>
+</svg>

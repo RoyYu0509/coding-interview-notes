@@ -1,0 +1,144 @@
+<svg width="100%" viewBox="0 0 680 892" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Minimum Cost to Hire K Workers: max-heap trace</title><desc>k=3 workers A..E sorted by rate</desc><defs><marker id="hw-ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="hw-ao" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="892" fill="#FFFFFF"/>
+<text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">k = 3 · 每一步: push 进 heap → 超过 k 个就 pop 最大的 q → 算 cost</text>
+<text x="40" y="38" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">total_q = 当前 group (heap 里所有节点) 的 q 全部相加 · cost = rate × total_q</text>
+<text x="40" y="64" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">worker</text>
+<text x="160" y="64" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">push 后</text>
+<text x="290" y="64" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">pop 后</text>
+<text x="440" y="64" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">计算</text>
+<line x1="40" y1="74" x2="640" y2="74" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="82" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="93" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">A</text>
+<text x="72" y="108" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">q = 10</text>
+<text x="72" y="123" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">rate = 2</text>
+<circle cx="220" cy="146" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="220" y="146" font-size="16" text-anchor="middle" fill="#085041" dominant-baseline="central">10</text>
+<circle cx="220" cy="146" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<path d="M104 107 L220 107 L220 122" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#hw-ag)"/>
+<text x="300" y="140" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">len = 1 ≤ k = 3</text>
+<text x="300" y="156" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">不需要 pop</text>
+<text x="440" y="114" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">total_q (group 里所有 q 相加):</text>
+<text x="440" y="134" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">10</text>
+<text x="440" y="154" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">len &lt; k, skip</text>
+<line x1="40" y1="182" x2="640" y2="182" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="190" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="201" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">B</text>
+<text x="72" y="216" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">q = 20</text>
+<text x="72" y="231" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">rate = 3</text>
+<line x1="220" y1="254" x2="188" y2="288" stroke="#898781" stroke-width="1.2"/>
+<circle cx="220" cy="254" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="220" y="254" font-size="16" text-anchor="middle" fill="#085041" dominant-baseline="central">20</text>
+<circle cx="220" cy="254" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="188" cy="288" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="188" y="288" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">10</text>
+<path d="M104 215 L220 215 L220 230" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#hw-ag)"/>
+<text x="300" y="248" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">len = 2 ≤ k = 3</text>
+<text x="300" y="264" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">不需要 pop</text>
+<text x="440" y="222" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">total_q (group 里所有 q 相加):</text>
+<text x="440" y="242" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">20 + 10 = 30</text>
+<text x="440" y="262" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">len &lt; k, skip</text>
+<line x1="40" y1="324" x2="640" y2="324" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="332" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="343" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">C</text>
+<text x="72" y="358" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">q = 5</text>
+<text x="72" y="373" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">rate = 4</text>
+<line x1="220" y1="396" x2="188" y2="430" stroke="#898781" stroke-width="1.2"/>
+<line x1="220" y1="396" x2="252" y2="430" stroke="#898781" stroke-width="1.2"/>
+<circle cx="220" cy="396" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="220" y="396" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">20</text>
+<circle cx="220" cy="396" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="188" cy="430" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="188" y="430" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">10</text>
+<circle cx="252" cy="430" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="252" y="430" font-size="16" text-anchor="middle" fill="#085041" dominant-baseline="central">5</text>
+<path d="M104 357 L220 357 L220 372" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#hw-ag)"/>
+<text x="300" y="390" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">len = 3 ≤ k = 3</text>
+<text x="300" y="406" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">不需要 pop</text>
+<text x="440" y="364" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">total_q (group 里所有 q 相加):</text>
+<text x="440" y="384" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">20 + 10 + 5 = 35</text>
+<text x="440" y="404" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">cost = rate × total_q</text>
+<text x="440" y="424" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">4 × 35 = 140</text>
+<line x1="40" y1="466" x2="640" y2="466" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="474" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="485" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">D</text>
+<text x="72" y="500" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">q = 8</text>
+<text x="72" y="515" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">rate = 5</text>
+<line x1="220" y1="538" x2="188" y2="572" stroke="#898781" stroke-width="1.2"/>
+<line x1="220" y1="538" x2="252" y2="572" stroke="#898781" stroke-width="1.2"/>
+<line x1="188" y1="572" x2="166" y2="606" stroke="#898781" stroke-width="1.2"/>
+<circle cx="220" cy="538" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="220" y="538" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">20</text>
+<circle cx="220" cy="538" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="188" cy="572" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="188" y="572" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">10</text>
+<circle cx="252" cy="572" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="252" y="572" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">5</text>
+<circle cx="166" cy="606" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="166" y="606" font-size="16" text-anchor="middle" fill="#085041" dominant-baseline="central">8</text>
+<path d="M104 499 L220 499 L220 514" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#hw-ag)"/>
+<path d="M196 538 L66 538 L66 558" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#hw-ao)"/>
+<text x="137.0" y="528" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">pop</text>
+<circle cx="66" cy="578" r="19" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="66" y="578" font-size="16" text-anchor="middle" fill="#712B13" dominant-baseline="central">20</text>
+<text x="40" y="608" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">len = 4 &gt; k = 3</text>
+<text x="40" y="624" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">pop 最大的 20</text>
+<line x1="350" y1="538" x2="318" y2="572" stroke="#898781" stroke-width="1.2"/>
+<line x1="350" y1="538" x2="382" y2="572" stroke="#898781" stroke-width="1.2"/>
+<circle cx="350" cy="538" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="350" y="538" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">10</text>
+<circle cx="350" cy="538" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="318" cy="572" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="318" y="572" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">8</text>
+<circle cx="382" cy="572" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="382" y="572" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">5</text>
+<text x="440" y="506" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">total_q (group 里所有 q 相加):</text>
+<text x="440" y="526" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">10 + 8 + 5 = 23</text>
+<text x="440" y="546" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">cost = rate × total_q</text>
+<text x="440" y="566" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">5 × 23 = 115</text>
+<line x1="40" y1="642" x2="640" y2="642" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="650" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="661" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">E</text>
+<text x="72" y="676" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">q = 9</text>
+<text x="72" y="691" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">rate = 7</text>
+<line x1="220" y1="714" x2="188" y2="748" stroke="#898781" stroke-width="1.2"/>
+<line x1="220" y1="714" x2="252" y2="748" stroke="#898781" stroke-width="1.2"/>
+<line x1="188" y1="748" x2="166" y2="782" stroke="#898781" stroke-width="1.2"/>
+<circle cx="220" cy="714" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="220" y="714" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">10</text>
+<circle cx="220" cy="714" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="188" cy="748" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="188" y="748" font-size="16" text-anchor="middle" fill="#085041" dominant-baseline="central">9</text>
+<circle cx="252" cy="748" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="252" y="748" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">5</text>
+<circle cx="166" cy="782" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="166" y="782" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">8</text>
+<path d="M104 675 L220 675 L220 690" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#hw-ag)"/>
+<path d="M196 714 L66 714 L66 734" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#hw-ao)"/>
+<text x="137.0" y="704" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">pop</text>
+<circle cx="66" cy="754" r="19" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="66" y="754" font-size="16" text-anchor="middle" fill="#712B13" dominant-baseline="central">10</text>
+<text x="40" y="784" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">len = 4 &gt; k = 3</text>
+<text x="40" y="800" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">pop 最大的 10</text>
+<line x1="350" y1="714" x2="318" y2="748" stroke="#898781" stroke-width="1.2"/>
+<line x1="350" y1="714" x2="382" y2="748" stroke="#898781" stroke-width="1.2"/>
+<circle cx="350" cy="714" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="350" y="714" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">9</text>
+<circle cx="350" cy="714" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="318" cy="748" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="318" y="748" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">8</text>
+<circle cx="382" cy="748" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="382" y="748" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">5</text>
+<text x="440" y="682" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">total_q (group 里所有 q 相加):</text>
+<text x="440" y="702" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">9 + 8 + 5 = 22</text>
+<text x="440" y="722" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">cost = rate × total_q</text>
+<text x="440" y="742" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">7 × 22 = 154</text>
+<line x1="40" y1="818" x2="640" y2="818" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="840" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">min_cost = min(140, 115, 154) = 115</text>
+<circle cx="48" cy="872" r="7" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="62" y="872" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">新 push 进来的</text>
+<circle cx="168" cy="872" r="7" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="182" y="872" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">被 pop 的</text>
+<circle cx="268" cy="872" r="7" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="282" y="872" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">heap top (最大的 q)</text>
+<circle cx="418" cy="872" r="7" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="432" y="872" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">heap 里其他的</text>
+</svg>

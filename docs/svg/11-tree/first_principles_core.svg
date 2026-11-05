@@ -1,0 +1,60 @@
+<svg width="100%" viewBox="0 0 680 352" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>tree 题的两种信息流向</title><desc>pre-order 往下传参数, post-order 往上传返回值</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<line x1="124" y1="108" x2="70" y2="164" stroke="#898781" stroke-width="1.2"/>
+<line x1="232" y1="164" x2="178" y2="220" stroke="#898781" stroke-width="1.2"/>
+<line x1="124" y1="108" x2="232" y2="164" stroke="#898781" stroke-width="1.2"/>
+<line x1="232" y1="164" x2="286" y2="220" stroke="#898781" stroke-width="1.2"/>
+<circle cx="70" cy="164" r="15" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="70" y="164" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">9</text>
+<circle cx="124" cy="108" r="15" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="124" y="108" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<circle cx="178" cy="220" r="15" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="178" y="220" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">15</text>
+<circle cx="232" cy="164" r="15" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="232" y="164" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">20</text>
+<circle cx="286" cy="220" r="15" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="286" y="220" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">7</text>
+<line x1="112.19969530006806" y1="120.23735302215165" x2="83.88271141168464" y2="149.6031140915863" stroke="#0F6E56" stroke-width="2" marker-end="url(#arrowG)"/>
+<text x="90.04120335587635" y="128.92023355686896" font-size="12" text-anchor="end" fill="#085041" font-weight="600" dominant-baseline="central">depth=2</text>
+<line x1="220.19969530006804" y1="176.23735302215164" x2="191.88271141168465" y2="205.6031140915863" stroke="#0F6E56" stroke-width="2" marker-end="url(#arrowG)"/>
+<text x="198.04120335587635" y="184.92023355686896" font-size="12" text-anchor="end" fill="#085041" font-weight="600" dominant-baseline="central">depth=3</text>
+<line x1="139.0918270346318" y1="115.825391795735" x2="214.2449093710214" y2="154.7936567109" stroke="#0F6E56" stroke-width="2" marker-end="url(#arrowG)"/>
+<text x="184.6683682028266" y="129.3095242533175" font-size="12" text-anchor="start" fill="#085041" font-weight="600" dominant-baseline="central">depth=2</text>
+<line x1="243.80030469993196" y1="176.23735302215164" x2="272.1172885883154" y2="205.6031140915863" stroke="#0F6E56" stroke-width="2" marker-end="url(#arrowG)"/>
+<text x="265.95879664412365" y="184.92023355686896" font-size="12" text-anchor="start" fill="#085041" font-weight="600" dominant-baseline="central">depth=3</text>
+<line x1="454" y1="108" x2="400" y2="164" stroke="#898781" stroke-width="1.2"/>
+<line x1="562" y1="164" x2="508" y2="220" stroke="#898781" stroke-width="1.2"/>
+<line x1="454" y1="108" x2="562" y2="164" stroke="#898781" stroke-width="1.2"/>
+<line x1="562" y1="164" x2="616" y2="220" stroke="#898781" stroke-width="1.2"/>
+<circle cx="400" cy="164" r="15" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="400" y="164" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">9</text>
+<circle cx="454" cy="108" r="15" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="454" y="108" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<circle cx="508" cy="220" r="15" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="508" y="220" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">15</text>
+<circle cx="562" cy="164" r="15" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="562" y="164" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">20</text>
+<circle cx="616" cy="220" r="15" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="616" y="220" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">7</text>
+<line x1="411.8003046999319" y1="151.76264697784836" x2="440.1172885883154" y2="122.39688590841371" stroke="#D85A30" stroke-width="2" marker-end="url(#arrowO)"/>
+<text x="417.95879664412365" y="131.07976644313104" font-size="12" text-anchor="end" fill="#712B13" font-weight="600" dominant-baseline="central">返回 1</text>
+<line x1="519.800304699932" y1="207.76264697784836" x2="548.1172885883153" y2="178.3968859084137" stroke="#D85A30" stroke-width="2" marker-end="url(#arrowO)"/>
+<text x="525.9587966441236" y="187.07976644313104" font-size="12" text-anchor="end" fill="#712B13" font-weight="600" dominant-baseline="central">返回 1</text>
+<line x1="546.9081729653682" y1="156.17460820426498" x2="471.75509062897856" y2="117.2063432891" stroke="#D85A30" stroke-width="2" marker-end="url(#arrowO)"/>
+<text x="517.3316317971734" y="130.6904757466825" font-size="12" text-anchor="start" fill="#712B13" font-weight="600" dominant-baseline="central">返回 2</text>
+<line x1="604.199695300068" y1="207.76264697784836" x2="575.8827114116847" y2="178.3968859084137" stroke="#D85A30" stroke-width="2" marker-end="url(#arrowO)"/>
+<text x="598.0412033558764" y="187.07976644313104" font-size="12" text-anchor="start" fill="#712B13" font-weight="600" dominant-baseline="central">返回 1</text>
+<text x="40" y="20" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">同一棵树 [3, 9, 20, None, None, 15, 7], 信息有两种流向: 看 node 需要谁告诉它</text>
+<text x="40" y="44" font-size="14" text-anchor="start" fill="#085041" font-weight="600" dominant-baseline="central">左: 自顶向下 (pre-order)</text>
+<text x="370" y="44" font-size="14" text-anchor="start" fill="#712B13" font-weight="600" dominant-baseline="central">右: 自底向上 (post-order)</text>
+<text x="40" y="64" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">箭头 = 祖先 → 孩子, 传的是参数</text>
+<text x="370" y="64" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">箭头 = 孩子 → 父亲, 传的是返回值 (此处 = height)</text>
+<line x1="40" y1="236" x2="640" y2="236" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="256" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">node 需要祖先告诉它什么? → 写成参数</text>
+<text x="40" y="278" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">例: depth、(low, high)、path 上的和</text>
+<text x="40" y="296" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">流程: 先检查自己 → 再把更新后的参数传给孩子</text>
+<text x="370" y="256" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">node 需要子树告诉它什么? → 写成返回值</text>
+<text x="370" y="278" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">例: height、gain、"找到的 p 或 q"</text>
+<text x="370" y="296" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">流程: 假设 L、R 已经算好 → 当前 node 只做合并</text>
+<line x1="40" y1="314" x2="640" y2="314" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="334" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">两者可以同时用: 参数往下传约束, 返回值往上传摘要 (本文每题只用其中一种, 最清楚)</text>
+</svg>

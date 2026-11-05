@@ -1,0 +1,190 @@
+<svg width="100%" viewBox="0 0 680 860" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>s = &quot;catsand&quot;, words = {cat, cats, and, sand} · dp[i] = 前 i 个字符 s[:i] 能不能切成词典里的词</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">s = &quot;catsand&quot;, words = {cat, cats, and, sand} · dp[i] = 前 i 个字符 s[:i] 能不能切成词典里的词</text>
+<text x="40" y="38" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">每一步: 只试 dp[j] = True 的 j, 看最后一块 s[j:i] 在不在词典里; 有一个 ✓ 就是 True</text>
+<text x="40" y="72" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">step</text>
+<text x="104" y="72" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">dp 数组</text>
+<text x="402" y="72" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">计算</text>
+<line x1="40" y1="84" x2="640" y2="84" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="40" y="100" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">i</text>
+<text x="122.0" y="100" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">0</text>
+<text x="158.0" y="100" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">1</text>
+<text x="194.0" y="100" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">2</text>
+<text x="230.0" y="100" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">3</text>
+<text x="266.0" y="100" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">4</text>
+<text x="302.0" y="100" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">5</text>
+<text x="338.0" y="100" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">6</text>
+<text x="374.0" y="100" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">7</text>
+<text x="40" y="120" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">s[i-1]</text>
+<text x="158.0" y="120" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="middle" dominant-baseline="central">c</text>
+<text x="194.0" y="120" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="middle" dominant-baseline="central">a</text>
+<text x="230.0" y="120" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="middle" dominant-baseline="central">t</text>
+<text x="266.0" y="120" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="middle" dominant-baseline="central">s</text>
+<text x="302.0" y="120" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="middle" dominant-baseline="central">a</text>
+<text x="338.0" y="120" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="middle" dominant-baseline="central">n</text>
+<text x="374.0" y="120" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="middle" dominant-baseline="central">d</text>
+<line x1="40" y1="134" x2="640" y2="134" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="105" y="148" width="34" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="122.0" y="163.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">T</text>
+<rect x="141" y="148" width="34" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="177" y="148" width="34" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="213" y="148" width="34" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="249" y="148" width="34" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="285" y="148" width="34" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="321" y="148" width="34" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="357" y="148" width="34" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="40" y="155.0" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">base</text>
+<text x="402" y="157" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">dp[0] = True</text>
+<text x="402" y="175" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">空串可以切 (0 个词)</text>
+<line x1="40" y1="198" x2="640" y2="198" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="105" y="212" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="122.0" y="227.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">T</text>
+<rect x="141" y="212" width="34" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="158.0" y="227.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">F</text>
+<rect x="177" y="212" width="34" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="213" y="212" width="34" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="249" y="212" width="34" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="285" y="212" width="34" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="321" y="212" width="34" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="357" y="212" width="34" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="40" y="219.0" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">i = 1</text>
+<text x="40" y="236.0" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">&#x27;c&#x27;</text>
+<text x="402" y="221" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">dp[j] = T 的 j: 0</text>
+<text x="402" y="239" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">切出 c✗</text>
+<text x="402" y="257" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">dp[1] = False</text>
+<line x1="40" y1="280" x2="640" y2="280" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="105" y="294" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="122.0" y="309.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">T</text>
+<rect x="141" y="294" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="158.0" y="309.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">F</text>
+<rect x="177" y="294" width="34" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="194.0" y="309.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">F</text>
+<rect x="213" y="294" width="34" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="249" y="294" width="34" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="285" y="294" width="34" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="321" y="294" width="34" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="357" y="294" width="34" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="40" y="301.0" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">i = 2</text>
+<text x="40" y="318.0" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">&#x27;ca&#x27;</text>
+<text x="402" y="303" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">dp[j] = T 的 j: 0</text>
+<text x="402" y="321" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">切出 ca✗</text>
+<text x="402" y="339" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">dp[2] = False</text>
+<line x1="40" y1="362" x2="640" y2="362" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="105" y="376" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="122.0" y="391.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">T</text>
+<rect x="141" y="376" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="158.0" y="391.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">F</text>
+<rect x="177" y="376" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="194.0" y="391.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">F</text>
+<rect x="213" y="376" width="34" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="230.0" y="391.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">T</text>
+<rect x="249" y="376" width="34" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="285" y="376" width="34" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="321" y="376" width="34" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="357" y="376" width="34" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="102" y="373" width="40" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<path d="M122.0 408 C122.0 434 226.0 434 226.0 411" fill="none" stroke="#52514E" stroke-width="1.4" marker-end="url(#arr)"/>
+<text x="40" y="383.0" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">i = 3</text>
+<text x="40" y="400.0" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">&#x27;cat&#x27;</text>
+<text x="402" y="385" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">dp[j] = T 的 j: 0</text>
+<text x="402" y="403" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">切出 cat✓</text>
+<text x="402" y="421" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">dp[3] = True</text>
+<line x1="40" y1="444" x2="640" y2="444" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="105" y="458" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="122.0" y="473.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">T</text>
+<rect x="141" y="458" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="158.0" y="473.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">F</text>
+<rect x="177" y="458" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="194.0" y="473.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">F</text>
+<rect x="213" y="458" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="230.0" y="473.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">T</text>
+<rect x="249" y="458" width="34" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="266.0" y="473.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">T</text>
+<rect x="285" y="458" width="34" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="321" y="458" width="34" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="357" y="458" width="34" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="102" y="455" width="40" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<path d="M122.0 490 C122.0 518 262.0 518 262.0 493" fill="none" stroke="#52514E" stroke-width="1.4" marker-end="url(#arr)"/>
+<text x="40" y="465.0" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">i = 4</text>
+<text x="40" y="482.0" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">&#x27;cats&#x27;</text>
+<text x="402" y="467" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">dp[j] = T 的 j: 0, 3</text>
+<text x="402" y="485" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">切出 cats✓  s✗</text>
+<text x="402" y="503" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">dp[4] = True</text>
+<line x1="40" y1="526" x2="640" y2="526" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="105" y="540" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="122.0" y="555.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">T</text>
+<rect x="141" y="540" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="158.0" y="555.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">F</text>
+<rect x="177" y="540" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="194.0" y="555.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">F</text>
+<rect x="213" y="540" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="230.0" y="555.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">T</text>
+<rect x="249" y="540" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="266.0" y="555.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">T</text>
+<rect x="285" y="540" width="34" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="302.0" y="555.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">F</text>
+<rect x="321" y="540" width="34" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="357" y="540" width="34" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="40" y="547.0" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">i = 5</text>
+<text x="40" y="564.0" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">&#x27;catsa&#x27;</text>
+<text x="402" y="549" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">dp[j] = T 的 j: 0, 3, 4</text>
+<text x="402" y="567" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">切出 catsa✗  sa✗  a✗</text>
+<text x="402" y="585" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">dp[5] = False</text>
+<line x1="40" y1="608" x2="640" y2="608" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="105" y="622" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="122.0" y="637.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">T</text>
+<rect x="141" y="622" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="158.0" y="637.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">F</text>
+<rect x="177" y="622" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="194.0" y="637.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">F</text>
+<rect x="213" y="622" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="230.0" y="637.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">T</text>
+<rect x="249" y="622" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="266.0" y="637.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">T</text>
+<rect x="285" y="622" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="302.0" y="637.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">F</text>
+<rect x="321" y="622" width="34" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="338.0" y="637.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">F</text>
+<rect x="357" y="622" width="34" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="40" y="629.0" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">i = 6</text>
+<text x="40" y="646.0" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">&#x27;catsan&#x27;</text>
+<text x="402" y="631" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">dp[j] = T 的 j: 0, 3, 4</text>
+<text x="402" y="649" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">切出 catsan✗  san✗  an✗</text>
+<text x="402" y="667" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">dp[6] = False</text>
+<line x1="40" y1="690" x2="640" y2="690" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="105" y="704" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="122.0" y="719.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">T</text>
+<rect x="141" y="704" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="158.0" y="719.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">F</text>
+<rect x="177" y="704" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="194.0" y="719.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">F</text>
+<rect x="213" y="704" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="230.0" y="719.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">T</text>
+<rect x="249" y="704" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="266.0" y="719.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">T</text>
+<rect x="285" y="704" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="302.0" y="719.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">F</text>
+<rect x="321" y="704" width="34" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="338.0" y="719.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">F</text>
+<rect x="357" y="704" width="34" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="374.0" y="719.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">T</text>
+<rect x="210" y="701" width="40" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="246" y="701" width="40" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<path d="M230.0 736 C230.0 764 370.0 764 370.0 739" fill="none" stroke="#52514E" stroke-width="1.4" marker-end="url(#arr)"/>
+<path d="M266.0 736 C266.0 762 370.0 762 370.0 739" fill="none" stroke="#52514E" stroke-width="1.4" marker-end="url(#arr)"/>
+<text x="40" y="711.0" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">i = 7</text>
+<text x="40" y="728.0" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">&#x27;catsand&#x27;</text>
+<text x="402" y="713" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">dp[j] = T 的 j: 0, 3, 4</text>
+<text x="402" y="731" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">切出 catsand✗  sand✓  and✓</text>
+<text x="402" y="749" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">dp[7] = True</text>
+<line x1="40" y1="772" x2="640" y2="772" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="40" y="792" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">答案 = dp[7] = True  (cat + sand 或 cats + and)</text>
+<rect x="40" y="828" width="22" height="16" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="70" y="836" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">新填的格子</text>
+<rect x="152" y="828" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="182" y="836" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">已有的格子</text>
+<rect x="264" y="828" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="261" y="825" width="28" height="22" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="300" y="836" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">被依赖 (橙色 ring)</text>
+<rect x="437.68" y="828" width="22" height="16" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="467.68" y="836" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">还没算</text>
+</svg>

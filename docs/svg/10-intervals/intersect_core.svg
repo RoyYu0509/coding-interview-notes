@@ -1,0 +1,165 @@
+<svg width="100%" viewBox="0 0 680 458" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif'><title>Interval List Intersections 的核心</title><desc>两个 interval 的交集是 [max(start), min(end)], 合法当且仅当 lo ≤ hi; end 小的那个再也碰不到对方后面的 interval</desc><defs><marker id="f16-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f16-r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f16-a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#C07A0A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f16-n" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">交集 = [lo, hi] = [两个 start 里大的, 两个 end 里小的] · lo ≤ hi 就是 overlap 条件</text>
+<text x="40" y="38" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">两个列表各自已排序且内部不重叠 → end 小的那个, 对方后面的 interval 都在它右边, 可以放心丢掉</text>
+<text x="40" y="74" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">情况</text>
+<text x="150" y="74" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">时间轴</text>
+<text x="458" y="74" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">计算</text>
+<line x1="150" y1="102" x2="440" y2="102" stroke="#898781" stroke-width="1"/>
+<line x1="150" y1="102" x2="150" y2="108" stroke="#898781" stroke-width="1"/>
+<text x="150" y="90" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">0</text>
+<line x1="161.2" y1="102" x2="161.2" y2="105" stroke="#898781" stroke-width="1"/>
+<line x1="172.3" y1="102" x2="172.3" y2="108" stroke="#898781" stroke-width="1"/>
+<text x="172.3" y="90" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">2</text>
+<line x1="183.5" y1="102" x2="183.5" y2="105" stroke="#898781" stroke-width="1"/>
+<line x1="194.6" y1="102" x2="194.6" y2="108" stroke="#898781" stroke-width="1"/>
+<text x="194.6" y="90" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">4</text>
+<line x1="205.8" y1="102" x2="205.8" y2="105" stroke="#898781" stroke-width="1"/>
+<line x1="216.9" y1="102" x2="216.9" y2="108" stroke="#898781" stroke-width="1"/>
+<text x="216.9" y="90" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">6</text>
+<line x1="228.1" y1="102" x2="228.1" y2="105" stroke="#898781" stroke-width="1"/>
+<line x1="239.2" y1="102" x2="239.2" y2="108" stroke="#898781" stroke-width="1"/>
+<text x="239.2" y="90" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">8</text>
+<line x1="250.4" y1="102" x2="250.4" y2="105" stroke="#898781" stroke-width="1"/>
+<line x1="261.5" y1="102" x2="261.5" y2="108" stroke="#898781" stroke-width="1"/>
+<text x="261.5" y="90" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">10</text>
+<line x1="272.7" y1="102" x2="272.7" y2="105" stroke="#898781" stroke-width="1"/>
+<line x1="283.8" y1="102" x2="283.8" y2="108" stroke="#898781" stroke-width="1"/>
+<text x="283.8" y="90" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">12</text>
+<line x1="295" y1="102" x2="295" y2="105" stroke="#898781" stroke-width="1"/>
+<line x1="306.2" y1="102" x2="306.2" y2="108" stroke="#898781" stroke-width="1"/>
+<text x="306.2" y="90" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">14</text>
+<line x1="317.3" y1="102" x2="317.3" y2="105" stroke="#898781" stroke-width="1"/>
+<line x1="328.5" y1="102" x2="328.5" y2="108" stroke="#898781" stroke-width="1"/>
+<text x="328.5" y="90" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">16</text>
+<line x1="339.6" y1="102" x2="339.6" y2="105" stroke="#898781" stroke-width="1"/>
+<line x1="350.8" y1="102" x2="350.8" y2="108" stroke="#898781" stroke-width="1"/>
+<text x="350.8" y="90" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">18</text>
+<line x1="361.9" y1="102" x2="361.9" y2="105" stroke="#898781" stroke-width="1"/>
+<line x1="373.1" y1="102" x2="373.1" y2="108" stroke="#898781" stroke-width="1"/>
+<text x="373.1" y="90" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">20</text>
+<line x1="384.2" y1="102" x2="384.2" y2="105" stroke="#898781" stroke-width="1"/>
+<line x1="395.4" y1="102" x2="395.4" y2="108" stroke="#898781" stroke-width="1"/>
+<text x="395.4" y="90" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">22</text>
+<line x1="406.5" y1="102" x2="406.5" y2="105" stroke="#898781" stroke-width="1"/>
+<line x1="417.7" y1="102" x2="417.7" y2="108" stroke="#898781" stroke-width="1"/>
+<text x="417.7" y="90" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">24</text>
+<line x1="428.8" y1="102" x2="428.8" y2="105" stroke="#898781" stroke-width="1"/>
+<line x1="440" y1="102" x2="440" y2="108" stroke="#898781" stroke-width="1"/>
+<text x="440" y="90" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">26</text>
+<line x1="40" y1="110" x2="640" y2="110" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<line x1="150" y1="118" x2="150" y2="248" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="172.3" y1="118" x2="172.3" y2="248" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="194.6" y1="118" x2="194.6" y2="248" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="216.9" y1="118" x2="216.9" y2="248" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="239.2" y1="118" x2="239.2" y2="248" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="261.5" y1="118" x2="261.5" y2="248" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="283.8" y1="118" x2="283.8" y2="248" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="306.2" y1="118" x2="306.2" y2="248" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="328.5" y1="118" x2="328.5" y2="248" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="350.8" y1="118" x2="350.8" y2="248" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="373.1" y1="118" x2="373.1" y2="248" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="395.4" y1="118" x2="395.4" y2="248" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="417.7" y1="118" x2="417.7" y2="248" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="440" y1="118" x2="440" y2="248" stroke="#ECEAE2" stroke-width="1"/>
+<rect x="40" y="160" width="66" height="46" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="73" y="174.5" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">有交集</text>
+<text x="73" y="191.5" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#085041">a 先结束</text>
+<text x="142" y="139" text-anchor="end" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">a</text>
+<rect x="205.8" y="128" width="55.8" height="22" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="233.7" y="139" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="500" fill="#444441">5,10</text>
+<text x="142" y="169" text-anchor="end" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">b</text>
+<rect x="239.2" y="158" width="44.6" height="22" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="261.5" y="169" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="500" fill="#444441">8,12</text>
+<text x="142" y="199" text-anchor="end" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">b 后</text>
+<rect x="317.3" y="188" width="100.4" height="22" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="367.5" y="199" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="500" fill="#444441">15,24</text>
+<text x="142" y="229" text-anchor="end" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">交集</text>
+<rect x="239.2" y="218" width="22.3" height="22" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="266.5" y="229" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="500" fill="#085041">8,10</text>
+<text x="458" y="130" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">lo = max(5, 8) = 8</text>
+<text x="458" y="149" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">hi = min(10, 12) = 10</text>
+<text x="458" y="168" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">lo ≤ hi → 交集 [8,10]</text>
+<text x="458" y="187" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">a.end 10 &lt; b.end 12 → i += 1</text>
+<text x="458" y="206" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">a 够不到 b 后 (15 &gt; 10)</text>
+<line x1="40" y1="251" x2="640" y2="251" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<line x1="150" y1="254" x2="150" y2="354" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="172.3" y1="254" x2="172.3" y2="354" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="194.6" y1="254" x2="194.6" y2="354" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="216.9" y1="254" x2="216.9" y2="354" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="239.2" y1="254" x2="239.2" y2="354" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="261.5" y1="254" x2="261.5" y2="354" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="283.8" y1="254" x2="283.8" y2="354" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="306.2" y1="254" x2="306.2" y2="354" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="328.5" y1="254" x2="328.5" y2="354" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="350.8" y1="254" x2="350.8" y2="354" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="373.1" y1="254" x2="373.1" y2="354" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="395.4" y1="254" x2="395.4" y2="354" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="417.7" y1="254" x2="417.7" y2="354" stroke="#ECEAE2" stroke-width="1"/>
+<line x1="440" y1="254" x2="440" y2="354" stroke="#ECEAE2" stroke-width="1"/>
+<rect x="40" y="281" width="66" height="46" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
+<text x="73" y="295.5" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#712B13">无交集</text>
+<text x="73" y="312.5" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#712B13">b 先结束</text>
+<text x="142" y="275" text-anchor="end" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">a</text>
+<rect x="295" y="264" width="111.5" height="22" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="350.8" y="275" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="500" fill="#444441">13,23</text>
+<text x="142" y="305" text-anchor="end" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">b</text>
+<rect x="239.2" y="294" width="44.6" height="22" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="261.5" y="305" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="500" fill="#444441">8,12</text>
+<text x="142" y="335" text-anchor="end" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">交集</text>
+<rect x="283.8" y="324" width="11.2" height="22" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="458" y="266" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">lo = max(13, 8) = 13</text>
+<text x="458" y="285" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">hi = min(23, 12) = 12</text>
+<text x="458" y="304" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#712B13">lo = 13 &gt; hi = 12 → 不相交</text>
+<text x="458" y="323" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">b.end 12 &lt; a.end 23 → j += 1</text>
+<line x1="40" y1="357" x2="640" y2="357" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<line x1="150" y1="366" x2="440" y2="366" stroke="#898781" stroke-width="1"/>
+<line x1="150" y1="366" x2="150" y2="372" stroke="#898781" stroke-width="1"/>
+<text x="150" y="381" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">0</text>
+<line x1="161.2" y1="366" x2="161.2" y2="369" stroke="#898781" stroke-width="1"/>
+<line x1="172.3" y1="366" x2="172.3" y2="372" stroke="#898781" stroke-width="1"/>
+<text x="172.3" y="381" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">2</text>
+<line x1="183.5" y1="366" x2="183.5" y2="369" stroke="#898781" stroke-width="1"/>
+<line x1="194.6" y1="366" x2="194.6" y2="372" stroke="#898781" stroke-width="1"/>
+<text x="194.6" y="381" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">4</text>
+<line x1="205.8" y1="366" x2="205.8" y2="369" stroke="#898781" stroke-width="1"/>
+<line x1="216.9" y1="366" x2="216.9" y2="372" stroke="#898781" stroke-width="1"/>
+<text x="216.9" y="381" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">6</text>
+<line x1="228.1" y1="366" x2="228.1" y2="369" stroke="#898781" stroke-width="1"/>
+<line x1="239.2" y1="366" x2="239.2" y2="372" stroke="#898781" stroke-width="1"/>
+<text x="239.2" y="381" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">8</text>
+<line x1="250.4" y1="366" x2="250.4" y2="369" stroke="#898781" stroke-width="1"/>
+<line x1="261.5" y1="366" x2="261.5" y2="372" stroke="#898781" stroke-width="1"/>
+<text x="261.5" y="381" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">10</text>
+<line x1="272.7" y1="366" x2="272.7" y2="369" stroke="#898781" stroke-width="1"/>
+<line x1="283.8" y1="366" x2="283.8" y2="372" stroke="#898781" stroke-width="1"/>
+<text x="283.8" y="381" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">12</text>
+<line x1="295" y1="366" x2="295" y2="369" stroke="#898781" stroke-width="1"/>
+<line x1="306.2" y1="366" x2="306.2" y2="372" stroke="#898781" stroke-width="1"/>
+<text x="306.2" y="381" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">14</text>
+<line x1="317.3" y1="366" x2="317.3" y2="369" stroke="#898781" stroke-width="1"/>
+<line x1="328.5" y1="366" x2="328.5" y2="372" stroke="#898781" stroke-width="1"/>
+<text x="328.5" y="381" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">16</text>
+<line x1="339.6" y1="366" x2="339.6" y2="369" stroke="#898781" stroke-width="1"/>
+<line x1="350.8" y1="366" x2="350.8" y2="372" stroke="#898781" stroke-width="1"/>
+<text x="350.8" y="381" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">18</text>
+<line x1="361.9" y1="366" x2="361.9" y2="369" stroke="#898781" stroke-width="1"/>
+<line x1="373.1" y1="366" x2="373.1" y2="372" stroke="#898781" stroke-width="1"/>
+<text x="373.1" y="381" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">20</text>
+<line x1="384.2" y1="366" x2="384.2" y2="369" stroke="#898781" stroke-width="1"/>
+<line x1="395.4" y1="366" x2="395.4" y2="372" stroke="#898781" stroke-width="1"/>
+<text x="395.4" y="381" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">22</text>
+<line x1="406.5" y1="366" x2="406.5" y2="369" stroke="#898781" stroke-width="1"/>
+<line x1="417.7" y1="366" x2="417.7" y2="372" stroke="#898781" stroke-width="1"/>
+<text x="417.7" y="381" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">24</text>
+<line x1="428.8" y1="366" x2="428.8" y2="369" stroke="#898781" stroke-width="1"/>
+<line x1="440" y1="366" x2="440" y2="372" stroke="#898781" stroke-width="1"/>
+<text x="440" y="381" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">26</text>
+<line x1="40" y1="390" x2="640" y2="390" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="40" y="412" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">每步: 算 [lo, hi] → lo ≤ hi 就收下 → end 小的指针前进</text>
+<rect x="40" y="433" width="16" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="62" y="440" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">A / B 里的 interval</text>
+<rect x="199.7" y="433" width="16" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="221.7" y="440" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">交集</text>
+<rect x="264.9" y="433" width="16" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="286.9" y="440" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">空隙</text>
+</svg>

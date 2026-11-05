@@ -1,0 +1,43 @@
+<svg width="100%" viewBox="0 0 680 444" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>Largest rectangle boundaries</title><desc>Bar 5 extends from the first smaller bar on the left to the first smaller bar on the right; both known at pop time.</desc><defs><marker id="c3-arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="c3-arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">heights = [2, 1, 5, 6, 2, 3] · 以每根柱子为 "最矮的那根" 能向左右延伸多远?</text>
+<text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">看高 = 5 的柱子 (idx 2): 它是 i = 4 时被 pop 的</text>
+<rect x="40" y="210" width="56" height="40" rx="2" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="68.0" y="198" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text>
+<text x="68.0" y="266" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">i=0</text>
+<rect x="102" y="230" width="56" height="20" rx="2" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="130.0" y="218" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="middle" dominant-baseline="central">1</text>
+<text x="130.0" y="266" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">i=1</text>
+<rect x="164" y="150" width="56" height="100" rx="2" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="192.0" y="138" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="middle" dominant-baseline="central">5</text>
+<text x="192.0" y="266" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">i=2</text>
+<rect x="226" y="130" width="56" height="120" rx="2" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="254.0" y="118" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="middle" dominant-baseline="central">6</text>
+<text x="254.0" y="266" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">i=3</text>
+<rect x="288" y="210" width="56" height="40" rx="2" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="316.0" y="198" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text>
+<text x="316.0" y="266" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">i=4</text>
+<rect x="350" y="190" width="56" height="60" rx="2" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="378.0" y="178" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="middle" dominant-baseline="central">3</text>
+<text x="378.0" y="266" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">i=5</text>
+<rect x="164" y="150" width="56" height="100" rx="2" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="164" y="150" width="118" height="100" rx="2" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-dasharray="5 3"/>
+<rect x="99" y="227" width="62" height="26" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="285" y="207" width="62" height="46" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="130.0" y="286" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">左边界</text>
+<text x="316.0" y="286" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">右边界</text>
+<text x="168" y="168" font-size="14" fill="#085041" font-weight="500" text-anchor="start" dominant-baseline="central">5 × 2</text>
+<text x="450" y="80" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">以高 5 为最矮:</text>
+<text x="450" y="108" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">往左: 第一根比 5 矮的</text>
+<text x="450" y="126" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">  = idx 1 (h = 1) → 左边界</text>
+<text x="450" y="154" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">往右: 第一根比 5 矮的</text>
+<text x="450" y="172" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">  = idx 4 (h = 2) → 右边界</text>
+<text x="450" y="200" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">宽 = 右 − 左 − 1</text>
+<text x="450" y="218" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">   = 4 − 1 − 1 = 2</text>
+<text x="450" y="244" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">面积 = 5 × 2 = 10</text>
+<line x1="40" y1="308" x2="640" y2="308" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="322" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里从底到顶 h 递增 → 栈里每根柱子下面那根, 就是它左边第一根更矮的</text>
+<text x="40" y="342" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop 时: 右边界 = 当前 i (它是第一个更矮的, 才触发 pop) · 左边界 = pop 之后的新栈顶</text>
+<text x="40" y="362" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">两个边界在同一时刻确定 → 一次 pop 算出一根柱子的最大面积</text>
+<text x="40" y="386" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">哨兵: 在 heights 末尾补一根 0, 最后一步把栈里剩下的柱子全部 pop 出来结算</text>
+<rect x="40" y="410" width="22" height="16" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="70" y="418" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">被结算的柱子及其矩形</text><rect x="220" y="410" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="250" y="418" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">其他柱子</text><rect x="328" y="410" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="325" y="407" width="28" height="22" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/><text x="358" y="418" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">左 / 右边界</text>
+</svg>

@@ -1,0 +1,35 @@
+<svg width="100%" viewBox="0 0 680 374" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif'><title>decode_core</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">s = 3[a2[c]] · 每个 '[' 开一层新上下文, 每个 ']' 回到外层</text>
+<text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">stack 存 '外层的现场' = (prev_str, k) · cur = 当前这层已拼出的字符串</text>
+<rect x="40" y="76" width="34" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="57.0" y="92.0" font-size="16" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">3</text>
+<rect x="80" y="76" width="34" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="97.0" y="92.0" font-size="16" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">[</text>
+<rect x="120" y="76" width="34" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="137.0" y="92.0" font-size="16" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">a</text>
+<rect x="160" y="76" width="34" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="177.0" y="92.0" font-size="16" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text>
+<rect x="200" y="76" width="34" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="217.0" y="92.0" font-size="16" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">[</text>
+<rect x="240" y="76" width="34" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="257.0" y="92.0" font-size="16" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">c</text>
+<rect x="280" y="76" width="34" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="297.0" y="92.0" font-size="16" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">]</text>
+<rect x="320" y="76" width="34" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="337.0" y="92.0" font-size="16" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">]</text>
+<path d="M80 116 L80 122 L354 122 L354 116" fill="none" stroke="#5F5E5A" stroke-width="1.5"/>
+<text x="217.0" y="136" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">外层 [ ]: k = 3</text>
+<path d="M200 144 L200 150 L314 150 L314 144" fill="none" stroke="#0F6E56" stroke-width="1.5"/>
+<text x="257.0" y="164" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">内层 [ ]: k = 2</text>
+<text x="40" y="196" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">读到下标 5 的 'c' 时:</text>
+<path d="M60 254 L60 320 L180 320 L180 254" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="68" y="292" width="104" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="120.0" y="305.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">('', 3)</text>
+<rect x="68" y="262" width="104" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="65" y="259" width="110" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="120.0" y="275.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">('a', 2)</text>
+<text x="120" y="338" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">栈底</text>
+<text x="210" y="262" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">cur = 'c'  (内层正在拼)</text>
+<text x="210" y="286" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">('a', 2) = 进内层之前的 cur 是 'a', 这个 [ ] 重复 2 次</text>
+<text x="210" y="306" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">('', 3) = 进外层之前的 cur 是 '', 这个 [ ] 重复 3 次</text>
+<text x="210" y="330" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">读到 ']' → pop ('a', 2):</text>
+<text x="210" y="352" font-size="14" fill="#0F6E56" font-weight="500" text-anchor="start" dominant-baseline="central">cur = prev_str + cur × k = 'a' + 'c' × 2 = 'acc'</text></svg>

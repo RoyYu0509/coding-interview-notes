@@ -1,0 +1,47 @@
+<svg width="100%" viewBox="0 0 680 318" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>LCA 的返回值语义</title><desc>三种合并情况</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="20" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">返回值 = 这棵子树里"找到的 p 或 q" (什么都没找到 = None). 当前 node 只有三种情况:</text>
+<text x="30" y="54" font-size="14" text-anchor="start" fill="#085041" font-weight="600" dominant-baseline="central">① p、q 分居两侧</text>
+<circle cx="120" cy="100" r="22" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="120" y="100" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">node</text>
+<line x1="100.8" y1="118" x2="72" y2="148" stroke="#898781" stroke-width="1.2"/>
+<circle cx="72" cy="160" r="14" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72" y="160" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">L</text>
+<text x="72" y="192" font-size="12" text-anchor="middle" fill="#085041" font-weight="600" dominant-baseline="central">→ p</text>
+<line x1="139.2" y1="118" x2="168" y2="148" stroke="#898781" stroke-width="1.2"/>
+<circle cx="168" cy="160" r="14" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="168" y="160" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">R</text>
+<text x="168" y="192" font-size="12" text-anchor="middle" fill="#085041" font-weight="600" dominant-baseline="central">→ q</text>
+<text x="30" y="226" font-size="14" text-anchor="start" fill="#085041" font-weight="600" dominant-baseline="central">return root</text>
+<text x="30" y="248" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">root 是拐点 = LCA</text>
+<text x="30" y="270" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">if L and R: return root</text>
+<text x="250" y="54" font-size="14" text-anchor="start" fill="#085041" font-weight="600" dominant-baseline="central">② 只有一侧找到</text>
+<circle cx="340" cy="100" r="22" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="340" y="100" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">node</text>
+<line x1="320.8" y1="118" x2="292" y2="148" stroke="#898781" stroke-width="1.2"/>
+<circle cx="292" cy="160" r="14" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="292" y="160" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">L</text>
+<text x="292" y="192" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">→ None</text>
+<line x1="359.2" y1="118" x2="388" y2="148" stroke="#898781" stroke-width="1.2"/>
+<circle cx="388" cy="160" r="14" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="388" y="160" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">R</text>
+<text x="388" y="192" font-size="12" text-anchor="middle" fill="#085041" font-weight="600" dominant-baseline="central">→ q</text>
+<text x="250" y="226" font-size="14" text-anchor="start" fill="#085041" font-weight="600" dominant-baseline="central">return R</text>
+<text x="250" y="248" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">原样往上传</text>
+<text x="250" y="270" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">return L or R</text>
+<text x="470" y="54" font-size="14" text-anchor="start" fill="#085041" font-weight="600" dominant-baseline="central">③ node 自己就是 p</text>
+<circle cx="560" cy="100" r="22" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<circle cx="560" cy="100" r="26" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="560" y="100" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">node</text>
+<line x1="540.8" y1="118" x2="512" y2="148" stroke="#B4B2A9" stroke-width="1.2" stroke-dasharray="3 3"/>
+<circle cx="512" cy="160" r="14" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="512" y="160" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">L</text>
+<line x1="579.2" y1="118" x2="608" y2="148" stroke="#B4B2A9" stroke-width="1.2" stroke-dasharray="3 3"/>
+<circle cx="608" cy="160" r="14" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="608" y="160" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">R</text>
+<text x="560" y="192" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">(不递归)</text>
+<text x="470" y="226" font-size="14" text-anchor="start" fill="#085041" font-weight="600" dominant-baseline="central">return root</text>
+<text x="470" y="248" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">不用再往下看</text>
+<text x="470" y="270" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">if root is p or q: return root</text>
+<line x1="40" y1="286" x2="640" y2="286" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="304" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">第 ③ 种的依据: 若 q 在 p 下面, p 就是 LCA; 若 q 不在下面, 也会由别处的非 None 在更上层汇合</text>
+</svg>

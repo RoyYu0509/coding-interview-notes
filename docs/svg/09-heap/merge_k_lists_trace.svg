@@ -1,0 +1,216 @@
+<svg width="100%" viewBox="0 0 680 1170" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Merge k Sorted Lists trace</title><desc>L0=1,4,5  L1=1,3,4  L2=2,6</desc><defs><marker id="mk-ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="mk-ao" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="1170" fill="#FFFFFF"/>
+<text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">L0 = 1→4→5 · L1 = 1→3→4 · L2 = 2→6 · heap 存 (val, i, node), 按 val 比 · 最小的在 top</text>
+<text x="40" y="38" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">heap 里每条 list 只放 1 个 (当前的 head) · 每一步: pop 最小的 → 接到 output → push 它的 next</text>
+<text x="40" y="64" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">step</text>
+<text x="160" y="64" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">pop 前</text>
+<text x="290" y="64" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">push next 后</text>
+<text x="440" y="64" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">output</text>
+<line x1="40" y1="74" x2="640" y2="74" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="82" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="107" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">init</text>
+<line x1="350" y1="146" x2="318" y2="180" stroke="#898781" stroke-width="1.2"/>
+<line x1="350" y1="146" x2="382" y2="180" stroke="#898781" stroke-width="1.2"/>
+<circle cx="350" cy="146" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="350" y="140" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">1</text>
+<text x="350" y="154" font-size="12" text-anchor="middle" fill="#085041" dominant-baseline="central">L0</text>
+<circle cx="350" cy="146" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="318" cy="180" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="318" y="174" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">1</text>
+<text x="318" y="188" font-size="12" text-anchor="middle" fill="#085041" dominant-baseline="central">L1</text>
+<circle cx="382" cy="180" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="382" y="174" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">2</text>
+<text x="382" y="188" font-size="12" text-anchor="middle" fill="#085041" dominant-baseline="central">L2</text>
+<text x="440" y="114" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">每条 list 的 head</text>
+<text x="440" y="134" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">push 进 heap</text>
+<text x="440" y="154" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">heap 大小 = k = 3</text>
+<line x1="40" y1="216" x2="640" y2="216" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="224" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="249" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">step 1</text>
+<line x1="220" y1="288" x2="188" y2="322" stroke="#898781" stroke-width="1.2"/>
+<line x1="220" y1="288" x2="252" y2="322" stroke="#898781" stroke-width="1.2"/>
+<circle cx="220" cy="288" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="220" y="282" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<text x="220" y="296" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L0</text>
+<circle cx="220" cy="288" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="188" cy="322" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="188" y="316" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<text x="188" y="330" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L1</text>
+<circle cx="252" cy="322" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="252" y="316" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<text x="252" y="330" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L2</text>
+<path d="M196 288 L66 288 L66 308" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#mk-ao)"/>
+<text x="137.0" y="278" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">pop</text>
+<circle cx="66" cy="328" r="19" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="66" y="322" font-size="14" text-anchor="middle" fill="#712B13" dominant-baseline="central">1</text>
+<text x="66" y="336" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">L0</text>
+<text x="40" y="358" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">pop 最小的 1 (L0)</text>
+<text x="40" y="374" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">接到 output</text>
+<line x1="350" y1="288" x2="318" y2="322" stroke="#898781" stroke-width="1.2"/>
+<line x1="350" y1="288" x2="382" y2="322" stroke="#898781" stroke-width="1.2"/>
+<circle cx="350" cy="288" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="350" y="282" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<text x="350" y="296" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L1</text>
+<circle cx="350" cy="288" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="318" cy="322" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="318" y="316" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<text x="318" y="330" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L2</text>
+<circle cx="382" cy="322" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="382" y="316" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">4</text>
+<text x="382" y="330" font-size="12" text-anchor="middle" fill="#085041" dominant-baseline="central">L0</text>
+<text x="440" y="256" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">output: 1</text>
+<text x="440" y="276" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">push next: 4 (L0 的下一个)</text>
+<line x1="40" y1="392" x2="640" y2="392" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="400" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="425" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">step 2</text>
+<line x1="220" y1="464" x2="188" y2="498" stroke="#898781" stroke-width="1.2"/>
+<line x1="220" y1="464" x2="252" y2="498" stroke="#898781" stroke-width="1.2"/>
+<circle cx="220" cy="464" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="220" y="458" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<text x="220" y="472" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L1</text>
+<circle cx="220" cy="464" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="188" cy="498" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="188" y="492" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<text x="188" y="506" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L2</text>
+<circle cx="252" cy="498" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="252" y="492" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">4</text>
+<text x="252" y="506" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L0</text>
+<path d="M196 464 L66 464 L66 484" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#mk-ao)"/>
+<text x="137.0" y="454" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">pop</text>
+<circle cx="66" cy="504" r="19" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="66" y="498" font-size="14" text-anchor="middle" fill="#712B13" dominant-baseline="central">1</text>
+<text x="66" y="512" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">L1</text>
+<text x="40" y="534" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">pop 最小的 1 (L1)</text>
+<text x="40" y="550" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">接到 output</text>
+<line x1="350" y1="464" x2="318" y2="498" stroke="#898781" stroke-width="1.2"/>
+<line x1="350" y1="464" x2="382" y2="498" stroke="#898781" stroke-width="1.2"/>
+<circle cx="350" cy="464" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="350" y="458" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<text x="350" y="472" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L2</text>
+<circle cx="350" cy="464" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="318" cy="498" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="318" y="492" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">4</text>
+<text x="318" y="506" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L0</text>
+<circle cx="382" cy="498" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="382" y="492" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">3</text>
+<text x="382" y="506" font-size="12" text-anchor="middle" fill="#085041" dominant-baseline="central">L1</text>
+<text x="440" y="432" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">output: 1 → 1</text>
+<text x="440" y="452" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">push next: 3 (L1 的下一个)</text>
+<line x1="40" y1="568" x2="640" y2="568" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="576" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="601" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">step 3</text>
+<line x1="220" y1="640" x2="188" y2="674" stroke="#898781" stroke-width="1.2"/>
+<line x1="220" y1="640" x2="252" y2="674" stroke="#898781" stroke-width="1.2"/>
+<circle cx="220" cy="640" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="220" y="634" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<text x="220" y="648" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L2</text>
+<circle cx="220" cy="640" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="188" cy="674" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="188" y="668" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">4</text>
+<text x="188" y="682" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L0</text>
+<circle cx="252" cy="674" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="252" y="668" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<text x="252" y="682" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L1</text>
+<path d="M196 640 L66 640 L66 660" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#mk-ao)"/>
+<text x="137.0" y="630" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">pop</text>
+<circle cx="66" cy="680" r="19" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="66" y="674" font-size="14" text-anchor="middle" fill="#712B13" dominant-baseline="central">2</text>
+<text x="66" y="688" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">L2</text>
+<text x="40" y="710" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">pop 最小的 2 (L2)</text>
+<text x="40" y="726" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">接到 output</text>
+<line x1="350" y1="640" x2="318" y2="674" stroke="#898781" stroke-width="1.2"/>
+<line x1="350" y1="640" x2="382" y2="674" stroke="#898781" stroke-width="1.2"/>
+<circle cx="350" cy="640" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="350" y="634" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<text x="350" y="648" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L1</text>
+<circle cx="350" cy="640" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="318" cy="674" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="318" y="668" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">4</text>
+<text x="318" y="682" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L0</text>
+<circle cx="382" cy="674" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="382" y="668" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">6</text>
+<text x="382" y="682" font-size="12" text-anchor="middle" fill="#085041" dominant-baseline="central">L2</text>
+<text x="440" y="608" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">output: 1 → 1 → 2</text>
+<text x="440" y="628" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">push next: 6 (L2 的下一个)</text>
+<line x1="40" y1="744" x2="640" y2="744" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="752" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="777" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">step 4</text>
+<line x1="220" y1="816" x2="188" y2="850" stroke="#898781" stroke-width="1.2"/>
+<line x1="220" y1="816" x2="252" y2="850" stroke="#898781" stroke-width="1.2"/>
+<circle cx="220" cy="816" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="220" y="810" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<text x="220" y="824" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L1</text>
+<circle cx="220" cy="816" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="188" cy="850" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="188" y="844" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">4</text>
+<text x="188" y="858" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L0</text>
+<circle cx="252" cy="850" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="252" y="844" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">6</text>
+<text x="252" y="858" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L2</text>
+<path d="M196 816 L66 816 L66 836" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#mk-ao)"/>
+<text x="137.0" y="806" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">pop</text>
+<circle cx="66" cy="856" r="19" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="66" y="850" font-size="14" text-anchor="middle" fill="#712B13" dominant-baseline="central">3</text>
+<text x="66" y="864" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">L1</text>
+<text x="40" y="886" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">pop 最小的 3 (L1)</text>
+<text x="40" y="902" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">接到 output</text>
+<line x1="350" y1="816" x2="318" y2="850" stroke="#898781" stroke-width="1.2"/>
+<line x1="350" y1="816" x2="382" y2="850" stroke="#898781" stroke-width="1.2"/>
+<circle cx="350" cy="816" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="350" y="810" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">4</text>
+<text x="350" y="824" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L0</text>
+<circle cx="350" cy="816" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="318" cy="850" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="318" y="844" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">6</text>
+<text x="318" y="858" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L2</text>
+<circle cx="382" cy="850" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="382" y="844" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">4</text>
+<text x="382" y="858" font-size="12" text-anchor="middle" fill="#085041" dominant-baseline="central">L1</text>
+<text x="440" y="784" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">output: 1 → 1 → 2 → 3</text>
+<text x="440" y="804" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">push next: 4 (L1 的下一个)</text>
+<line x1="40" y1="920" x2="640" y2="920" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="928" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="953" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">step 5</text>
+<line x1="220" y1="992" x2="188" y2="1026" stroke="#898781" stroke-width="1.2"/>
+<line x1="220" y1="992" x2="252" y2="1026" stroke="#898781" stroke-width="1.2"/>
+<circle cx="220" cy="992" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="220" y="986" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">4</text>
+<text x="220" y="1000" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L0</text>
+<circle cx="220" cy="992" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="188" cy="1026" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="188" y="1020" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">6</text>
+<text x="188" y="1034" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L2</text>
+<circle cx="252" cy="1026" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="252" y="1020" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">4</text>
+<text x="252" y="1034" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L1</text>
+<path d="M196 992 L66 992 L66 1012" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#mk-ao)"/>
+<text x="137.0" y="982" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">pop</text>
+<circle cx="66" cy="1032" r="19" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="66" y="1026" font-size="14" text-anchor="middle" fill="#712B13" dominant-baseline="central">4</text>
+<text x="66" y="1040" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">L0</text>
+<text x="40" y="1062" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">pop 最小的 4 (L0)</text>
+<text x="40" y="1078" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">接到 output</text>
+<line x1="350" y1="992" x2="318" y2="1026" stroke="#898781" stroke-width="1.2"/>
+<line x1="350" y1="992" x2="382" y2="1026" stroke="#898781" stroke-width="1.2"/>
+<circle cx="350" cy="992" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="350" y="986" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">4</text>
+<text x="350" y="1000" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L1</text>
+<circle cx="350" cy="992" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="318" cy="1026" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="318" y="1020" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">6</text>
+<text x="318" y="1034" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L2</text>
+<circle cx="382" cy="1026" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="382" y="1020" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">5</text>
+<text x="382" y="1034" font-size="12" text-anchor="middle" fill="#085041" dominant-baseline="central">L0</text>
+<text x="440" y="960" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">output: 1 → 1 → 2 → 3 → 4</text>
+<text x="440" y="980" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">push next: 5 (L0 的下一个)</text>
+<line x1="40" y1="1096" x2="640" y2="1096" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="1118" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">继续 pop 到 heap 空: output = 1→1→2→3→4→4→5→6 (8 个 node, 每个进出 heap 各 1 次)</text>
+<circle cx="48" cy="1150" r="7" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="62" y="1150" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">新 push 进来的</text>
+<circle cx="168" cy="1150" r="7" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="182" y="1150" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">被 pop 的</text>
+<circle cx="268" cy="1150" r="7" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="282" y="1150" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">heap top (最小的 val)</text>
+<circle cx="428" cy="1150" r="7" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="442" y="1150" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">heap 里其他的</text>
+</svg>

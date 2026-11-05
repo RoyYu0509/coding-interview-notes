@@ -1,0 +1,54 @@
+<svg width="100%" viewBox="0 0 680 435" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Combination Sum II 的 decision tree</title><desc>candidates=[1,2,2,3], target=5, 同层去重。</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">candidates 排序后 = [1, 2, 2, 3] · target = 5 · 每个数最多用一次 =&gt; dfs(i+1, ...)</text>
+<text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">同一层第二个 2 (i &gt; start 且 与前一个相等) 的子树和第一个 2 完全相同 =&gt; 剪掉</text>
+<line x1="405.625" y1="105" x2="208.75" y2="145" stroke="#8A8984" stroke-width="1.2"/>
+<line x1="208.75" y1="171" x2="115" y2="211" stroke="#8A8984" stroke-width="1.2"/>
+<line x1="115" y1="237" x2="77.5" y2="277" stroke="#8A8984" stroke-width="1.2"/>
+<line x1="115" y1="237" x2="152.5" y2="277" stroke="#D85A30" stroke-width="1.2" stroke-dasharray="4 3"/>
+<line x1="208.75" y1="171" x2="227.5" y2="211" stroke="#D85A30" stroke-width="1.2" stroke-dasharray="4 3"/>
+<line x1="208.75" y1="171" x2="302.5" y2="211" stroke="#8A8984" stroke-width="1.2"/>
+<line x1="405.625" y1="105" x2="415" y2="145" stroke="#8A8984" stroke-width="1.2"/>
+<line x1="415" y1="171" x2="377.5" y2="211" stroke="#8A8984" stroke-width="1.2"/>
+<line x1="377.5" y1="237" x2="377.5" y2="277" stroke="#D85A30" stroke-width="1.2" stroke-dasharray="4 3"/>
+<line x1="415" y1="171" x2="452.5" y2="211" stroke="#8A8984" stroke-width="1.2"/>
+<line x1="405.625" y1="105" x2="527.5" y2="145" stroke="#D85A30" stroke-width="1.2" stroke-dasharray="4 3"/>
+<line x1="405.625" y1="105" x2="602.5" y2="145" stroke="#8A8984" stroke-width="1.2"/>
+<rect x="390.625" y="79" width="30" height="26" rx="6" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="405.625" y="92" font-size="13" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">[]</text>
+<rect x="193.04" y="145" width="31.42" height="26" rx="6" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="208.75" y="158" font-size="13" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">[1]</text>
+<rect x="92.92" y="211" width="44.16" height="26" rx="6" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="115" y="224" font-size="13" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">[1,2]</text>
+<rect x="49.05" y="277" width="56.9" height="26" rx="6" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="77.5" y="290" font-size="13" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">[1,2,2]</text>
+<rect x="124.05" y="277" width="56.9" height="26" rx="6" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="5 3"/>
+<text x="152.5" y="290" font-size="13" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">[1,2,3]</text>
+<text x="152.5" y="314" font-size="12" fill="#712B13" font-weight="400" text-anchor="middle" dominant-baseline="central">3&gt;2</text>
+<rect x="205.42" y="211" width="44.16" height="26" rx="6" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="5 3"/>
+<text x="227.5" y="224" font-size="13" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">[1,2]</text>
+<text x="227.5" y="248" font-size="12" fill="#712B13" font-weight="400" text-anchor="middle" dominant-baseline="central">同层重复</text>
+<rect x="280.42" y="211" width="44.16" height="26" rx="6" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="302.5" y="224" font-size="13" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">[1,3]</text>
+<rect x="399.29" y="145" width="31.42" height="26" rx="6" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="415" y="158" font-size="13" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">[2]</text>
+<rect x="355.42" y="211" width="44.16" height="26" rx="6" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="377.5" y="224" font-size="13" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">[2,2]</text>
+<rect x="349.05" y="277" width="56.9" height="26" rx="6" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="5 3"/>
+<text x="377.5" y="290" font-size="13" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">[2,2,3]</text>
+<text x="377.5" y="314" font-size="12" fill="#712B13" font-weight="400" text-anchor="middle" dominant-baseline="central">3&gt;1</text>
+<rect x="430.42" y="211" width="44.16" height="26" rx="6" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="452.5" y="224" font-size="13" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">[2,3]</text>
+<rect x="511.79" y="145" width="31.42" height="26" rx="6" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="5 3"/>
+<text x="527.5" y="158" font-size="13" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">[2]</text>
+<text x="527.5" y="182" font-size="12" fill="#712B13" font-weight="400" text-anchor="middle" dominant-baseline="central">同层重复</text>
+<rect x="586.79" y="145" width="31.42" height="26" rx="6" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="602.5" y="158" font-size="13" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">[3]</text>
+<text x="40" y="353" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">答案 [[1,2,2],[2,3]] · 节点数 13 (含 4 个被剪掉的)</text>
+<text x="40" y="375" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">[1,2,2] 里两个 2 都留着: 第二个 2 在下一层 (i == start), 不是同一层</text>
+<rect x="40" y="398" width="18" height="14" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="64" y="405" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">收集到的答案</text>
+<rect x="158" y="398" width="18" height="14" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="182" y="405" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">普通节点 (path)</text>
+<rect x="292.8" y="398" width="18" height="14" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="5 3"/>
+<text x="316.8" y="405" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">被剪枝的分支 (写原因)</text>
+</svg>

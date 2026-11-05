@@ -1,0 +1,115 @@
+<svg width="100%" viewBox="0 0 680 374" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>s += c 与 list.append + join 的复制量对比</title><desc>n = 8, 左边每次 += 都复制旧内容, 右边 append 只写 1 格, join 最后复制一次</desc>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">n = 8 · 每一行 = 循环里的一次操作 · 每个格子 = 一次字符的复制或写入</text>
+<text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">str 不可变: s += c 要新建 string, 把旧内容全部复制过去; list.append 不动旧元素</text>
+<text x="40" y="64" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">res += c</text>
+<text x="360" y="64" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">parts.append(c), 最后 ''.join(parts)</text>
+<line x1="40" y1="76" x2="640" y2="76" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 3"/>
+<rect x="40" y="86" width="16" height="18" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="196" y="95" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">复制 0 + 写 1 = 1</text>
+<rect x="360" y="86" width="16" height="18" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="516" y="95" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">append: 只写 1</text>
+<rect x="40" y="110" width="16" height="18" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<rect x="58" y="110" width="16" height="18" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="196" y="119" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">复制 1 + 写 1 = 2</text>
+<rect x="360" y="110" width="16" height="18" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="378" y="110" width="16" height="18" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="516" y="119" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">append: 只写 1</text>
+<rect x="40" y="134" width="16" height="18" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<rect x="58" y="134" width="16" height="18" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<rect x="76" y="134" width="16" height="18" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="196" y="143" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">复制 2 + 写 1 = 3</text>
+<rect x="360" y="134" width="16" height="18" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="378" y="134" width="16" height="18" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="396" y="134" width="16" height="18" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="516" y="143" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">append: 只写 1</text>
+<rect x="40" y="158" width="16" height="18" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<rect x="58" y="158" width="16" height="18" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<rect x="76" y="158" width="16" height="18" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<rect x="94" y="158" width="16" height="18" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="196" y="167" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">复制 3 + 写 1 = 4</text>
+<rect x="360" y="158" width="16" height="18" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="378" y="158" width="16" height="18" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="396" y="158" width="16" height="18" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="414" y="158" width="16" height="18" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="516" y="167" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">append: 只写 1</text>
+<rect x="40" y="182" width="16" height="18" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<rect x="58" y="182" width="16" height="18" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<rect x="76" y="182" width="16" height="18" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<rect x="94" y="182" width="16" height="18" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<rect x="112" y="182" width="16" height="18" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="196" y="191" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">复制 4 + 写 1 = 5</text>
+<rect x="360" y="182" width="16" height="18" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="378" y="182" width="16" height="18" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="396" y="182" width="16" height="18" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="414" y="182" width="16" height="18" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="432" y="182" width="16" height="18" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="516" y="191" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">append: 只写 1</text>
+<rect x="40" y="206" width="16" height="18" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<rect x="58" y="206" width="16" height="18" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<rect x="76" y="206" width="16" height="18" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<rect x="94" y="206" width="16" height="18" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<rect x="112" y="206" width="16" height="18" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<rect x="130" y="206" width="16" height="18" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="196" y="215" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">复制 5 + 写 1 = 6</text>
+<rect x="360" y="206" width="16" height="18" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="378" y="206" width="16" height="18" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="396" y="206" width="16" height="18" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="414" y="206" width="16" height="18" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="432" y="206" width="16" height="18" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="450" y="206" width="16" height="18" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="516" y="215" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">append: 只写 1</text>
+<rect x="40" y="230" width="16" height="18" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<rect x="58" y="230" width="16" height="18" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<rect x="76" y="230" width="16" height="18" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<rect x="94" y="230" width="16" height="18" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<rect x="112" y="230" width="16" height="18" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<rect x="130" y="230" width="16" height="18" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<rect x="148" y="230" width="16" height="18" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="196" y="239" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">复制 6 + 写 1 = 7</text>
+<rect x="360" y="230" width="16" height="18" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="378" y="230" width="16" height="18" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="396" y="230" width="16" height="18" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="414" y="230" width="16" height="18" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="432" y="230" width="16" height="18" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="450" y="230" width="16" height="18" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="468" y="230" width="16" height="18" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="516" y="239" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">append: 只写 1</text>
+<rect x="40" y="254" width="16" height="18" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<rect x="58" y="254" width="16" height="18" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<rect x="76" y="254" width="16" height="18" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<rect x="94" y="254" width="16" height="18" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<rect x="112" y="254" width="16" height="18" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<rect x="130" y="254" width="16" height="18" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<rect x="148" y="254" width="16" height="18" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<rect x="166" y="254" width="16" height="18" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="196" y="263" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">复制 7 + 写 1 = 8</text>
+<rect x="360" y="254" width="16" height="18" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="378" y="254" width="16" height="18" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="396" y="254" width="16" height="18" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="414" y="254" width="16" height="18" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="432" y="254" width="16" height="18" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="450" y="254" width="16" height="18" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="468" y="254" width="16" height="18" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="486" y="254" width="16" height="18" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="516" y="263" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">append: 只写 1</text>
+<line x1="40" y1="279" x2="640" y2="279" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 3"/>
+<rect x="360" y="288" width="16" height="18" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="378" y="288" width="16" height="18" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="396" y="288" width="16" height="18" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="414" y="288" width="16" height="18" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="432" y="288" width="16" height="18" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="450" y="288" width="16" height="18" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="468" y="288" width="16" height="18" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="486" y="288" width="16" height="18" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="516" y="297" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">join: 复制 8 (一次)</text>
+<text x="40" y="297" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">合计 1 + 2 + ... + 8 = 36 = n(n+1)/2</text>
+<text x="40" y="320" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">n 个字符 -&gt; O(n^2)</text>
+<text x="360" y="320" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">8 次 append + join 8 = 8 + 8 = 16 -&gt; O(n)</text>
+<rect x="40" y="347" width="14" height="14" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="60" y="354" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">这一步新写入的字符</text>
+<rect x="190" y="347" width="14" height="14" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="210" y="354" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">被复制的旧字符 (浪费)</text>
+<rect x="359.8" y="347" width="14" height="14" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="379.8" y="354" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">没被碰的字符</text>
+</svg>

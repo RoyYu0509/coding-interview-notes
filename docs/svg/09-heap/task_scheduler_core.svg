@@ -1,0 +1,36 @@
+<svg width="100%" viewBox="0 0 680 470" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Task Scheduler: ready heap and cooldown queue</title><desc>pop the most frequent ready task, it waits in cooldown, then returns to heap</desc><defs><marker id="tc0-ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="tc0-ao" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="470" fill="#FFFFFF"/>
+<text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">heap = 现在能做的 task (剩余次数最多的在 top) · cooldown = 刚做过, 还要等</text>
+<line x1="110" y1="90" x2="70" y2="136" stroke="#898781" stroke-width="1.2"/>
+<line x1="110" y1="90" x2="150" y2="136" stroke="#898781" stroke-width="1.2"/>
+<circle cx="110" cy="90" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="110" y="84" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<text x="110" y="98" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">A</text>
+<circle cx="110" cy="90" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="70" cy="136" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="70" y="130" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<text x="70" y="144" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">B</text>
+<circle cx="150" cy="136" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="150" y="130" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<text x="150" y="144" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">C</text>
+<text x="110" y="36" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">heap (max-heap)</text>
+<rect x="440" y="78" width="84" height="44" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="482.0" y="100.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">A 剩 2</text>
+<rect x="540" y="78" width="84" height="44" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="582.0" y="100.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">B 剩 1</text>
+<text x="530" y="62" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">cooldown 队列 (先进先出)</text>
+<path d="M170 96 L432 96" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#tc0-ag)"/>
+<text x="300" y="78" font-size="12" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">pop 一个 = 这个 slot 执行 1 次</text>
+<text x="300" y="114" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">剩余 &gt; 0 → 进 cooldown</text>
+<path d="M490 122 L490 190 L110 190 L110 150" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#tc0-ag)"/>
+<text x="300" y="176" font-size="12" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">过了 n 个 slot → push 回 heap</text>
+<line x1="40" y1="214" x2="640" y2="214" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="238" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">为什么每次 pop 剩余最多的 (greedy)</text>
+<text x="40" y="260" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">次数最多的 task 间隔要求最紧, 先做它, 才不会最后只剩它一个而被迫 idle</text>
+<text x="40" y="282" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">heap 空但 cooldown 非空 → 这个 slot idle, time 照样 +1</text>
+<line x1="40" y1="318" x2="640" y2="318" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="342" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">只要答案时的公式 (不用模拟)</text>
+<text x="40" y="364" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">max(len(tasks), (max_count - 1) × (n + 1) + 有几种 task 达到 max_count)</text>
+<text x="40" y="386" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">例: max(6, (3 - 1) × (2 + 1) + 1) = max(6, 7) = 7</text>
+<line x1="40" y1="420" x2="640" y2="420" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="442" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">Reorganize String 同构: n = 1, 每次 pop 剩余最多的, 刚用过的先放一边, 下一步再 push 回来</text>
+</svg>

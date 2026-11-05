@@ -1,0 +1,38 @@
+<svg width="100%" viewBox="0 0 680 440" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Kth Largest: why a min-heap of size k</title><desc>sorted nums with the top-k kept in the heap, top is the kth largest</desc><defs><marker id="kc0-ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="kc0-ao" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="440" fill="#FFFFFF"/>
+<text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">nums = [3, 2, 1, 5, 6, 4], k = 2 (下面按大小排好, 只为看清谁留下)</text>
+<rect x="40" y="56" width="46" height="36" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="63.0" y="74.0" font-size="14" text-anchor="middle" fill="#712B13" dominant-baseline="central">1</text>
+<rect x="94" y="56" width="46" height="36" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="117.0" y="74.0" font-size="14" text-anchor="middle" fill="#712B13" dominant-baseline="central">2</text>
+<rect x="148" y="56" width="46" height="36" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="171.0" y="74.0" font-size="14" text-anchor="middle" fill="#712B13" dominant-baseline="central">3</text>
+<rect x="202" y="56" width="46" height="36" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="225.0" y="74.0" font-size="14" text-anchor="middle" fill="#712B13" dominant-baseline="central">4</text>
+<rect x="256" y="56" width="46" height="36" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="252" y="52" width="54" height="44" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="279.0" y="74.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">5</text>
+<rect x="310" y="56" width="46" height="36" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="333.0" y="74.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">6</text>
+<text x="40" y="118" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">1, 2, 3, 4 : 已被 pop 掉</text>
+<text x="256" y="118" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">5, 6 : 最大的 k = 2 个, 留在 heap</text>
+<line x1="560" y1="80" x2="526" y2="120" stroke="#898781" stroke-width="1.2"/>
+<circle cx="560" cy="80" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="560" y="80" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">5</text>
+<circle cx="560" cy="80" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="526" cy="120" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="526" y="120" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">6</text>
+<path d="M364 74 L506 74" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#kc0-ag)"/>
+<text x="435" y="58" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">留下的 k 个 = min-heap</text>
+<text x="560" y="150" font-size="14" text-anchor="middle" fill="#0B0B0B" font-weight="600" dominant-baseline="central">top = 5 = 第 2 大</text>
+<line x1="40" y1="176" x2="640" y2="176" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="190" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">为什么是 min-heap, 不是 max-heap</text>
+<text x="40" y="214" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">1. heap 里装 "目前最大的 k 个", 满了要踢一个, 踢的永远是里面最小的</text>
+<text x="40" y="236" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">2. 要立刻拿到 "里面最小的" → 它放 top → min-heap</text>
+<text x="40" y="258" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">3. 留下来的 k 个里最小的 = 整体第 k 大 → 答案就是 h[0]</text>
+<line x1="40" y1="290" x2="640" y2="290" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="314" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">新来的 x 和 top 比</text>
+<text x="40" y="338" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">x &lt; top (例: x = 4 &lt; 5): 进不了前 2 大 → push 完马上被 pop, 什么都没变</text>
+<text x="40" y="360" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">x &gt; top: 挤掉 top, 新的 top 变大, 门槛抬高</text>
+<line x1="40" y1="396" x2="640" y2="396" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="418" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">brute force: sort 再取第 k 个 O(n log n) · min-heap 只留 k 个: O(n log k), 空间 O(k)</text>
+</svg>

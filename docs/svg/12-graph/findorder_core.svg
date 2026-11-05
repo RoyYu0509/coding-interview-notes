@@ -1,0 +1,26 @@
+<svg width="100%" viewBox="0 0 680 300" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>有环时 Kahn 会卡住</title><desc>有环时 Kahn 会卡住</desc><defs><marker id="ar-gray" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ar-red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ar-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">同一个算法, order 记下 pop 的顺序。有环 → 环上的点 indegree 永远 &gt; 0 → 永远进不了 queue</text>
+<text x="40" y="38" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">prerequisites = [[1, 0], [2, 1], [1, 2], [3, 0], [4, 3]] · 0 → 1, 1 ⇄ 2 (环), 0 → 3 → 4</text>
+<line x1="85.2" y1="149.9" x2="191.0" y2="183.9" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#ar-gray)"/>
+<path d="M225.7 193.1 Q280.0 204.0 330.4 193.9" fill="none" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#ar-gray)"/>
+<path d="M334.3 186.9 Q280.0 176.0 229.6 186.1" fill="none" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#ar-gray)"/>
+<line x1="85.2" y1="140.1" x2="191.0" y2="106.1" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#ar-gray)"/>
+<line x1="226.0" y1="100.0" x2="330.0" y2="100.0" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#ar-gray)"/>
+<circle cx="70" cy="145" r="16" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="70" y="145" font-size="14" font-weight="500" fill="#444441" text-anchor="middle" dominant-baseline="central">0</text>
+<circle cx="210" cy="100" r="16" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="210" y="100" font-size="14" font-weight="500" fill="#444441" text-anchor="middle" dominant-baseline="central">3</text>
+<circle cx="350" cy="100" r="16" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="350" y="100" font-size="14" font-weight="500" fill="#444441" text-anchor="middle" dominant-baseline="central">4</text>
+<circle cx="210" cy="190" r="16" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="210" y="190" font-size="14" font-weight="500" fill="#712B13" text-anchor="middle" dominant-baseline="central">1</text>
+<circle cx="350" cy="190" r="16" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="350" y="190" font-size="14" font-weight="500" fill="#712B13" text-anchor="middle" dominant-baseline="central">2</text>
+<text x="210" y="218" font-size="12" font-weight="400" fill="#712B13" text-anchor="middle" dominant-baseline="central">indegree = 1</text>
+<text x="350" y="218" font-size="12" font-weight="400" fill="#712B13" text-anchor="middle" dominant-baseline="central">indegree = 1</text>
+<text x="430" y="90" font-size="14" font-weight="500" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">Kahn 跑完后:</text>
+<text x="430" y="114" font-size="14" font-weight="500" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">order = [0, 3, 4]  (3 个)</text>
+<text x="430" y="138" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">numCourses = 5</text>
+<text x="430" y="168" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">1 在等 2 先上, 2 在等 1 先上</text>
+<text x="430" y="188" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">→ 谁的 indegree 都减不到 0</text>
+<text x="40" y="254" font-size="14" font-weight="500" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">len(order) = 3 &lt; numCourses = 5 → 有环 → 返回 []</text>
+<text x="40" y="276" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">(另一种做法: DFS 三色标记, 走到"正在访问"的点 = 有环。Kahn 不用递归, 面试里更好写。)</text></svg>

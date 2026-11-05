@@ -1,0 +1,48 @@
+<svg width="100%" viewBox="0 0 680 346" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>House Robber II 把环拆成两个线性问题</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">环: nums[0] 和 nums[4] 相邻 → 它们至少有一个不偷</text>
+<text x="40" y="38" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">把 &quot;环&quot; 拆成两个线性问题: 每个都是 House Robber, 最后取较大者</text>
+<text x="40" y="95" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">情况 A</text>
+<text x="40" y="116" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">不偷最后一间</text>
+<text x="178.0" y="68" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">nums[0]</text>
+<rect x="151" y="80" width="54" height="34" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="178.0" y="97.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">2</text>
+<text x="234.0" y="68" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">nums[1]</text>
+<rect x="207" y="80" width="54" height="34" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="234.0" y="97.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">3</text>
+<text x="290.0" y="68" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">nums[2]</text>
+<rect x="263" y="80" width="54" height="34" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="290.0" y="97.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">9</text>
+<text x="346.0" y="68" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">nums[3]</text>
+<rect x="319" y="80" width="54" height="34" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="346.0" y="97.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">3</text>
+<text x="402.0" y="68" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">nums[4]</text>
+<rect x="375" y="80" width="54" height="34" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="402.0" y="97" font-size="14" font-weight="600" fill="#712B13" text-anchor="middle" dominant-baseline="central">1</text>
+<line x1="380" y1="86" x2="424" y2="108" stroke="#D85A30" stroke-width="1.5"/>
+<text x="40" y="191" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">情况 B</text>
+<text x="40" y="212" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">不偷第一间</text>
+<text x="178.0" y="164" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">nums[0]</text>
+<rect x="151" y="176" width="54" height="34" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="178.0" y="193" font-size="14" font-weight="600" fill="#712B13" text-anchor="middle" dominant-baseline="central">2</text>
+<line x1="156" y1="182" x2="200" y2="204" stroke="#D85A30" stroke-width="1.5"/>
+<text x="234.0" y="164" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">nums[1]</text>
+<rect x="207" y="176" width="54" height="34" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="234.0" y="193.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">3</text>
+<text x="290.0" y="164" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">nums[2]</text>
+<rect x="263" y="176" width="54" height="34" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="290.0" y="193.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">9</text>
+<text x="346.0" y="164" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">nums[3]</text>
+<rect x="319" y="176" width="54" height="34" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="346.0" y="193.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">3</text>
+<text x="402.0" y="164" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">nums[4]</text>
+<rect x="375" y="176" width="54" height="34" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="402.0" y="193.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">1</text>
+<text x="446" y="97" font-size="16" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">= 11</text>
+<text x="446" y="193" font-size="16" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">= 10</text>
+<text x="40" y="262" font-size="16" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">答案 = max(A, B) = max(11, 10) = 11</text>
+<text x="40" y="292" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">所有合法方案 = 不偷尾 (A 覆盖) ∪ 不偷首 (B 覆盖); 首尾都不偷同时被 A、B 覆盖, 不影响取 max</text>
+<rect x="40" y="314" width="22" height="16" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="70" y="322" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">这一轮参与线性 DP 的房子</text>
+<rect x="239.84" y="314" width="22" height="16" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="269.84000000000003" y="322" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">被排除 (不偷) 的那间</text>
+</svg>

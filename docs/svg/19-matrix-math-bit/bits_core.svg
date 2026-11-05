@@ -1,0 +1,64 @@
+<svg width="100%" viewBox="0 0 680 388" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>n &amp; (n-1) 核心</title><desc>n-1 把最低位的 1 变 0、右边的 0 变 1,与 n 相与后最低位 1 消失</desc><defs><marker id="f14-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f14-r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f14-n" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f14-o" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#EF9F27" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="388" fill="#fff"/>
+<text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">n - 1 对 n 做了什么: 最低位的那个 1 变 0, 它右边的 0 全变 1, 左边完全不变</text>
+<text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">所以 n &amp; (n-1): 左边相同的位原样保留, 最低位的 1 及右边全是 (1 &amp; 0) 或 (0 &amp; 1) = 0</text>
+<text x="210.0" y="70" font-size="12" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">bit 5</text>
+<text x="254.0" y="70" font-size="12" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">bit 4</text>
+<text x="298.0" y="70" font-size="12" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">bit 3</text>
+<text x="342.0" y="70" font-size="12" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">bit 2</text>
+<text x="386.0" y="70" font-size="12" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">bit 1</text>
+<text x="430.0" y="70" font-size="12" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">bit 0</text>
+<text x="40" y="101" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">n = 44</text>
+<rect x="190" y="84" width="40" height="34" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="210.0" y="101.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<rect x="234" y="84" width="40" height="34" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1.0"/>
+<text x="254.0" y="101.0" font-size="14" fill="#52514E" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<rect x="278" y="84" width="40" height="34" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="298.0" y="101.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<rect x="322" y="84" width="40" height="34" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1.0"/>
+<rect x="319" y="81" width="46" height="40" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="101.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<rect x="366" y="84" width="40" height="34" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1.0"/>
+<text x="386.0" y="101.0" font-size="14" fill="#52514E" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<rect x="410" y="84" width="40" height="34" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1.0"/>
+<text x="430.0" y="101.0" font-size="14" fill="#52514E" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<text x="40" y="155" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">n - 1 = 43</text>
+<rect x="190" y="138" width="40" height="34" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="210.0" y="155.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<rect x="234" y="138" width="40" height="34" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1.0"/>
+<text x="254.0" y="155.0" font-size="14" fill="#52514E" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<rect x="278" y="138" width="40" height="34" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="298.0" y="155.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<rect x="322" y="138" width="40" height="34" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<text x="342.0" y="155.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<rect x="366" y="138" width="40" height="34" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<text x="386.0" y="155.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<rect x="410" y="138" width="40" height="34" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<text x="430.0" y="155.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<text x="40" y="209" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">n &amp; (n - 1) = 40</text>
+<rect x="190" y="192" width="40" height="34" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="210.0" y="209.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<rect x="234" y="192" width="40" height="34" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1.0"/>
+<text x="254.0" y="209.0" font-size="14" fill="#52514E" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<rect x="278" y="192" width="40" height="34" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="298.0" y="209.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<rect x="322" y="192" width="40" height="34" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1.0"/>
+<text x="342.0" y="209.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<rect x="366" y="192" width="40" height="34" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1.0"/>
+<text x="386.0" y="209.0" font-size="14" fill="#52514E" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<rect x="410" y="192" width="40" height="34" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1.0"/>
+<text x="430.0" y="209.0" font-size="14" fill="#52514E" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<text x="460" y="101" font-size="12" fill="#712B13" text-anchor="start" font-weight="500" dominant-baseline="central">← 最低位的 1 (bit 2)</text>
+<text x="460" y="155" font-size="12" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central">← bit 2 变 0, bit 1,0 变 1</text>
+<text x="460" y="209" font-size="12" fill="#712B13" text-anchor="start" font-weight="500" dominant-baseline="central">← 这个 1 消失了</text>
+<line x1="40" y1="252" x2="640" y2="252" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="40" y="272" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">数 1 的个数: 每轮 n &amp;= n - 1 消掉一个 1, 循环次数 = 1 的个数 (&lt;= 32), 不是固定 32 轮</text>
+<text x="40" y="292" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">n &amp; (n - 1) == 0  →  n 只有一个 1  →  n 是 2 的幂 (n &gt; 0)</text>
+<text x="40" y="312" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">n &amp; -n  →  只留下最低位的 1 (如 44 &amp; -44 = 4)</text>
+<text x="40" y="332" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">Python: bin(n).count("1") 或 n.bit_count() (3.10+) 面试里先写 n &amp;= n - 1 的版本</text>
+<rect x="40" y="357" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1.0"/>
+<text x="60" y="364" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">最低位的 1 (被消掉)</text>
+<rect x="199.0" y="357" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<text x="219.0" y="364" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">被翻转的位</text>
+<rect x="301.0" y="357" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="321.0" y="364" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">不变的 1</text>
+</svg>

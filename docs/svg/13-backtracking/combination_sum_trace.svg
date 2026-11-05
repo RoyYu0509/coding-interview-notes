@@ -1,0 +1,185 @@
+<svg width="100%" viewBox="0 0 680 910" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Combination Sum 的 path / remain 变化</title><desc>candidates=[2,3,5], target=6 前 14 步。</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">candidates = [2, 3, 5] · target = 6 · remain = target - sum(path)</text>
+<text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">每次 push c: remain 减 c · c &gt; remain 就剪枝 (红色虚线格子 = 想选但不能选)</text>
+<text x="40" y="70" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">动作 / 原因</text>
+<text x="206" y="70" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">被撤销</text>
+<text x="262" y="70" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">path</text>
+<text x="468" y="70" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">remain / res</text>
+<line x1="40" y1="80" x2="640" y2="80" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="114" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">1</text>
+<text x="62" y="104" font-size="14" fill="#085041" font-weight="500" text-anchor="start" dominant-baseline="central">push 2</text>
+<text x="62" y="122" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">2 &lt;= remain 6</text>
+<rect x="262" y="100" width="34" height="28" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="279" y="114" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text>
+<rect x="259" y="97" width="40" height="34" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="468" y="101" font-size="12" fill="#0B0B0B" font-weight="400" text-anchor="start" dominant-baseline="central">remain = 6 - (2) = 4</text>
+<text x="468" y="124" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">res 共 0 个</text>
+<line x1="40" y1="136" x2="640" y2="136" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="162" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">2</text>
+<text x="62" y="152" font-size="14" fill="#085041" font-weight="500" text-anchor="start" dominant-baseline="central">push 2</text>
+<text x="62" y="170" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">2 &lt;= remain 4</text>
+<rect x="262" y="148" width="34" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="279" y="162" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text>
+<rect x="298" y="148" width="34" height="28" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="315" y="162" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text>
+<rect x="295" y="145" width="40" height="34" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="468" y="149" font-size="12" fill="#0B0B0B" font-weight="400" text-anchor="start" dominant-baseline="central">remain = 6 - (2+2) = 2</text>
+<text x="468" y="172" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">res 共 0 个</text>
+<line x1="40" y1="184" x2="640" y2="184" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="210" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">3</text>
+<text x="62" y="200" font-size="14" fill="#085041" font-weight="500" text-anchor="start" dominant-baseline="central">push 2</text>
+<text x="62" y="218" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">2 &lt;= remain 2</text>
+<rect x="262" y="196" width="34" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="279" y="210" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text>
+<rect x="298" y="196" width="34" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="315" y="210" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text>
+<rect x="334" y="196" width="34" height="28" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="351" y="210" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text>
+<rect x="331" y="193" width="40" height="34" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="468" y="197" font-size="12" fill="#0B0B0B" font-weight="400" text-anchor="start" dominant-baseline="central">remain = 6 - (2+2+2) = 0</text>
+<text x="468" y="220" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">res 共 0 个</text>
+<line x1="40" y1="232" x2="640" y2="232" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="258" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">4</text>
+<text x="62" y="248" font-size="14" fill="#085041" font-weight="500" text-anchor="start" dominant-baseline="central">收集 [2,2,2]</text>
+<text x="62" y="266" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">remain == 0</text>
+<rect x="262" y="244" width="34" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="279" y="258" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text>
+<rect x="298" y="244" width="34" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="315" y="258" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text>
+<rect x="334" y="244" width="34" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="351" y="258" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text>
+<rect x="331" y="241" width="40" height="34" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="468" y="245" font-size="12" fill="#0B0B0B" font-weight="400" text-anchor="start" dominant-baseline="central">remain = 6 - (2+2+2) = 0</text>
+<rect x="464" y="258" width="129.84" height="20" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="470" y="268" font-size="12" fill="#085041" font-weight="500" text-anchor="start" dominant-baseline="central">res += [2,2,2] (共 1)</text>
+<line x1="40" y1="280" x2="640" y2="280" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="306" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">5</text>
+<text x="62" y="296" font-size="14" fill="#712B13" font-weight="500" text-anchor="start" dominant-baseline="central">pop 2</text>
+<text x="62" y="314" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">2 的子树走完</text>
+<rect x="262" y="292" width="34" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="279" y="306" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text>
+<rect x="298" y="292" width="34" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="315" y="306" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text>
+<rect x="295" y="289" width="40" height="34" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="206" y="292" width="34" height="28" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="5 3"/>
+<text x="223" y="306" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text>
+<rect x="334" y="292" width="34" height="28" rx="4" fill="none" stroke="#993C1D" stroke-width="0.8" stroke-dasharray="5 3"/>
+<path d="M351 292 L351 285 L223 285 L223 291" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arrowR)"/>
+<text x="468" y="293" font-size="12" fill="#0B0B0B" font-weight="400" text-anchor="start" dominant-baseline="central">remain = 6 - (2+2) = 2</text>
+<text x="468" y="316" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">res 共 1 个</text>
+<line x1="40" y1="328" x2="640" y2="328" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="354" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">6</text>
+<text x="62" y="344" font-size="14" fill="#712B13" font-weight="500" text-anchor="start" dominant-baseline="central">剪枝 3</text>
+<text x="62" y="362" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">3 &gt; remain 2, break</text>
+<rect x="262" y="340" width="34" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="279" y="354" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text>
+<rect x="298" y="340" width="34" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="315" y="354" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text>
+<rect x="295" y="337" width="40" height="34" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="334" y="340" width="34" height="28" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="5 3"/>
+<text x="351" y="354" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">3</text>
+<text x="468" y="341" font-size="12" fill="#0B0B0B" font-weight="400" text-anchor="start" dominant-baseline="central">remain = 6 - (2+2) = 2</text>
+<text x="468" y="364" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">res 共 1 个</text>
+<line x1="40" y1="376" x2="640" y2="376" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="402" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">7</text>
+<text x="62" y="392" font-size="14" fill="#712B13" font-weight="500" text-anchor="start" dominant-baseline="central">pop 2</text>
+<text x="62" y="410" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">2 的子树走完</text>
+<rect x="262" y="388" width="34" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="279" y="402" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text>
+<rect x="259" y="385" width="40" height="34" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="206" y="388" width="34" height="28" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="5 3"/>
+<text x="223" y="402" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text>
+<rect x="298" y="388" width="34" height="28" rx="4" fill="none" stroke="#993C1D" stroke-width="0.8" stroke-dasharray="5 3"/>
+<path d="M315 388 L315 381 L223 381 L223 387" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arrowR)"/>
+<text x="468" y="389" font-size="12" fill="#0B0B0B" font-weight="400" text-anchor="start" dominant-baseline="central">remain = 6 - (2) = 4</text>
+<text x="468" y="412" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">res 共 1 个</text>
+<line x1="40" y1="424" x2="640" y2="424" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="450" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">8</text>
+<text x="62" y="440" font-size="14" fill="#085041" font-weight="500" text-anchor="start" dominant-baseline="central">push 3</text>
+<text x="62" y="458" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">3 &lt;= remain 4</text>
+<rect x="262" y="436" width="34" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="279" y="450" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text>
+<rect x="298" y="436" width="34" height="28" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="315" y="450" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">3</text>
+<rect x="295" y="433" width="40" height="34" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="468" y="437" font-size="12" fill="#0B0B0B" font-weight="400" text-anchor="start" dominant-baseline="central">remain = 6 - (2+3) = 1</text>
+<text x="468" y="460" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">res 共 1 个</text>
+<line x1="40" y1="472" x2="640" y2="472" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="498" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">9</text>
+<text x="62" y="488" font-size="14" fill="#712B13" font-weight="500" text-anchor="start" dominant-baseline="central">剪枝 3</text>
+<text x="62" y="506" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">3 &gt; remain 1, break</text>
+<rect x="262" y="484" width="34" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="279" y="498" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text>
+<rect x="298" y="484" width="34" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="315" y="498" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">3</text>
+<rect x="295" y="481" width="40" height="34" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="334" y="484" width="34" height="28" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="5 3"/>
+<text x="351" y="498" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">3</text>
+<text x="468" y="485" font-size="12" fill="#0B0B0B" font-weight="400" text-anchor="start" dominant-baseline="central">remain = 6 - (2+3) = 1</text>
+<text x="468" y="508" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">res 共 1 个</text>
+<line x1="40" y1="520" x2="640" y2="520" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="546" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">10</text>
+<text x="62" y="536" font-size="14" fill="#712B13" font-weight="500" text-anchor="start" dominant-baseline="central">pop 3</text>
+<text x="62" y="554" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">3 的子树走完</text>
+<rect x="262" y="532" width="34" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="279" y="546" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text>
+<rect x="259" y="529" width="40" height="34" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="206" y="532" width="34" height="28" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="5 3"/>
+<text x="223" y="546" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">3</text>
+<rect x="298" y="532" width="34" height="28" rx="4" fill="none" stroke="#993C1D" stroke-width="0.8" stroke-dasharray="5 3"/>
+<path d="M315 532 L315 525 L223 525 L223 531" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arrowR)"/>
+<text x="468" y="533" font-size="12" fill="#0B0B0B" font-weight="400" text-anchor="start" dominant-baseline="central">remain = 6 - (2) = 4</text>
+<text x="468" y="556" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">res 共 1 个</text>
+<line x1="40" y1="568" x2="640" y2="568" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="594" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">11</text>
+<text x="62" y="584" font-size="14" fill="#712B13" font-weight="500" text-anchor="start" dominant-baseline="central">剪枝 5</text>
+<text x="62" y="602" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">5 &gt; remain 4, break</text>
+<rect x="262" y="580" width="34" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="279" y="594" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text>
+<rect x="259" y="577" width="40" height="34" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="298" y="580" width="34" height="28" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="5 3"/>
+<text x="315" y="594" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">5</text>
+<text x="468" y="581" font-size="12" fill="#0B0B0B" font-weight="400" text-anchor="start" dominant-baseline="central">remain = 6 - (2) = 4</text>
+<text x="468" y="604" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">res 共 1 个</text>
+<line x1="40" y1="616" x2="640" y2="616" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="642" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">12</text>
+<text x="62" y="632" font-size="14" fill="#712B13" font-weight="500" text-anchor="start" dominant-baseline="central">pop 2</text>
+<text x="62" y="650" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">2 的子树走完</text>
+<text x="262" y="642" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">[ ] 空</text>
+<rect x="206" y="628" width="34" height="28" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="5 3"/>
+<text x="223" y="642" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text>
+<rect x="262" y="628" width="34" height="28" rx="4" fill="none" stroke="#993C1D" stroke-width="0.8" stroke-dasharray="5 3"/>
+<path d="M279 628 L279 621 L223 621 L223 627" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arrowR)"/>
+<text x="468" y="629" font-size="12" fill="#0B0B0B" font-weight="400" text-anchor="start" dominant-baseline="central">remain = 6 - (0) = 6</text>
+<text x="468" y="652" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">res 共 1 个</text>
+<line x1="40" y1="664" x2="640" y2="664" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="690" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">13</text>
+<text x="62" y="680" font-size="14" fill="#085041" font-weight="500" text-anchor="start" dominant-baseline="central">push 3</text>
+<text x="62" y="698" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">3 &lt;= remain 6</text>
+<rect x="262" y="676" width="34" height="28" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="279" y="690" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">3</text>
+<rect x="259" y="673" width="40" height="34" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="468" y="677" font-size="12" fill="#0B0B0B" font-weight="400" text-anchor="start" dominant-baseline="central">remain = 6 - (3) = 3</text>
+<text x="468" y="700" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">res 共 1 个</text>
+<line x1="40" y1="712" x2="640" y2="712" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="738" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">14</text>
+<text x="62" y="728" font-size="14" fill="#085041" font-weight="500" text-anchor="start" dominant-baseline="central">push 3</text>
+<text x="62" y="746" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">3 &lt;= remain 3</text>
+<rect x="262" y="724" width="34" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="279" y="738" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">3</text>
+<rect x="298" y="724" width="34" height="28" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="315" y="738" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">3</text>
+<rect x="295" y="721" width="40" height="34" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="468" y="725" font-size="12" fill="#0B0B0B" font-weight="400" text-anchor="start" dominant-baseline="central">remain = 6 - (3+3) = 0</text>
+<text x="468" y="748" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">res 共 1 个</text>
+<line x1="40" y1="760" x2="640" y2="760" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="772" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">... 省略后面 7 步 (规律完全相同), 直接看最终结果</text>
+<text x="40" y="806" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">最终 res = [[2,2,2],[3,3]]</text>
+<text x="40" y="826" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">[3,3] 里的第二个 3 来自 dfs(i, ...): 同一个下标可以重复选</text>
+<rect x="40" y="847" width="18" height="14" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="64" y="854" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">push / 收集答案</text>
+<rect x="177.44" y="847" width="18" height="14" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="5 3"/>
+<text x="201.44" y="854" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop 撤销 / 剪枝</text>
+<rect x="560" y="847" width="16" height="14" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="582" y="854" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">path 栈顶</text>
+</svg>

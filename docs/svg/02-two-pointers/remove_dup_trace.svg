@@ -1,0 +1,224 @@
+<svg width="100%" viewBox="0 0 680 746" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Remove Duplicates trace</title><desc>w, r 同向</desc><defs><marker id="arG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">nums = [0, 0, 1, 1, 2, 2, 3] · w = 1 (nums[0] 一定保留) · r 从 1 扫到 6</text>
+<text x="40" y="38" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">每一步: nums[r] 和 nums[w-1] (最后一个保留的) 比 -&gt; 不同才写到 nums[w], w += 1</text>
+<text x="40" y="70" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">状态 (绿 = [0, w), 红 = 残留, 白 = 没读)</text>
+<text x="330" y="70" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">比较 -&gt; 动作</text>
+<line x1="40" y1="80" x2="640" y2="80" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="60.0" y="96" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">0</text>
+<rect x="40" y="104" width="38" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="59.0" y="119.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">0</text>
+<text x="100.0" y="96" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">1</text>
+<rect x="80" y="104" width="38" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<text x="99.0" y="119.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">0</text>
+<rect x="77" y="101" width="44" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="140.0" y="96" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">2</text>
+<rect x="120" y="104" width="38" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<text x="139.0" y="119.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">1</text>
+<text x="180.0" y="96" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">3</text>
+<rect x="160" y="104" width="38" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<text x="179.0" y="119.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">1</text>
+<text x="220.0" y="96" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">4</text>
+<rect x="200" y="104" width="38" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<text x="219.0" y="119.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">2</text>
+<text x="260.0" y="96" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">5</text>
+<rect x="240" y="104" width="38" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<text x="259.0" y="119.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">2</text>
+<text x="300.0" y="96" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">6</text>
+<rect x="280" y="104" width="38" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<text x="299.0" y="119.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">3</text>
+<path d="M59.0 137 L54.0 145 L64.0 145 Z" fill="#0B0B0B"/>
+<text x="59.0" y="154" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">w-1</text>
+<path d="M99.0 137 L94.0 145 L104.0 145 Z" fill="#0B0B0B"/>
+<text x="99.0" y="154" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">r</text>
+<text x="330" y="111.0" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">nums[r] = 0  vs  nums[w-1] = 0</text>
+<text x="330" y="129.0" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">相同 -&gt; 重复</text>
+<text x="330" y="147.0" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#712B13">跳过, w 不变 (w = 1)</text>
+<line x1="40" y1="165.0" x2="640" y2="165.0" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="60.0" y="180" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">0</text>
+<rect x="40" y="188" width="38" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="59.0" y="203.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">0</text>
+<text x="100.0" y="180" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">1</text>
+<rect x="80" y="188" width="38" height="30" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="99.0" y="203.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#712B13">0</text>
+<text x="140.0" y="180" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">2</text>
+<rect x="120" y="188" width="38" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<text x="139.0" y="203.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">1</text>
+<rect x="117" y="185" width="44" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="180.0" y="180" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">3</text>
+<rect x="160" y="188" width="38" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<text x="179.0" y="203.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">1</text>
+<text x="220.0" y="180" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">4</text>
+<rect x="200" y="188" width="38" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<text x="219.0" y="203.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">2</text>
+<text x="260.0" y="180" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">5</text>
+<rect x="240" y="188" width="38" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<text x="259.0" y="203.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">2</text>
+<text x="300.0" y="180" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">6</text>
+<rect x="280" y="188" width="38" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<text x="299.0" y="203.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">3</text>
+<path d="M59.0 221 L54.0 229 L64.0 229 Z" fill="#0B0B0B"/>
+<text x="59.0" y="238" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">w-1</text>
+<path d="M139.0 221 L134.0 229 L144.0 229 Z" fill="#0B0B0B"/>
+<text x="139.0" y="238" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">r</text>
+<text x="330" y="195.0" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">nums[r] = 1  vs  nums[w-1] = 0</text>
+<text x="330" y="213.0" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">不同 -&gt; 新的值</text>
+<text x="330" y="231.0" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#085041">nums[w=1] = 1;  w += 1  -&gt;  2</text>
+<line x1="40" y1="249.0" x2="640" y2="249.0" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="60.0" y="264" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">0</text>
+<rect x="40" y="272" width="38" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="59.0" y="287.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">0</text>
+<text x="100.0" y="264" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">1</text>
+<rect x="80" y="272" width="38" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="99.0" y="287.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">1</text>
+<text x="140.0" y="264" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">2</text>
+<rect x="120" y="272" width="38" height="30" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="139.0" y="287.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#712B13">1</text>
+<text x="180.0" y="264" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">3</text>
+<rect x="160" y="272" width="38" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<text x="179.0" y="287.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">1</text>
+<rect x="157" y="269" width="44" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="220.0" y="264" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">4</text>
+<rect x="200" y="272" width="38" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<text x="219.0" y="287.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">2</text>
+<text x="260.0" y="264" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">5</text>
+<rect x="240" y="272" width="38" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<text x="259.0" y="287.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">2</text>
+<text x="300.0" y="264" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">6</text>
+<rect x="280" y="272" width="38" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<text x="299.0" y="287.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">3</text>
+<path d="M99.0 305 L94.0 313 L104.0 313 Z" fill="#0B0B0B"/>
+<text x="99.0" y="322" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">w-1</text>
+<path d="M179.0 305 L174.0 313 L184.0 313 Z" fill="#0B0B0B"/>
+<text x="179.0" y="322" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">r</text>
+<text x="330" y="279.0" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">nums[r] = 1  vs  nums[w-1] = 1</text>
+<text x="330" y="297.0" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">相同 -&gt; 重复</text>
+<text x="330" y="315.0" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#712B13">跳过, w 不变 (w = 2)</text>
+<line x1="40" y1="333.0" x2="640" y2="333.0" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="60.0" y="348" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">0</text>
+<rect x="40" y="356" width="38" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="59.0" y="371.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">0</text>
+<text x="100.0" y="348" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">1</text>
+<rect x="80" y="356" width="38" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="99.0" y="371.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">1</text>
+<text x="140.0" y="348" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">2</text>
+<rect x="120" y="356" width="38" height="30" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="139.0" y="371.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#712B13">1</text>
+<text x="180.0" y="348" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">3</text>
+<rect x="160" y="356" width="38" height="30" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="179.0" y="371.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#712B13">1</text>
+<text x="220.0" y="348" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">4</text>
+<rect x="200" y="356" width="38" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<text x="219.0" y="371.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">2</text>
+<rect x="197" y="353" width="44" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="260.0" y="348" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">5</text>
+<rect x="240" y="356" width="38" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<text x="259.0" y="371.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">2</text>
+<text x="300.0" y="348" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">6</text>
+<rect x="280" y="356" width="38" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<text x="299.0" y="371.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">3</text>
+<path d="M99.0 389 L94.0 397 L104.0 397 Z" fill="#0B0B0B"/>
+<text x="99.0" y="406" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">w-1</text>
+<path d="M219.0 389 L214.0 397 L224.0 397 Z" fill="#0B0B0B"/>
+<text x="219.0" y="406" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">r</text>
+<text x="330" y="363.0" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">nums[r] = 2  vs  nums[w-1] = 1</text>
+<text x="330" y="381.0" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">不同 -&gt; 新的值</text>
+<text x="330" y="399.0" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#085041">nums[w=2] = 2;  w += 1  -&gt;  3</text>
+<line x1="40" y1="417.0" x2="640" y2="417.0" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="60.0" y="432" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">0</text>
+<rect x="40" y="440" width="38" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="59.0" y="455.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">0</text>
+<text x="100.0" y="432" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">1</text>
+<rect x="80" y="440" width="38" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="99.0" y="455.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">1</text>
+<text x="140.0" y="432" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">2</text>
+<rect x="120" y="440" width="38" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="139.0" y="455.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">2</text>
+<text x="180.0" y="432" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">3</text>
+<rect x="160" y="440" width="38" height="30" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="179.0" y="455.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#712B13">1</text>
+<text x="220.0" y="432" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">4</text>
+<rect x="200" y="440" width="38" height="30" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="219.0" y="455.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#712B13">2</text>
+<text x="260.0" y="432" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">5</text>
+<rect x="240" y="440" width="38" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<text x="259.0" y="455.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">2</text>
+<rect x="237" y="437" width="44" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="300.0" y="432" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">6</text>
+<rect x="280" y="440" width="38" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<text x="299.0" y="455.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">3</text>
+<path d="M139.0 473 L134.0 481 L144.0 481 Z" fill="#0B0B0B"/>
+<text x="139.0" y="490" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">w-1</text>
+<path d="M259.0 473 L254.0 481 L264.0 481 Z" fill="#0B0B0B"/>
+<text x="259.0" y="490" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">r</text>
+<text x="330" y="447.0" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">nums[r] = 2  vs  nums[w-1] = 2</text>
+<text x="330" y="465.0" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">相同 -&gt; 重复</text>
+<text x="330" y="483.0" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#712B13">跳过, w 不变 (w = 3)</text>
+<line x1="40" y1="501.0" x2="640" y2="501.0" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="60.0" y="516" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">0</text>
+<rect x="40" y="524" width="38" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="59.0" y="539.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">0</text>
+<text x="100.0" y="516" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">1</text>
+<rect x="80" y="524" width="38" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="99.0" y="539.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">1</text>
+<text x="140.0" y="516" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">2</text>
+<rect x="120" y="524" width="38" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="139.0" y="539.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">2</text>
+<text x="180.0" y="516" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">3</text>
+<rect x="160" y="524" width="38" height="30" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="179.0" y="539.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#712B13">1</text>
+<text x="220.0" y="516" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">4</text>
+<rect x="200" y="524" width="38" height="30" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="219.0" y="539.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#712B13">2</text>
+<text x="260.0" y="516" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">5</text>
+<rect x="240" y="524" width="38" height="30" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="259.0" y="539.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#712B13">2</text>
+<text x="300.0" y="516" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">6</text>
+<rect x="280" y="524" width="38" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<text x="299.0" y="539.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">3</text>
+<rect x="277" y="521" width="44" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<path d="M139.0 557 L134.0 565 L144.0 565 Z" fill="#0B0B0B"/>
+<text x="139.0" y="574" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">w-1</text>
+<path d="M299.0 557 L294.0 565 L304.0 565 Z" fill="#0B0B0B"/>
+<text x="299.0" y="574" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">r</text>
+<text x="330" y="531.0" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">nums[r] = 3  vs  nums[w-1] = 2</text>
+<text x="330" y="549.0" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">不同 -&gt; 新的值</text>
+<text x="330" y="567.0" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#085041">nums[w=3] = 3;  w += 1  -&gt;  4</text>
+<line x1="40" y1="585.0" x2="640" y2="585.0" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="60.0" y="600" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">0</text>
+<rect x="40" y="608" width="38" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="59.0" y="623.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">0</text>
+<text x="100.0" y="600" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">1</text>
+<rect x="80" y="608" width="38" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="99.0" y="623.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">1</text>
+<text x="140.0" y="600" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">2</text>
+<rect x="120" y="608" width="38" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="139.0" y="623.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">2</text>
+<text x="180.0" y="600" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">3</text>
+<rect x="160" y="608" width="38" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="179.0" y="623.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">3</text>
+<text x="220.0" y="600" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">4</text>
+<rect x="200" y="608" width="38" height="30" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="219.0" y="623.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#712B13">2</text>
+<text x="260.0" y="600" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">5</text>
+<rect x="240" y="608" width="38" height="30" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="259.0" y="623.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#712B13">2</text>
+<text x="300.0" y="600" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">6</text>
+<rect x="280" y="608" width="38" height="30" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="299.0" y="623.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#712B13">3</text>
+<path d="M219.0 641 L214.0 649 L224.0 649 Z" fill="#0B0B0B"/>
+<text x="219.0" y="658" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">w</text>
+<text x="330" y="615.0" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">r 走完, return w = 4</text>
+<text x="330" y="633.0" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#085041">答案 = nums[:4] = [0, 1, 2, 3]</text>
+<text x="330" y="651.0" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#712B13">后面 3 格是没用的残留</text>
+<line x1="40" y1="669.0" x2="640" y2="669.0" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="40" y="686" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">答案: return w = 4,  nums[:4] = [0, 1, 2, 3]</text>
+<rect x="40" y="715" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="62" y="722" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">[0, w) 答案</text>
+<rect x="197" y="715" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="219" y="722" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">[w, r) 残留</text>
+<rect x="354" y="715" width="14" height="14" rx="3" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<text x="376" y="722" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">[r, n) 没读</text>
+<rect x="511" y="715" width="14" height="14" rx="3" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="508" y="712" width="20" height="20" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="533" y="722" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">r</text>
+</svg>

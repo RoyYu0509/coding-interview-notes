@@ -1,0 +1,90 @@
+<svg width="100%" viewBox="0 0 680 484" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Subarray Sums Divisible by K trace</title><desc>每步取余、查桶、放入桶</desc><defs><marker id="arg" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">k = 5 · count 初始 {0: 1} · 每一步: prefix = (prefix + nums[i]) % 5 → ans += count[prefix] → count[prefix] += 1</text>
+<text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">count 里每个格子是 余数: 出现次数</text>
+<text x="40" y="64" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">nums[i]</text>
+<text x="154" y="64" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">取余</text>
+<text x="310" y="64" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">查桶 / ans</text>
+<text x="430" y="64" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">count (后放)</text>
+<line x1="40" y1="74" x2="640" y2="74" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="40" y="88" width="100" height="40" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="90.0" y="108.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">nums[0] = 4</text>
+<text x="154" y="94" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="400" dominant-baseline="central">(0 + 4) % 5</text>
+<text x="154" y="114" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">prefix = 4</text>
+<text x="310" y="94" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="400" dominant-baseline="central">count[4] = 0</text>
+<text x="310" y="114" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">ans = 0</text>
+<rect x="430" y="96" width="38" height="22" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="449.0" y="107.0" font-size="12" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">0:1</text>
+<rect x="472" y="96" width="38" height="22" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="491.0" y="107.0" font-size="12" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">4:1</text>
+<line x1="40" y1="138" x2="640" y2="138" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="40" y="144" width="100" height="40" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="90.0" y="164.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">nums[1] = 5</text>
+<text x="154" y="150" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="400" dominant-baseline="central">(4 + 5) % 5</text>
+<text x="154" y="170" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">prefix = 4</text>
+<text x="310" y="150" font-size="12" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central">count[4] = 1</text>
+<text x="310" y="170" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">ans = 1</text>
+<rect x="430" y="152" width="38" height="22" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="449.0" y="163.0" font-size="12" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">0:1</text>
+<rect x="472" y="152" width="38" height="22" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="469" y="149" width="44" height="28" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="491.0" y="163.0" font-size="12" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">4:2</text>
+<line x1="40" y1="194" x2="640" y2="194" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="40" y="200" width="100" height="40" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="90.0" y="220.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">nums[2] = 0</text>
+<text x="154" y="206" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="400" dominant-baseline="central">(4 + 0) % 5</text>
+<text x="154" y="226" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">prefix = 4</text>
+<text x="310" y="206" font-size="12" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central">count[4] = 2</text>
+<text x="310" y="226" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">ans = 3</text>
+<rect x="430" y="208" width="38" height="22" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="449.0" y="219.0" font-size="12" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">0:1</text>
+<rect x="472" y="208" width="38" height="22" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="469" y="205" width="44" height="28" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="491.0" y="219.0" font-size="12" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">4:3</text>
+<line x1="40" y1="250" x2="640" y2="250" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="40" y="256" width="100" height="40" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="90.0" y="276.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">nums[3] = -2</text>
+<text x="154" y="262" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="400" dominant-baseline="central">(4 + -2) % 5</text>
+<text x="154" y="282" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">prefix = 2</text>
+<text x="310" y="262" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="400" dominant-baseline="central">count[2] = 0</text>
+<text x="310" y="282" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">ans = 3</text>
+<rect x="430" y="264" width="38" height="22" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="449.0" y="275.0" font-size="12" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">0:1</text>
+<rect x="472" y="264" width="38" height="22" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="491.0" y="275.0" font-size="12" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">4:3</text>
+<rect x="514" y="264" width="38" height="22" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="533.0" y="275.0" font-size="12" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">2:1</text>
+<line x1="40" y1="306" x2="640" y2="306" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="40" y="312" width="100" height="40" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="90.0" y="332.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">nums[4] = -3</text>
+<text x="154" y="318" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="400" dominant-baseline="central">(2 + -3) % 5</text>
+<text x="154" y="338" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">prefix = 4</text>
+<text x="310" y="318" font-size="12" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central">count[4] = 3</text>
+<text x="310" y="338" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">ans = 6</text>
+<rect x="430" y="320" width="38" height="22" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="449.0" y="331.0" font-size="12" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">0:1</text>
+<rect x="472" y="320" width="38" height="22" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="469" y="317" width="44" height="28" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="491.0" y="331.0" font-size="12" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">4:4</text>
+<rect x="514" y="320" width="38" height="22" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="533.0" y="331.0" font-size="12" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">2:1</text>
+<line x1="40" y1="362" x2="640" y2="362" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="40" y="368" width="100" height="40" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="90.0" y="388.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">nums[5] = 1</text>
+<text x="154" y="374" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="400" dominant-baseline="central">(4 + 1) % 5</text>
+<text x="154" y="394" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">prefix = 0</text>
+<text x="310" y="374" font-size="12" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central">count[0] = 1</text>
+<text x="310" y="394" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">ans = 7</text>
+<rect x="430" y="376" width="38" height="22" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="427" y="373" width="44" height="28" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="449.0" y="387.0" font-size="12" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">0:2</text>
+<rect x="472" y="376" width="38" height="22" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="491.0" y="387.0" font-size="12" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">4:4</text>
+<rect x="514" y="376" width="38" height="22" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="533.0" y="387.0" font-size="12" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">2:1</text>
+<line x1="40" y1="418" x2="640" y2="418" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="40" y="436" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">答案 ans = 7 (和上一张图里 1 + 6 对得上)</text>
+<rect x="40" y="459" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="60" y="466" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">本步 prefix 放进去 (次数 +1)</text>
+<rect x="264.4" y="459" width="14" height="14" rx="3" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="284.4" y="466" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">查到的桶 (放之前已有 ≥ 1 个)</text>
+</svg>

@@ -1,0 +1,115 @@
+<svg width="100%" viewBox="0 0 680 688" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif'><title>Meeting Rooms II 的 min-heap 运行流程</title><desc>按 start 排序后逐个会议: 最早结束的房间已空出来就 pop, 然后 push 这场会议的 end, heap 大小即房间数</desc><defs><marker id="f14-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f14-r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f14-a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#C07A0A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f14-n" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">ends = min-heap, 存每个正在使用的房间里当前会议的 end · 画成 tree, 最上面的是最小的 (ring)</text>
+<text x="40" y="38" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">每一步: ends[0] ≤ s → 最早结束的房间空出来了, 先 pop → 再 push 这场会议的 end → rooms = len(ends)</text>
+<text x="40" y="72" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">当前会议</text>
+<text x="121" y="72" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">pop 后</text>
+<text x="372" y="72" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">push 后</text>
+<text x="500" y="72" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">计算</text>
+<line x1="40" y1="86" x2="640" y2="86" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="40" y="106" width="66" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="73" y="123" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">[0,30]</text>
+<text x="73" y="142" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#085041">s = 0</text>
+<text x="205" y="122" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">(空)</text>
+<text x="268" y="122" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">ends 为空</text>
+<circle cx="420" cy="122" r="14" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="420" y="122" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">30</text>
+<circle cx="420" cy="122" r="18" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="500" y="110" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">push 30</text>
+<text x="500" y="128" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">rooms = len(ends) = 1</text>
+<line x1="40" y1="186" x2="640" y2="186" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="40" y="202" width="66" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="73" y="219" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">[5,10]</text>
+<text x="73" y="238" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#085041">s = 5</text>
+<circle cx="205" cy="218" r="14" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="205" y="218" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">30</text>
+<circle cx="205" cy="218" r="18" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="268" y="209" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">ends[0] = 30</text>
+<text x="268" y="227" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">&gt; s = 5: 不 pop</text>
+<line x1="420" y1="232" x2="386" y2="236" stroke="#B4B2A9" stroke-width="1"/>
+<circle cx="420" cy="218" r="14" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="420" y="218" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">10</text>
+<circle cx="386" cy="250" r="14" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="386" y="250" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">30</text>
+<circle cx="420" cy="218" r="18" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="500" y="206" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">push 10</text>
+<text x="500" y="224" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">rooms = len(ends) = 2</text>
+<line x1="40" y1="282" x2="640" y2="282" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="40" y="298" width="66" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="73" y="315" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">[10,25]</text>
+<text x="73" y="334" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#085041">s = 10</text>
+<circle cx="205" cy="314" r="14" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="205" y="314" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">30</text>
+<circle cx="205" cy="314" r="18" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="135" cy="314" r="14" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8" stroke-dasharray="3 2"/>
+<text x="135" y="314" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#712B13">10</text>
+<line x1="183" y1="314" x2="153" y2="314" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#f14-r)"/>
+<text x="268" y="305" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">ends[0] = 10</text>
+<text x="268" y="323" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#712B13">≤ s = 10: pop 10</text>
+<line x1="420" y1="328" x2="386" y2="332" stroke="#B4B2A9" stroke-width="1"/>
+<circle cx="420" cy="314" r="14" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="420" y="314" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">25</text>
+<circle cx="386" cy="346" r="14" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="386" y="346" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">30</text>
+<circle cx="420" cy="314" r="18" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="500" y="302" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">push 25</text>
+<text x="500" y="320" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">rooms = len(ends) = 2</text>
+<line x1="40" y1="378" x2="640" y2="378" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="40" y="394" width="66" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="73" y="411" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">[15,20]</text>
+<text x="73" y="430" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#085041">s = 15</text>
+<line x1="205" y1="424" x2="171" y2="428" stroke="#B4B2A9" stroke-width="1"/>
+<circle cx="205" cy="410" r="14" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="205" y="410" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">25</text>
+<circle cx="171" cy="442" r="14" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="171" y="442" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">30</text>
+<circle cx="205" cy="410" r="18" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="268" y="401" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">ends[0] = 25</text>
+<text x="268" y="419" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">&gt; s = 15: 不 pop</text>
+<line x1="420" y1="424" x2="386" y2="428" stroke="#B4B2A9" stroke-width="1"/>
+<line x1="420" y1="424" x2="454" y2="428" stroke="#B4B2A9" stroke-width="1"/>
+<circle cx="420" cy="410" r="14" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="420" y="410" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">20</text>
+<circle cx="386" cy="442" r="14" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="386" y="442" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">30</text>
+<circle cx="454" cy="442" r="14" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="454" y="442" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">25</text>
+<circle cx="420" cy="410" r="18" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="500" y="398" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">push 20</text>
+<text x="500" y="416" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">rooms = len(ends) = 3</text>
+<line x1="40" y1="474" x2="640" y2="474" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="40" y="490" width="66" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="73" y="507" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">[22,28]</text>
+<text x="73" y="526" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#085041">s = 22</text>
+<line x1="205" y1="520" x2="171" y2="524" stroke="#B4B2A9" stroke-width="1"/>
+<circle cx="205" cy="506" r="14" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="205" y="506" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">25</text>
+<circle cx="171" cy="538" r="14" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="171" y="538" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">30</text>
+<circle cx="205" cy="506" r="18" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="135" cy="506" r="14" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8" stroke-dasharray="3 2"/>
+<text x="135" y="506" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#712B13">20</text>
+<line x1="183" y1="506" x2="153" y2="506" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#f14-r)"/>
+<text x="268" y="497" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">ends[0] = 20</text>
+<text x="268" y="515" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#712B13">≤ s = 22: pop 20</text>
+<line x1="420" y1="520" x2="386" y2="524" stroke="#B4B2A9" stroke-width="1"/>
+<line x1="420" y1="520" x2="454" y2="524" stroke="#B4B2A9" stroke-width="1"/>
+<circle cx="420" cy="506" r="14" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="420" y="506" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">25</text>
+<circle cx="386" cy="538" r="14" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="386" y="538" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">30</text>
+<circle cx="454" cy="538" r="14" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="454" y="538" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">28</text>
+<circle cx="420" cy="506" r="18" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="500" y="494" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">push 28</text>
+<text x="500" y="512" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">rooms = len(ends) = 3</text>
+<line x1="40" y1="572" x2="640" y2="572" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="40" y="594" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">rooms = len(ends) = 3 · 最后 heap 里的 end = 25, 28, 30</text>
+<rect x="40" y="615" width="16" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="62" y="622" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">新 push 进来的 end</text>
+<rect x="193.4" y="615" width="16" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="215.4" y="622" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">被 pop 的 end</text>
+<rect x="315.3" y="615" width="16" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="337.3" y="622" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">heap 里其他的 end</text>
+<rect x="462.4" y="615" width="16" height="14" rx="4" fill="#F1EFE8" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="484.4" y="622" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">heap 顶</text>
+</svg>

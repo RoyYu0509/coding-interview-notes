@@ -1,0 +1,143 @@
+<svg width="100%" viewBox="0 0 680 830" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Validate BST 的 top-down trace</title><desc>tree [5, 3, 8, 2, 6, None, None, 1]; 6 在 3 的右边 (6 &gt; 3), 但在 5 的左边 (6 &gt; 5 违规)</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">pre-order: 先用 (low, high) 检查自己 → 再把更严的区间传给孩子 · 初值 (-inf, inf)</text>
+<text x="40" y="38" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">向左: high = node.val · 向右: low = node.val · 只比较 parent 的局部检查会漏掉 6</text>
+<text x="40" y="64" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">step</text>
+<text x="100" y="64" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">tree (灰 = 已检查通过, 橙圈 = 当前)</text>
+<text x="364" y="64" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">当前 node 的区间检查</text>
+<line x1="40" y1="74" x2="640" y2="74" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="143.0" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">step 1</text>
+<text x="40" y="161.0" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">node 5</text>
+<line x1="140" y1="170" x2="106" y2="200" stroke="#898781" stroke-width="1.2"/>
+<line x1="174" y1="140" x2="140" y2="170" stroke="#898781" stroke-width="1.2"/>
+<line x1="242" y1="110" x2="174" y2="140" stroke="#898781" stroke-width="1.2"/>
+<line x1="174" y1="140" x2="208" y2="170" stroke="#898781" stroke-width="1.2"/>
+<line x1="242" y1="110" x2="276" y2="140" stroke="#898781" stroke-width="1.2"/>
+<circle cx="106" cy="200" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="106" y="200" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<circle cx="140" cy="170" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="140" y="170" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<circle cx="174" cy="140" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="174" y="140" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<circle cx="208" cy="170" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="208" y="170" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">6</text>
+<circle cx="242" cy="110" r="13" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<circle cx="242" cy="110" r="17" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="242" y="110" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">5</text>
+<circle cx="276" cy="140" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="276" y="140" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">8</text>
+<text x="364" y="132.0" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">(low, high) = (-inf, inf)</text>
+<text x="364" y="152.0" font-size="14" text-anchor="start" fill="#085041" font-weight="600" dominant-baseline="central">-inf &lt; 5 &lt; inf ? 是</text>
+<text x="364" y="172.0" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">左 (-inf, 5) · 右 (5, inf)</text>
+<line x1="40" y1="218" x2="640" y2="218" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="279.0" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">step 2</text>
+<text x="40" y="297.0" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">node 3</text>
+<line x1="140" y1="306" x2="106" y2="336" stroke="#898781" stroke-width="1.2"/>
+<line x1="174" y1="276" x2="140" y2="306" stroke="#898781" stroke-width="1.2"/>
+<line x1="242" y1="246" x2="174" y2="276" stroke="#898781" stroke-width="1.2"/>
+<line x1="174" y1="276" x2="208" y2="306" stroke="#898781" stroke-width="1.2"/>
+<line x1="242" y1="246" x2="276" y2="276" stroke="#898781" stroke-width="1.2"/>
+<circle cx="106" cy="336" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="106" y="336" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<circle cx="140" cy="306" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="140" y="306" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<circle cx="174" cy="276" r="13" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<circle cx="174" cy="276" r="17" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="174" y="276" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">3</text>
+<circle cx="208" cy="306" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="208" y="306" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">6</text>
+<circle cx="242" cy="246" r="13" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="242" y="246" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">5</text>
+<circle cx="276" cy="276" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="276" y="276" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">8</text>
+<text x="364" y="268.0" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">(low, high) = (-inf, 5)</text>
+<text x="364" y="288.0" font-size="14" text-anchor="start" fill="#085041" font-weight="600" dominant-baseline="central">-inf &lt; 3 &lt; 5 ? 是</text>
+<text x="364" y="308.0" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">左 (-inf, 3) · 右 (3, 5)</text>
+<line x1="40" y1="354" x2="640" y2="354" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="415.0" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">step 3</text>
+<text x="40" y="433.0" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">node 2</text>
+<line x1="140" y1="442" x2="106" y2="472" stroke="#898781" stroke-width="1.2"/>
+<line x1="174" y1="412" x2="140" y2="442" stroke="#898781" stroke-width="1.2"/>
+<line x1="242" y1="382" x2="174" y2="412" stroke="#898781" stroke-width="1.2"/>
+<line x1="174" y1="412" x2="208" y2="442" stroke="#898781" stroke-width="1.2"/>
+<line x1="242" y1="382" x2="276" y2="412" stroke="#898781" stroke-width="1.2"/>
+<circle cx="106" cy="472" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="106" y="472" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<circle cx="140" cy="442" r="13" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<circle cx="140" cy="442" r="17" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="140" y="442" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">2</text>
+<circle cx="174" cy="412" r="13" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="174" y="412" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">3</text>
+<circle cx="208" cy="442" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="208" y="442" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">6</text>
+<circle cx="242" cy="382" r="13" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="242" y="382" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">5</text>
+<circle cx="276" cy="412" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="276" y="412" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">8</text>
+<text x="364" y="404.0" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">(low, high) = (-inf, 3)</text>
+<text x="364" y="424.0" font-size="14" text-anchor="start" fill="#085041" font-weight="600" dominant-baseline="central">-inf &lt; 2 &lt; 3 ? 是</text>
+<text x="364" y="444.0" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">左 (-inf, 2) · 右 (2, 3)</text>
+<line x1="40" y1="490" x2="640" y2="490" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="551.0" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">step 4</text>
+<text x="40" y="569.0" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">node 1</text>
+<line x1="140" y1="578" x2="106" y2="608" stroke="#898781" stroke-width="1.2"/>
+<line x1="174" y1="548" x2="140" y2="578" stroke="#898781" stroke-width="1.2"/>
+<line x1="242" y1="518" x2="174" y2="548" stroke="#898781" stroke-width="1.2"/>
+<line x1="174" y1="548" x2="208" y2="578" stroke="#898781" stroke-width="1.2"/>
+<line x1="242" y1="518" x2="276" y2="548" stroke="#898781" stroke-width="1.2"/>
+<circle cx="106" cy="608" r="13" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<circle cx="106" cy="608" r="17" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="106" y="608" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">1</text>
+<circle cx="140" cy="578" r="13" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="140" y="578" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">2</text>
+<circle cx="174" cy="548" r="13" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="174" y="548" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">3</text>
+<circle cx="208" cy="578" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="208" y="578" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">6</text>
+<circle cx="242" cy="518" r="13" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="242" y="518" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">5</text>
+<circle cx="276" cy="548" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="276" y="548" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">8</text>
+<text x="364" y="540.0" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">(low, high) = (-inf, 2)</text>
+<text x="364" y="560.0" font-size="14" text-anchor="start" fill="#085041" font-weight="600" dominant-baseline="central">-inf &lt; 1 &lt; 2 ? 是</text>
+<text x="364" y="580.0" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">左 (-inf, 1) · 右 (1, 2)</text>
+<line x1="40" y1="626" x2="640" y2="626" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="687.0" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">step 5</text>
+<text x="40" y="705.0" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">node 6</text>
+<line x1="140" y1="714" x2="106" y2="744" stroke="#898781" stroke-width="1.2"/>
+<line x1="174" y1="684" x2="140" y2="714" stroke="#898781" stroke-width="1.2"/>
+<line x1="242" y1="654" x2="174" y2="684" stroke="#898781" stroke-width="1.2"/>
+<line x1="174" y1="684" x2="208" y2="714" stroke="#898781" stroke-width="1.2"/>
+<line x1="242" y1="654" x2="276" y2="684" stroke="#898781" stroke-width="1.2"/>
+<circle cx="106" cy="744" r="13" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="106" y="744" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">1</text>
+<circle cx="140" cy="714" r="13" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="140" y="714" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">2</text>
+<circle cx="174" cy="684" r="13" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="174" y="684" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">3</text>
+<circle cx="208" cy="714" r="13" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<circle cx="208" cy="714" r="17" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="208" y="714" font-size="14" text-anchor="middle" fill="#712B13" dominant-baseline="central">6</text>
+<circle cx="242" cy="654" r="13" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="242" y="654" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">5</text>
+<circle cx="276" cy="684" r="13" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="276" y="684" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">8</text>
+<text x="364" y="676.0" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">(low, high) = (3, 5)</text>
+<text x="364" y="696.0" font-size="14" text-anchor="start" fill="#712B13" font-weight="600" dominant-baseline="central">3 &lt; 6 &lt; 5 ? 否</text>
+<text x="364" y="716.0" font-size="14" text-anchor="start" fill="#712B13" dominant-baseline="central">return False, 一路 and 回去</text>
+<line x1="40" y1="762" x2="640" y2="762" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="778" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">返回 False: node 6 不在 (3, 5) 内, node 8 根本不用看 (短路)</text>
+<circle cx="48" cy="808" r="7" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<circle cx="48" cy="808" r="11" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="48" y="808" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central"></text>
+<text x="64" y="808" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">当前 node</text>
+<circle cx="143" cy="808" r="7" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<circle cx="143" cy="808" r="11" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="143" y="808" font-size="14" text-anchor="middle" fill="#712B13" dominant-baseline="central"></text>
+<text x="159" y="808" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">违规</text>
+<circle cx="203" cy="808" r="7" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="203" y="808" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central"></text>
+<text x="219" y="808" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">已检查通过</text>
+<circle cx="302" cy="808" r="7" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="302" y="808" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central"></text>
+<text x="318" y="808" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">还没访问</text>
+</svg>

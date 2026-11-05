@@ -1,0 +1,107 @@
+<svg width="100%" viewBox="0 0 680 1220" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>Largest Rectangle in Histogram trace</title><desc>heights=[2,1,5,6,2,3]+[0]: increasing stack, popped bar's width is fixed at pop time.</desc><defs><marker id="lrhtrace-arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="lrhtrace-arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">heights = [2, 1, 5, 6, 2, 3] + [0 哨兵] · 栈里存 i·h, 从底到顶 h 递增</text>
+<text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop 的那一刻: 高 = 被 pop 的 h · 右边界 = i · 左边界 = pop 后的新栈顶 (空则 −1) · w = i − 左 − 1</text>
+<text x="40" y="72" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">当前输入</text>
+<text x="118" y="72" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop (扔到左边)</text>
+<text x="350" y="72" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop 后</text>
+<text x="432" y="72" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">push 后</text>
+<text x="514" y="72" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">面积</text>
+<line x1="40" y1="84" x2="640" y2="84" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="133.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="149.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 0</text>
+<text x="72.0" y="167.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">h = 2</text>
+<path d="M350 102 L350 226 L418 226 L418 102" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 102 L432 226 L500 226 L500 102" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="438" y="192.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="204.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">0·2</text><rect x="435" y="189.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="122" y="158.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈空, 不 pop</text>
+<line x1="40" y1="236" x2="640" y2="236" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="285.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="301.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 1</text>
+<text x="72.0" y="319.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">h = 1</text>
+<path d="M350 254 L350 378 L418 378 L418 254" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 254 L432 378 L500 378 L500 254" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="438" y="344.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="356.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">1·1</text><rect x="435" y="341.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="118" y="344.0" width="58" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="147.0" y="356.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">0·2</text>
+<path d="M352 356.0 L180 356.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#lrhtrace-arrR)"/>
+<text x="186" y="341.0" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">2 &gt; 1, pop</text>
+<text x="514" y="349.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">w = 1 − (−1) − 1 = 1</text>
+<text x="514" y="363.0" font-size="12" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">2 × 1 = 2</text>
+<line x1="40" y1="388" x2="640" y2="388" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="437.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="453.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 2</text>
+<text x="72.0" y="471.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">h = 5</text>
+<path d="M350 406 L350 530 L418 530 L418 406" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 406 L432 530 L500 530 L500 406" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="356" y="496.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="384.0" y="508.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1·1</text><rect x="353" y="493.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="438" y="496.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="466.0" y="508.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1·1</text>
+<rect x="438" y="456.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="468.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">2·5</text><rect x="435" y="453.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="122" y="462.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶 1 ≤ 5, 不 pop</text>
+<line x1="40" y1="540" x2="640" y2="540" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="589.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="605.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 3</text>
+<text x="72.0" y="623.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">h = 6</text>
+<path d="M350 558 L350 682 L418 682 L418 558" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 558 L432 682 L500 682 L500 558" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="356" y="648.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="384.0" y="660.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1·1</text>
+<rect x="356" y="608.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="384.0" y="620.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2·5</text><rect x="353" y="605.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="438" y="648.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="466.0" y="660.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1·1</text>
+<rect x="438" y="608.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="466.0" y="620.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2·5</text>
+<rect x="438" y="568.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="580.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">3·6</text><rect x="435" y="565.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="122" y="614.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶 5 ≤ 6, 不 pop</text>
+<line x1="40" y1="692" x2="640" y2="692" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="741.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="757.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 4</text>
+<text x="72.0" y="775.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">h = 2</text>
+<path d="M350 710 L350 834 L418 834 L418 710" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 710 L432 834 L500 834 L500 710" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="356" y="800.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="384.0" y="812.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1·1</text><rect x="353" y="797.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="438" y="800.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="466.0" y="812.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1·1</text>
+<rect x="438" y="760.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="772.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">4·2</text><rect x="435" y="757.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="118" y="720.0" width="58" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="147.0" y="732.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">3·6</text>
+<path d="M352 732.0 L180 732.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#lrhtrace-arrR)"/>
+<text x="186" y="717.0" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">6 &gt; 2, pop</text>
+<text x="514" y="725.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">w = 4 − 2 − 1 = 1</text>
+<text x="514" y="739.0" font-size="12" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">6 × 1 = 6</text>
+<rect x="118" y="760.0" width="58" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="147.0" y="772.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">2·5</text>
+<path d="M352 772.0 L180 772.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#lrhtrace-arrR)"/>
+<text x="186" y="757.0" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">5 &gt; 2, pop</text>
+<text x="514" y="765.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">w = 4 − 1 − 1 = 2</text>
+<text x="514" y="779.0" font-size="12" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">5 × 2 = 10</text>
+<line x1="40" y1="844" x2="640" y2="844" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="893.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="909.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 5</text>
+<text x="72.0" y="927.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">h = 3</text>
+<path d="M350 862 L350 986 L418 986 L418 862" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 862 L432 986 L500 986 L500 862" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="356" y="952.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="384.0" y="964.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1·1</text>
+<rect x="356" y="912.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="384.0" y="924.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">4·2</text><rect x="353" y="909.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="438" y="952.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="466.0" y="964.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">1·1</text>
+<rect x="438" y="912.0" width="56" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="466.0" y="924.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">4·2</text>
+<rect x="438" y="872.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="884.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">5·3</text><rect x="435" y="869.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="122" y="918.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶 2 ≤ 3, 不 pop</text>
+<line x1="40" y1="996" x2="640" y2="996" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="1045.0" width="64" height="50" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="72.0" y="1061.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i = 6</text>
+<text x="72.0" y="1079.0" font-size="12" fill="#0F6E56" font-weight="400" text-anchor="middle" dominant-baseline="central">h = 0 哨兵</text>
+<path d="M350 1014 L350 1138 L418 1138 L418 1014" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M432 1014 L432 1138 L500 1138 L500 1014" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="438" y="1104.0" width="56" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="466.0" y="1116.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">6·0</text><rect x="435" y="1101.0" width="62" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="118" y="1024.0" width="58" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="147.0" y="1036.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">5·3</text>
+<path d="M352 1036.0 L180 1036.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#lrhtrace-arrR)"/>
+<text x="186" y="1021.0" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">3 &gt; 0, pop</text>
+<text x="514" y="1029.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">w = 6 − 4 − 1 = 1</text>
+<text x="514" y="1043.0" font-size="12" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">3 × 1 = 3</text>
+<rect x="118" y="1064.0" width="58" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="147.0" y="1076.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">4·2</text>
+<path d="M352 1076.0 L180 1076.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#lrhtrace-arrR)"/>
+<text x="186" y="1061.0" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">2 &gt; 0, pop</text>
+<text x="514" y="1069.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">w = 6 − 1 − 1 = 4</text>
+<text x="514" y="1083.0" font-size="12" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">2 × 4 = 8</text>
+<rect x="118" y="1104.0" width="58" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="147.0" y="1116.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">1·1</text>
+<path d="M352 1116.0 L180 1116.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#lrhtrace-arrR)"/>
+<text x="186" y="1101.0" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">1 &gt; 0, pop</text>
+<text x="514" y="1109.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">w = 6 − (−1) − 1 = 6</text>
+<text x="514" y="1123.0" font-size="12" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">1 × 6 = 6</text>
+<line x1="40" y1="1148" x2="640" y2="1148" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="1170" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">pop 过的面积: 2, 6, 10, 3, 8, 6 → best = max = 10 (高 5 × 宽 2, i = 2..3)</text>
+<rect x="40" y="1190" width="22" height="16" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="70" y="1198" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">新 push / 当前输入</text><rect x="211.2" y="1190" width="22" height="16" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="241.2" y="1198" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop (虚线扔到左边)</text><rect x="381.6" y="1190" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="411.6" y="1198" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里其他</text><rect x="489.6" y="1190" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="486.6" y="1187" width="28" height="22" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/><text x="519.6" y="1198" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶</text>
+</svg>

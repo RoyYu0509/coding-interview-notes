@@ -1,0 +1,38 @@
+<svg width="100%" viewBox="0 0 680 300" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>grid 是隐式 graph: 4 个方向 = 4 条边</title><desc>grid 是隐式 graph: 4 个方向 = 4 条边</desc><defs><marker id="ar-gray" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ar-red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ar-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">格子 = 点, 上下左右 = 边。不用建邻接表, 邻居靠 (dr, dc) 算出来</text>
+<text x="40" y="38" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">DIRS = ((1, 0), (-1, 0), (0, 1), (0, -1))</text>
+<rect x="56" y="70" width="62" height="46" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="87.0" y="93.0" font-size="12" font-weight="500" fill="#444441" text-anchor="middle" dominant-baseline="central">(r-1,c-1)</text>
+<rect x="118" y="70" width="62" height="46" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="149.0" y="93.0" font-size="12" font-weight="500" fill="#444441" text-anchor="middle" dominant-baseline="central">(r-1,c+0)</text>
+<rect x="180" y="70" width="62" height="46" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="211.0" y="93.0" font-size="12" font-weight="500" fill="#444441" text-anchor="middle" dominant-baseline="central">(r-1,c+1)</text>
+<rect x="56" y="116" width="62" height="46" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="87.0" y="139.0" font-size="12" font-weight="500" fill="#444441" text-anchor="middle" dominant-baseline="central">(r+0,c-1)</text>
+<rect x="118" y="116" width="62" height="46" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="149.0" y="139.0" font-size="12" font-weight="500" fill="#085041" text-anchor="middle" dominant-baseline="central">(r,c)</text>
+<rect x="115" y="113" width="68" height="52" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="180" y="116" width="62" height="46" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="211.0" y="139.0" font-size="12" font-weight="500" fill="#444441" text-anchor="middle" dominant-baseline="central">(r+0,c+1)</text>
+<rect x="56" y="162" width="62" height="46" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="87.0" y="185.0" font-size="12" font-weight="500" fill="#444441" text-anchor="middle" dominant-baseline="central">(r+1,c-1)</text>
+<rect x="118" y="162" width="62" height="46" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="149.0" y="185.0" font-size="12" font-weight="500" fill="#444441" text-anchor="middle" dominant-baseline="central">(r+1,c+0)</text>
+<rect x="180" y="162" width="62" height="46" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="211.0" y="185.0" font-size="12" font-weight="500" fill="#444441" text-anchor="middle" dominant-baseline="central">(r+1,c+1)</text>
+<text x="149.0" y="226" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">中心格的 4 个邻居: (r±1, c) 和 (r, c±1)</text>
+<text x="330" y="78" font-size="14" font-weight="500" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">进入 dfs(r, c) 先过三关, 任何一关不过就 return:</text>
+<rect x="330" y="95" width="70" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="365.0" y="108.0" font-size="12" font-weight="500" fill="#712B13" text-anchor="middle" dominant-baseline="central">1. 出界</text>
+<text x="410" y="102" font-size="12" font-weight="400" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">r &lt; 0 或 r &gt;= m 或 c &lt; 0 或 c &gt;= n</text>
+<text x="410" y="118" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">没有这条边</text>
+<rect x="330" y="139" width="70" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="365.0" y="152.0" font-size="12" font-weight="500" fill="#712B13" text-anchor="middle" dominant-baseline="central">2. 是水</text>
+<text x="410" y="146" font-size="12" font-weight="400" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">grid[r][c] == "0"</text>
+<text x="410" y="162" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">不是陆地</text>
+<rect x="330" y="183" width="70" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="365.0" y="196.0" font-size="12" font-weight="500" fill="#712B13" text-anchor="middle" dominant-baseline="central">3. 已 sink</text>
+<text x="410" y="190" font-size="12" font-weight="400" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">走过的格子被改成 "0"</text>
+<text x="410" y="206" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">和第 2 关同一个判断</text>
+<text x="330" y="246" font-size="12" font-weight="400" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">第 3 关就是 visited: 进来先改 "0", 每格最多展开一次。</text>
+<text x="330" y="266" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">不 sink: (0,0) → (0,1) → (0,0) → ... 无限递归。</text>
+<text x="330" y="286" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">island 数 = 外层扫描里"遇到 1"的次数, 总工作 O(m·n)。</text></svg>

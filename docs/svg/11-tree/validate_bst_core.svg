@@ -1,0 +1,33 @@
+<svg width="100%" viewBox="0 0 680 330" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Validate BST: 约束是从所有祖先累积下来的</title><desc>区间 (low, high) 向下传递</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="20" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">node 的合法范围由所有祖先决定, 不只是 parent: 把它压成 (low, high) 往下传</text>
+<line x1="178" y1="146" x2="120" y2="208" stroke="#898781" stroke-width="1.2"/>
+<line x1="294" y1="84" x2="178" y2="146" stroke="#898781" stroke-width="1.2"/>
+<line x1="178" y1="146" x2="236" y2="208" stroke="#898781" stroke-width="1.2"/>
+<line x1="294" y1="84" x2="352" y2="146" stroke="#898781" stroke-width="1.2"/>
+<circle cx="120" cy="208" r="15" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="120" y="208" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<text x="102" y="194" font-size="12" text-anchor="end" fill="#52514E" dominant-baseline="central">(-inf, 3)</text>
+<circle cx="178" cy="146" r="15" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="178" y="146" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<text x="160" y="132" font-size="12" text-anchor="end" fill="#52514E" dominant-baseline="central">(-inf, 5)</text>
+<circle cx="236" cy="208" r="15" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<circle cx="236" cy="208" r="19" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="236" y="208" font-size="14" text-anchor="middle" fill="#712B13" dominant-baseline="central">6</text>
+<text x="254" y="194" font-size="12" text-anchor="start" fill="#712B13" font-weight="600" dominant-baseline="central">(3, 5)</text>
+<circle cx="294" cy="84" r="15" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="294" y="84" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">5</text>
+<text x="312" y="70" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">(-inf, inf)</text>
+<circle cx="352" cy="146" r="15" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="352" y="146" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">8</text>
+<text x="370" y="132" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">(5, inf)</text>
+<text x="452" y="84" font-size="14" text-anchor="start" fill="#085041" font-weight="600" dominant-baseline="central">向左走: high = node.val</text>
+<text x="452" y="106" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">(左子树必须比 node 小)</text>
+<text x="452" y="134" font-size="14" text-anchor="start" fill="#085041" font-weight="600" dominant-baseline="central">向右走: low = node.val</text>
+<text x="452" y="156" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">(右子树必须比 node 大)</text>
+<text x="452" y="188" font-size="14" text-anchor="start" fill="#712B13" font-weight="600" dominant-baseline="central">node 6 在 (3, 5) 之外</text>
+<text x="452" y="210" font-size="14" text-anchor="start" fill="#712B13" font-weight="600" dominant-baseline="central">→ return False</text>
+<line x1="40" y1="236" x2="640" y2="236" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="258" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">只做局部检查 (left &lt; node &lt; right) 会漏掉它:</text>
+<text x="40" y="280" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">3 &lt; 6 局部成立, 但 6 在 5 的左子树里, 必须 &lt; 5. 5 这条约束只能由祖先一路传下来</text>
+<text x="40" y="300" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">暴力做法: 每个 node 去扫整棵左、右子树找 max/min → O(n²). 传区间: 每个 node 比一次 → O(n)</text>
+</svg>

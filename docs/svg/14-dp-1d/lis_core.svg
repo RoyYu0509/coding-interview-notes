@@ -1,0 +1,60 @@
+<svg width="100%" viewBox="0 0 680 366" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>LIS: dp[i] = 以 i 结尾, 往回看所有 j</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">dp[i] = 以 nums[i] 结尾的 LIS 长度 · 和 Kadane 一样, 规定 &quot;以 i 结尾&quot; 才能接上前面的子问题</text>
+<text x="40" y="38" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">nums[i] 前面可以接任何 j &lt; i 且 nums[j] &lt; nums[i] 的 LIS → 取 dp[j] 最大的 + 1</text>
+<text x="40" y="106" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">nums</text>
+<text x="40" y="152" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">dp</text>
+<text x="147.0" y="76" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">i=0</text>
+<rect x="121" y="90" width="52" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="147.0" y="105.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">10</text>
+<rect x="121" y="136" width="52" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="147.0" y="151.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">1</text>
+<text x="201.0" y="76" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">i=1</text>
+<rect x="175" y="90" width="52" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="201.0" y="105.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">9</text>
+<rect x="175" y="136" width="52" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="201.0" y="151.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">1</text>
+<text x="255.0" y="76" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">i=2</text>
+<rect x="229" y="90" width="52" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="255.0" y="105.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">2</text>
+<rect x="229" y="136" width="52" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="255.0" y="151.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">1</text>
+<text x="309.0" y="76" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">i=3</text>
+<rect x="283" y="90" width="52" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="309.0" y="105.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">5</text>
+<rect x="283" y="136" width="52" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="309.0" y="151.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">2</text>
+<text x="363.0" y="76" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">i=4</text>
+<rect x="337" y="90" width="52" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="363.0" y="105.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">3</text>
+<rect x="337" y="136" width="52" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="363.0" y="151.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">2</text>
+<text x="417.0" y="76" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">i=5</text>
+<rect x="391" y="90" width="52" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="417.0" y="105.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">7</text>
+<rect x="391" y="136" width="52" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="417.0" y="151.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">3</text>
+<text x="471.0" y="76" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">i=6</text>
+<rect x="445" y="90" width="52" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="471.0" y="105.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">101</text>
+<rect x="445" y="136" width="52" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="525.0" y="76" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">i=7</text>
+<rect x="499" y="90" width="52" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="525.0" y="105.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">18</text>
+<rect x="499" y="136" width="52" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="226" y="133" width="58" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="280" y="133" width="58" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="334" y="133" width="58" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<path d="M255.0 168 C255.0 194 413.0 194 413.0 171" fill="none" stroke="#52514E" stroke-width="1.4" marker-end="url(#arr)"/>
+<path d="M309.0 168 C309.0 188 413.0 188 413.0 171" fill="none" stroke="#52514E" stroke-width="1.4" marker-end="url(#arr)"/>
+<path d="M363.0 168 C363.0 182 413.0 182 413.0 171" fill="none" stroke="#52514E" stroke-width="1.4" marker-end="url(#arr)"/>
+<text x="120" y="208" font-size="14" font-weight="400" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">nums[2..4] = 2, 5, 3 都 &lt; nums[5] = 7  →  它们的 dp = 1, 2, 2</text>
+<text x="120" y="232" font-size="16" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">dp[5] = 1 + max(1, 2, 2) = 3</text>
+<text x="40" y="266" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">10, 9 &gt; 7, 不能接: 递增要求 nums[j] &lt; nums[i]。dp[i] 至少是 1 (只取自己)。</text>
+<text x="40" y="288" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">最终答案是 max(dp), 因为 LIS 不一定以最后一个元素结尾。</text>
+<text x="40" y="310" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">双层循环 → O(n²)。另有 patience / tails + binary search 的 O(n log n) 做法 (文末一句话)。</text>
+<rect x="40" y="334" width="22" height="16" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="70" y="342" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">要算的 dp[5]</text>
+<rect x="169.76" y="334" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="166.76" y="331" width="28" height="22" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="205.76" y="342" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">nums[j] &lt; nums[5] 的 dp[j]</text>
+</svg>

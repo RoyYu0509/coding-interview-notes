@@ -1,0 +1,128 @@
+<svg width="100%" viewBox="0 0 680 928" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Find Median from Data Stream: two heaps trace</title><desc>stream 5,2,8,3,9,1</desc><defs><marker id="md-ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="md-ao" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="928" fill="#FFFFFF"/>
+<text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">lo = max-heap (较小的一半, top = 最大) · hi = min-heap (较大的一半, top = 最小)</text>
+<text x="40" y="38" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">每个 num: 先 push 进 lo → lo 的 top 移到 hi → hi 比 lo 多就把 hi 的 top 移回 lo</text>
+<text x="40" y="64" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">num</text>
+<text x="130" y="64" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">lo (max-heap)</text>
+<text x="270" y="64" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">hi (min-heap)</text>
+<text x="400" y="64" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">这一步发生了什么</text>
+<line x1="40" y1="74" x2="640" y2="74" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="82" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="99" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">num</text>
+<text x="72" y="116" font-size="16" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">5</text>
+<circle cx="190" cy="134" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="190" y="134" font-size="16" text-anchor="middle" fill="#085041" dominant-baseline="central">5</text>
+<circle cx="190" cy="134" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<path d="M104 107 L190 107 L190 110" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#md-ag)"/>
+<text x="330" y="134" font-size="14" text-anchor="middle" fill="#52514E" dominant-baseline="central">空</text>
+<text x="400" y="102" font-size="12" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">push 5 → lo, lo 最大的 5 → hi</text>
+<text x="400" y="122" font-size="12" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">len(hi) &gt; len(lo) → hi 最小的 5 → lo</text>
+<text x="400" y="152" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">median = lo.top = 5</text>
+<line x1="40" y1="204" x2="640" y2="204" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="212" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="229" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">num</text>
+<text x="72" y="246" font-size="16" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">2</text>
+<circle cx="190" cy="264" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="190" y="264" font-size="16" text-anchor="middle" fill="#085041" dominant-baseline="central">2</text>
+<circle cx="190" cy="264" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<path d="M104 237 L190 237 L190 240" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#md-ag)"/>
+<circle cx="330" cy="264" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="330" y="264" font-size="16" text-anchor="middle" fill="#085041" dominant-baseline="central">5</text>
+<circle cx="330" cy="264" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="400" y="232" font-size="12" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">push 2 → lo, lo 最大的 5 → hi</text>
+<text x="400" y="252" font-size="12" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">len(hi) ≤ len(lo), 不用再移</text>
+<text x="400" y="282" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">median = (2 + 5) / 2 = 3.5</text>
+<line x1="40" y1="334" x2="640" y2="334" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="342" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="359" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">num</text>
+<text x="72" y="376" font-size="16" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">8</text>
+<line x1="190" y1="394" x2="160" y2="428" stroke="#898781" stroke-width="1.2"/>
+<circle cx="190" cy="394" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="190" y="394" font-size="16" text-anchor="middle" fill="#085041" dominant-baseline="central">5</text>
+<circle cx="190" cy="394" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="160" cy="428" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="160" y="428" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<path d="M104 367 L190 367 L190 370" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#md-ag)"/>
+<circle cx="330" cy="394" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="330" y="394" font-size="16" text-anchor="middle" fill="#085041" dominant-baseline="central">8</text>
+<circle cx="330" cy="394" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="400" y="362" font-size="12" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">push 8 → lo, lo 最大的 8 → hi</text>
+<text x="400" y="382" font-size="12" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">len(hi) &gt; len(lo) → hi 最小的 5 → lo</text>
+<text x="400" y="412" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">median = lo.top = 5</text>
+<line x1="40" y1="464" x2="640" y2="464" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="472" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="489" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">num</text>
+<text x="72" y="506" font-size="16" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">3</text>
+<line x1="190" y1="524" x2="160" y2="558" stroke="#898781" stroke-width="1.2"/>
+<circle cx="190" cy="524" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="190" y="524" font-size="16" text-anchor="middle" fill="#085041" dominant-baseline="central">3</text>
+<circle cx="190" cy="524" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="160" cy="558" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="160" y="558" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<path d="M104 497 L190 497 L190 500" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#md-ag)"/>
+<line x1="330" y1="524" x2="300" y2="558" stroke="#898781" stroke-width="1.2"/>
+<circle cx="330" cy="524" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="330" y="524" font-size="16" text-anchor="middle" fill="#085041" dominant-baseline="central">5</text>
+<circle cx="330" cy="524" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="300" cy="558" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="300" y="558" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">8</text>
+<text x="400" y="492" font-size="12" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">push 3 → lo, lo 最大的 5 → hi</text>
+<text x="400" y="512" font-size="12" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">len(hi) ≤ len(lo), 不用再移</text>
+<text x="400" y="542" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">median = (3 + 5) / 2 = 4</text>
+<line x1="40" y1="594" x2="640" y2="594" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="602" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="619" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">num</text>
+<text x="72" y="636" font-size="16" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">9</text>
+<line x1="190" y1="654" x2="160" y2="688" stroke="#898781" stroke-width="1.2"/>
+<line x1="190" y1="654" x2="220" y2="688" stroke="#898781" stroke-width="1.2"/>
+<circle cx="190" cy="654" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="190" y="654" font-size="16" text-anchor="middle" fill="#085041" dominant-baseline="central">5</text>
+<circle cx="190" cy="654" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="160" cy="688" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="160" y="688" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<circle cx="220" cy="688" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="220" y="688" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<path d="M104 627 L190 627 L190 630" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#md-ag)"/>
+<line x1="330" y1="654" x2="300" y2="688" stroke="#898781" stroke-width="1.2"/>
+<circle cx="330" cy="654" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="330" y="654" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">8</text>
+<circle cx="330" cy="654" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="300" cy="688" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="300" y="688" font-size="16" text-anchor="middle" fill="#085041" dominant-baseline="central">9</text>
+<text x="400" y="622" font-size="12" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">push 9 → lo, lo 最大的 9 → hi</text>
+<text x="400" y="642" font-size="12" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">len(hi) &gt; len(lo) → hi 最小的 5 → lo</text>
+<text x="400" y="672" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">median = lo.top = 5</text>
+<line x1="40" y1="724" x2="640" y2="724" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="732" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="749" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">num</text>
+<text x="72" y="766" font-size="16" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">1</text>
+<line x1="190" y1="784" x2="160" y2="818" stroke="#898781" stroke-width="1.2"/>
+<line x1="190" y1="784" x2="220" y2="818" stroke="#898781" stroke-width="1.2"/>
+<circle cx="190" cy="784" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="190" y="784" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<circle cx="190" cy="784" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="160" cy="818" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="160" y="818" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<circle cx="220" cy="818" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="220" y="818" font-size="16" text-anchor="middle" fill="#085041" dominant-baseline="central">1</text>
+<path d="M104 757 L190 757 L190 760" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#md-ag)"/>
+<line x1="330" y1="784" x2="300" y2="818" stroke="#898781" stroke-width="1.2"/>
+<line x1="330" y1="784" x2="360" y2="818" stroke="#898781" stroke-width="1.2"/>
+<circle cx="330" cy="784" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="330" y="784" font-size="16" text-anchor="middle" fill="#085041" dominant-baseline="central">5</text>
+<circle cx="330" cy="784" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="300" cy="818" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="300" y="818" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">9</text>
+<circle cx="360" cy="818" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="360" y="818" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">8</text>
+<text x="400" y="752" font-size="12" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">push 1 → lo, lo 最大的 5 → hi</text>
+<text x="400" y="772" font-size="12" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">len(hi) ≤ len(lo), 不用再移</text>
+<text x="400" y="802" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">median = (3 + 5) / 2 = 4</text>
+<line x1="40" y1="854" x2="640" y2="854" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="876" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">median 依次 = 5, 3.5, 5, 4, 5, 4   (每步 O(log n), 不用排序)</text>
+<circle cx="48" cy="908" r="7" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="62" y="908" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">这一步移进来的</text>
+<circle cx="168" cy="908" r="7" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="182" y="908" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">heap top</text>
+<circle cx="248" cy="908" r="7" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="262" y="908" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">heap 里其他的</text>
+</svg>

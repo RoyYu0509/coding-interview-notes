@@ -1,0 +1,52 @@
+<svg width="100%" viewBox="0 0 680 506" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Median: two heaps hold the two halves</title><desc>sorted numbers split into lo and hi, tops are the middle numbers</desc><defs><marker id="mdc-ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="mdc-ao" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="506" fill="#FFFFFF"/>
+<text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">把排好序的数从中间切开: 左半 lo, 右半 hi · 中位数只看切口两边的数</text>
+<rect x="170" y="56" width="46" height="34" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="193.0" y="73.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<rect x="222" y="56" width="46" height="34" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="245.0" y="73.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<rect x="274" y="56" width="46" height="34" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="270" y="52" width="54" height="42" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="297.0" y="73.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<rect x="366" y="56" width="46" height="34" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="362" y="52" width="54" height="42" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="389.0" y="73.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">5</text>
+<rect x="418" y="56" width="46" height="34" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="441.0" y="73.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">8</text>
+<rect x="470" y="56" width="46" height="34" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="493.0" y="73.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">9</text>
+<line x1="340" y1="50" x2="340" y2="98" stroke="#5F5E5A" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="248" y="40" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">lo: 较小的一半</text>
+<text x="441" y="40" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">hi: 较大的一半</text>
+<line x1="200" y1="190" x2="164" y2="234" stroke="#898781" stroke-width="1.2"/>
+<line x1="200" y1="190" x2="236" y2="234" stroke="#898781" stroke-width="1.2"/>
+<circle cx="200" cy="190" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="200" y="190" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<circle cx="200" cy="190" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="164" cy="234" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="164" y="234" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<circle cx="236" cy="234" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="236" y="234" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<line x1="480" y1="190" x2="444" y2="234" stroke="#898781" stroke-width="1.2"/>
+<line x1="480" y1="190" x2="516" y2="234" stroke="#898781" stroke-width="1.2"/>
+<circle cx="480" cy="190" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="480" y="190" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">5</text>
+<circle cx="480" cy="190" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="444" cy="234" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="444" y="234" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">9</text>
+<circle cx="516" cy="234" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="516" y="234" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">8</text>
+<path d="M297 94 L221 164" fill="none" stroke="#898781" stroke-width="1.2" marker-end="url(#mdc-ag)"/>
+<path d="M389 94 L465 164" fill="none" stroke="#898781" stroke-width="1.2" marker-end="url(#mdc-ag)"/>
+<text x="200" y="262" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">lo = max-heap</text>
+<text x="200" y="280" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">top = 3 (lo 里最大)</text>
+<text x="480" y="262" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">hi = min-heap</text>
+<text x="480" y="280" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">top = 5 (hi 里最小)</text>
+<line x1="40" y1="302" x2="640" y2="302" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="326" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">median = (lo.top + hi.top) / 2 = (3 + 5) / 2 = 4   (个数是奇数时 = lo.top)</text>
+<text x="40" y="358" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">两个 invariant (每次 add 后都要成立)</text>
+<text x="40" y="382" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">1. max(lo) ≤ min(hi)   → 两个 top 紧挨着切口</text>
+<text x="40" y="404" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">2. len(lo) = len(hi) 或 len(lo) = len(hi) + 1   → 切口在正中间</text>
+<line x1="40" y1="438" x2="640" y2="438" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="460" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">每个数 add: O(log n) · 找 median: O(1)</text>
+<text x="40" y="482" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">brute force: 每次 find 都 sort O(n log n), 或者插入有序 list O(n)</text>
+</svg>

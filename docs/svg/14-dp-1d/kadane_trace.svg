@@ -1,0 +1,225 @@
+<svg width="100%" viewBox="0 0 680 910" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>nums = [-2, 1, -3, 4, -1, 2, 1, -5, 4] · cur[i] = 以 nums[i] 结尾的最大 subarray sum</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">nums = [-2, 1, -3, 4, -1, 2, 1, -5, 4] · cur[i] = 以 nums[i] 结尾的最大 subarray sum</text>
+<text x="40" y="38" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">每一步: cur[i] = max(x, cur[i-1] + x) (x = nums[i]); best = 所有 cur 里最大的</text>
+<text x="40" y="72" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">step</text>
+<text x="112" y="72" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">cur 数组</text>
+<text x="430" y="72" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">计算</text>
+<line x1="40" y1="84" x2="640" y2="84" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="40" y="100" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">i</text>
+<text x="129.0" y="100" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">0</text>
+<text x="163.0" y="100" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">1</text>
+<text x="197.0" y="100" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">2</text>
+<text x="231.0" y="100" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">3</text>
+<text x="265.0" y="100" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">4</text>
+<text x="299.0" y="100" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">5</text>
+<text x="333.0" y="100" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">6</text>
+<text x="367.0" y="100" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">7</text>
+<text x="401.0" y="100" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">8</text>
+<text x="40" y="120" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">nums</text>
+<text x="129.0" y="120" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="middle" dominant-baseline="central">-2</text>
+<text x="163.0" y="120" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="middle" dominant-baseline="central">1</text>
+<text x="197.0" y="120" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="middle" dominant-baseline="central">-3</text>
+<text x="231.0" y="120" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="middle" dominant-baseline="central">4</text>
+<text x="265.0" y="120" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="middle" dominant-baseline="central">-1</text>
+<text x="299.0" y="120" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="middle" dominant-baseline="central">2</text>
+<text x="333.0" y="120" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="middle" dominant-baseline="central">1</text>
+<text x="367.0" y="120" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="middle" dominant-baseline="central">-5</text>
+<text x="401.0" y="120" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="middle" dominant-baseline="central">4</text>
+<line x1="40" y1="134" x2="640" y2="134" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="113" y="148" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="129.0" y="163.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">-2</text>
+<rect x="147" y="148" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="181" y="148" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="215" y="148" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="249" y="148" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="283" y="148" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="317" y="148" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="351" y="148" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="385" y="148" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="40" y="155.0" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">base</text>
+<text x="430" y="157" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">cur[0] = nums[0] = -2</text>
+<text x="430" y="175" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">best = -2</text>
+<line x1="40" y1="198" x2="640" y2="198" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="113" y="212" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="129.0" y="227.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">-2</text>
+<rect x="147" y="212" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="163.0" y="227.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">1</text>
+<rect x="181" y="212" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="215" y="212" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="249" y="212" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="283" y="212" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="317" y="212" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="351" y="212" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="385" y="212" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="110" y="209" width="38" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<path d="M129.0 244 C129.0 258 159.0 258 159.0 247" fill="none" stroke="#52514E" stroke-width="1.4" marker-end="url(#arr)"/>
+<text x="40" y="219.0" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">i = 1</text>
+<text x="40" y="236.0" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">x = 1</text>
+<text x="430" y="221" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">cur = max(1, -2 + 1) = 1</text>
+<text x="430" y="239" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">重开 (只取 x) · best = 1</text>
+<line x1="40" y1="276" x2="640" y2="276" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="113" y="290" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="129.0" y="305.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">-2</text>
+<rect x="147" y="290" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="163.0" y="305.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">1</text>
+<rect x="181" y="290" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="197.0" y="305.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">-2</text>
+<rect x="215" y="290" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="249" y="290" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="283" y="290" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="317" y="290" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="351" y="290" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="385" y="290" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="144" y="287" width="38" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<path d="M163.0 322 C163.0 336 193.0 336 193.0 325" fill="none" stroke="#52514E" stroke-width="1.4" marker-end="url(#arr)"/>
+<text x="40" y="297.0" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">i = 2</text>
+<text x="40" y="314.0" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">x = -3</text>
+<text x="430" y="299" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">cur = max(-3, 1 + (-3)) = -2</text>
+<text x="430" y="317" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">接在 cur[1] 后面 · best = 1</text>
+<line x1="40" y1="354" x2="640" y2="354" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="113" y="368" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="129.0" y="383.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">-2</text>
+<rect x="147" y="368" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="163.0" y="383.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">1</text>
+<rect x="181" y="368" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="197.0" y="383.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">-2</text>
+<rect x="215" y="368" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="231.0" y="383.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">4</text>
+<rect x="249" y="368" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="283" y="368" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="317" y="368" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="351" y="368" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="385" y="368" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="178" y="365" width="38" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<path d="M197.0 400 C197.0 414 227.0 414 227.0 403" fill="none" stroke="#52514E" stroke-width="1.4" marker-end="url(#arr)"/>
+<text x="40" y="375.0" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">i = 3</text>
+<text x="40" y="392.0" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">x = 4</text>
+<text x="430" y="377" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">cur = max(4, -2 + 4) = 4</text>
+<text x="430" y="395" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">重开 (只取 x) · best = 4</text>
+<line x1="40" y1="432" x2="640" y2="432" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="113" y="446" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="129.0" y="461.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">-2</text>
+<rect x="147" y="446" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="163.0" y="461.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">1</text>
+<rect x="181" y="446" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="197.0" y="461.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">-2</text>
+<rect x="215" y="446" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="231.0" y="461.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">4</text>
+<rect x="249" y="446" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="265.0" y="461.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">3</text>
+<rect x="283" y="446" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="317" y="446" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="351" y="446" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="385" y="446" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="212" y="443" width="38" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<path d="M231.0 478 C231.0 492 261.0 492 261.0 481" fill="none" stroke="#52514E" stroke-width="1.4" marker-end="url(#arr)"/>
+<text x="40" y="453.0" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">i = 4</text>
+<text x="40" y="470.0" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">x = -1</text>
+<text x="430" y="455" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">cur = max(-1, 4 + (-1)) = 3</text>
+<text x="430" y="473" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">接在 cur[3] 后面 · best = 4</text>
+<line x1="40" y1="510" x2="640" y2="510" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="113" y="524" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="129.0" y="539.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">-2</text>
+<rect x="147" y="524" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="163.0" y="539.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">1</text>
+<rect x="181" y="524" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="197.0" y="539.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">-2</text>
+<rect x="215" y="524" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="231.0" y="539.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">4</text>
+<rect x="249" y="524" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="265.0" y="539.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">3</text>
+<rect x="283" y="524" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="299.0" y="539.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">5</text>
+<rect x="317" y="524" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="351" y="524" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="385" y="524" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="246" y="521" width="38" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<path d="M265.0 556 C265.0 570 295.0 570 295.0 559" fill="none" stroke="#52514E" stroke-width="1.4" marker-end="url(#arr)"/>
+<text x="40" y="531.0" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">i = 5</text>
+<text x="40" y="548.0" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">x = 2</text>
+<text x="430" y="533" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">cur = max(2, 3 + 2) = 5</text>
+<text x="430" y="551" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">接在 cur[4] 后面 · best = 5</text>
+<line x1="40" y1="588" x2="640" y2="588" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="113" y="602" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="129.0" y="617.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">-2</text>
+<rect x="147" y="602" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="163.0" y="617.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">1</text>
+<rect x="181" y="602" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="197.0" y="617.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">-2</text>
+<rect x="215" y="602" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="231.0" y="617.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">4</text>
+<rect x="249" y="602" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="265.0" y="617.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">3</text>
+<rect x="283" y="602" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="299.0" y="617.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">5</text>
+<rect x="317" y="602" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="333.0" y="617.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">6</text>
+<rect x="351" y="602" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="385" y="602" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="280" y="599" width="38" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<path d="M299.0 634 C299.0 648 329.0 648 329.0 637" fill="none" stroke="#52514E" stroke-width="1.4" marker-end="url(#arr)"/>
+<text x="40" y="609.0" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">i = 6</text>
+<text x="40" y="626.0" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">x = 1</text>
+<text x="430" y="611" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">cur = max(1, 5 + 1) = 6</text>
+<text x="430" y="629" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">接在 cur[5] 后面 · best = 6</text>
+<line x1="40" y1="666" x2="640" y2="666" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="113" y="680" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="129.0" y="695.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">-2</text>
+<rect x="147" y="680" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="163.0" y="695.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">1</text>
+<rect x="181" y="680" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="197.0" y="695.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">-2</text>
+<rect x="215" y="680" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="231.0" y="695.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">4</text>
+<rect x="249" y="680" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="265.0" y="695.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">3</text>
+<rect x="283" y="680" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="299.0" y="695.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">5</text>
+<rect x="317" y="680" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="333.0" y="695.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">6</text>
+<rect x="351" y="680" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="367.0" y="695.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">1</text>
+<rect x="385" y="680" width="32" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="314" y="677" width="38" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<path d="M333.0 712 C333.0 726 363.0 726 363.0 715" fill="none" stroke="#52514E" stroke-width="1.4" marker-end="url(#arr)"/>
+<text x="40" y="687.0" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">i = 7</text>
+<text x="40" y="704.0" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">x = -5</text>
+<text x="430" y="689" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">cur = max(-5, 6 + (-5)) = 1</text>
+<text x="430" y="707" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">接在 cur[6] 后面 · best = 6</text>
+<line x1="40" y1="744" x2="640" y2="744" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="113" y="758" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="129.0" y="773.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">-2</text>
+<rect x="147" y="758" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="163.0" y="773.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">1</text>
+<rect x="181" y="758" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="197.0" y="773.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">-2</text>
+<rect x="215" y="758" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="231.0" y="773.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">4</text>
+<rect x="249" y="758" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="265.0" y="773.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">3</text>
+<rect x="283" y="758" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="299.0" y="773.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">5</text>
+<rect x="317" y="758" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="333.0" y="773.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">6</text>
+<rect x="351" y="758" width="32" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="367.0" y="773.0" font-size="14" font-weight="600" fill="#444441" text-anchor="middle" dominant-baseline="central">1</text>
+<rect x="385" y="758" width="32" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="401.0" y="773.0" font-size="14" font-weight="600" fill="#085041" text-anchor="middle" dominant-baseline="central">5</text>
+<rect x="348" y="755" width="38" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<path d="M367.0 790 C367.0 804 397.0 804 397.0 793" fill="none" stroke="#52514E" stroke-width="1.4" marker-end="url(#arr)"/>
+<text x="40" y="765.0" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">i = 8</text>
+<text x="40" y="782.0" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">x = 4</text>
+<text x="430" y="767" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">cur = max(4, 1 + 4) = 5</text>
+<text x="430" y="785" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">接在 cur[7] 后面 · best = 6</text>
+<line x1="40" y1="822" x2="640" y2="822" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="40" y="842" font-size="14" font-weight="600" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">答案 = best = 6  (subarray [4, -1, 2, 1])</text>
+<rect x="40" y="878" width="22" height="16" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="70" y="886" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">新填的格子</text>
+<rect x="152" y="878" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="182" y="886" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">已有的格子</text>
+<rect x="264" y="878" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="261" y="875" width="28" height="22" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="300" y="886" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">被依赖 (橙色 ring)</text>
+<rect x="437.68" y="878" width="22" height="16" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="467.68" y="886" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">还没算</text>
+</svg>

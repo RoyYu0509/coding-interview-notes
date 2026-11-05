@@ -1,0 +1,169 @@
+<svg width="100%" viewBox="0 0 680 638" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Set Matrix Zeroes 运行流程</title><desc>3x4 矩阵,两个内部 0 先在第一行第一列留言,再按留言清零</desc><defs><marker id="f7-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f7-r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f7-n" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="f7-o" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#EF9F27" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="638" fill="#fff"/>
+<text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">matrix 3×4 · 内部 (i ≥ 1, j ≥ 1) 有两个 0: (1,1) 和 (2,3)</text>
+<text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">绿色 = 这一步写下的留言 · 红色 = 被清零的格子 · 橙圈 = 当前扫到的 0</text>
+<text x="40" y="64" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">阶段</text>
+<text x="200" y="64" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">之后的矩阵</text>
+<text x="340" y="64" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">发生了什么</text>
+<line x1="40" y1="74" x2="640" y2="74" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="200" y="92" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="215.0" y="104.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<rect x="230" y="92" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="245.0" y="104.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">2</text>
+<rect x="260" y="92" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="275.0" y="104.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">3</text>
+<rect x="290" y="92" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="305.0" y="104.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">4</text>
+<rect x="200" y="116" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="215.0" y="128.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">5</text>
+<rect x="230" y="116" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="245.0" y="128.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<rect x="260" y="116" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="275.0" y="128.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">7</text>
+<rect x="290" y="116" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="305.0" y="128.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">8</text>
+<rect x="200" y="140" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="215.0" y="152.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">9</text>
+<rect x="230" y="140" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="245.0" y="152.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">10</text>
+<rect x="260" y="140" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="275.0" y="152.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">11</text>
+<rect x="290" y="140" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="305.0" y="152.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<text x="40" y="108" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">① 起手</text>
+<text x="40" y="128" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">row0 / col0</text>
+<text x="340" y="100" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">row0 = any(第一行 == 0) = False</text>
+<text x="340" y="120" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">col0 = any(第一列 == 0) = False</text>
+<text x="340" y="140" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">→ 第一行 / 第一列原本都没有 0</text>
+<line x1="40" y1="170" x2="640" y2="170" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="200" y="184" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="215.0" y="196.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<rect x="230" y="184" width="30" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<text x="245.0" y="196.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<rect x="260" y="184" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="275.0" y="196.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">3</text>
+<rect x="290" y="184" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="305.0" y="196.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">4</text>
+<rect x="200" y="208" width="30" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<text x="215.0" y="220.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<rect x="230" y="208" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<rect x="227" y="205" width="36" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="245.0" y="220.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<rect x="260" y="208" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="275.0" y="220.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">7</text>
+<rect x="290" y="208" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="305.0" y="220.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">8</text>
+<rect x="200" y="232" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="215.0" y="244.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">9</text>
+<rect x="230" y="232" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="245.0" y="244.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">10</text>
+<rect x="260" y="232" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="275.0" y="244.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">11</text>
+<rect x="290" y="232" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="305.0" y="244.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<text x="40" y="200" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">② pass 1</text>
+<text x="40" y="220" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">扫到 (1,1) = 0</text>
+<text x="340" y="192" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">matrix[1][1] == 0</text>
+<text x="340" y="212" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">→ matrix[1][0] = 0   (留言: 第 1 行清零)</text>
+<text x="340" y="232" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">→ matrix[0][1] = 0   (留言: 第 1 列清零)</text>
+<line x1="40" y1="262" x2="640" y2="262" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="200" y="276" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="215.0" y="288.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<rect x="230" y="276" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="245.0" y="288.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<rect x="260" y="276" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="275.0" y="288.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">3</text>
+<rect x="290" y="276" width="30" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<text x="305.0" y="288.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<rect x="200" y="300" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="215.0" y="312.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<rect x="230" y="300" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="245.0" y="312.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<rect x="260" y="300" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="275.0" y="312.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">7</text>
+<rect x="290" y="300" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="305.0" y="312.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">8</text>
+<rect x="200" y="324" width="30" height="24" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<text x="215.0" y="336.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<rect x="230" y="324" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="245.0" y="336.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">10</text>
+<rect x="260" y="324" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="275.0" y="336.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">11</text>
+<rect x="290" y="324" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<rect x="287" y="321" width="36" height="30" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="305.0" y="336.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<text x="40" y="292" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">② pass 1</text>
+<text x="40" y="312" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">扫到 (2,3) = 0</text>
+<text x="340" y="284" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">matrix[2][3] == 0</text>
+<text x="340" y="304" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">→ matrix[2][0] = 0   (留言: 第 2 行清零)</text>
+<text x="340" y="324" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">→ matrix[0][3] = 0   (留言: 第 3 列清零)</text>
+<line x1="40" y1="354" x2="640" y2="354" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="200" y="368" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="215.0" y="380.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<rect x="230" y="368" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="245.0" y="380.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<rect x="260" y="368" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="275.0" y="380.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">3</text>
+<rect x="290" y="368" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="305.0" y="380.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<rect x="200" y="392" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="215.0" y="404.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<rect x="230" y="392" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="245.0" y="404.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<rect x="260" y="392" width="30" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1.0"/>
+<text x="275.0" y="404.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<rect x="290" y="392" width="30" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1.0"/>
+<text x="305.0" y="404.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<rect x="200" y="416" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="215.0" y="428.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<rect x="230" y="416" width="30" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1.0"/>
+<text x="245.0" y="428.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<rect x="260" y="416" width="30" height="24" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1.0"/>
+<text x="275.0" y="428.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<rect x="290" y="416" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="305.0" y="428.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<text x="40" y="384" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">③ pass 2</text>
+<text x="40" y="404" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">内部按留言清零</text>
+<text x="340" y="376" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">内部 6 格里 matrix[i][0] == 0 (i = 1, 2)</text>
+<text x="340" y="396" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">→ 全清零, 其中 4 格本来非 0 (红)</text>
+<text x="340" y="416" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">(1,1) 和 (2,3) 本来就是 0</text>
+<line x1="40" y1="446" x2="640" y2="446" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<rect x="200" y="460" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="215.0" y="472.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<rect x="230" y="460" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="245.0" y="472.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<rect x="260" y="460" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="275.0" y="472.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">3</text>
+<rect x="290" y="460" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="305.0" y="472.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<rect x="200" y="484" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="215.0" y="496.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<rect x="230" y="484" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="245.0" y="496.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<rect x="260" y="484" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="275.0" y="496.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<rect x="290" y="484" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="305.0" y="496.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<rect x="200" y="508" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="215.0" y="520.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<rect x="230" y="508" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="245.0" y="520.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<rect x="260" y="508" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="275.0" y="520.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<rect x="290" y="508" width="30" height="24" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="305.0" y="520.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<text x="40" y="476" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">④ 最后</text>
+<text x="40" y="496" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">第一行 / 第一列</text>
+<text x="340" y="468" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">row0 = False → 第一行不整行清零</text>
+<text x="340" y="488" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">col0 = False → 第一列不整列清零</text>
+<text x="340" y="508" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">留言区原样保留: 第一行 = [1, 0, 3, 0]</text>
+<line x1="40" y1="538" x2="640" y2="538" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="40" y="556" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">最终: [[1, 0, 3, 0], [0, 0, 0, 0], [0, 0, 0, 0]]  ·  额外空间只有 row0 / col0 两个 bool</text>
+<rect x="40" y="579" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.0"/>
+<text x="60" y="586" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">写下的留言</text>
+<rect x="142" y="579" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1.0"/>
+<text x="162" y="586" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">被清零</text>
+<rect x="220" y="579" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.0"/>
+<text x="240" y="586" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">其他</text>
+<rect x="286" y="579" width="14" height="14" rx="3" fill="#fff" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="306" y="586" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">当前扫到的 0</text>
+</svg>

@@ -1,0 +1,39 @@
+<svg width="100%" viewBox="0 0 680 352" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif'><title>dup2_core</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">s = abbbaac, k = 3 · 删掉 bbb 以后, 左边的 a 和右边的 aa 变成相邻 → 还要继续合并</text>
+<text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">stack 每个元素存一整段 [char, count], 栈顶 = 当前最右边的连续段</text>
+<text x="40" y="70" font-size="14" fill="#993C1D" font-weight="500" text-anchor="start" dominant-baseline="central">只存 char (需要回头数)</text>
+<path d="M50 104 L50 230 L140 230 L140 104" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="58" y="202" width="74" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="95.0" y="215.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">a</text>
+<rect x="58" y="172" width="74" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="95.0" y="185.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">b</text>
+<rect x="58" y="142" width="74" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="95.0" y="155.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">b</text>
+<rect x="58" y="112" width="74" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="55" y="109" width="80" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="95.0" y="125.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">b</text>
+<text x="40" y="252" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">第 3 个 b 进来才知道凑够 3</text>
+<text x="40" y="272" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">删完后又要回头数 a 有几个 → 重复劳动</text>
+<line x1="250" y1="62" x2="250" y2="290" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="270" y="70" font-size="14" fill="#0F6E56" font-weight="500" text-anchor="start" dominant-baseline="central">存 [char, count] (对): 栈顶的 count 就是答案</text>
+<path d="M280 104 L280 230 L380 230 L380 104" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="288" y="202" width="84" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="330.0" y="215.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">(a, 1)</text>
+<rect x="288" y="172" width="84" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="285" y="169" width="90" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="330.0" y="185.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">(b, 3)</text>
+<text x="330" y="248" font-size="12" fill="#712B13" font-weight="400" text-anchor="middle" dominant-baseline="central">count == k</text>
+<path d="M390 150 L424 150" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="407" y="132" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">pop</text>
+<path d="M430 104 L430 230 L530 230 L530 104" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="438" y="202" width="84" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="435" y="199" width="90" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="480.0" y="215.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">(a, 1)</text>
+<text x="480" y="248" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">新栈顶</text>
+<path d="M540 150 L566 150" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
+<path d="M570 104 L570 230 L640 230 L640 104" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="578" y="202" width="54" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="575" y="199" width="60" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="605.0" y="215.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">(a,2)</text>
+<text x="605" y="248" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">读到 a</text>
+<text x="40" y="306" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">删掉一段 = pop 一个元素 · 左右两段自动相邻, 因为它们在栈里本来就上下挨着</text>
+<text x="40" y="330" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">额外状态 (count) 跟着元素存进栈 —— 和 Min Stack 的 (val, min) 是同一个套路</text></svg>

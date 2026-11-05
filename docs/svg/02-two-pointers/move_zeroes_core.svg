@@ -1,0 +1,51 @@
+<svg width="100%" viewBox="0 0 680 284" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Move Zeroes 核心</title><desc>三个区</desc><defs><marker id="arG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">r 一路读过去, w 只在"遇到要保留的"时才走 · 两个 pointer 同向, 速度不同</text>
+<text x="40" y="38" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">某一刻 (示意): w = 2, r = 4  -&gt;  [0, w) 非零, [w, r) 全是 0, [r, n) 没读</text>
+<text x="66.0" y="70" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">0</text>
+<rect x="40" y="78" width="50" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="65.0" y="93.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">1</text>
+<text x="118.0" y="70" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">1</text>
+<rect x="92" y="78" width="50" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="117.0" y="93.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#085041">3</text>
+<text x="170.0" y="70" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">2</text>
+<rect x="144" y="78" width="50" height="30" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="169.0" y="93.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#712B13">0</text>
+<text x="222.0" y="70" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">3</text>
+<rect x="196" y="78" width="50" height="30" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="221.0" y="93.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#712B13">0</text>
+<text x="274.0" y="70" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">4</text>
+<rect x="248" y="78" width="50" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<text x="273.0" y="93.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">5</text>
+<rect x="245" y="75" width="56" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="326.0" y="70" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#898781">5</text>
+<rect x="300" y="78" width="50" height="30" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<text x="325.0" y="93.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#444441">7</text>
+<path d="M169.0 111 L164.0 119 L174.0 119 Z" fill="#0B0B0B"/>
+<text x="169.0" y="128" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">w</text>
+<path d="M273.0 111 L268.0 119 L278.0 119 Z" fill="#0B0B0B"/>
+<text x="273.0" y="128" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">r</text>
+<line x1="40" y1="144" x2="142" y2="144" stroke="#085041" stroke-width="2"/>
+<line x1="40" y1="139" x2="40" y2="144" stroke="#085041" stroke-width="2"/>
+<line x1="142" y1="139" x2="142" y2="144" stroke="#085041" stroke-width="2"/>
+<text x="91.0" y="160" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#085041">[0, w): 非零, 顺序没变</text>
+<line x1="144" y1="144" x2="246" y2="144" stroke="#712B13" stroke-width="2"/>
+<line x1="144" y1="139" x2="144" y2="144" stroke="#712B13" stroke-width="2"/>
+<line x1="246" y1="139" x2="246" y2="144" stroke="#712B13" stroke-width="2"/>
+<text x="195.0" y="160" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#712B13">[w, r): 全是 0</text>
+<line x1="248" y1="144" x2="350" y2="144" stroke="#52514E" stroke-width="2"/>
+<line x1="248" y1="139" x2="248" y2="144" stroke="#52514E" stroke-width="2"/>
+<line x1="350" y1="139" x2="350" y2="144" stroke="#52514E" stroke-width="2"/>
+<text x="299.0" y="160" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">[r, n) 还没读</text>
+<text x="40" y="184" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">nums[r] != 0 时, 把它和 nums[w] 交换: nums[w] 一定是 0 (或 w == r), 交换后区间仍然成立。</text>
+<text x="40" y="206" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">nums[r] == 0 时什么都不做, r 前进, 这个 0 自然并入 [w, r)。</text>
+<text x="40" y="228" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="500" fill="#0B0B0B">w &lt;= r 永远成立, 所以 nums[w] 在 r 之前, 写入不会盖掉没读的数据。</text>
+<rect x="40" y="253" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="62" y="260" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">答案区: 非零</text>
+<rect x="171" y="253" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="193" y="260" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">残留区: 0</text>
+<rect x="289" y="253" width="14" height="14" rx="3" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<text x="311" y="260" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">未读</text>
+<rect x="355" y="253" width="14" height="14" rx="3" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1"/>
+<rect x="352" y="250" width="20" height="20" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="377" y="260" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">r = 当前读到</text>
+</svg>

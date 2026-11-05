@@ -1,0 +1,67 @@
+<svg width="100%" viewBox="0 0 680 392" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>没有 visited 与有 visited 的对比</title><desc>没有 visited 与有 visited 的对比</desc><defs><marker id="ar-gray" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ar-red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ar-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">同一张图: S → A,B → M → C,D → T。两层 diamond: 不记 visited 时, 汇合点被重复处理</text>
+<text x="40" y="38" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">数字 ×k = 这个点被处理了 k 次</text>
+<text x="40" y="66" font-size="14" font-weight="500" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">没有 visited</text>
+<text x="370" y="66" font-size="14" font-weight="500" fill="#0B0B0B" text-anchor="start" dominant-baseline="central">有 visited (入队/进入时标记)</text>
+<line x1="139.2" y1="116.8" x2="113.5" y2="145.2" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#ar-gray)"/>
+<line x1="160.8" y1="116.8" x2="186.5" y2="145.2" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#ar-gray)"/>
+<line x1="110.8" y1="171.8" x2="136.5" y2="200.2" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#ar-gray)"/>
+<line x1="189.2" y1="171.8" x2="163.5" y2="200.2" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#ar-gray)"/>
+<line x1="139.2" y1="226.8" x2="113.5" y2="255.2" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#ar-gray)"/>
+<line x1="160.8" y1="226.8" x2="186.5" y2="255.2" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#ar-gray)"/>
+<line x1="110.8" y1="281.8" x2="136.5" y2="310.2" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#ar-gray)"/>
+<line x1="189.2" y1="281.8" x2="163.5" y2="310.2" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#ar-gray)"/>
+<circle cx="150" cy="105" r="16" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="150" y="105" font-size="14" font-weight="500" fill="#444441" text-anchor="middle" dominant-baseline="central">S</text>
+<text x="174" y="105" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">×1</text>
+<circle cx="100" cy="160" r="16" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="100" y="160" font-size="14" font-weight="500" fill="#444441" text-anchor="middle" dominant-baseline="central">A</text>
+<text x="124" y="160" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">×1</text>
+<circle cx="200" cy="160" r="16" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="200" y="160" font-size="14" font-weight="500" fill="#444441" text-anchor="middle" dominant-baseline="central">B</text>
+<text x="224" y="160" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">×1</text>
+<circle cx="150" cy="215" r="16" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="150" y="215" font-size="14" font-weight="500" fill="#712B13" text-anchor="middle" dominant-baseline="central">M</text>
+<text x="174" y="215" font-size="12" font-weight="500" fill="#712B13" text-anchor="start" dominant-baseline="central">×2</text>
+<circle cx="100" cy="270" r="16" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="100" y="270" font-size="14" font-weight="500" fill="#712B13" text-anchor="middle" dominant-baseline="central">C</text>
+<text x="124" y="270" font-size="12" font-weight="500" fill="#712B13" text-anchor="start" dominant-baseline="central">×2</text>
+<circle cx="200" cy="270" r="16" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="200" y="270" font-size="14" font-weight="500" fill="#712B13" text-anchor="middle" dominant-baseline="central">D</text>
+<text x="224" y="270" font-size="12" font-weight="500" fill="#712B13" text-anchor="start" dominant-baseline="central">×2</text>
+<circle cx="150" cy="325" r="16" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="150" y="325" font-size="14" font-weight="500" fill="#712B13" text-anchor="middle" dominant-baseline="central">T</text>
+<text x="174" y="325" font-size="12" font-weight="500" fill="#712B13" text-anchor="start" dominant-baseline="central">×4</text>
+<line x1="469.2" y1="116.8" x2="443.5" y2="145.2" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#ar-gray)"/>
+<line x1="490.8" y1="116.8" x2="516.5" y2="145.2" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#ar-gray)"/>
+<line x1="440.8" y1="171.8" x2="466.5" y2="200.2" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#ar-gray)"/>
+<line x1="519.2" y1="171.8" x2="493.5" y2="200.2" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#ar-red)"/>
+<line x1="469.2" y1="226.8" x2="443.5" y2="255.2" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#ar-gray)"/>
+<line x1="490.8" y1="226.8" x2="516.5" y2="255.2" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#ar-gray)"/>
+<line x1="440.8" y1="281.8" x2="466.5" y2="310.2" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#ar-gray)"/>
+<line x1="519.2" y1="281.8" x2="493.5" y2="310.2" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#ar-red)"/>
+<circle cx="480" cy="105" r="16" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="480" y="105" font-size="14" font-weight="500" fill="#444441" text-anchor="middle" dominant-baseline="central">S</text>
+<text x="504" y="105" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">×1</text>
+<circle cx="430" cy="160" r="16" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="430" y="160" font-size="14" font-weight="500" fill="#444441" text-anchor="middle" dominant-baseline="central">A</text>
+<text x="454" y="160" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">×1</text>
+<circle cx="530" cy="160" r="16" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="530" y="160" font-size="14" font-weight="500" fill="#444441" text-anchor="middle" dominant-baseline="central">B</text>
+<text x="554" y="160" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">×1</text>
+<circle cx="480" cy="215" r="16" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="480" y="215" font-size="14" font-weight="500" fill="#444441" text-anchor="middle" dominant-baseline="central">M</text>
+<text x="504" y="215" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">×1</text>
+<circle cx="430" cy="270" r="16" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="430" y="270" font-size="14" font-weight="500" fill="#444441" text-anchor="middle" dominant-baseline="central">C</text>
+<text x="454" y="270" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">×1</text>
+<circle cx="530" cy="270" r="16" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="530" y="270" font-size="14" font-weight="500" fill="#444441" text-anchor="middle" dominant-baseline="central">D</text>
+<text x="554" y="270" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">×1</text>
+<circle cx="480" cy="325" r="16" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="480" y="325" font-size="14" font-weight="500" fill="#444441" text-anchor="middle" dominant-baseline="central">T</text>
+<text x="504" y="325" font-size="12" font-weight="400" fill="#52514E" text-anchor="start" dominant-baseline="central">×1</text>
+<text x="150" y="355" font-size="14" font-weight="500" fill="#0B0B0B" text-anchor="middle" dominant-baseline="central">共处理 1+1+1+2+2+2+4 = 13 次</text>
+<text x="150" y="375" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">再加一层 diamond 就翻倍: 2^k</text>
+<text x="480" y="355" font-size="14" font-weight="500" fill="#0B0B0B" text-anchor="middle" dominant-baseline="central">共处理 7 次 = V</text>
+<text x="480" y="375" font-size="12" font-weight="400" fill="#52514E" text-anchor="middle" dominant-baseline="central">红虚线: 看到 visited 就跳过 → O(V + E)</text>
+<line x1="330" y1="56" x2="330" y2="380" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 3"/></svg>

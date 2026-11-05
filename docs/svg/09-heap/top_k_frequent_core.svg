@@ -1,0 +1,37 @@
+<svg width="100%" viewBox="0 0 680 436" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Top K Frequent: Counter then size-k heap on count</title><desc>flow from nums to Counter to heap of (count, num)</desc><defs><marker id="tk0-ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="tk0-ao" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="436" fill="#FFFFFF"/>
+<text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">和 Kth Largest 是同一个模板: 比较的 key 从 "值" 换成 "count"</text>
+<rect x="40" y="70" width="176" height="64" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="128.0" y="94.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">nums =</text>
+<text x="128.0" y="110.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">[1,1,1,2,2,3,4,4,4,4]</text>
+<path d="M216 102 L270 102" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#tk0-ag)"/>
+<text x="243" y="84" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">Counter</text>
+<rect x="274" y="70" width="140" height="64" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="344.0" y="94.0" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">1 → 3 次   2 → 2 次</text>
+<text x="344.0" y="110.0" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">3 → 1 次   4 → 4 次</text>
+<path d="M414 102 L452 102" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#tk0-ag)"/>
+<line x1="556" y1="96" x2="520" y2="142" stroke="#898781" stroke-width="1.2"/>
+<circle cx="556" cy="96" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="556" y="90" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<text x="556" y="104" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">n=1</text>
+<circle cx="556" cy="96" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="520" cy="142" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="520" y="136" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">4</text>
+<text x="520" y="150" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">n=4</text>
+<text x="556" y="48" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">size k=2 的 min-heap</text>
+<text x="556" y="176" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">node = (count, num)</text>
+<text x="556" y="194" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">top = count 最小的 (门槛)</text>
+<line x1="40" y1="214" x2="640" y2="214" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="236" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">三种做法, 差别只在 "怎么挑 count 最大的 k 个"</text>
+<text x="40" y="260" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">(m = 不同数字的个数, m ≤ n)</text>
+<text x="40" y="290" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">全部按 count sort</text>
+<text x="250" y="290" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">O(m log m)</text>
+<text x="370" y="290" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">最直接</text>
+<text x="40" y="316" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">size-k min-heap</text>
+<text x="250" y="316" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">O(m log k)</text>
+<text x="370" y="316" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">本节, k 小的时候省</text>
+<text x="40" y="342" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">bucket: count 当 index</text>
+<text x="250" y="342" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">O(n)</text>
+<text x="370" y="342" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">count 最大 ≤ n, 不用比较</text>
+<line x1="40" y1="382" x2="640" y2="382" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="404" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">Top K Frequent Words: 同一个模板, 只是 count 相同时要按字典序, 把 key 换成 (count, word) 处理</text>
+</svg>

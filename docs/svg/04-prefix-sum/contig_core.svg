@@ -1,0 +1,71 @@
+<svg width="100%" viewBox="0 0 680 456" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Contiguous Array: 0 看成 -1</title><desc>两个相同的前缀和之间 0 和 1 一样多</desc><defs><marker id="arg" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">nums = [0, 1, 1, 0, 1, 1, 1, 0] · 0 看成 -1, 1 还是 +1 · s = 前 t 个数的和</text>
+<text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">0 和 1 一样多 ⟺ 区间和为 0 ⟺ 两个 s 相等 · 求最长 → 每个 s 只记第一次出现的下标</text>
+<line x1="50" y1="222" x2="630" y2="222" stroke="#E4E2DB" stroke-width="1"/>
+<text x="40" y="222" font-size="12" fill="#52514E" text-anchor="end" font-weight="400" dominant-baseline="central">-1</text>
+<line x1="50" y1="188" x2="630" y2="188" stroke="#E4E2DB" stroke-width="1"/>
+<text x="40" y="188" font-size="12" fill="#52514E" text-anchor="end" font-weight="400" dominant-baseline="central">0</text>
+<line x1="50" y1="154" x2="630" y2="154" stroke="#E4E2DB" stroke-width="1"/>
+<text x="40" y="154" font-size="12" fill="#52514E" text-anchor="end" font-weight="400" dominant-baseline="central">1</text>
+<line x1="50" y1="120" x2="630" y2="120" stroke="#E4E2DB" stroke-width="1"/>
+<text x="40" y="120" font-size="12" fill="#52514E" text-anchor="end" font-weight="400" dominant-baseline="central">2</text>
+<line x1="50" y1="86" x2="630" y2="86" stroke="#E4E2DB" stroke-width="1"/>
+<text x="40" y="86" font-size="12" fill="#52514E" text-anchor="end" font-weight="400" dominant-baseline="central">3</text>
+<polyline points="60,188 130,222 200,188 270,154 340,188 410,154 480,120 550,86 620,120" fill="none" stroke="#5F5E5A" stroke-width="1.5"/>
+<line x1="60" y1="188" x2="340" y2="188" stroke="#0F6E56" stroke-width="2" stroke-dasharray="4 4"/>
+<circle cx="60" cy="188" r="12" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="60" y="188" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central"></text>
+<text x="60" y="246" font-size="12" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">t=0</text>
+<circle cx="130" cy="222" r="12" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="130" y="222" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central"></text>
+<text x="130" y="246" font-size="12" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">t=1</text>
+<circle cx="200" cy="188" r="12" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="200" y="188" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central"></text>
+<text x="200" y="246" font-size="12" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">t=2</text>
+<circle cx="270" cy="154" r="12" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="270" y="154" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central"></text>
+<text x="270" y="246" font-size="12" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">t=3</text>
+<circle cx="340" cy="188" r="12" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<circle cx="340" cy="188" r="16" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="340" y="188" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central"></text>
+<text x="340" y="246" font-size="12" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">t=4</text>
+<circle cx="410" cy="154" r="12" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="410" y="154" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central"></text>
+<text x="410" y="246" font-size="12" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">t=5</text>
+<circle cx="480" cy="120" r="12" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="480" y="120" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central"></text>
+<text x="480" y="246" font-size="12" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">t=6</text>
+<circle cx="550" cy="86" r="12" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="550" y="86" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central"></text>
+<text x="550" y="246" font-size="12" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">t=7</text>
+<circle cx="620" cy="120" r="12" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="620" y="120" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central"></text>
+<text x="620" y="246" font-size="12" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">t=8</text>
+<text x="95.0" y="268" font-size="12" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">0→-1</text>
+<text x="165.0" y="268" font-size="12" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">1→+1</text>
+<text x="235.0" y="268" font-size="12" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">1→+1</text>
+<text x="305.0" y="268" font-size="12" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">0→-1</text>
+<text x="375.0" y="268" font-size="12" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">1→+1</text>
+<text x="445.0" y="268" font-size="12" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">1→+1</text>
+<text x="515.0" y="268" font-size="12" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">1→+1</text>
+<text x="585.0" y="268" font-size="12" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">0→-1</text>
+<text x="40" y="268" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central"></text>
+<text x="44" y="162" font-size="12" fill="#712B13" text-anchor="start" font-weight="400" dominant-baseline="central">第一次 s = 0</text>
+<text x="320" y="156" font-size="12" fill="#085041" text-anchor="start" font-weight="400" dominant-baseline="central">再次 s = 0</text>
+<text x="130" y="100" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">t = 2 的 s 也是 0, 但 first[0] 不覆盖 (越早越长)</text>
+<line x1="40" y1="286" x2="640" y2="286" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 4"/>
+<text x="40" y="310" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">t = 0 和 t = 4 的 s 都是 0 → nums[0..3] = [0, 1, 1, 0], 长度 = 4 - 0 = 4</text>
+<text x="40" y="334" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="400" dominant-baseline="central">用 nums 的下标: s 在 i = -1 (空前缀) 出现过, 到 i = 3 又是 0: 长度 = 3 - (-1) = 4</text>
+<rect x="40" y="352" width="290" height="62" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="185.0" y="375.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central">brute force: 每个子数组数 0 和 1</text>
+<text x="185.0" y="391.0" font-size="12" fill="#712B13" text-anchor="middle" font-weight="400" dominant-baseline="central">O(n²) 个子数组 → O(n²) (或 O(n³))</text>
+<rect x="350" y="352" width="290" height="62" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="495.0" y="375.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">first[s] = s 第一次出现的位置</text>
+<text x="495.0" y="391.0" font-size="12" fill="#085041" text-anchor="middle" font-weight="400" dominant-baseline="central">一遍扫描 → O(n)</text>
+<rect x="40" y="431" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D"/>
+<text x="60" y="438" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">第一次出现</text>
+<rect x="148" y="431" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="168" y="438" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">再次出现, 长度 4</text>
+<rect x="294.4" y="431" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="314.4" y="438" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">其他</text>
+</svg>

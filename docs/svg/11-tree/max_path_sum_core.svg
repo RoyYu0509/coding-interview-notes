@@ -1,0 +1,45 @@
+<svg width="100%" viewBox="0 0 680 360" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Max Path Sum: 拐点更新答案, 返回值只带一边</title><desc>同一个 node 20, 两个不同的用途</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<text x="40" y="20" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">同一个 node 20 (L = 15, R = 7), 做两件不同的事</text>
+<text x="40" y="46" font-size="14" text-anchor="start" fill="#085041" font-weight="600" dominant-baseline="central">① 答案 best: 两边都用</text>
+<text x="370" y="46" font-size="14" text-anchor="start" fill="#712B13" font-weight="600" dominant-baseline="central">② 返回值: 只带一边给父亲</text>
+<line x1="102" y1="92" x2="50" y2="138" stroke="#898781" stroke-width="1.2"/>
+<line x1="206" y1="138" x2="154" y2="184" stroke="#0F6E56" stroke-width="3.5"/>
+<line x1="102" y1="92" x2="206" y2="138" stroke="#898781" stroke-width="1.2"/>
+<line x1="206" y1="138" x2="258" y2="184" stroke="#0F6E56" stroke-width="3.5"/>
+<circle cx="50" cy="138" r="15" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="50" y="138" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">-5</text>
+<circle cx="102" cy="92" r="15" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="102" y="92" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">-10</text>
+<circle cx="154" cy="184" r="15" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="154" y="184" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">15</text>
+<circle cx="206" cy="138" r="15" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<circle cx="206" cy="138" r="19" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="206" y="138" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">20</text>
+<circle cx="258" cy="184" r="15" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="258" y="184" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">7</text>
+<line x1="432" y1="92" x2="380" y2="138" stroke="#898781" stroke-width="1.2"/>
+<line x1="536" y1="138" x2="484" y2="184" stroke="#0F6E56" stroke-width="3.5"/>
+<line x1="432" y1="92" x2="536" y2="138" stroke="#0F6E56" stroke-width="3.5"/>
+<line x1="536" y1="138" x2="588" y2="184" stroke="#898781" stroke-width="1.2"/>
+<circle cx="380" cy="138" r="15" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="380" y="138" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">-5</text>
+<circle cx="432" cy="92" r="15" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="432" y="92" font-size="14" text-anchor="middle" fill="#712B13" dominant-baseline="central">-10</text>
+<circle cx="484" cy="184" r="15" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="484" y="184" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">15</text>
+<circle cx="536" cy="138" r="15" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<circle cx="536" cy="138" r="19" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="536" y="138" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">20</text>
+<circle cx="588" cy="184" r="15" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="588" y="184" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central">7</text>
+<text x="40" y="226" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">路径 15 - 20 - 7 呈 ∧ 形, 在 20 拐弯</text>
+<text x="40" y="248" font-size="14" text-anchor="start" fill="#085041" font-weight="600" dominant-baseline="central">best = max(best, 20 + 15 + 7) = 42</text>
+<text x="40" y="268" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">拐点 = 路径最高的那个 node, 只此一处能"两边都用"</text>
+<text x="370" y="226" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">父亲 -10 要往下接, 路径不能分叉</text>
+<text x="370" y="248" font-size="14" text-anchor="start" fill="#712B13" font-weight="600" dominant-baseline="central">return 20 + max(15, 7) = 35</text>
+<text x="370" y="268" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">只能带 15 那一边; 带 7 不会更大</text>
+<line x1="40" y1="288" x2="640" y2="288" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="312" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">clamp: 负的链不如不接. -10 看左边: L = max(-5, 0) = 0</text>
+<text x="40" y="334" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">所以递归的返回值 (35) ≠ 答案 (42): 答案放在 nonlocal 的 best 里, 在每个 node 的拐点处更新</text>
+<text x="40" y="354" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">初值 best = -inf, 因为全部为负时答案是"最大的那个负数", 不是 0</text>
+</svg>
