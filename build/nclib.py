@@ -23,7 +23,7 @@ class _S:
 
     def t(self, x, y, s, size=12, fill=SUB, anchor="start", weight=400):
         self.p.append('<text x="%s" y="%s" font-size="%d" fill="%s" text-anchor="%s" font-weight="%d" '
-                      'dominant-baseline="central">%s</text>' % (x, y, size, fill, anchor, weight, html.escape(str(s))))
+                      'dominant-baseline="central" style="white-space:pre">%s</text>' % (x, y, size, fill, anchor, weight, html.escape(str(s))))
 
     def line(self, x1, y1, x2, y2):
         self.p.append('<line x1="%s" y1="%s" x2="%s" y2="%s" stroke="%s" stroke-dasharray="4 4"/>'

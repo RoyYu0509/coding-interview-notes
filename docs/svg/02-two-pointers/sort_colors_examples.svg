@@ -1,49 +1,49 @@
-<svg width="100%" viewBox="0 0 680 280" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Sort Colors examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">数组里只有 0, 1, 2 三种数 (三种颜色)。原地排成 0...0 1...1 2...2, 不能用 sort</text>
+<svg width="100%" viewBox="0 0 680 280" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Sort Colors examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">数组里只有 0, 1, 2 三种数 (三种颜色)。原地排成 0...0 1...1 2...2, 不能用 sort</text>
 <line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
-<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">Example:  [2,0,2,1,1,0]  →  [0,0,1,1,2,2]</text>
-<text x="40" y="103" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">改之前</text>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  [2,0,2,1,1,0]  →  [0,0,1,1,2,2]</text>
+<text x="40" y="103" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">改之前</text>
 <rect x="104" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="121.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">2</text>
-<text x="121.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">0</text>
+<text x="121.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="121.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
 <rect x="138" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="155.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
-<text x="155.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">1</text>
+<text x="155.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">0</text>
+<text x="155.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
 <rect x="172" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="189.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">2</text>
-<text x="189.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">2</text>
+<text x="189.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="189.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
 <rect x="206" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="223.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
-<text x="223.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">3</text>
+<text x="223.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="223.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
 <rect x="240" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="257.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
-<text x="257.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">4</text>
+<text x="257.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="257.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
 <rect x="274" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="291.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
-<text x="291.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">5</text>
-<text x="40" y="165" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">改之后</text>
+<text x="291.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">0</text>
+<text x="291.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">5</text>
+<text x="40" y="165" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">改之后</text>
 <rect x="104" y="150" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="121.0" y="166.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
-<text x="121.0" y="192" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">0</text>
+<text x="121.0" y="166.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">0</text>
+<text x="121.0" y="192" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
 <rect x="138" y="150" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="155.0" y="166.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
-<text x="155.0" y="192" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">1</text>
+<text x="155.0" y="166.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">0</text>
+<text x="155.0" y="192" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
 <rect x="172" y="150" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="189.0" y="166.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
-<text x="189.0" y="192" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">2</text>
+<text x="189.0" y="166.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="189.0" y="192" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
 <rect x="206" y="150" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="223.0" y="166.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
-<text x="223.0" y="192" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">3</text>
+<text x="223.0" y="166.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="223.0" y="192" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
 <rect x="240" y="150" width="34" height="30" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
-<text x="257.0" y="166.0" font-size="15" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central">2</text>
-<text x="257.0" y="192" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">4</text>
+<text x="257.0" y="166.0" font-size="15" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="257.0" y="192" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
 <rect x="274" y="150" width="34" height="30" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
-<text x="291.0" y="166.0" font-size="15" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central">2</text>
-<text x="291.0" y="192" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">5</text>
-<text x="40" y="212" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">相当于把数组切成三块: 左边全是 0, 中间全是 1, 右边全是 2</text>
+<text x="291.0" y="166.0" font-size="15" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="291.0" y="192" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">5</text>
+<text x="40" y="212" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">相当于把数组切成三块: 左边全是 0, 中间全是 1, 右边全是 2</text>
 <line x1="40" y1="236" x2="640" y2="236" stroke="#B4B2A9" stroke-dasharray="4 4"/>
 <rect x="33" y="251" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
-<text x="54" y="258" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">0</text>
+<text x="54" y="258" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
 <rect x="79.6" y="251" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A"/>
-<text x="100.6" y="258" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">1</text>
+<text x="100.6" y="258" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
 <rect x="126.19999999999999" y="251" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
-<text x="147.2" y="258" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">2</text></svg>
+<text x="147.2" y="258" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text></svg>

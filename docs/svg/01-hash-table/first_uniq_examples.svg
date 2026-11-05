@@ -1,89 +1,89 @@
-<svg width="100%" viewBox="0 0 680 450" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>First Unique Character examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">找第一个在整个字符串里只出现一次的字符, 返回它的下标; 没有就返回 -1</text>
+<svg width="100%" viewBox="0 0 680 450" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>First Unique Character examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">找第一个在整个字符串里只出现一次的字符, 返回它的下标; 没有就返回 -1</text>
 <line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
-<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">Example 1:  s = &quot;leetcode&quot;  →  0</text>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  s = &quot;leetcode&quot;  →  0</text>
 <rect x="40" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="57.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">l</text>
-<text x="57.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">0</text>
+<text x="57.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">l</text>
+<text x="57.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
 <rect x="74" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="91.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">e</text>
-<text x="91.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">1</text>
+<text x="91.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">e</text>
+<text x="91.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
 <rect x="108" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="125.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">e</text>
-<text x="125.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">2</text>
+<text x="125.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">e</text>
+<text x="125.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
 <rect x="142" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="159.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">t</text>
-<text x="159.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">3</text>
+<text x="159.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">t</text>
+<text x="159.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
 <rect x="176" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="193.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">c</text>
-<text x="193.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">4</text>
+<text x="193.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">c</text>
+<text x="193.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
 <rect x="210" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="227.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">o</text>
-<text x="227.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">5</text>
+<text x="227.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">o</text>
+<text x="227.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">5</text>
 <rect x="244" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="261.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">d</text>
-<text x="261.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">6</text>
+<text x="261.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">d</text>
+<text x="261.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">6</text>
 <rect x="278" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="295.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">e</text>
-<text x="295.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">7</text>
-<text x="336" y="103" font-size="14" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central">l 只出现一次, 而且最靠前</text>
+<text x="295.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">e</text>
+<text x="295.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">7</text>
+<text x="336" y="103" font-size="14" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">l 只出现一次, 而且最靠前</text>
 <line x1="40" y1="150" x2="640" y2="150" stroke="#B4B2A9" stroke-dasharray="4 4"/>
-<text x="40" y="170" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">Example 2:  s = &quot;loveleetcode&quot;  →  2</text>
+<text x="40" y="170" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  s = &quot;loveleetcode&quot;  →  2</text>
 <rect x="40" y="212" width="30" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="55.0" y="228.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">l</text>
-<text x="55.0" y="254" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">0</text>
+<text x="55.0" y="228.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">l</text>
+<text x="55.0" y="254" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
 <rect x="70" y="212" width="30" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="85.0" y="228.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">o</text>
-<text x="85.0" y="254" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">1</text>
+<text x="85.0" y="228.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">o</text>
+<text x="85.0" y="254" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
 <rect x="100" y="212" width="30" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="115.0" y="228.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">v</text>
-<text x="115.0" y="254" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">2</text>
+<text x="115.0" y="228.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">v</text>
+<text x="115.0" y="254" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
 <rect x="130" y="212" width="30" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="145.0" y="228.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">e</text>
-<text x="145.0" y="254" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">3</text>
+<text x="145.0" y="228.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">e</text>
+<text x="145.0" y="254" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
 <rect x="160" y="212" width="30" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="175.0" y="228.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">l</text>
-<text x="175.0" y="254" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">4</text>
+<text x="175.0" y="228.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">l</text>
+<text x="175.0" y="254" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
 <rect x="190" y="212" width="30" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="205.0" y="228.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">e</text>
-<text x="205.0" y="254" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">5</text>
+<text x="205.0" y="228.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">e</text>
+<text x="205.0" y="254" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">5</text>
 <rect x="220" y="212" width="30" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="235.0" y="228.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">e</text>
-<text x="235.0" y="254" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">6</text>
+<text x="235.0" y="228.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">e</text>
+<text x="235.0" y="254" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">6</text>
 <rect x="250" y="212" width="30" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="265.0" y="228.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">t</text>
-<text x="265.0" y="254" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">7</text>
+<text x="265.0" y="228.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">t</text>
+<text x="265.0" y="254" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">7</text>
 <rect x="280" y="212" width="30" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="295.0" y="228.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">c</text>
-<text x="295.0" y="254" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">8</text>
+<text x="295.0" y="228.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">c</text>
+<text x="295.0" y="254" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">8</text>
 <rect x="310" y="212" width="30" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="325.0" y="228.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">o</text>
-<text x="325.0" y="254" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">9</text>
+<text x="325.0" y="228.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">o</text>
+<text x="325.0" y="254" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">9</text>
 <rect x="340" y="212" width="30" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="355.0" y="228.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">d</text>
-<text x="355.0" y="254" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">10</text>
+<text x="355.0" y="228.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">d</text>
+<text x="355.0" y="254" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">10</text>
 <rect x="370" y="212" width="30" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="385.0" y="228.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">e</text>
-<text x="385.0" y="254" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">11</text>
+<text x="385.0" y="228.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">e</text>
+<text x="385.0" y="254" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">11</text>
 <path d="M43 204 L43 196 L97 196 L97 204" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="4 3"/>
-<text x="424" y="198" font-size="12" fill="#712B13" text-anchor="start" font-weight="400" dominant-baseline="central">l 和 o 后面还会再出现 ✗</text>
-<text x="424" y="227" font-size="14" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central">v</text>
+<text x="424" y="198" font-size="12" fill="#712B13" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">l 和 o 后面还会再出现 ✗</text>
+<text x="424" y="227" font-size="14" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">v</text>
 <line x1="40" y1="274" x2="640" y2="274" stroke="#B4B2A9" stroke-dasharray="4 4"/>
-<text x="40" y="294" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">Example 3:  s = &quot;aabb&quot;  →  -1</text>
+<text x="40" y="294" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 3:  s = &quot;aabb&quot;  →  -1</text>
 <rect x="40" y="320" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="57.0" y="336.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">a</text>
-<text x="57.0" y="362" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">0</text>
+<text x="57.0" y="336.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">a</text>
+<text x="57.0" y="362" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
 <rect x="74" y="320" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="91.0" y="336.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">a</text>
-<text x="91.0" y="362" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">1</text>
+<text x="91.0" y="336.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">a</text>
+<text x="91.0" y="362" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
 <rect x="108" y="320" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="125.0" y="336.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">b</text>
-<text x="125.0" y="362" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">2</text>
+<text x="125.0" y="336.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">b</text>
+<text x="125.0" y="362" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
 <rect x="142" y="320" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
-<text x="159.0" y="336.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">b</text>
-<text x="159.0" y="362" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">3</text>
-<text x="40" y="382" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">每个字符都出现了两次 → -1</text>
+<text x="159.0" y="336.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">b</text>
+<text x="159.0" y="362" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="40" y="382" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">每个字符都出现了两次 → -1</text>
 <line x1="40" y1="406" x2="640" y2="406" stroke="#B4B2A9" stroke-dasharray="4 4"/>
 <rect x="33" y="421" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
-<text x="54" y="428" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">答案</text>
+<text x="54" y="428" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">答案</text>
 <rect x="97" y="421" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
-<text x="118" y="428" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">看起来像, 但不对</text></svg>
+<text x="118" y="428" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">看起来像, 但不对</text></svg>
