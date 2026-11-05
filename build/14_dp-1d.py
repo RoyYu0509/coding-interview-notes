@@ -93,7 +93,7 @@ CODE["prod"] = '''
 def maxProduct(nums):
     mx = mn = best = nums[0]        # mx / mn = 以 nums[i] 结尾的最大 / 最小 product
     for x in nums[1:]:
-        cands = (x, mx * x, mn * x) # 重开, 接在 max 后, 接在 min 后 (x < 0 时 min 乘 x 会变 max)
+        cands = (x, mx * x, mn * x)  # 重开, 接在 max 后, 接在 min 后 (x < 0 时 min 乘 x 会变 max)
         mx, mn = max(cands), min(cands)   # 两个都用 旧的 mx, mn 算, 所以先算 cands
         best = max(best, mx)
     return best

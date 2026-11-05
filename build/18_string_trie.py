@@ -217,7 +217,7 @@ CODE_S0 = '''
 # str 不可变: s[0] = 'x' 会 TypeError, s += c 其实是 "新建一个 string"
 res = ''
 for c in s:
-    res += c                  # 每次: 新 string = 旧 string 全部复制 + 1 个字符  -> 总共 O(n^2)
+    res += c                  # 每次: 新 string = 旧 string 全部复制 + 1 个字符 -> O(n^2)
 
 parts = []
 for c in s:
@@ -331,7 +331,7 @@ def findWords(board, words):
         node = parent.children[ch]            # 调用前已保证 ch 在 parent.children 里
         if node.word:
             res.append(node.word)
-            node.word = None                  # 找到后删 word: 不会重复收, 也让这个 node 可以被摘掉
+            node.word = None                  # 找到后删 word: 不重复收, node 也能被摘掉
         board[r][c] = '#'                     # choose: 标记已访问 ('#' 不在任何 children 里)
         for dr, dc in ((1, 0), (-1, 0), (0, 1), (0, -1)):
             nr, nc = r + dr, c + dc
