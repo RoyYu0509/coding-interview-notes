@@ -24,17 +24,87 @@ figure svg{width:100%;height:auto;display:block}
 figcaption{color:#52514e;font-size:14px;padding:4px 6px 0}
 table{border-collapse:collapse;margin:10px 0;font-size:15px}
 td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
+details{margin:12px 0;border:1px dashed var(--box);border-radius:6px;padding:4px 12px}
+summary{cursor:pointer;color:var(--sub);font-size:15px}
+ol,ul{padding-left:24px}li{margin:4px 0}
 </style></head><body><article contenteditable="true">
 <h1>07 · Monotonic Stack / Queue</h1>
-<p class="main">主线: 扫一遍数组, 同时维护一个 <b>单调</b> 的容器 (stack 或 deque)。新元素一到, 就把 "从此没用" 的元素弹掉 —— <b>弹出的那一刻, 就是它的答案 / 边界出现的那一刻</b>。每个元素最多进出一次, 把 O(n²) 的反复往右扫降成 O(n)。</p>
-<p class="main">概念链: Next Greater (模板) → Daily Temperatures (存 index, pop 时结算) → Next Greater Element II (循环数组, 走 2n) → Largest Rectangle in Histogram (pop 时左右边界同时确定, 哨兵 0) → Remove K Digits (greedy: 栈就是答案) → Sliding Window Maximum (两头都能 pop 的 deque)</p>
-<h2>0. 第一性原理: 暴力在反复扫什么, stack 怎么消掉</h2>
-<p><b>题目:</b> 数组里每个数, 找它右边第一个比它大的数, 没有就是 −1。例子: <code>[9, 8, 7, 6, 5, 10]</code> → <code>[10, 10, 10, 10, 10, −1]</code>。</p>
-<p><b>Brute force:</b> 每个 i 都从 i+1 往右扫, 直到遇到更大的。最坏 O(n²)。</p>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">next_greater_brute</span>(nums):             <span class="c"># O(n^2)</span></span><span class="l">    n = <span class="t">len</span>(nums)</span><span class="l">    ans = [-1] * n</span><span class="l">    <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(n):</span><span class="l">        <span class="k">for</span> j <span class="k">in</span> <span class="t">range</span>(i + 1, n):         <span class="c"># 每个 i 都从 i+1 重新往右扫</span></span><span class="l">            <span class="k">if</span> nums[j] &gt; nums[i]:</span><span class="l">                ans[i] = nums[j]</span><span class="l">                <span class="k">break</span></span><span class="l">    <span class="r">return</span> ans</span></div>
-<p><b>浪费在哪:</b> 看图左边。8, 7, 6, 5 被 i = 0, 1, 2, 3 各扫了一遍, 但它们其实都在等同一个 10。暴力每个 i 都从头扫, <b>没有记住 "谁还在等答案"</b>。</p>
-<p><b>怎么消掉:</b> 扫的时候只保留 "还没等到更大数" 的元素, 放进 stack。它们一定是 <b>从底到顶递减</b> 的 (如果某个元素比它下面的大, 下面的早就被它结算了)。所以新来的 x 只要和栈顶比: 栈顶更小就 pop 并结算, 直到栈顶 ≥ x 为止, 再往下全 ≥ 栈顶, 不用看。</p>
-<p><b>为什么 pop 掉的元素以后再也用不到:</b> 它已经拿到答案; 栈里还在等的元素都 ≥ 它, 不会拿它当答案; 它右边的新元素只往右找, 它在左边, 看不到。所以每个元素 push 1 次、最多 pop 1 次, 总共 ≤ 2n 次操作, 是 amortized O(n) (一次 pop 好几个没关系, 总数还是 ≤ n)。</p>
+<h2>这篇讲什么</h2>
+<p>这一类题都在问同一件事的变形: <b>对每个元素, 找它右边 (或左边) 第一个比它大 (或小) 的元素</b>。比如"要等几天才会更暖"、"这根柱子往左右能延伸多远"。</p>
+<p>brute force 是每个元素都往右扫, 直到找到更大的, <code>O(n²)</code>。</p>
+<p><b>Monotonic stack</b> (单调栈) 是一个特殊的 stack (见 06): 栈里的元素从底到顶<b>保持单调</b> (比如一直递减)。新元素来的时候, 把栈顶比它小的全部 pop 掉。神奇的地方在于: <b>被 pop 的那一刻, 正好就是它找到答案的那一刻</b>。每个元素只进出一次, 所以是 <code>O(n)</code>。</p>
+<p>如果窗口会滑动 (旧元素会过期), 就把 stack 换成两头都能 pop 的 deque, 叫 monotonic queue。</p>
+<table><tr><th>#</th><th>题目</th><th>考过的公司数</th><th>相比上一题多了什么</th></tr><tr><td>1</td><td>Daily Temperatures</td><td>25</td><td>模板题: 右边第一个更大的</td></tr><tr><td>2</td><td>Next Greater Element II</td><td>17</td><td>数组变成循环的</td></tr><tr><td>3</td><td>Largest Rectangle in Histogram</td><td>28</td><td>pop 时同时得到左右两个边界</td></tr><tr><td>4</td><td>Remove K Digits</td><td>21</td><td>栈本身就是答案 (greedy)</td></tr><tr><td>5</td><td>Sliding Window Maximum</td><td>48</td><td>窗口会过期, 换成 deque</td></tr></table>
+<p>每道题的顺序: <b>题目在问什么 → 看例子 → brute force → intuition → 算法 → 手动走一遍 → 复杂度</b>。代码放在最后, 默认折叠。</p>
+<p>前置知识: 06 · Stack。</p>
+<h2>1. Daily Temperatures</h2>
+<h3>题目在问什么</h3>
+<p><code>temperatures[i]</code> 是第 i 天的温度。对每一天, 问: 要再等几天, 才会遇到一个<b>更暖和</b>的天? 如果之后都没有更暖的, 填 0。</p>
+<p>换句话说: 对每个元素, 找它<b>右边第一个比它大的</b>元素, 返回下标之差。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 298" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Daily Temperatures examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">temperatures[i] 是第 i 天的温度。对每一天, 要等几天才会遇到更暖和的一天? 一直没有就填 0</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  [73,74,75,71,69,72,76,73]  →  [1,1,4,2,1,1,0,0]</text>
+<text x="40" y="103" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">温度</text>
+<rect x="104" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">73</text>
+<text x="121.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="138" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="155.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">74</text>
+<text x="155.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="172" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="189.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">75</text>
+<text x="189.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="206" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="223.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">71</text>
+<text x="223.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="240" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="257.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">69</text>
+<text x="257.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="274" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="291.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">72</text>
+<text x="291.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">5</text>
+<rect x="308" y="88" width="34" height="30" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
+<text x="325.0" y="104.0" font-size="15" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">76</text>
+<text x="325.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">6</text>
+<rect x="342" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="359.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">73</text>
+<text x="359.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">7</text>
+<text x="40" y="165" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">答案</text>
+<rect x="104" y="150" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="166.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="121.0" y="192" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="138" y="150" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="155.0" y="166.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="155.0" y="192" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="172" y="150" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="189.0" y="166.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<text x="189.0" y="192" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="206" y="150" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="223.0" y="166.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="223.0" y="192" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="240" y="150" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="257.0" y="166.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="257.0" y="192" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="274" y="150" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="291.0" y="166.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="291.0" y="192" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">5</text>
+<rect x="308" y="150" width="34" height="30" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="0.8"/>
+<text x="325.0" y="166.0" font-size="15" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">0</text>
+<text x="325.0" y="192" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">6</text>
+<rect x="342" y="150" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="359.0" y="166.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">0</text>
+<text x="359.0" y="192" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">7</text>
+<text x="40" y="212" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">第 2 天 75 度: 往后 71、69、72 都更冷, 第 6 天 76 才更暖 → 等 6 - 2 = 4 天</text>
+<text x="40" y="230" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">第 6 天 76 度: 后面没有更暖的 → 0</text>
+<line x1="40" y1="254" x2="640" y2="254" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="269" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="276" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">例: 第 2 天</text>
+<rect x="142.0" y="269" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
+<text x="163.0" y="276" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">例: 第 6 天</text></svg>
+<figcaption>例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>每一天 i, 从 i+1 开始往右扫, 遇到第一个更暖的就停。最坏 (温度一直下降) 每天都扫到最后, <code>O(n²)</code>。</p>
 <figure><svg width="100%" viewBox="0 0 680 490" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>Brute force vs monotonic stack</title><desc>Left: brute force rescans to the right O(n^2); right: stack pops every element at most once.</desc><defs><marker id="c0-arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="c0-arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">nums = [9, 8, 7, 6, 5, 10] · 每个数找 "右边第一个更大的数"</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">同一个例子: 左边暴力每个 i 重新往右扫, 右边 stack 每个数只进出一次</text>
@@ -96,20 +166,16 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="40" y="432" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">→ 每个数 push 1 次、最多 pop 1 次 → 总共 ≤ 2n 次操作 = O(n)</text>
 <rect x="40" y="456" width="22" height="16" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="70" y="464" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">新 push / 当前输入</text><rect x="211.2" y="456" width="22" height="16" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="241.2" y="464" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop (虚线扔到左边)</text><rect x="381.6" y="456" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="411.6" y="464" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">数组 / 栈里其他</text><rect x="532.8" y="456" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="529.8" y="453" width="28" height="22" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/><text x="562.8" y="464" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶</text>
 </svg>
-<figcaption>左: 暴力每个 i 重新扫 (15 次比较)。右: 10 一来, 栈里 5 个等答案的数一次性结算, 每个数只进出一次。</figcaption></figure>
-<p>通用模板 (找右边第一个更大 → 递减栈):</p>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">next_greater</span>(nums):                   <span class="c"># O(n)</span></span><span class="l">    ans = [-1] * <span class="t">len</span>(nums)</span><span class="l">    stack = []                            <span class="c"># 存 index; 对应的值从底到顶递减</span></span><span class="l">    <span class="k">for</span> i, x <span class="k">in</span> <span class="t">enumerate</span>(nums):</span><span class="l">        <span class="k">while</span> stack <span class="k">and</span> nums[stack[-1]] &lt; x:   <span class="c"># x 比栈顶大: x 就是栈顶的 next greater</span></span><span class="l">            ans[stack.<span class="f">pop</span>()] = x          <span class="c"># pop 的这一刻结算; 弹出的元素以后再也用不到</span></span><span class="l">        stack.<span class="f">append</span>(i)                   <span class="c"># 栈里全是 &quot;还没等到更大数&quot; 的元素</span></span><span class="l">    <span class="r">return</span> ans</span></div>
-<h3>口诀: 递增栈还是递减栈</h3>
-<table><tr><th>要找</th><th>栈 (底 → 顶)</th><th>while 条件 (pop)</th><th>答案什么时候出现</th></tr><tr><td>右边第一个 <b>更大</b></td><td>递减</td><td><code>nums[stack[-1]] &lt; x</code></td><td>pop 时: 答案 = x</td></tr><tr><td>右边第一个 <b>更小</b></td><td>递增</td><td><code>nums[stack[-1]] &gt; x</code></td><td>pop 时: 答案 = x</td></tr><tr><td>左边第一个 更大</td><td>递减</td><td>同右边更大</td><td>pop 完, push 前: 看栈顶</td></tr><tr><td>左边第一个 更小</td><td>递增</td><td>同右边更小</td><td>pop 完, push 前: 看栈顶</td></tr></table>
-<p>口诀: <b>找更大 → 栈递减</b> (小的在栈里等大的来); <b>找更小 → 栈递增</b>。while 条件永远是 "来了个比栈顶更 '强' 的, 栈顶出去"。右边的答案在 pop 时拿到, 左边的答案在 pop 完后看栈顶。</p>
-<p>同一个循环可以同时拿到左右两个边界 (后面 Largest Rectangle 就靠这个):</p>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">nearest_smaller_both</span>(nums):           <span class="c"># 递增栈: 一次循环同时得到左右两个边界</span></span><span class="l">    n = <span class="t">len</span>(nums)</span><span class="l">    left, right = [-1] * n, [n] * n       <span class="c"># -1 / n 表示那一侧没有更小的</span></span><span class="l">    stack = []</span><span class="l">    <span class="k">for</span> i, x <span class="k">in</span> <span class="t">enumerate</span>(nums):</span><span class="l">        <span class="k">while</span> stack <span class="k">and</span> nums[stack[-1]] &gt; x:</span><span class="l">            right[stack.<span class="f">pop</span>()] = i        <span class="c"># 被 x pop: x 是它右边第一个更小的</span></span><span class="l">        left[i] = stack[-1] <span class="k">if</span> stack <span class="k">else</span> -1   <span class="c"># pop 完剩下的栈顶 = i 左边第一个 &lt;= x 的</span></span><span class="l">        stack.<span class="f">append</span>(i)</span><span class="l">    <span class="r">return</span> left, right</span></div>
-<p>相等怎么办: 条件用 <code>&lt;</code> 还是 <code>&lt;=</code>, 取决于题目要 "严格更大" 还是 "大于等于"。面试里先问清楚, 再决定把哪边的等号放进 while。</p>
-<p class="note"><b>记:</b>单调栈 = 记住 "谁还在等答案"。新元素和栈顶比, 能 pop 就结算; 每个元素最多进出一次, O(n)。找更大用递减栈, 找更小用递增栈。</p>
-<h2>1. Daily Temperatures: 存 index, 在 pop 时结算答案</h2>
-<p><b>题目:</b> 给每日温度 T, 对每一天算出还要等几天才有更高的温度, 没有则 0。例子: <code>T = [73, 74, 75, 71, 69, 72, 76, 73]</code> → <code>[1, 1, 4, 2, 1, 1, 0, 0]</code>。</p>
-<p><b>Brute force:</b> 每天往右扫到第一个更高温, O(n²)。浪费: 和第 0 节一样, 71 和 69 都在等 72, 却各自扫了一遍。</p>
-<p><b>关键观察:</b> 这就是模板, 只改一点: 答案是 <b>距离</b> i − j, 不是值, 所以栈里存 <b>index</b>, 比较时回 T 里取温度。</p>
+<figcaption>左: brute force 每个 i 都重新往右扫。右: 一个大的数来了, 栈里等答案的数一次性全部结算, 每个数只进出一次。</figcaption></figure>
+<p>浪费在哪: 看温度 <code>75, 71, 69, 72</code>。brute force 里, 71 往右扫看到 69、72; 69 往右扫又看到 72。72 被反复看了好几次。</p>
+<h3>Intuition: 让"还在等答案"的天排队, 来了一个暖的就一起结算</h3>
+<p>换个方向想: 不是每一天去找答案, 而是每来一个新的温度, 看看它<b>能当谁的答案</b>。</p>
+<ol><li>从左往右扫。还没找到更暖的那些天, 先放进一个 stack 里"等着"。</li><li>来了新的一天 x。栈顶的那一天如果比 x 冷, 那 x 就是它等的那个更暖的天! 结算它的答案, pop 掉。</li><li>继续看新的栈顶, 只要比 x 冷就一直 pop、一直结算。直到栈顶比 x 暖 (或者栈空了)。</li><li>最后把 x 自己 push 进去, 它也要开始等。</li></ol>
+<p>这样栈里的温度从底到顶一定是<b>递减</b>的 (比 x 冷的都被 pop 了, x 才放上去)。所以叫 monotonic stack。</p>
+<p>为什么被 pop 的元素可以扔掉? 因为它已经找到答案了, 以后再也用不到。每个元素最多 push 一次、pop 一次, 总共 <code>O(n)</code>。</p>
+<p>一个细节: 答案要的是"等几天", 所以栈里存<b>下标</b>, 不存温度。温度用 <code>temperatures[下标]</code> 去查。</p>
+<h3>算法</h3>
+<ol><li><code>ans = [0] * n</code>, <code>stack = []</code> (存下标)。</li><li>i 从 0 到 n-1: 当栈不空且 <code>T[stack[-1]] < T[i]</code>: <code>j = stack.pop()</code>, <code>ans[j] = i - j</code>。</li><li><code>stack.append(i)</code>。</li><li>最后还在栈里的, 答案保持 0。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 396" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>Daily Temperatures invariant</title><desc>Stack holds days still waiting for a warmer day, temperatures decreasing; pop settles the answer.</desc><defs><marker id="c1-arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="c1-arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">T = [73, 74, 75, 71, 69, 72, 76, 73] · 走到 i = 5 (T = 72) 这一刻</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">invariant: 栈里 = 还没等到更高温的那些天 · 从底到顶温度递减</text>
@@ -146,7 +212,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="230" y="336" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">pop 的那一刻就是答案出现的那一刻 → 在 pop 里结算 ans</text>
 <rect x="40" y="364" width="22" height="16" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="70" y="372" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">当前输入</text><rect x="148" y="364" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="178" y="372" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里其他</text><rect x="256" y="364" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="253" y="361" width="28" height="22" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/><text x="286" y="372" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶 / 当前</text>
 </svg>
-<figcaption>i = 5 (T = 72) 到来: 栈里 69、71 都比 72 冷 → pop 并结算; 75 不比 72 冷 → 停。</figcaption></figure>
+<figcaption>i = 5 (72 度) 来了: 栈里 69、71 都比 72 冷, pop 并结算; 75 不比 72 冷, 停。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 1108" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>Daily Temperatures trace</title><desc>T = [73,74,75,71,69,72,76,73]: for each day pop colder days off a decreasing stack and settle ans.</desc><defs><marker id="dttrace-arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="dttrace-arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">T = [73, 74, 75, 71, 69, 72, 76, 73] · 栈里存 i·T (index·温度), 从底到顶温度递减</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">每一步: 当前 T 和栈顶比 → 栈顶更冷就 pop 并结算 ans = i − j → 最后把 i push 进去</text>
@@ -258,15 +325,70 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="40" y="1058" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">ans = [1, 1, 4, 2, 1, 1, 0, 0]</text>
 <rect x="40" y="1078" width="22" height="16" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="70" y="1086" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">新 push / 当前输入</text><rect x="211.2" y="1078" width="22" height="16" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="241.2" y="1086" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop (虚线扔到左边)</text><rect x="381.6" y="1078" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="411.6" y="1086" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里其他</text><rect x="489.6" y="1078" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="486.6" y="1075" width="28" height="22" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/><text x="519.6" y="1086" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶</text>
 </svg>
-<figcaption>8 天的完整运行。注意 i = 5 一次 pop 两个、i = 6 一次 pop 两个; 每一次 pop 都对应一个 ans 的确定。</figcaption></figure>
+<figcaption>8 天的完整运行。i = 5 一次 pop 两个, i = 6 一次 pop 两个; 每次 pop 都确定了一个答案。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n)</code>: 每个下标最多 push 一次、pop 一次。Space <code>O(n)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">daily_temperatures</span>(T):</span><span class="l">    ans = [0] * <span class="t">len</span>(T)</span><span class="l">    stack = []                            <span class="c"># 存 index (不存温度): 答案是 i - j, 需要位置</span></span><span class="l">    <span class="k">for</span> i, t <span class="k">in</span> <span class="t">enumerate</span>(T):</span><span class="l">        <span class="k">while</span> stack <span class="k">and</span> T[stack[-1]] &lt; t: <span class="c"># t 是栈顶那天等到的第一个更高温</span></span><span class="l">            j = stack.<span class="f">pop</span>()</span><span class="l">            ans[j] = i - j                <span class="c"># 在 pop 时结算 j 的答案</span></span><span class="l">        stack.<span class="f">append</span>(i)</span><span class="l">    <span class="r">return</span> ans                            <span class="c"># 栈里剩下的天没等到更高温, ans 保持 0</span></span></div>
-<p><b>Time:</b> O(n)。每个 index push 1 次, 最多 pop 1 次, while 循环总共执行 ≤ n 次。<b>Space:</b> O(n), 最坏是温度严格递减 (<code>[5, 4, 3, 2, 1]</code>), 全部留在栈里。</p>
-<p>变体: Next Greater Element I (nums1 是 nums2 的子集) 就是模板 + 一个 dict 记 "值 → 它的 next greater"。Final Prices With a Special Discount 是 "右边第一个 ≤ 自己" → 换成递增栈。</p>
-<p class="note"><b>记:</b>存 index; while 栈顶 < 当前: pop, 并在这一刻写 ans[j] = i − j。</p>
-<h2>2. Next Greater Element II: 循环数组, 遍历 2n</h2>
-<p><b>题目:</b> 数组首尾相连 (循环), 对每个元素找它 "往右走" 遇到的第一个更大的数, 可以绕回开头。例子: <code>[2, 3, 1]</code> → <code>[3, −1, 2]</code> (最后的 1 绕回去遇到 2)。</p>
-<p><b>相比上一题:</b> 多了 "绕回"。Brute force 是每个元素往右扫最多 n−1 个 (取模), O(n²)。</p>
-<p><b>关键观察:</b> 把数组虚拟地拼成两份, 取值用 <code>i % n</code>, 就能看到每个元素 "右边" 的全部 n−1 个元素。改两行: <code>range(2 * n)</code> 和只在 <code>i &lt; n</code> 时 push。</p>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">next_greater_brute</span>(nums):             <span class="c"># O(n^2)</span></span><span class="l">    n = <span class="t">len</span>(nums)</span><span class="l">    ans = [-1] * n</span><span class="l">    <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(n):</span><span class="l">        <span class="k">for</span> j <span class="k">in</span> <span class="t">range</span>(i + 1, n):         <span class="c"># 每个 i 都从 i+1 重新往右扫</span></span><span class="l">            <span class="k">if</span> nums[j] &gt; nums[i]:</span><span class="l">                ans[i] = nums[j]</span><span class="l">                <span class="k">break</span></span><span class="l">    <span class="r">return</span> ans</span></div>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">next_greater</span>(nums):                   <span class="c"># O(n)</span></span><span class="l">    ans = [-1] * <span class="t">len</span>(nums)</span><span class="l">    stack = []                            <span class="c"># 存 index; 对应的值从底到顶递减</span></span><span class="l">    <span class="k">for</span> i, x <span class="k">in</span> <span class="t">enumerate</span>(nums):</span><span class="l">        <span class="k">while</span> stack <span class="k">and</span> nums[stack[-1]] &lt; x:   <span class="c"># x 比栈顶大: x 就是栈顶的 next greater</span></span><span class="l">            ans[stack.<span class="f">pop</span>()] = x          <span class="c"># pop 的这一刻结算; 弹出的元素以后再也用不到</span></span><span class="l">        stack.<span class="f">append</span>(i)                   <span class="c"># 栈里全是 &quot;还没等到更大数&quot; 的元素</span></span><span class="l">    <span class="r">return</span> ans</span></div>
+</details>
+<p class="note"><b>记:</b>找右边第一个更大的: 维护递减栈 (存下标)。新元素比栈顶大就 pop, pop 的那一刻就是栈顶找到答案的时候。</p>
+<h2>把第 1 题抽象一下: 递增栈还是递减栈</h2>
+<p>第 1 题的规律可以总结成两句:</p>
+<ul><li><b>找更大的 → 维护递减栈</b> (来了一个大的, 就把比它小的 pop 掉)。<b>找更小的 → 维护递增栈</b>。</li><li><b>右边</b>的答案在 pop 的时候拿到 (pop 它的那个新元素就是答案)。<b>左边</b>的答案在 pop 完之后看栈顶 (新元素 push 之前, 栈顶就是它左边第一个更大 / 更小的)。</li></ul>
+<p>所以一次扫描可以同时拿到左右两边的答案, 第 3 题就要用到这一点。</p>
+<details><summary>代码: 一次扫描同时得到左边、右边第一个更小的</summary>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">nearest_smaller_both</span>(nums):           <span class="c"># 递增栈: 一次循环同时得到左右两个边界</span></span><span class="l">    n = <span class="t">len</span>(nums)</span><span class="l">    left, right = [-1] * n, [n] * n       <span class="c"># -1 / n 表示那一侧没有更小的</span></span><span class="l">    stack = []</span><span class="l">    <span class="k">for</span> i, x <span class="k">in</span> <span class="t">enumerate</span>(nums):</span><span class="l">        <span class="k">while</span> stack <span class="k">and</span> nums[stack[-1]] &gt; x:</span><span class="l">            right[stack.<span class="f">pop</span>()] = i        <span class="c"># 被 x pop: x 是它右边第一个更小的</span></span><span class="l">        left[i] = stack[-1] <span class="k">if</span> stack <span class="k">else</span> -1   <span class="c"># pop 完剩下的栈顶 = i 左边第一个 &lt;= x 的</span></span><span class="l">        stack.<span class="f">append</span>(i)</span><span class="l">    <span class="r">return</span> left, right</span></div>
+</details>
+<p class="note"><b>记:</b>找更大用递减栈, 找更小用递增栈。右边的答案 pop 时拿, 左边的答案 push 前看栈顶。</p>
+<h2>2. Next Greater Element II</h2>
+<h3>题目在问什么</h3>
+<p>和第 1 题一样找"右边第一个更大的数", 但数组是<b>循环</b>的: 最后一个元素后面接着第一个元素。没有更大的返回 -1。这题返回的是那个数的值, 不是距离。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 368" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Next Greater Element II examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">数组是循环的: 最后一个元素的下一个是第一个。对每个元素, 找它往后 (可以绕回开头) 第一个更大的数, 没有就是 -1</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  [1,2,1]  →  [2,-1,2]</text>
+<rect x="40" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="57.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="91.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="91.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="108" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="125.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="125.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="40" y="150" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">最后一个 1: 往后绕回开头, 先遇到 1 (不大), 再遇到 2 → 2</text>
+<text x="40" y="168" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">2 绕一整圈都没有更大的 → -1</text>
+<line x1="40" y1="192" x2="640" y2="192" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="212" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  [1,2,3,4,3]  →  [2,3,4,-1,4]</text>
+<rect x="40" y="238" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="254.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="57.0" y="280" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="238" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="91.0" y="254.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="91.0" y="280" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="108" y="238" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.0" y="254.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="125.0" y="280" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="142" y="238" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="159.0" y="254.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<text x="159.0" y="280" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="176" y="238" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="193.0" y="254.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="193.0" y="280" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
+<text x="40" y="300" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">最后一个 3 绕回开头: 1、2 都不大, 3 也不大, 4 更大 → 4</text>
+<line x1="40" y1="324" x2="640" y2="324" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="339" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="346" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">需要绕回开头的元素</text></svg>
+<figcaption>两个例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>每个元素往后走 n-1 步 (用 <code>% n</code> 绕回开头), 找第一个更大的。<code>O(n²)</code>。</p>
+<h3>Intuition: 把数组走两遍</h3>
+<p>循环数组的常用技巧: 想象把数组复制一份接在后面, <code>[1,2,1]</code> 变成 <code>[1,2,1,1,2,1]</code>。在这个两倍长的数组上做第 1 题, 前 n 个元素的答案就是循环数组的答案。</p>
+<p>不用真的复制: 循环 i 从 0 到 2n-1, 用 <code>nums[i % n]</code> 取值。第二圈的元素只负责"给别人当答案"(pop 别人), 不需要 push 自己, 因为它们的答案在第一圈已经处理过了。</p>
+<h3>算法</h3>
+<ol><li><code>ans = [-1] * n</code>。i 从 0 到 2n-1, <code>x = nums[i % n]</code>。</li><li>当栈不空且 <code>nums[stack[-1]] < x</code>: <code>ans[stack.pop()] = x</code>。</li><li>如果 <code>i < n</code>, push i。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 430" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>Circular array doubled</title><desc>Walk 2n indices with i % n; wrap-around gives elements at the end a second chance.</desc><defs><marker id="c2-arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="c2-arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">nums = [2, 3, 1] · 循环数组: 最后一个元素的 "右边" 要绕回开头</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">把数组虚拟地拼成两份, 取值用 nums[i % n], 不真的拷贝</text>
@@ -301,7 +423,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="40" y="370" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">2n 次循环, 每个元素最多 push 1 次 / pop 1 次 → 仍是 O(n)</text>
 <rect x="40" y="396" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="70" y="404" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">第 1 圈 (真实)</text><rect x="186.4" y="396" width="22" height="16" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="216.4" y="404" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">答案</text>
 </svg>
-<figcaption>拼成两份后, idx 2 (值 1) 在第 2 圈遇到 2; idx 1 (值 3) 绕一圈都没有更大的。</figcaption></figure>
+<figcaption>拼成两份之后, index 2 (值 1) 在第二圈遇到了 2; index 1 (值 3) 绕一圈都没有更大的。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 708" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>Next Greater Element II trace</title><desc>nums=[2,3,1] circular: 2n iterations, only push in the first pass.</desc><defs><marker id="ngetrace-arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ngetrace-arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">nums = [2, 3, 1] (循环) · 走 i = 0..5 (共 2n = 6 步), x = nums[i % n]</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里存 idx·值, 从底到顶递减 · 只在第 1 圈 (i &lt; n) push, 第 2 圈只负责结算</text>
@@ -377,14 +500,72 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="40" y="658" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">ans = [3, −1, 2]  (ans[2] = 2: 1 绕回第 2 圈才遇到 2)</text>
 <rect x="40" y="678" width="22" height="16" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="70" y="686" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">新 push / 当前输入</text><rect x="211.2" y="678" width="22" height="16" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="241.2" y="686" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop (虚线扔到左边)</text><rect x="381.6" y="678" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="411.6" y="686" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里其他</text><rect x="489.6" y="678" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="486.6" y="675" width="28" height="22" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/><text x="519.6" y="686" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶</text>
 </svg>
-<figcaption>6 步 (2n)。第 2 圈 (i = 3, 4, 5) 不 push, 只结算: i = 3 把 1 pop 掉并得到 ans[2] = 2。</figcaption></figure>
+<figcaption>6 步 (2n)。第二圈 (i = 3, 4, 5) 不 push, 只结算: i = 3 把 1 pop 掉, 得到 ans[2] = 2。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n)</code>, Space <code>O(n)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">next_greater_elements</span>(nums):</span><span class="l">    n = <span class="t">len</span>(nums)</span><span class="l">    ans = [-1] * n</span><span class="l">    stack = []</span><span class="l">    <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(2 * n):                <span class="c"># 走 2 圈: 第 2 圈让右边没有的元素绕回去找</span></span><span class="l">        x = nums[i % n]                   <span class="c"># 用 i % n 取值, 不拷贝数组</span></span><span class="l">        <span class="k">while</span> stack <span class="k">and</span> nums[stack[-1]] &lt; x:</span><span class="l">            ans[stack.<span class="f">pop</span>()] = x</span><span class="l">        <span class="k">if</span> i &lt; n:                         <span class="c"># 只在第 1 圈 push: 第 2 圈只负责结算</span></span><span class="l">            stack.<span class="f">append</span>(i)</span><span class="l">    <span class="r">return</span> ans</span></div>
-<p><b>Time:</b> O(n), 循环 2n 次, 每个元素仍然最多 push 1 次 / pop 1 次。<b>Space:</b> O(n)。</p>
-<p class="note"><b>记:</b>循环数组 = 遍历 2n, 用 i % n 取值; 只在第 1 圈 push, 第 2 圈只结算。</p>
-<h2>3. Largest Rectangle in Histogram: pop 时左右边界同时确定</h2>
-<p><b>题目:</b> 一排宽为 1 的柱子 heights, 求柱状图里最大的矩形面积。例子: <code>[2, 1, 5, 6, 2, 3]</code> → <code>10</code> (高 5, 宽 2)。</p>
-<p><b>Brute force:</b> 对每根柱子, 向左右各扩展到第一根比它矮的, 面积 = 高 × 宽, O(n²)。浪费: 每根柱子都从自己出发重新向两边走, 不知道别人已经走过哪一段。</p>
-<p><b>相比上一题:</b> 不再是 "给每个元素找一个答案", 而是 <b>每根柱子要左右两个边界</b>, 即 "以它为最矮的柱子, 能延伸多远"。这正是第 0 节那个 <code>nearest_smaller_both</code>: 用递增栈, 当柱子被 pop 的那一刻, 右边界 = 当前 i (第一根比它矮的, 才触发 pop), 左边界 = pop 后的新栈顶 (栈递增, 它下面那根就是左边第一根更矮的)。两个边界同时确定, 当场算面积。</p>
+</details>
+<p class="note"><b>记:</b>循环数组: 循环 2n 次, 用 i % n 取值; 第二圈只 pop 不 push。</p>
+<h2>3. Largest Rectangle in Histogram</h2>
+<h3>题目在问什么</h3>
+<p><code>heights</code> 是一排相邻的柱子, 每根宽 1。在这些柱子里面画一个矩形 (矩形不能超出柱子), 求最大面积。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 342" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Largest Rectangle in Histogram examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">heights 是一排宽度为 1 的柱子。在柱子里面画一个矩形 (必须完全在柱子内), 求最大面积</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  heights = [2,1,5,6,2,3]  →  10</text>
+<rect x="40" y="104" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="57.0" y="146" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="104" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="91.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="91.0" y="146" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="108" y="104" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="125.0" y="120.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<text x="125.0" y="146" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="142" y="104" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="159.0" y="120.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">6</text>
+<text x="159.0" y="146" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="176" y="104" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="193.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="193.0" y="146" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="210" y="104" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="227.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="227.0" y="146" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">5</text>
+<path d="M43 96 L43 88 L241 88 L241 96" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="268" y="90" font-size="12" fill="#712B13" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">整排: 最矮是 1, 高 1 × 宽 6 = 6</text>
+<rect x="105" y="101" width="74" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="268" y="119" font-size="14" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">高 5, 宽 2 (index 2..3) → 10</text>
+<text x="40" y="166" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">一个矩形的高, 一定等于它覆盖的柱子里最矮的那根。index 2..3 最矮是 5</text>
+<line x1="40" y1="190" x2="640" y2="190" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="210" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  heights = [2,4]  →  4</text>
+<rect x="40" y="236" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="252.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="57.0" y="278" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="236" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="91.0" y="252.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<text x="91.0" y="278" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="71" y="233" width="40" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="132" y="251" font-size="14" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">高 4 宽 1 = 4 (高 2 宽 2 也是 4)</text>
+<line x1="40" y1="298" x2="640" y2="298" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="313" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="320" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">答案</text>
+<rect x="97" y="313" width="14" height="14" rx="3" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="118" y="320" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">答案的范围</text>
+<rect x="197" y="313" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
+<text x="218" y="320" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">看起来像, 但不对</text></svg>
+<figcaption>两个例子。</figcaption></figure>
+<p>关键观察: 一个矩形的高, 一定等于它覆盖的那些柱子里<b>最矮</b>的那根。</p>
+<h3>Brute force</h3>
+<p>枚举所有区间 [l, r], 找区间里最矮的柱子 h, 面积 = h × (r - l + 1)。<code>O(n²)</code> 个区间 (边扩边维护最小值)。</p>
+<h3>Intuition: 以每根柱子为"最矮", 它能延伸多宽?</h3>
+<p>换个枚举方式: 对每根柱子 i, 假设矩形的高就是 <code>heights[i]</code>。那么矩形可以往左右延伸, 直到碰到一根<b>比它矮</b>的柱子为止。</p>
+<p>所以要知道: i 的<b>左边第一个比它矮的</b>在哪 (L), <b>右边第一个比它矮的</b>在哪 (R)。宽度 = <code>R - L - 1</code>, 面积 = <code>heights[i] × (R - L - 1)</code>。</p>
+<p>"左右第一个更小的" 正是上一节说的: 维护<b>递增栈</b>, 一次扫描同时拿到两边:</p>
+<ul><li>新柱子 i 比栈顶矮时, pop 栈顶 top。i 就是 top 右边第一个比它矮的 (R = i)。</li><li>pop 之后的新栈顶, 就是 top 左边第一个比它矮的 (L = 新栈顶)。栈空了就是 L = -1。</li><li>所以 pop 的那一刻, top 的面积就能算出来了。</li></ul>
+<p>最后在 heights 末尾加一根高度 0 的柱子 (哨兵)。它比所有柱子都矮, 会把栈里剩下的全部 pop 出来结算。</p>
+<h3>算法</h3>
+<ol><li><code>heights.append(0)</code>, <code>stack = []</code>, <code>best = 0</code>。</li><li>i 从 0 到 n: 当栈不空且 <code>heights[stack[-1]] > heights[i]</code>: <code>h = heights[stack.pop()]</code>; <code>L = stack[-1] if stack else -1</code>; <code>best = max(best, h × (i - L - 1))</code>。</li><li>push i。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 444" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>Largest rectangle boundaries</title><desc>Bar 5 extends from the first smaller bar on the left to the first smaller bar on the right; both known at pop time.</desc><defs><marker id="c3-arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="c3-arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">heights = [2, 1, 5, 6, 2, 3] · 以每根柱子为 "最矮的那根" 能向左右延伸多远?</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">看高 = 5 的柱子 (idx 2): 它是 i = 4 时被 pop 的</text>
@@ -428,7 +609,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="40" y="386" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">哨兵: 在 heights 末尾补一根 0, 最后一步把栈里剩下的柱子全部 pop 出来结算</text>
 <rect x="40" y="410" width="22" height="16" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="70" y="418" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">被结算的柱子及其矩形</text><rect x="220" y="410" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="250" y="418" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">其他柱子</text><rect x="328" y="410" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="325" y="407" width="28" height="22" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/><text x="358" y="418" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">左 / 右边界</text>
 </svg>
-<figcaption>高 5 的柱子在 i = 4 被 pop: 右边界 = 4, 左边界 = 新栈顶 idx 1, 宽 = 4 − 1 − 1 = 2, 面积 10。</figcaption></figure>
+<figcaption>高 5 的柱子在 i = 4 被 pop: 右边界 = 4, 左边界 = 新栈顶 index 1, 宽 = 4 - 1 - 1 = 2, 面积 10。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 1220" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>Largest Rectangle in Histogram trace</title><desc>heights=[2,1,5,6,2,3]+[0]: increasing stack, popped bar's width is fixed at pop time.</desc><defs><marker id="lrhtrace-arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="lrhtrace-arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">heights = [2, 1, 5, 6, 2, 3] + [0 哨兵] · 栈里存 i·h, 从底到顶 h 递增</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop 的那一刻: 高 = 被 pop 的 h · 右边界 = i · 左边界 = pop 后的新栈顶 (空则 −1) · w = i − 左 − 1</text>
@@ -536,19 +718,83 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="40" y="1170" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">pop 过的面积: 2, 6, 10, 3, 8, 6 → best = max = 10 (高 5 × 宽 2, i = 2..3)</text>
 <rect x="40" y="1190" width="22" height="16" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="70" y="1198" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">新 push / 当前输入</text><rect x="211.2" y="1190" width="22" height="16" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="241.2" y="1198" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop (虚线扔到左边)</text><rect x="381.6" y="1190" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="411.6" y="1198" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里其他</text><rect x="489.6" y="1190" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="486.6" y="1187" width="28" height="22" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/><text x="519.6" y="1198" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶</text>
 </svg>
-<figcaption>heights + [0] 共 7 步。每个 pop 都写出 w 和面积, 最后一行哨兵 0 把栈清空。</figcaption></figure>
+<figcaption>heights + [0] 共 7 步。每次 pop 都写出宽度和面积, 最后一步哨兵 0 把栈清空。</figcaption></figure>
+<p>变体 Maximal Rectangle (0/1 矩阵里最大的全 1 矩形): 一行一行往下, 把每一列"连续的 1 有多高"当成柱子, 每一行都做一次这道题。</p>
+<h3>复杂度</h3>
+<p>Time <code>O(n)</code>, Space <code>O(n)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">largest_rectangle_area</span>(heights):</span><span class="l">    heights = heights + [0]               <span class="c"># 哨兵 0: 最后一步把栈里剩下的柱子全部 pop 出来</span></span><span class="l">    stack = []                            <span class="c"># 存 index; heights 从底到顶递增</span></span><span class="l">    best = 0</span><span class="l">    <span class="k">for</span> i, h <span class="k">in</span> <span class="t">enumerate</span>(heights):</span><span class="l">        <span class="k">while</span> stack <span class="k">and</span> heights[stack[-1]] &gt; h:   <span class="c"># h 比栈顶矮 -&gt; 栈顶的右边界就是 i</span></span><span class="l">            height = heights[stack.<span class="f">pop</span>()]</span><span class="l">            left = stack[-1] <span class="k">if</span> stack <span class="k">else</span> -1     <span class="c"># pop 后的新栈顶 = 左边界 (空: -1)</span></span><span class="l">            width = i - left - 1          <span class="c"># 左右边界之间 (不含边界) 的柱子数</span></span><span class="l">            best = <span class="t">max</span>(best, height * width)</span><span class="l">        stack.<span class="f">append</span>(i)                   <span class="c"># 相等的柱子不 pop: 后面那根会把宽度补全</span></span><span class="l">    <span class="r">return</span> best</span></div>
-<p><b>哨兵 0 的作用:</b> 末尾补一根高 0 的柱子, 它比所有柱子都矮, 所以一定把栈里剩下的柱子全部 pop 出来结算, 不用在循环后面再写一段清栈代码。</p>
-<p><b>Time:</b> O(n)。<b>Space:</b> O(n), 最坏是柱子严格递增, 全留在栈里。</p>
-<p><b>Maximal Rectangle</b> 是逐行套用: 矩阵每一行, 把每一列 "到这一行为止往上连续 1 的个数" 当成柱子高度, 这一行就是一个直方图, 直接调用上面的函数。</p>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">maximal_rectangle</span>(matrix):            <span class="c"># 逐行套用 largest_rectangle_area</span></span><span class="l">    <span class="k">if</span> <span class="k">not</span> matrix:</span><span class="l">        <span class="r">return</span> 0</span><span class="l">    heights = [0] * <span class="t">len</span>(matrix[0])</span><span class="l">    best = 0</span><span class="l">    <span class="k">for</span> row <span class="k">in</span> matrix:</span><span class="l">        <span class="k">for</span> j, c <span class="k">in</span> <span class="t">enumerate</span>(row):</span><span class="l">            heights[j] = heights[j] + 1 <span class="k">if</span> c == <span class="s">&quot;1&quot;</span> <span class="k">else</span> 0   <span class="c"># 这一列往上连续 1 的个数</span></span><span class="l">        best = <span class="t">max</span>(best, <span class="f">largest_rectangle_area</span>(heights))    <span class="c"># 这一行就是一个直方图</span></span><span class="l">    <span class="r">return</span> best</span></div>
-<p>Time O(rows × cols): 每行更新 heights 是 O(cols), 再 O(cols) 的单调栈。同一套 "左右边界" 换成数个数, 就是 Sum of Subarray Minimums (每个数作为最小值贡献 (i − left) × (right − i) 次)。</p>
-<p class="note"><b>记:</b>以每个元素为最值能延伸多远 = 左右边界 = 单调栈。pop 时右边界是 i, 左边界是新栈顶。末尾补哨兵 0 清栈。</p>
-<h2>4. Remove K Digits: greedy + 递增栈, 栈就是答案</h2>
-<p><b>题目:</b> 数字字符串 num, 删掉恰好 k 位, 使剩下的数最小。例子: <code>num = "1432219", k = 3</code> → <code>"1219"</code>。</p>
-<p><b>Brute force:</b> 枚举删哪 k 位, C(n, k) 种, 指数级。稍好一点的 greedy: 每次从头扫找第一个 "比后一位大" 的数字删掉, 重复 k 次, O(nk)。</p>
-<p><b>浪费在哪:</b> 每删一次, 又要从头扫一遍。其实删掉一位后, 只可能让 "紧挨着它左边" 的那一位变成新的 "比后一位大", 前面不会再有。这正是栈: 每次只看栈顶。</p>
-<p><b>相比上一题:</b> 栈里存的不再是 "等答案的元素", 而是 <b>最终结果本身</b>; pop 也不是结算, 而是 <b>真的删掉</b>, 且受 k 个名额限制 (<code>while k and ...</code>)。</p>
+</details>
+<p class="note"><b>记:</b>以每个元素为最小值能延伸多远: 递增栈, pop 时右边界 = 当前 i, 左边界 = 新栈顶。末尾加哨兵 0。</p>
+<h2>4. Remove K Digits</h2>
+<h3>题目在问什么</h3>
+<p><code>num</code> 是一个用字符串表示的非负整数。从中删掉 k 位数字, 剩下的数字<b>保持原来的顺序</b>, 让得到的数最小。结果去掉开头的 0, 全删光就返回 "0"。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 446" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Remove K Digits examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">num 是一个用字符串表示的非负整数。删掉其中 k 位数字 (剩下的顺序不变), 让结果最小。去掉开头的 0</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  num = &quot;1432219&quot;, k = 3  →  &quot;1219&quot;</text>
+<rect x="40" y="104" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="57.0" y="146" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="104" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="91.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<text x="91.0" y="146" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="108" y="104" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="125.0" y="146" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="142" y="104" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="159.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="159.0" y="146" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="176" y="104" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="193.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="193.0" y="146" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="210" y="104" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="227.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="227.0" y="146" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">5</text>
+<rect x="244" y="104" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="261.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">9</text>
+<text x="261.0" y="146" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">6</text>
+<path d="M77 96 L77 88 L173 88 L173 96" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="302" y="90" font-size="12" fill="#712B13" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">删掉 4, 3, 2</text>
+<text x="40" y="166" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">剩下 1, 2, 1, 9 → &quot;1219&quot;</text>
+<line x1="40" y1="190" x2="640" y2="190" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="210" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  num = &quot;10200&quot;, k = 1  →  &quot;200&quot;</text>
+<rect x="40" y="252" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="268.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="57.0" y="294" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="252" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="91.0" y="268.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">0</text>
+<text x="91.0" y="294" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="108" y="252" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.0" y="268.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="125.0" y="294" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="142" y="252" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="159.0" y="268.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">0</text>
+<text x="159.0" y="294" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="176" y="252" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="193.0" y="268.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">0</text>
+<text x="193.0" y="294" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
+<path d="M43 244 L43 236 L71 236 L71 244" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="234" y="238" font-size="12" fill="#712B13" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">删掉 1</text>
+<text x="40" y="314" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">剩下 &quot;0200&quot;, 去掉开头的 0 → &quot;200&quot;</text>
+<line x1="40" y1="338" x2="640" y2="338" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="358" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 3:  num = &quot;10&quot;, k = 2  →  &quot;0&quot;</text>
+<text x="40" y="378" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">全删光了, 返回 &quot;0&quot;</text>
+<line x1="40" y1="402" x2="640" y2="402" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="417" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
+<text x="54" y="424" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">删掉的数字</text></svg>
+<figcaption>三个例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>枚举所有删法 (从 n 位里选 k 位删), 比较大小。组合数 <code>C(n, k)</code>, 指数级。</p>
+<p>稍好一点的 greedy: 每次删一位, 试所有位置, 选结果最小的, 重复 k 次。<code>O(n·k)</code>。</p>
+<h3>Intuition: 高位越小越好</h3>
+<p>剩下的位数是固定的 (n - k 位), 所以比较大小就是从最高位开始比。要让结果最小, <b>高位要尽量小</b>。</p>
+<p>看 "1432" 删 1 位: 从左往右, 第一个"比它后面那位大"的数字是 4 (4 > 3)。删掉它, 3 就补到了它的位置, 高位变小了。删 4 得到 132, 是最小的。</p>
+<p>推广: 从左往右扫, 维护一个<b>递增栈</b>。新数字 d 比栈顶小, 而且还有删除额度 (k > 0), 就 pop 栈顶 (删掉它), k 减 1。然后 push d。</p>
+<p>这次栈里留下的东西<b>就是答案</b>, 不是用来查别人的。扫完之后 k 还没用完, 就从末尾删 (此时栈是递增的, 末尾最大)。</p>
+<h3>算法</h3>
+<ol><li>对每个数字 d: 当 <code>k > 0</code> 且栈顶 > d: pop, k 减 1。然后 push d。</li><li>如果 k 还有剩, 删掉栈末尾的 k 个。</li><li>拼起来, 去掉开头的 0; 空了返回 "0"。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 388" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>Why delete the first bigger digit</title><desc>Deleting the first digit that is larger than its successor gives the smallest number.</desc><defs><marker id="c4-arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="c4-arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">num = "1432", 删 1 位 · 4 种删法, 哪个最小?</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">位数相同 → 先比最高位, 高位越小越好</text>
@@ -588,7 +834,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="40" y="330" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈从底到顶非递减 = 高位尽量小 · 如果整个数字都是递增的, 就删最末尾的 k 位</text>
 <rect x="40" y="354" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="70" y="362" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">保留的数字</text><rect x="160" y="354" width="22" height="16" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="190" y="362" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">删掉的数字</text><rect x="280" y="354" width="22" height="16" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="310" y="362" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">结果最小</text><rect x="388" y="354" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="385" y="351" width="28" height="22" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/><text x="418" y="362" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">答案</text>
 </svg>
-<figcaption>位数相同, 先比高位。"1432" 删 4 得 132 最小: 从左往右第一个比后一位大的数字 (4 &gt; 3) 删掉最划算。</figcaption></figure>
+<figcaption>位数一样时先比高位。"1432" 删掉 4 得到 132 最小: 从左往右第一个比后一位大的数字 (4 > 3), 删掉最划算。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 1164" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>Remove K Digits trace</title><desc>num='1432219', k=3: increasing stack of digits, pop a bigger previous digit while k&gt;0.</desc><defs><marker id="rkdtrace-arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="rkdtrace-arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">num = "1432219", k = 3 · 栈里存数字, 从底到顶非递减 (高位尽量小)</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">每一步: 前一位 (栈顶) &gt; 当前位 d 且 k &gt; 0 → pop 栈顶 (删掉它, k 减 1) → 把 d push 进去</text>
@@ -686,15 +933,86 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="40" y="1114" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">k 用完 (k = 0), 栈 = [1, 2, 1, 9] → 结果 "1219"</text>
 <rect x="40" y="1134" width="22" height="16" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="70" y="1142" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">新 push / 当前输入</text><rect x="211.2" y="1134" width="22" height="16" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="241.2" y="1142" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop (虚线扔到左边)</text><rect x="381.6" y="1134" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="411.6" y="1142" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里其他</text><rect x="489.6" y="1134" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="486.6" y="1131" width="28" height="22" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/><text x="519.6" y="1142" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶</text>
 </svg>
-<figcaption>7 个数字。d = 3, 2, 1 各 pop 一个比它大的前一位 (共 3 次, k: 3 → 0); 之后 d = 9 直接 push。</figcaption></figure>
+<figcaption>"1432219", k = 3: d = 3、2、1 各 pop 一个比它大的前一位 (共 3 次, k 从 3 到 0); 之后 d = 9 直接 push。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n)</code>, Space <code>O(n)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">remove_k_digits</span>(num, k):</span><span class="l">    stack = []                            <span class="c"># 栈就是答案本身 (数字字符), 从底到顶非递减</span></span><span class="l">    <span class="k">for</span> dig <span class="k">in</span> num:</span><span class="l">        <span class="k">while</span> k <span class="k">and</span> stack <span class="k">and</span> stack[-1] &gt; dig:   <span class="c"># 前一位比当前大: 删前一位, 高位变小</span></span><span class="l">            stack.<span class="f">pop</span>()</span><span class="l">            k -= 1                        <span class="c"># pop 一次 = 花掉 1 个删除名额</span></span><span class="l">        stack.<span class="f">append</span>(dig)</span><span class="l">    <span class="k">if</span> k:                                 <span class="c"># 整串都是递增: 名额没花完, 删最末尾的 k 位</span></span><span class="l">        stack = stack[:-k]</span><span class="l">    <span class="r">return</span> <span class="s">&quot;&quot;</span>.<span class="f">join</span>(stack).<span class="f">lstrip</span>(<span class="s">&quot;0&quot;</span>) <span class="k">or</span> <span class="s">&quot;0&quot;</span>   <span class="c"># 去前导零; 全删光时返回 &quot;0&quot;</span></span></div>
-<p>两个收尾: ① 名额没用完 (整串递增, 如 <code>"12345"</code>, k = 2) → 删末尾 k 位; ② 前导零要去掉, 全删光返回 <code>"0"</code>。</p>
-<p><b>Time:</b> O(n), 每个数字 push 1 次 / pop 1 次。<b>Space:</b> O(n)。同一思路: Remove Duplicate Letters (再加一个 "这个字母后面还会不会出现" 的判断), 不展开。</p>
-<p class="note"><b>记:</b>要在保持顺序的前提下删/选若干元素使结果字典序最小: 栈顶比当前 "差" 就 pop (有预算限制), 栈就是答案。</p>
-<h2>5. Sliding Window Maximum: 窗口会过期, 用 deque 两头 pop</h2>
-<p><b>题目:</b> 长度 k 的窗口从左滑到右, 输出每个窗口的最大值。例子: <code>nums = [1, 3, −1, −3, 5, 3, 6, 7], k = 3</code> → <code>[3, 3, 5, 5, 6, 7]</code>。</p>
-<p><b>Brute force:</b> 每个窗口 <code>max(nums[i-k+1:i+1])</code>, O(nk)。浪费: 相邻两个窗口有 k − 1 个元素相同, 却每次重新找最大。(另一个做法: heap, O(n log n), 要惰性删除过期元素。)</p>
-<p><b>相比上一题:</b> 单调栈只在一头 (栈顶) 进出。这里元素会 <b>过期</b> (滑出窗口), 过期的是最老的, 在另一头, 所以改用 deque: <b>队尾</b> 和新元素比 (比 x 小的出队), <b>队头</b> 检查过期 (滑出窗口的出队)。队列里保持 index 递增、值递减, 所以队头永远是窗口最大。</p>
+</details>
+<p class="note"><b>记:</b>删 / 选 k 个让结果的字典序最小 (顺序不能变): greedy + 递增栈, 栈就是答案, pop 次数受 k 限制。</p>
+<h2>5. Sliding Window Maximum</h2>
+<h3>题目在问什么</h3>
+<p>一个长度为 k 的窗口从数组最左边开始, 每次往右滑一格。输出每个位置上窗口里的最大值。一共 <code>n - k + 1</code> 个答案。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 294" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Sliding Window Maximum examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">一个长度为 k 的窗口从左往右滑, 每次移动一格。输出每个位置的窗口里的最大值</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  nums = [1,3,-1,-3,5,3,6,7], k = 3  →  [3,3,5,5,6,7]</text>
+<text x="40" y="103" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">窗口 1</text>
+<rect x="104" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="121.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="138" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="155.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="172" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="189.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">-1</text>
+<rect x="206" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="223.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">-3</text>
+<rect x="240" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="257.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<rect x="274" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="291.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="308" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="325.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">6</text>
+<rect x="342" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="359.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">7</text>
+<text x="40" y="149" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">窗口 2</text>
+<rect x="104" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="138" y="134" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="155.0" y="150.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="172" y="134" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="189.0" y="150.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">-1</text>
+<rect x="206" y="134" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="223.0" y="150.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">-3</text>
+<rect x="240" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="257.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<rect x="274" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="291.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="308" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="325.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">6</text>
+<rect x="342" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="359.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">7</text>
+<text x="40" y="195" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">窗口 3</text>
+<rect x="104" y="180" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="196.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="138" y="180" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="155.0" y="196.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="172" y="180" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="189.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">-1</text>
+<rect x="206" y="180" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="223.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">-3</text>
+<rect x="240" y="180" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="257.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<rect x="274" y="180" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="291.0" y="196.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="308" y="180" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="325.0" y="196.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">6</text>
+<rect x="342" y="180" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="359.0" y="196.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">7</text>
+<text x="40" y="226" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">窗口 1 = [1,3,-1] 最大 3;  窗口 2 = [3,-1,-3] 最大 3;  窗口 3 = [-1,-3,5] 最大 5;  ... 一共 n - k + 1 = 6 个窗口</text>
+<line x1="40" y1="250" x2="640" y2="250" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="265" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="272" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">当前窗口</text></svg>
+<figcaption>例子: 前三个窗口。</figcaption></figure>
+<h3>Brute force</h3>
+<p>每个窗口都扫一遍求 max, <code>O(n·k)</code>。浪费: 相邻两个窗口有 k - 1 个元素是一样的, 却重新比较。</p>
+<p>用 heap (见 09) 可以做到 <code>O(n log n)</code>, 但要处理"堆顶已经滑出窗口"的情况。</p>
+<h3>Intuition: 又小又早过期的元素, 永远不会是最大值</h3>
+<p>看窗口里的两个元素 a 和 b, a 在 b 的左边, 而且 a ≤ b。那么从现在开始, 只要 a 还在窗口里, b 也一定在 (b 更晚离开), 而 b 更大。所以 <b>a 永远不可能是最大值</b>, 可以直接扔掉。</p>
+<p>于是维护一个队列, 只保留"有可能成为最大值"的元素。扔掉之后, 剩下的从队头到队尾一定是<b>递减</b>的, 队头就是当前窗口的最大值。</p>
+<p>和前面的 stack 不同, 这里元素会从两头离开:</p>
+<ul><li><b>队尾</b>: 新元素 x 来了, 队尾比 x 小 (或相等) 的都 pop 掉 (它们又小又早过期)。这和 monotonic stack 一样。</li><li><b>队头</b>: 队头的下标如果已经滑出窗口了, 也要 pop 掉。这是 stack 做不到的, 所以用 <code>deque</code>。</li></ul>
+<h3>算法</h3>
+<ol><li><code>dq = deque()</code> (存下标)。</li><li>i 从 0 到 n-1: 如果 <code>dq[0] <= i - k</code> (队头过期), popleft。</li><li>当 dq 不空且 <code>nums[dq[-1]] <= nums[i]</code>: pop。然后 append i。</li><li>如果 <code>i >= k - 1</code> (窗口满了), 输出 <code>nums[dq[0]]</code>。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 410" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>Why drop smaller tail elements</title><desc>Elements smaller than a newcomer and older than it can never be the window maximum again.</desc><defs><marker id="c5-arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="c5-arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">nums = [1, 3, −1, −3, 5, 3, 6, 7], k = 3 · 看 i = 4 (x = 5) 到来的这一刻</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">idx j 在窗口里的时间 = i ∈ [j, j + 2] (窗口 [i − 2, i] 里有 j)</text>
@@ -733,7 +1051,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="40" y="350" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">队头最老, 最先过期 → 过期的从头部 popleft · 每个元素最多进出一次 → O(n)</text>
 <rect x="40" y="376" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="70" y="384" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">还在窗口里</text><rect x="160" y="376" width="22" height="16" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="190" y="384" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">被 5 压住 (永远不是最大)</text><rect x="366.4" y="376" width="22" height="16" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="396.4" y="384" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">新来的最大</text>
 </svg>
-<figcaption>i = 4, x = 5 到来: idx 1 滑出窗口 (队头过期); −1、−3 又小又早过期 (队尾被压住), 都不可能再是最大。</figcaption></figure>
+<figcaption>i = 4, x = 5 来了: index 1 滑出窗口 (队头过期); -1、-3 又小又早过期 (被 5 压住), 都不可能再是最大值。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 1084" role="img" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, -apple-system, 'PingFang SC', sans-serif"><title>Sliding Window Maximum trace</title><desc>nums=[1,3,-1,-3,5,3,6,7], k=3: monotonic deque, head expires, tail smaller than x dropped.</desc><defs><marker id="swmtrace-arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="swmtrace-arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">nums = [1, 3, −1, −3, 5, 3, 6, 7], k = 3 · deque 存 idx·值, 底 = 队头 (最大), 顶 = 队尾</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">每一步: ① 队头过期就出队 ② 队尾 ≤ x 就出队 ③ push x ④ 窗口满了就输出 nums[队头]</text>
@@ -849,12 +1168,16 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="40" y="1034" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">ans = [3, 3, 5, 5, 6, 7]  (i = 2..7 各输出一个, 共 n − k + 1 = 6 个)</text>
 <rect x="40" y="1054" width="22" height="16" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/><text x="70" y="1062" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">新 push / 当前输入</text><rect x="211.2" y="1054" width="22" height="16" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/><text x="241.2" y="1062" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">出队 (扔到左边)</text><rect x="362.4" y="1054" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="392.4" y="1062" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">deque 里其他</text><rect x="496.79999999999995" y="1054" width="22" height="16" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="493.79999999999995" y="1051" width="28" height="22" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/><text x="526.8" y="1062" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">队头 = 窗口最大</text>
 </svg>
-<figcaption>8 步, k = 3。i = 4 一次出队 3 个 (队头过期 1 个 + 队尾 2 个); i = 2..7 每步输出 nums[队头]。</figcaption></figure>
+<figcaption>k = 3, 8 步。i = 4 一次出队 3 个 (队头过期 1 个 + 队尾 2 个); 从 i = 2 开始每步输出 nums[队头]。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n)</code>: 每个下标最多进出 deque 一次。Space <code>O(k)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">from</span> <span class="t">collections</span> <span class="k">import</span> <span class="t">deque</span></span><span class="l"></span><span class="l"><span class="k">def</span> <span class="f">max_sliding_window</span>(nums, k):</span><span class="l">    dq = <span class="t">deque</span>()                          <span class="c"># 存 index; 值从头到尾递减, dq[0] = 窗口最大</span></span><span class="l">    ans = []</span><span class="l">    <span class="k">for</span> i, x <span class="k">in</span> <span class="t">enumerate</span>(nums):</span><span class="l">        <span class="k">if</span> dq <span class="k">and</span> dq[0] &lt;= i - k:         <span class="c"># 队头已滑出窗口 [i-k+1, i]: 过期, 从头部出队</span></span><span class="l">            dq.<span class="f">popleft</span>()</span><span class="l">        <span class="k">while</span> dq <span class="k">and</span> nums[dq[-1]] &lt;= x:   <span class="c"># 队尾比 x 小: 比 x 早过期又更小, 永远当不了最大</span></span><span class="l">            dq.<span class="f">pop</span>()</span><span class="l">        dq.<span class="f">append</span>(i)</span><span class="l">        <span class="k">if</span> i &gt;= k - 1:                    <span class="c"># 窗口满了才有答案</span></span><span class="l">            ans.<span class="f">append</span>(nums[dq[0]])       <span class="c"># 队头 = 窗口最大, O(1)</span></span><span class="l">    <span class="r">return</span> ans</span></div>
-<p><b>Time:</b> O(n)。每个 index 进 deque 1 次、出 1 次 (头或尾)。<b>Space:</b> O(k), deque 里最多 k 个。</p>
-<p class="note"><b>记:</b>窗口最大/最小 = 单调 deque。队头过期出队, 队尾比新元素差的出队, 队头 = 答案。</p>
-<h2>6. 识别信号: 看到什么 → 试什么</h2>
-<table><tr><th>题目特征</th><th>做法</th><th>complexity</th></tr><tr><td>每个元素找右 / 左边 <b>第一个更大 / 更小</b> 的数或距离</td><td>单调栈, 存 index, pop 时结算</td><td>O(n²) → O(n)</td></tr><tr><td>数组 <b>循环</b> (首尾相连)</td><td>遍历 2n, <code>i % n</code>, 只在第 1 圈 push</td><td>O(n²) → O(n)</td></tr><tr><td>以每个元素为 <b>最大 / 最小值</b> 能延伸多远 (矩形面积、子数组最小值之和)</td><td>单调栈, pop 时右边界 = i, 左边界 = 新栈顶</td><td>O(n²) → O(n)</td></tr><tr><td>二维 0/1 矩阵里找最大矩形</td><td>逐行压成直方图, 套 Largest Rectangle</td><td>O(rows²·cols²) 以上 → O(rows·cols)</td></tr><tr><td>删 / 选 k 个元素, 使结果 <b>字典序或数值最小</b> (顺序不变)</td><td>greedy + 单调栈, 栈就是答案, pop 受预算 k 限制</td><td>O(nk) 或指数 → O(n)</td></tr><tr><td>固定长度滑动窗口求 <b>max / min</b></td><td>单调 deque: 队头过期出队, 队尾 ≤ x 出队</td><td>O(nk) → O(n)</td></tr><tr><td>"后面有更大的才轮到我" / "被后来者盖住就没用"</td><td>先想: 谁还在等? 谁被 pop 就永远没用?</td><td>反复往右扫 → 每个元素进出 1 次</td></tr></table>
-<p>选栈的方向: <b>找更大 → 递减栈; 找更小 → 递增栈</b>。右边的答案在 pop 时拿, 左边的答案在 pop 完后看栈顶。窗口会过期 (两头都要出) → 换成 deque。</p>
-<p><b>以后再学 (一行):</b> Car Fleet (按位置排序后从后往前, 栈里存 "到达时间")、132 Pattern、Max Chunks To Make Sorted 都是同一套 pop 逻辑的变形, 先把上面六题吃透。</p>
+</details>
+<p class="note"><b>记:</b>固定长度窗口的最大 / 最小值: monotonic deque。队尾 pop 掉比新元素小的, 队头 pop 掉过期的, 队头就是答案。</p>
+<h2>6. 识别信号: 看到什么, 就想到 monotonic stack / queue</h2>
+<table><tr><th>题目特征</th><th>做法</th><th>complexity</th></tr><tr><td>每个元素找右边 / 左边<b>第一个更大 / 更小</b>的数或距离</td><td>单调栈, 存下标, pop 时结算</td><td><code>O(n²)</code> → <code>O(n)</code></td></tr><tr><td>数组是循环的</td><td>循环 2n 次, i % n, 第二圈只 pop</td><td><code>O(n²)</code> → <code>O(n)</code></td></tr><tr><td>以每个元素为最大 / 最小值能延伸多远 (矩形面积)</td><td>单调栈, pop 时右边界 = i, 左边界 = 新栈顶</td><td><code>O(n²)</code> → <code>O(n)</code></td></tr><tr><td>0/1 矩阵里最大的全 1 矩形</td><td>逐行变成柱子, 套第 3 题</td><td><code>O(rows·cols)</code></td></tr><tr><td>删 / 选 k 个使结果最小, 顺序不变</td><td>greedy + 单调栈, 栈就是答案</td><td>指数 → <code>O(n)</code></td></tr><tr><td>固定长度窗口的 max / min</td><td>单调 deque: 队头过期出, 队尾小的出</td><td><code>O(n·k)</code> → <code>O(n)</code></td></tr></table>
+<p>选方向的口诀: <b>找更大 → 递减栈; 找更小 → 递增栈</b>。窗口会过期 → deque。</p>
+<h2>以后再学</h2>
+<p>Car Fleet (按位置排序后从后往前用栈)、132 Pattern、Sum of Subarray Minimums (第 3 题的思路, 每个元素当最小值贡献多少)。</p>
 </article></body></html>
