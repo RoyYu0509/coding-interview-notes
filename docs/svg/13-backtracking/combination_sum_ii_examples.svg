@@ -1,0 +1,15 @@
+<svg width="100%" viewBox="0 0 680 188" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Combination Sum II examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">candidates 里&lt;可能有重复的数&gt;。每个位置的数最多用一次。和等于 target 的所有不同组合</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  candidates = [10,1,2,7,6,1,5], target = 8</text>
+<text x="40" y="103" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">答案</text>
+<rect x="104" y="88" width="76" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="142.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[1,1,6]</text>
+<rect x="180" y="88" width="76" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="218.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[1,2,5]</text>
+<rect x="256" y="88" width="76" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="294.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[1,7]</text>
+<rect x="332" y="88" width="76" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="370.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[2,6]</text>
+<text x="40" y="134" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">有两个 1。[1,7] 用第一个 1 或第二个 1 都能得到, 但只能输出一次</text>
+<text x="40" y="152" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">[1,1,6] 是可以的: 两个 1 是不同位置的数, 各用一次</text>
+<line x1="40" y1="176" x2="640" y2="176" stroke="#B4B2A9" stroke-dasharray="4 4"/></svg>

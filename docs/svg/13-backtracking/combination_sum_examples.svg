@@ -1,0 +1,15 @@
+<svg width="100%" viewBox="0 0 680 216" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Combination Sum examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">candidates 互不相同。选一些数 (&lt;同一个数可以选很多次&gt;) 让和等于 target。返回所有不同的组合</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  candidates = [2,3,6,7], target = 7  →  [[2,2,3],[7]]</text>
+<text x="40" y="103" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">组合 1</text>
+<rect x="104" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="121.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="138" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="155.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="172" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="189.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="40" y="149" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">组合 2</text>
+<rect x="104" y="134" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="121.0" y="150.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">7</text>
+<text x="40" y="180" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">2 用了两次。[2,3,2] 和 [2,2,3] 是同一个组合, 不能重复输出</text>
+<line x1="40" y1="204" x2="640" y2="204" stroke="#B4B2A9" stroke-dasharray="4 4"/></svg>

@@ -24,16 +24,55 @@ figure svg{width:100%;height:auto;display:block}
 figcaption{color:#52514e;font-size:14px;padding:4px 6px 0}
 table{border-collapse:collapse;margin:10px 0;font-size:15px}
 td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
+details{margin:12px 0;border:1px dashed var(--box);border-radius:6px;padding:4px 12px}
+summary{cursor:pointer;color:var(--sub);font-size:15px}
+ol,ul{padding-left:24px}li{margin:4px 0}
 </style></head><body><article contenteditable="true">
 <h1>13 · Backtracking</h1>
-<p class="main">主线: backtracking = 在 decision tree 上做 DFS。节点 = 一个 partial path, 边 = 一次选择。做选择 → 递归 → 撤销选择; 一定走不通的分支, 进去之前就剪掉。</p>
-<p class="main">概念链: Subsets (模板) → Permutations (+ used) → Combination Sum (+ 重复选, + remain 剪枝) → Combination Sum II (+ 同层去重) → Generate Parentheses (约束剪枝) → Letter Combinations (每层候选不同) → Word Search (grid, 原地标记) → N-Queens (多个约束 set)</p>
-<h2>0. 第一性原理: 暴力在浪费什么, backtracking 怎么消掉</h2>
-<p>题目要的是 <b>所有</b> 组合 / 排列 / 路径。答案个数本身就是指数级, 所以输出大小就是 time complexity 的下限。能优化的只有一件事: <b>不要展开一定没有答案的分支</b>。</p>
-<p>最直接的暴力是 n 层嵌套 <code>for</code>, 每层选一个, 最后检查合法。它有两个问题。</p>
-<p>① n 是 input, 嵌套层数写不出来。解法: 一层递归 = 一层 <code>for</code>, 递归深度 = 层数。</p>
-<p>② 先生成完整候选, 再检查。以 3 对括号为例: 一共 2^6 = 64 个串, 合法的只有 5 个。前缀是 <code>)</code> 的串一开始就注定不合法, 却还要把后面 5 位全展开 (2^5 = 32 个)。backtracking 在每一步选择之前就检查约束, 一旦违反就不进这个分支。</p>
-<p>把所有选择画成树就是 <b>decision tree</b>: 根 = 什么都没选; 每个节点 = 已做的选择 (path); 每条边 = 一个选择。backtracking 就是在这棵树上做 DFS: 往下走 = 做选择, 往回走 = 撤销选择。</p>
+<h2>这篇讲什么</h2>
+<p>有一类题要你<b>列出所有的可能</b>: 所有子集、所有排列、所有和为 target 的组合、所有合法的括号、所有棋盘放法……答案本身就有指数多个, 所以没有"更快"的算法, 只能一个一个生成出来。</p>
+<p>问题是怎么<b>系统地</b>生成, 不重复、不遗漏, 而且尽早放弃没有希望的方向。这就是 <b>backtracking</b> (回溯)。</p>
+<p>想象你在走一个迷宫, 每到一个岔路口就选一条路走下去; 走不通 (或者到了终点) 就<b>退回</b>上一个岔路口, 换另一条路。所有的选择画出来是一棵树, 叫 decision tree。backtracking 就是在这棵树上做 DFS。</p>
+<p>每道 backtracking 题都只要想清楚三件事:</p>
+<ul><li><b>path</b>: 目前已经做了哪些选择。</li><li><b>choices</b>: 下一步还能选什么。</li><li><b>结束条件</b>: 什么时候 path 是一个完整的答案。</li></ul>
+<p>写法也固定: <b>做选择 (push) → 递归 → 撤销选择 (pop)</b>。</p>
+<table><tr><th>#</th><th>题目</th><th>考过的公司数</th><th>相比上一题多了什么</th></tr><tr><td>1</td><td>Subsets</td><td>19</td><td>模板题: 每个节点都是答案</td></tr><tr><td>2</td><td>Permutations</td><td>24</td><td>顺序有关: 每层都从头选, 跳过用过的</td></tr><tr><td>3</td><td>Combination Sum</td><td>26</td><td>同一个数可以重复选</td></tr><tr><td>4</td><td>Combination Sum II</td><td>15</td><td>输入有重复: 同一层去重</td></tr><tr><td>5</td><td>Generate Parentheses</td><td>35</td><td>用约束剪枝, 只走合法的分支</td></tr><tr><td>6</td><td>Letter Combinations of a Phone Number</td><td>32</td><td>每一层的选项不一样</td></tr><tr><td>7</td><td>Word Search</td><td>32</td><td>在 grid 上回溯, 标记后要恢复</td></tr><tr><td>8</td><td>N-Queens</td><td>16</td><td>多个约束, 用几个 set 检查</td></tr></table>
+<p>每道题的顺序: <b>题目在问什么 → 看例子 → brute force → intuition → 算法 → 手动走一遍 → 复杂度</b>。代码放在最后, 默认折叠。</p>
+<h2>1. Subsets</h2>
+<h3>题目在问什么</h3>
+<p>给一个数组, 里面的数互不相同。返回它<b>所有的子集</b> (包括空集和整个数组), 顺序随意, 但不能有重复的子集。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 308" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Subsets examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">数组里的数互不相同。返回所有子集 (包括空集和它自己), 顺序随意</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  nums = [1,2,3]  →  8 个子集</text>
+<text x="40" y="103" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">0 个</text>
+<rect x="104" y="88" width="70" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="139.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[]</text>
+<text x="40" y="149" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">1 个</text>
+<rect x="104" y="134" width="70" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="139.0" y="150.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[1]</text>
+<rect x="174" y="134" width="70" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="209.0" y="150.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[2]</text>
+<rect x="244" y="134" width="70" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="279.0" y="150.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[3]</text>
+<text x="40" y="195" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">2 个</text>
+<rect x="104" y="180" width="70" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="139.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[1,2]</text>
+<rect x="174" y="180" width="70" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="209.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[1,3]</text>
+<rect x="244" y="180" width="70" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="279.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[2,3]</text>
+<text x="40" y="241" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">3 个</text>
+<rect x="104" y="226" width="70" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="139.0" y="242.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[1,2,3]</text>
+<text x="40" y="272" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">每个数选或不选, 2 × 2 × 2 = 8 种。[2,1] 和 [1,2] 是同一个子集, 只算一次</text>
+<line x1="40" y1="296" x2="640" y2="296" stroke="#B4B2A9" stroke-dasharray="4 4"/></svg>
+<figcaption>例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>如果数组长度固定是 3, 可以写三层循环 (每层决定一个数选不选)。但长度是变量, 循环的层数写不死。</p>
+<p>另一种想法是先生成所有"可能的"序列, 再去重。比如把每个排列都生成一遍再转成 set, 会生成大量重复, 很浪费。</p>
+<h3>Intuition: 用 recursion 代替"写不死的循环"</h3>
+<p>recursion 的每一层就相当于一层循环, 层数可以是任意的。画出所有选择:</p>
 <figure><svg width="100%" viewBox="0 0 680 572" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Backtracking = decision tree 上的 DFS</title><desc>nums=[1,2] 的 decision tree, 以及 DFS 过程中 path 这个共用 list 的 push/pop 时间线。</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">nums = [1, 2] · 节点 = 一个 path 状态 · 边 = 一次选择 · DFS 往下走 = push, 往回走 = pop</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">左: decision tree (绿箭头 push, 红虚线 pop) · 右: 同一个 path list 随时间 t 的变化</text>
@@ -125,21 +164,12 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="330" y="537" width="16" height="14" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="352" y="544" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">path 栈顶</text>
 </svg>
-<figcaption>图 0: nums=[1,2] 的 decision tree (左) 和 path 这个共用 list 在 DFS 过程中随时间的 push/pop (右)。t3、t4 的 pop 保证了 t5 从 [] 开始, 而不是从 [1,2] 开始。</figcaption></figure>
-<h3>三件事</h3>
-<p><b>path</b>: 已经做过的选择, 一个共用的 list。<b>choices</b>: 此刻还能选什么 (每个选择是一条往下的边)。<b>结束条件</b>: path 什么时候是一个完整答案。</p>
-<h3>为什么必须撤销</h3>
-<p>path 只有一个 list, 递归的每一层都在改同一个对象。回到上一层之后, 兄弟分支要看到的是 <b>做选择之前</b> 的 path。不 pop, 兄弟分支就带着上一个分支的选择 (图 0: path 会变成 [1,2,2])。收集答案要 <code>path[:]</code> 复制一份, 否则 <code>res</code> 里存的全是同一个 list 的引用, 最后都变成空 list。</p>
-<p>另一种写法是每次传新 list (<code>path + [c]</code>), 不用撤销, 代价是每个节点多 O(n) 的复制。面试默认写 mutate + undo。</p>
-<h3>通用模板</h3>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">backtrack</span>(path, choices):</span><span class="l">    <span class="k">if</span> <span class="f">is_done</span>(path):                 <span class="c"># 1. 结束条件: path 已经是一个完整答案</span></span><span class="l">        res.<span class="f">append</span>(path[:])           <span class="c">#    必须 copy: path 还会继续被改</span></span><span class="l">        <span class="r">return</span></span><span class="l">    <span class="k">for</span> c <span class="k">in</span> choices:                 <span class="c"># 2. choices: 此刻还能选什么</span></span><span class="l">        <span class="k">if</span> <span class="k">not</span> <span class="f">valid</span>(path, c):        <span class="c">#    约束剪枝: 这个选择一定走不通, 不进去</span></span><span class="l">            <span class="k">continue</span></span><span class="l">        path.<span class="f">append</span>(c)                <span class="c"># 3. 做选择</span></span><span class="l">        <span class="f">backtrack</span>(path, <span class="f">next_choices</span>(path, c))   <span class="c"># 4. 递归: 树往下一层</span></span><span class="l">        path.<span class="f">pop</span>()                    <span class="c"># 5. 撤销选择: path 回到 &quot;做选择之前&quot;</span></span></div>
-<h3>Complexity 怎么算</h3>
-<p>time = decision tree 的节点数 × 每个节点的工作 (通常是 <code>path[:]</code> 的 O(n))。space = 树的深度 (递归栈 + path), 不算输出。剪枝的价值就是让节点数从 "所有候选" 降到 "接近答案数"。</p>
-<p class="note"><b>记:</b>backtracking = 树上 DFS。path 是共用 list: 做选择 push, 回来 pop; 收集要 copy。complexity 数节点。</p>
-<h2>1. Subsets: 每个节点都是答案, start index 防重复</h2>
-<p>题: <code>nums = [1,2,3]</code> (无重复), 返回所有子集, 共 8 个: <code>[], [1], [1,2], [1,2,3], [1,3], [2], [2,3], [3]</code>。</p>
-<p>Brute force: 枚举 bitmask 0 … 2^n−1, 每个 mask 扫 n 位, O(n·2^n)。这其实已经和输出大小一样大, 没有浪费; 但 bitmask 一遇到 "和等于 target" "去重" 这类约束就没法剪枝。所以先用这题把 backtracking 的骨架学会。</p>
-<p>关键观察: 子集 = 每个元素选 / 不选。为了不生成 <code>[1,2]</code> 和 <code>[2,1]</code> 两个相同的子集, 规定只能往后选: 选了 <code>nums[i]</code> 之后, 下一层从 <code>i+1</code> 开始。这个 <code>start</code> 就是 choices。</p>
+<figcaption>左: brute force 的问题 (循环层数写不死 / 先生成再检查)。右: decision tree, 每个节点是一个 path, 每条边是一次选择。</figcaption></figure>
+<p>为了不重复 (不让 [1,2] 和 [2,1] 都出现), 规定<b>只能往后选</b>: 选了第 i 个数之后, 下一个只能从 i+1 往后选。这样每个子集只会按"下标从小到大"的顺序被生成一次。</p>
+<p>这棵树上的<b>每个节点</b>都是一个合法的子集 (不只是叶子), 所以每进入一个节点就把 path 记下来。</p>
+<p>记下来的时候要 <code>path[:]</code> 复制一份: path 是同一个 list, 后面还会被修改; 不复制的话, 最后答案里全是同一个 (空的) list。</p>
+<h3>算法</h3>
+<ol><li><code>dfs(start)</code>: 先把 <code>path[:]</code> 加入答案。</li><li>对 i 从 start 到 n-1: <code>path.append(nums[i])</code>, <code>dfs(i + 1)</code>, <code>path.pop()</code>。</li><li>调用 <code>dfs(0)</code>。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 435" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Subsets 的 decision tree</title><desc>nums=[1,2,3], 每个节点都是答案, 共 8 个。</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">nums = [1, 2, 3] · 节点 = path · 子节点 = path + [nums[i]], i 只能取 start 之后的</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">每个节点都收集 =&gt; 没有剪枝, 也没有 "废节点"</text>
@@ -173,7 +203,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="158" y="398" width="18" height="14" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="182" y="405" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">普通节点 (path)</text>
 </svg>
-<figcaption>图 1a: decision tree。每个节点都是一个答案 (绿); 子节点只能加 start 之后的元素。8 个节点 = 8 个子集。</figcaption></figure>
+<figcaption>start index 保证只往后选, 所以每个子集只出现一次。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 862" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Subsets 的 path 变化</title><desc>nums=[1,2,3] 前 13 步 push/pop。</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">nums = [1, 2, 3] · 每个节点: 先收集 path[:], 再逐个 push → 递归 → pop</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">'被撤销' 列 = 刚 pop 掉的元素 (虚线扔到左边); 原因写在左边动作下面</text>
@@ -331,16 +362,53 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="560" y="799" width="16" height="14" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="582" y="806" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">path 栈顶</text>
 </svg>
-<figcaption>图 1b: 前 13 步。进入节点先收集; push 往下, pop 往回, pop 掉的元素虚线扔到左边。</figcaption></figure>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">subsets</span>(nums):</span><span class="l">    res, path = [], []</span><span class="l">    <span class="k">def</span> <span class="f">dfs</span>(start):</span><span class="l">        res.<span class="f">append</span>(path[:])                <span class="c"># 每个节点都是答案; 要 copy, path 之后还会变</span></span><span class="l">        <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(start, <span class="t">len</span>(nums)):  <span class="c"># 只选 start 之后的: 有 [1,2], 没有 [2,1]</span></span><span class="l">            path.<span class="f">append</span>(nums[i])           <span class="c"># 做选择</span></span><span class="l">            <span class="f">dfs</span>(i + 1)                     <span class="c"># 递归: 下一层只能选 i 之后的</span></span><span class="l">            path.<span class="f">pop</span>()                     <span class="c"># 撤销: 兄弟分支要看到干净的 path</span></span><span class="l">    <span class="f">dfs</span>(0)</span><span class="l">    <span class="r">return</span> res</span></div>
-<p>等价的 "选 / 不选" 写法 (二叉树, 只有叶子是答案), 适合元素有额外状态的题:</p>
+<figcaption>path 的 push / pop 随时间变化, 每一步都把当前 path 记进答案。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n · 2ⁿ)</code>: 2ⁿ 个子集, 每个复制 <code>O(n)</code>。Space <code>O(n)</code> (recursion 深度, 不算输出)。</p>
+<p>另一种写法: 每个数"选或不选", recursion 到第 n 层时记录。两种都对。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">subsets</span>(nums):</span><span class="l">    res, path = [], []</span><span class="l">    <span class="k">def</span> <span class="f">dfs</span>(start):</span><span class="l">        <span class="c"># 每个节点都是答案; 要 copy, path 之后还会变</span></span><span class="l">        res.<span class="f">append</span>(path[:])</span><span class="l">        <span class="c"># 只选 start 之后的: 有 [1,2], 没有 [2,1]</span></span><span class="l">        <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(start, <span class="t">len</span>(nums)):</span><span class="l">            path.<span class="f">append</span>(nums[i])           <span class="c"># 做选择</span></span><span class="l">            <span class="f">dfs</span>(i + 1)                     <span class="c"># 递归: 下一层只能选 i 之后的</span></span><span class="l">            path.<span class="f">pop</span>()                     <span class="c"># 撤销: 兄弟分支要看到干净的 path</span></span><span class="l">    <span class="f">dfs</span>(0)</span><span class="l">    <span class="r">return</span> res</span></div>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">subsets</span>(nums):            <span class="c"># 另一种写法: 每个元素 &quot;选 / 不选&quot; (二叉树)</span></span><span class="l">    res, path = [], []</span><span class="l">    <span class="k">def</span> <span class="f">dfs</span>(i):</span><span class="l">        <span class="k">if</span> i == <span class="t">len</span>(nums):    <span class="c"># 每个元素都决定完了, 才是叶子</span></span><span class="l">            res.<span class="f">append</span>(path[:])</span><span class="l">            <span class="r">return</span></span><span class="l">        <span class="f">dfs</span>(i + 1)            <span class="c"># 不选 nums[i]: path 不变</span></span><span class="l">        path.<span class="f">append</span>(nums[i])  <span class="c"># 选 nums[i]</span></span><span class="l">        <span class="f">dfs</span>(i + 1)</span><span class="l">        path.<span class="f">pop</span>()            <span class="c"># 撤销</span></span><span class="l">    <span class="f">dfs</span>(0)</span><span class="l">    <span class="r">return</span> res</span></div>
-<p>Time O(n·2^n): 2^n 个节点, 每个节点 <code>path[:]</code> 复制 O(n)。Space O(n): 递归深度 + path (不算输出)。</p>
-<p class="note"><b>记:</b>子集 / 组合: 每层只往后选 (<code>range(start, n)</code>, 递归传 <code>i+1</code>); 每个节点都可能是答案。</p>
-<h2>2. Permutations: 每层从头看, 用 used[] 跳过已选</h2>
-<p>题: <code>nums = [1,2,3]</code>, 返回所有排列, 共 3! = 6 个。</p>
-<p>Brute force: 每个位置从 n 个数里选, 共 n^n = 27 个序列, 再过滤出没有重复数字的, O(n^n · n)。浪费: 第 2 层又选了 path 里已有的数, 整棵子树都是废的。</p>
-<p>关键观察: 相比 Subsets, 顺序有意义 (<code>[1,2]</code> 和 <code>[2,1]</code> 是两个答案), 所以不能再 "只往后选", 每层都要从头看。改两处: <code>range(start, n)</code> → <code>range(n)</code>; 加 <code>used[i]</code> 跳过 path 里已有的数。只有叶子 (<code>len(path) == n</code>) 是答案。</p>
+</details>
+<p class="note"><b>记:</b>列出所有子集 / 组合: start index 只往后选防重复; 每个节点都记录 path[:]。</p>
+<h2>把第 1 题抽象一下: backtracking 模板</h2>
+<p>所有 backtracking 题都是这个形状, 只换三样东西: path 里放什么、choices 是什么、什么时候记录答案。</p>
+<p>为什么一定要 pop (撤销选择)? 因为整个过程只用一个 path list。从一个分支退回来, 必须把这个分支加进去的东西拿掉, 才能去试下一个分支。</p>
+<p>复杂度基本等于 decision tree 的节点数。所以优化的方向只有一个: <b>剪枝</b>, 尽早发现某个分支不可能有答案, 不往下走 (第 3、5、8 题)。</p>
+<details><summary>通用模板代码</summary>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">backtrack</span>(path, choices):</span><span class="l">    <span class="k">if</span> <span class="f">is_done</span>(path):                 <span class="c"># 1. 结束条件: path 已经是一个完整答案</span></span><span class="l">        res.<span class="f">append</span>(path[:])           <span class="c">#    必须 copy: path 还会继续被改</span></span><span class="l">        <span class="r">return</span></span><span class="l">    <span class="k">for</span> c <span class="k">in</span> choices:                 <span class="c"># 2. choices: 此刻还能选什么</span></span><span class="l">        <span class="k">if</span> <span class="k">not</span> <span class="f">valid</span>(path, c):        <span class="c">#    约束剪枝: 这个选择一定走不通, 不进去</span></span><span class="l">            <span class="k">continue</span></span><span class="l">        path.<span class="f">append</span>(c)                <span class="c"># 3. 做选择</span></span><span class="l">        <span class="f">backtrack</span>(path, <span class="f">next_choices</span>(path, c))   <span class="c"># 4. 递归: 树往下一层</span></span><span class="l">        path.<span class="f">pop</span>()                    <span class="c"># 5. 撤销选择: path 回到 &quot;做选择之前&quot;</span></span></div>
+</details>
+<p class="note"><b>记:</b>backtracking = decision tree 上的 DFS。做选择 → 递归 → 撤销选择。记录答案时复制 path。</p>
+<h2>2. Permutations</h2>
+<h3>题目在问什么</h3>
+<p>给一个数组, 里面的数互不相同。返回<b>所有的排列</b>: 每个数恰好用一次, 顺序不同就算不同的排列。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 170" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Permutations examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">数组里的数互不相同。返回所有排列 (每个数都用一次, 顺序不同就算不同)</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  nums = [1,2,3]  →  6 个排列</text>
+<rect x="40" y="88" width="76" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="78.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[1,2,3]</text>
+<rect x="116" y="88" width="76" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="154.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[1,3,2]</text>
+<rect x="192" y="88" width="76" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="230.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[2,1,3]</text>
+<rect x="268" y="88" width="76" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="306.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[2,3,1]</text>
+<rect x="344" y="88" width="76" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="382.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[3,1,2]</text>
+<rect x="420" y="88" width="76" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="458.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[3,2,1]</text>
+<text x="40" y="134" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">第一个位置 3 种选法, 第二个 2 种, 第三个 1 种: 3 × 2 × 1 = 6。和子集不同, [1,2] 和 [2,1] 是两个排列</text>
+<line x1="40" y1="158" x2="640" y2="158" stroke="#B4B2A9" stroke-dasharray="4 4"/></svg>
+<figcaption>例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>同样是循环层数写不死的问题。</p>
+<h3>Intuition: 每一层都从头选, 跳过已经用过的</h3>
+<p>和 Subsets 的区别: 排列和顺序有关, [1,2] 和 [2,1] 是两个答案。所以不能再用 start index 规定"只往后选", <b>每一层都要从头看所有数</b>。</p>
+<p>但同一个数不能用两次。用一个 <code>used</code> 数组记录哪些数已经在 path 里了, 选的时候跳过它们。</p>
+<p>答案只在叶子上: path 的长度等于 n 时才是一个完整的排列。</p>
+<h3>算法</h3>
+<ol><li><code>dfs()</code>: 如果 <code>len(path) == n</code>, 记录 <code>path[:]</code>, 返回。</li><li>对每个 i: 如果 used[i], 跳过。否则 <code>used[i] = True</code>, push, dfs(), pop, <code>used[i] = False</code>。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 435" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Permutations 的 decision tree</title><desc>nums=[1,2,3], 6 个叶子。</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">nums = [1, 2, 3] · 每层都从头看 3 个数, used[i] 为真的跳过 (没有画出)</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">每层的 choices = 还没用的数: 第 1 层 3 个, 第 2 层 2 个, 第 3 层 1 个</text>
@@ -398,7 +466,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="158" y="398" width="18" height="14" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="182" y="405" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">普通节点 (path)</text>
 </svg>
-<figcaption>图 2a: decision tree。第 1 层 3 个选择, 第 2 层 2 个, 第 3 层 1 个; 叶子 3! = 6 个。</figcaption></figure>
+<figcaption>每一层都从头看所有数, 用 used 跳过已选的。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 814" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Permutations 的 path / used 变化</title><desc>nums=[1,2,3] 前 12 步。</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">nums = [1, 2, 3] · push: used[i] = True 且 path.append · pop: 两个一起还原</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">'used' 列: 绿色 = 在 path 里的数, 灰色 = 还能选的数</text>
@@ -641,14 +710,42 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="560" y="751" width="16" height="14" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="582" y="758" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">path 栈顶</text>
 </svg>
-<figcaption>图 2b: path 和 used[] 同步变化。push 时 used 变绿, pop 时 used 变回灰色。</figcaption></figure>
+<figcaption>path 和 used 随时间的变化; path 满了才记录。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n · n!)</code>, Space <code>O(n)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">permute</span>(nums):</span><span class="l">    res, path = [], []</span><span class="l">    used = [<span class="k">False</span>] * <span class="t">len</span>(nums)      <span class="c"># used[i]: nums[i] 已在 path 里, O(1) 判断</span></span><span class="l">    <span class="k">def</span> <span class="f">dfs</span>():</span><span class="l">        <span class="k">if</span> <span class="t">len</span>(path) == <span class="t">len</span>(nums):  <span class="c"># 每个位置都填好了</span></span><span class="l">            res.<span class="f">append</span>(path[:])</span><span class="l">            <span class="r">return</span></span><span class="l">        <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(<span class="t">len</span>(nums)):  <span class="c"># 每一层都从头看: 排列允许先选后面的元素</span></span><span class="l">            <span class="k">if</span> used[i]:             <span class="c"># 剪枝: 已经用过的不能再用</span></span><span class="l">                <span class="k">continue</span></span><span class="l">            used[i] = <span class="k">True</span>          <span class="c"># 做选择: 两个状态一起改 (path 和 used)</span></span><span class="l">            path.<span class="f">append</span>(nums[i])</span><span class="l">            <span class="f">dfs</span>()</span><span class="l">            path.<span class="f">pop</span>()              <span class="c"># 撤销: 两个状态一起还原</span></span><span class="l">            used[i] = <span class="k">False</span></span><span class="l">    <span class="f">dfs</span>()</span><span class="l">    <span class="r">return</span> res</span></div>
-<p>Time O(n·n!): 叶子 n! 个, 节点总数约 e·n!, 每个叶子复制 O(n)。Space O(n): path + used + 递归栈。</p>
-<p class="note"><b>记:</b>排列: 每层 <code>range(n)</code> + <code>used[]</code>; 做选择改两个状态 (path, used), 撤销也要改两个。</p>
-<h2>3. Combination Sum: 可重复选 => 递归传 i, 不是 i+1</h2>
-<p>题: <code>candidates = [2,3,5]</code>, <code>target = 6</code>, 每个数可以用任意多次, 返回和为 target 的所有组合 (顺序不同算同一个)。答案: <code>[[2,2,2],[3,3]]</code>。</p>
-<p>Brute force: 每个数枚举用 0 … target/c 次, 共 (6/2+1)·(6/3+1)·(6/5+1) = 4·3·2 = 24 种, 每种求和检查。浪费: 2 已经用了 4 次 (和 8 &gt; 6), 却还要继续枚举 3 和 5 的次数。</p>
-<p>关键观察: 这是 Subsets 加两处改动。① 同一个数能再选: 递归传 <code>i</code> (下一层仍可选 <code>candidates[i]</code>), 而不是 <code>i+1</code>; <code>start</code> 仍然保证不会出现 <code>[3,2]</code>。② 剪枝: 维护 <code>remain = target − sum(path)</code>, 排序后一旦 <code>c &gt; remain</code>, 后面更大的数也不行, 直接 <code>break</code>。</p>
+</details>
+<p class="note"><b>记:</b>排列: 每层从头选, used 跳过已选的; 长度满了才记录。</p>
+<h2>3. Combination Sum</h2>
+<h3>题目在问什么</h3>
+<p>给一个数组 candidates (互不相同) 和 target。从中选一些数, 让它们的和等于 target。<b>同一个数可以选任意多次</b>。返回所有不同的组合 (组合不看顺序)。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 216" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Combination Sum examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">candidates 互不相同。选一些数 (&lt;同一个数可以选很多次&gt;) 让和等于 target。返回所有不同的组合</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  candidates = [2,3,6,7], target = 7  →  [[2,2,3],[7]]</text>
+<text x="40" y="103" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">组合 1</text>
+<rect x="104" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="121.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="138" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="155.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="172" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="189.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="40" y="149" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">组合 2</text>
+<rect x="104" y="134" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="121.0" y="150.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">7</text>
+<text x="40" y="180" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">2 用了两次。[2,3,2] 和 [2,2,3] 是同一个组合, 不能重复输出</text>
+<line x1="40" y1="204" x2="640" y2="204" stroke="#B4B2A9" stroke-dasharray="4 4"/></svg>
+<figcaption>例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>生成所有可能的多重集合, 检查和。不知道每个数要选几次, 没法列举。</p>
+<h3>Intuition: 和 Subsets 一样, 只改一个下标</h3>
+<p>组合不看顺序, 所以和 Subsets 一样用 start index 防止重复。</p>
+<p>区别在于同一个数可以重复选: 选了 <code>candidates[i]</code> 之后, 下一层<b>仍然可以从 i 开始选</b> (而不是 i+1)。所以递归时传 i。</p>
+<p>用 remain 记录还差多少。<code>remain == 0</code> 就找到一个答案; <code>remain < 0</code> 就没希望了, 直接返回。</p>
+<p>剪枝: 先把 candidates 排序。如果当前的 <code>candidates[i] > remain</code>, 它后面的更大, 都不用试了, 直接 break。</p>
+<h3>算法</h3>
+<ol><li>排序。<code>dfs(start, remain)</code>: remain == 0 就记录。</li><li>对 i 从 start 开始: <code>candidates[i] > remain</code> 就 break。否则 push, <code>dfs(i, remain - candidates[i])</code>, pop。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 435" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Combination Sum 的 decision tree</title><desc>candidates=[2,3,5], target=6。</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">candidates = [2, 3, 5] · target = 6 · 子节点 = 从 candidates[start:] 里选一个, 可以和父节点同值</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">剪枝: c &gt; remain =&gt; break (排序后, 后面更大的也不行, 所以不画 [2,2,5] 这类节点)</text>
@@ -704,7 +801,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="292.8" y="398" width="18" height="14" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="5 3"/>
 <text x="316.8" y="405" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">被剪枝的分支 (写原因)</text>
 </svg>
-<figcaption>图 3a: decision tree。红色虚线 = 选了就超过 target, break。[2,2,2] 和 [3,3] 是绿色答案。</figcaption></figure>
+<figcaption>递归传 i 而不是 i+1: 同一个数可以再选; 排序后超过 remain 的直接剪掉。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 910" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Combination Sum 的 path / remain 变化</title><desc>candidates=[2,3,5], target=6 前 14 步。</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">candidates = [2, 3, 5] · target = 6 · remain = target - sum(path)</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">每次 push c: remain 减 c · c &gt; remain 就剪枝 (红色虚线格子 = 想选但不能选)</text>
@@ -890,15 +988,44 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="560" y="847" width="16" height="14" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="582" y="854" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">path 栈顶</text>
 </svg>
-<figcaption>图 3b: 每步写出 remain = target − sum(path) 的具体数字。</figcaption></figure>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">combination_sum</span>(candidates, target):</span><span class="l">    candidates.<span class="f">sort</span>()           <span class="c"># 排序: 一旦 c &gt; remain, 后面更大的也不行, 可以 break</span></span><span class="l">    res, path = [], []</span><span class="l">    <span class="k">def</span> <span class="f">dfs</span>(start, remain):     <span class="c"># remain = target - sum(path), 不用每次重算 sum</span></span><span class="l">        <span class="k">if</span> remain == 0:         <span class="c"># 结束条件: 刚好凑够</span></span><span class="l">            res.<span class="f">append</span>(path[:])</span><span class="l">            <span class="r">return</span></span><span class="l">        <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(start, <span class="t">len</span>(candidates)):</span><span class="l">            c = candidates[i]</span><span class="l">            <span class="k">if</span> c &gt; remain:      <span class="c"># 剪枝: 超了; 排过序, 后面的更大, 直接 break</span></span><span class="l">                <span class="k">break</span></span><span class="l">            path.<span class="f">append</span>(c)</span><span class="l">            <span class="f">dfs</span>(i, remain - c)  <span class="c"># 关键: 传 i (不是 i+1) =&gt; 同一个数可以重复选</span></span><span class="l">            path.<span class="f">pop</span>()</span><span class="l">    <span class="f">dfs</span>(0, target)</span><span class="l">    <span class="r">return</span> res</span></div>
-<p>Time: 树深最多 target/min(c) 层, 每层最多 n 个分支, 上界 O(n^(target/min)), 实际因为剪枝和 start 小得多。Space O(target/min): 递归深度。</p>
-<p class="note"><b>记:</b>元素可重复用: 递归传 <code>i</code>; 每个数只能用一次: 传 <code>i+1</code>。有和的约束: sort + <code>c &gt; remain</code> 就 break。</p>
-<h2>4. Combination Sum II: 排序 + 同层去重</h2>
-<p>题: <code>candidates = [1,2,2,3]</code>, <code>target = 5</code>, 每个数最多用一次, 候选里有重复值, 答案不能有重复组合。答案: <code>[[1,2,2],[2,3]]</code>。</p>
-<p>Brute force: 枚举 2^4 = 16 个子集, 筛出和为 5 的, 再用 set 去重, O(n·2^n)。浪费: 选第一个 2 和选第二个 2 生成的是完全相同的子树, 白白展开了两遍, 最后还要靠 set 去重。</p>
-<p>关键观察: 先排序, 相同的值就挨在一起。在 <b>同一层</b> (同一个 <code>for</code> 循环里), 如果 <code>candidates[i] == candidates[i-1]</code>, 说明这个值在这一层已经试过, 子树会一模一样, 跳过。但 <code>i == start</code> 时是 "下一层的第一个", 不是同一层, 必须允许 — 否则 <code>[1,2,2]</code> 出不来。所以条件是 <code>i &gt; start and candidates[i] == candidates[i-1]</code>。</p>
-<p>相比上一题改两行: 递归传 <code>i+1</code> (每个数只用一次); 加这一行去重。</p>
+<figcaption>path 和 remain 的变化; 被剪掉的分支标红。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time 是 decision tree 的大小, 上界大约 <code>O(n^(target / min))</code>。Space <code>O(target / min)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">combination_sum</span>(candidates, target):</span><span class="l">    <span class="c"># 排序: 一旦 c &gt; remain, 后面更大的也不行, 可以 break</span></span><span class="l">    candidates.<span class="f">sort</span>()</span><span class="l">    res, path = [], []</span><span class="l">    <span class="k">def</span> <span class="f">dfs</span>(start, remain):     <span class="c"># remain = target - sum(path), 不用每次重算 sum</span></span><span class="l">        <span class="k">if</span> remain == 0:         <span class="c"># 结束条件: 刚好凑够</span></span><span class="l">            res.<span class="f">append</span>(path[:])</span><span class="l">            <span class="r">return</span></span><span class="l">        <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(start, <span class="t">len</span>(candidates)):</span><span class="l">            c = candidates[i]</span><span class="l">            <span class="k">if</span> c &gt; remain:      <span class="c"># 剪枝: 超了; 排过序, 后面的更大, 直接 break</span></span><span class="l">                <span class="k">break</span></span><span class="l">            path.<span class="f">append</span>(c)</span><span class="l">            <span class="f">dfs</span>(i, remain - c)  <span class="c"># 关键: 传 i (不是 i+1) =&gt; 同一个数可以重复选</span></span><span class="l">            path.<span class="f">pop</span>()</span><span class="l">    <span class="f">dfs</span>(0, target)</span><span class="l">    <span class="r">return</span> res</span></div>
+</details>
+<p class="note"><b>记:</b>可以重复选: 递归传 i; 不能重复选: 传 i + 1。排序后可以用 break 剪枝。</p>
+<h2>4. Combination Sum II</h2>
+<h3>题目在问什么</h3>
+<p>和第 3 题类似, 但有两个不同: candidates 里<b>可能有重复的数</b>; 每个位置上的数<b>最多用一次</b>。返回所有不同的组合。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 188" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Combination Sum II examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">candidates 里&lt;可能有重复的数&gt;。每个位置的数最多用一次。和等于 target 的所有不同组合</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  candidates = [10,1,2,7,6,1,5], target = 8</text>
+<text x="40" y="103" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">答案</text>
+<rect x="104" y="88" width="76" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="142.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[1,1,6]</text>
+<rect x="180" y="88" width="76" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="218.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[1,2,5]</text>
+<rect x="256" y="88" width="76" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="294.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[1,7]</text>
+<rect x="332" y="88" width="76" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="370.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[2,6]</text>
+<text x="40" y="134" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">有两个 1。[1,7] 用第一个 1 或第二个 1 都能得到, 但只能输出一次</text>
+<text x="40" y="152" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">[1,1,6] 是可以的: 两个 1 是不同位置的数, 各用一次</text>
+<line x1="40" y1="176" x2="640" y2="176" stroke="#B4B2A9" stroke-dasharray="4 4"/></svg>
+<figcaption>例子。</figcaption></figure>
+<p>难点: 数组里有两个 1, 用第一个 1 和用第二个 1 得到的组合是一样的, 只能输出一次。</p>
+<h3>Brute force</h3>
+<p>像 Subsets 那样生成所有组合, 再用 set 去重。会生成很多重复的分支, 浪费时间。</p>
+<h3>Intuition: 同一层不选两次同样的值</h3>
+<p>先排序, 让相同的数挨在一起。</p>
+<p>重复是怎么产生的? 在 decision tree 的<b>同一层</b> (同一个位置上), 先选了第一个 1, 后来又选了第二个 1, 这两个分支下面长出来的东西完全一样。</p>
+<p>所以规则是: <b>同一层里, 如果当前的数和前一个数相同, 就跳过</b>。写成代码就是 <code>if i > start and nums[i] == nums[i-1]: continue</code>。</p>
+<p>注意是 <code>i > start</code>, 不是 <code>i > 0</code>: 不同层选同样的值是可以的, 比如 [1,1,6] 里两个 1 在不同的层。</p>
+<p>每个数只能用一次, 所以递归传 i + 1。</p>
+<h3>算法</h3>
+<ol><li>排序。<code>dfs(start, remain)</code>: remain == 0 就记录。</li><li>对 i 从 start 开始: <code>i > start and nums[i] == nums[i-1]</code> 就 continue; <code>nums[i] > remain</code> 就 break。</li><li>push, <code>dfs(i + 1, remain - nums[i])</code>, pop。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 435" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Combination Sum II 的 decision tree</title><desc>candidates=[1,2,2,3], target=5, 同层去重。</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">candidates 排序后 = [1, 2, 2, 3] · target = 5 · 每个数最多用一次 =&gt; dfs(i+1, ...)</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">同一层第二个 2 (i &gt; start 且 与前一个相等) 的子树和第一个 2 完全相同 =&gt; 剪掉</text>
@@ -953,7 +1080,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="292.8" y="398" width="18" height="14" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="5 3"/>
 <text x="316.8" y="405" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">被剪枝的分支 (写原因)</text>
 </svg>
-<figcaption>图 4a: decision tree。"同层重复" 的红色分支是第二个 2 (i=2, start=1 或 0), 子树和第一个 2 一样, 剪掉。</figcaption></figure>
+<figcaption>同一层里第二个 1 被跳过 (它会长出和第一个 1 一样的子树); 不同层可以重复用值。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 814" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Combination Sum II 的同层去重</title><desc>candidates=[1,2,2,3], target=5 前 12 步。</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">candidates = [1, 2, 2, 3] (下标 0..3) · target = 5 · 去重条件: i &gt; start 且 c == candidates[i-1]</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">第 8 步: 在 path=[1] 这一层, i=2 的 2 和 i=1 的 2 相同, 子树重复 =&gt; 剪枝</text>
@@ -1115,14 +1243,42 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="560" y="751" width="16" height="14" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="582" y="758" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">path 栈顶</text>
 </svg>
-<figcaption>图 4b: 第 8 步 path=[1], i=2 > start=1 且 2 == 2, 剪枝; 第 3 步 path=[1,2,2] 允许, 因为 i=2 == start=2。</figcaption></figure>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">combination_sum2</span>(candidates, target):</span><span class="l">    candidates.<span class="f">sort</span>()               <span class="c"># 排序: 相同的数挨在一起, 才能 &quot;和前一个比&quot; 去重</span></span><span class="l">    res, path = [], []</span><span class="l">    <span class="k">def</span> <span class="f">dfs</span>(start, remain):</span><span class="l">        <span class="k">if</span> remain == 0:</span><span class="l">            res.<span class="f">append</span>(path[:])</span><span class="l">            <span class="r">return</span></span><span class="l">        <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(start, <span class="t">len</span>(candidates)):</span><span class="l">            <span class="k">if</span> i &gt; start <span class="k">and</span> candidates[i] == candidates[i - 1]:</span><span class="l">                <span class="k">continue</span>            <span class="c"># 同一层已试过这个值, 子树一样</span></span><span class="l">            c = candidates[i]</span><span class="l">            <span class="k">if</span> c &gt; remain:</span><span class="l">                <span class="k">break</span></span><span class="l">            path.<span class="f">append</span>(c)</span><span class="l">            <span class="f">dfs</span>(i + 1, remain - c)  <span class="c"># 每个数只能用一次 =&gt; 传 i + 1</span></span><span class="l">            path.<span class="f">pop</span>()</span><span class="l">    <span class="f">dfs</span>(0, target)</span><span class="l">    <span class="r">return</span> res</span></div>
-<p>Time O(2^n) 上界 (每个元素选 / 不选), 去重后实际更少, 不再需要 set。Space O(n)。</p>
-<p class="note"><b>记:</b>有重复元素又要去重: 先 sort, 循环里加 <code>if i &gt; start and nums[i] == nums[i-1]: continue</code>。Subsets II 同样一行。</p>
-<h2>5. Generate Parentheses: 约束剪枝, 只生成合法前缀</h2>
-<p>题: 给 <code>n</code>, 生成所有 n 对合法括号。<code>n = 2</code>: <code>["(())", "()()"]</code>。</p>
-<p>Brute force: 2^(2n) 个由 <code>(</code> <code>)</code> 组成的串, 逐个检查合法, O(n·4^n)。n = 3 时 64 个串里只有 5 个合法。</p>
-<p>关键观察: 一个串合法 ⟺ 每个前缀里 <code>)</code> 的个数 ≤ <code>(</code> 的个数, 且最后各 n 个。所以不用事后检查, 每一步只加 "不会破坏前缀" 的字符: <code>(</code> 要 <code>open_ &lt; n</code>; <code>)</code> 要 <code>close &lt; open_</code>。两个 <code>if</code> 就是约束剪枝, 树上每个叶子都是答案, 没有一个废叶子。</p>
+<figcaption>同层去重的过程。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(2ⁿ · n)</code> 上界, Space <code>O(n)</code>。Subsets II、Permutations II 都用同样的去重方法。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">combination_sum2</span>(candidates, target):</span><span class="l">    <span class="c"># 排序: 相同的数挨在一起, 才能 &quot;和前一个比&quot; 去重</span></span><span class="l">    candidates.<span class="f">sort</span>()</span><span class="l">    res, path = [], []</span><span class="l">    <span class="k">def</span> <span class="f">dfs</span>(start, remain):</span><span class="l">        <span class="k">if</span> remain == 0:</span><span class="l">            res.<span class="f">append</span>(path[:])</span><span class="l">            <span class="r">return</span></span><span class="l">        <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(start, <span class="t">len</span>(candidates)):</span><span class="l">            <span class="k">if</span> i &gt; start <span class="k">and</span> candidates[i] == candidates[i - 1]:</span><span class="l">                <span class="k">continue</span>            <span class="c"># 同一层已试过这个值, 子树一样</span></span><span class="l">            c = candidates[i]</span><span class="l">            <span class="k">if</span> c &gt; remain:</span><span class="l">                <span class="k">break</span></span><span class="l">            path.<span class="f">append</span>(c)</span><span class="l">            <span class="f">dfs</span>(i + 1, remain - c)  <span class="c"># 每个数只能用一次 =&gt; 传 i + 1</span></span><span class="l">            path.<span class="f">pop</span>()</span><span class="l">    <span class="f">dfs</span>(0, target)</span><span class="l">    <span class="r">return</span> res</span></div>
+</details>
+<p class="note"><b>记:</b>输入有重复、输出要去重: 先排序, 同一层 if i > start and nums[i] == nums[i-1]: continue。</p>
+<h2>5. Generate Parentheses</h2>
+<h3>题目在问什么</h3>
+<p>给 n, 生成所有由 n 对括号组成的<b>合法</b>括号字符串。合法: 每个 ( 都有对应的 ), 而且从左往右读的时候, 任何时刻 ) 的个数都不超过 (。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 188" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Generate Parentheses examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">给 n, 生成所有由 n 对括号组成的、合法的括号字符串</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  n = 3  →  5 个</text>
+<rect x="40" y="88" width="80" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="80.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">((()))</text>
+<rect x="120" y="88" width="80" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="160.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">(()())</text>
+<rect x="200" y="88" width="80" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="240.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">(())()</text>
+<rect x="280" y="88" width="80" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="320.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">()(())</text>
+<rect x="360" y="88" width="80" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="400.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">()()()</text>
+<text x="40" y="134" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">合法: 从左往右读, 任何时候 ) 的个数都不超过 (; 最后两者相等</text>
+<text x="40" y="152" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">&quot;())(()&quot; 不合法: 读到第 3 个字符时 ) 比 ( 多了</text>
+<line x1="40" y1="176" x2="640" y2="176" stroke="#B4B2A9" stroke-dasharray="4 4"/></svg>
+<figcaption>例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>生成所有长度 2n 的 ( 和 ) 组成的字符串 (<code>2^(2n)</code> 个), 再一个一个检查是否合法。n = 3 时要生成 64 个, 只有 5 个合法。</p>
+<h3>Intuition: 只往合法的方向走 (剪枝)</h3>
+<p>与其先生成再检查, 不如在生成的过程中就保证合法。每一步只有两种选择: 加 ( 或者加 )。</p>
+<ul><li>加 ( 的条件: 已经用的 ( 少于 n 个 (<code>open < n</code>)。</li><li>加 ) 的条件: 已经用的 ) 少于 ( (<code>close < open</code>)。否则 ) 会比 ( 多, 一定不合法。</li></ul>
+<p>满足这两个条件, 生成出来的每个字符串都是合法的, 不需要再检查。这就是<b>剪枝</b>: 在走进一个分支之前就判断它有没有希望。</p>
+<h3>算法</h3>
+<ol><li><code>dfs(open, close)</code>: 长度到 2n, 记录。</li><li><code>open < n</code>: 加 (, dfs(open + 1, close), 撤销。</li><li><code>close < open</code>: 加 ), dfs(open, close + 1), 撤销。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 501" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Generate Parentheses 的 decision tree</title><desc>n=2, 两个剪枝条件。</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">n = 2 · 每个节点最多两个选择: 加 "(" (需要 open_ &lt; n) 或 加 ")" (需要 close &lt; open_)</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">红色虚线 = 被两个条件挡住的选择; 剩下的每个叶子都合法</text>
@@ -1180,7 +1336,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="292.8" y="464" width="18" height="14" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="5 3"/>
 <text x="316.8" y="471" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">被剪枝的分支 (写原因)</text>
 </svg>
-<figcaption>图 5a: n=2 的 decision tree。红色虚线 = 被两个条件挡住的选择, 写明哪个条件。</figcaption></figure>
+<figcaption>两个条件把不合法的分支在生成之前就剪掉了。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 814" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Generate Parentheses 的 path 变化</title><desc>n=2 前 12 步。</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">n = 2 · push "(" 要 open_ &lt; n · push ")" 要 close &lt; open_ · path 的长度到 2n = 4 就收集</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">红色虚线格子 = 想加但被条件挡住 (原因写在左边)</text>
@@ -1360,14 +1517,63 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="560" y="751" width="16" height="14" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="582" y="758" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">path 栈顶</text>
 </svg>
-<figcaption>图 5b: 前 12 步。第 3、5 步 open_ = n 挡住 "("; 根节点的 ")" 要到第 21 步才被挡 (close=0 ≥ open_=0)。</figcaption></figure>
+<figcaption>path 的变化; 被剪掉的分支标红并写了原因。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time 和答案个数成正比 (Catalan 数, 大约 <code>4ⁿ / n^1.5</code>)。Space <code>O(n)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">generate_parenthesis</span>(n):</span><span class="l">    res, path = [], []</span><span class="l">    <span class="k">def</span> <span class="f">dfs</span>(open_, close):  <span class="c"># open_ / close: path 里已有的 ( 和 ) 的个数</span></span><span class="l">        <span class="k">if</span> <span class="t">len</span>(path) == 2 * n:</span><span class="l">            res.<span class="f">append</span>(<span class="s">&quot;&quot;</span>.<span class="f">join</span>(path))</span><span class="l">            <span class="r">return</span></span><span class="l">        <span class="k">if</span> open_ &lt; n:       <span class="c"># 剪枝 1: ( 最多 n 个</span></span><span class="l">            path.<span class="f">append</span>(<span class="s">&quot;(&quot;</span>)</span><span class="l">            <span class="f">dfs</span>(open_ + 1, close)</span><span class="l">            path.<span class="f">pop</span>()</span><span class="l">        <span class="k">if</span> close &lt; open_:   <span class="c"># 剪枝 2: ) 不能比 ( 多, 否则前缀已经不合法</span></span><span class="l">            path.<span class="f">append</span>(<span class="s">&quot;)&quot;</span>)</span><span class="l">            <span class="f">dfs</span>(open_, close + 1)</span><span class="l">            path.<span class="f">pop</span>()</span><span class="l">    <span class="f">dfs</span>(0, 0)</span><span class="l">    <span class="r">return</span> res</span></div>
-<p>Time O(4^n / √n) 量级 (Catalan 数个答案 × 每个 O(n) 的 join); Space O(n)。</p>
-<p class="note"><b>记:</b>构造的串有 "前缀合法性": 把条件写成 <code>if</code> 挡在 push 之前, 不要先生成再检查。</p>
-<h2>6. Letter Combinations of a Phone Number: 每层候选不同</h2>
-<p>题: <code>digits = "23"</code>, 每个数字对应几个字母, 返回所有字母组合。<code>"2"→abc</code>, <code>"3"→def</code>, 共 3×3 = 9 个。</p>
-<p>Brute force: 嵌套 for / <code>itertools.product</code>。问题是 <code>digits</code> 的长度是 input, 嵌套层数写不出来。这里没有任何东西可以剪枝 — 它是纯粹的笛卡尔积。</p>
-<p>关键观察: 相比前面几题, choices 不再是 "从 start 往后" 或 "没用过的", 而是由 <b>层数 idx</b> 决定: 第 idx 层的候选 = <code>PHONE[digits[idx]]</code>, 和 path 里选了什么无关。所以不需要 start 也不需要 used, 只要一个 <code>idx</code>。backtracking 在这里只是把 "层数不固定的嵌套 for" 写成递归。</p>
+</details>
+<p class="note"><b>记:</b>有约束的生成: 在 push 之前就检查约束, 只走合法的分支, 不要先生成再过滤。</p>
+<h2>6. Letter Combinations of a Phone Number</h2>
+<h3>题目在问什么</h3>
+<p>手机键盘上, 2 对应 abc, 3 对应 def, ……, 9 对应 wxyz。给一串数字 (2–9), 返回它能表示的所有字母组合。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 262" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Letter Combinations examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">手机键盘上 2 对应 abc, 3 对应 def, ... 9 对应 wxyz。给一串数字, 返回所有可能的字母组合</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  digits = &quot;23&quot;  →  9 个</text>
+<text x="40" y="103" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">2 → abc</text>
+<rect x="104" y="88" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="126.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">a</text>
+<rect x="148" y="88" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="170.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">b</text>
+<rect x="192" y="88" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="214.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">c</text>
+<text x="40" y="149" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">3 → def</text>
+<rect x="104" y="134" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="126.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">d</text>
+<rect x="148" y="134" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="170.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">e</text>
+<rect x="192" y="134" width="44" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="214.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">f</text>
+<text x="40" y="195" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">答案</text>
+<rect x="104" y="180" width="44" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="126.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">ad</text>
+<rect x="148" y="180" width="44" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="170.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">ae</text>
+<rect x="192" y="180" width="44" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="214.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">af</text>
+<rect x="236" y="180" width="44" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="258.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">bd</text>
+<rect x="280" y="180" width="44" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="302.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">be</text>
+<rect x="324" y="180" width="44" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="346.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">bf</text>
+<rect x="368" y="180" width="44" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="390.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">cd</text>
+<rect x="412" y="180" width="44" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="434.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">ce</text>
+<rect x="456" y="180" width="44" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="478.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">cf</text>
+<text x="40" y="226" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">第一位从 abc 里选一个, 第二位从 def 里选一个: 3 × 3 = 9</text>
+<line x1="40" y1="250" x2="640" y2="250" stroke="#B4B2A9" stroke-dasharray="4 4"/></svg>
+<figcaption>例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>每一位一层循环, 但位数不固定, 循环层数写不死。</p>
+<h3>Intuition: 第 i 层的选项由第 i 个数字决定</h3>
+<p>这是最直接的 backtracking: decision tree 的第 i 层, 选项就是第 i 个数字对应的那几个字母。path 长度等于数字个数时, 就是一个答案。</p>
+<p>和前面的题不同, 这里没有 start index, 也没有 used: 每一层的选项本来就不同, 不会重复。也不需要剪枝, 所有组合都是答案。</p>
+<h3>算法</h3>
+<ol><li><code>dfs(idx)</code>: idx == len(digits), 记录 path。</li><li>对 <code>phone[digits[idx]]</code> 里的每个字母: push, dfs(idx + 1), pop。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 369" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Letter Combinations 的 decision tree</title><desc>digits=23, 3×3=9 个叶子。</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">digits = "23" · 第 1 层从 "abc" 选一个, 第 2 层从 "def" 选一个</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">每层的 choices 由层数 idx 决定, 和 path 里选了什么无关 =&gt; 不需要 start / used</text>
@@ -1416,7 +1622,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="158" y="332" width="18" height="14" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="182" y="339" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">普通节点 (path)</text>
 </svg>
-<figcaption>图 6a: decision tree。每层的分支数固定 (3 和 3), 没有被剪的分支; 9 个叶子 = 9 个答案。</figcaption></figure>
+<figcaption>每一层的选项由当前的数字决定。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 814" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Letter Combinations 的 path 变化</title><desc>digits=23 前 12 步。</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">digits = "23" · idx = 正在决定第几个数字 · 到 idx == 2 收集</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">每个叶子 push 一次、收集一次、pop 一次; 第 11 步 pop a, 回到空 path 试 b</text>
@@ -1572,14 +1779,64 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="560" y="751" width="16" height="14" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="582" y="758" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">path 栈顶</text>
 </svg>
-<figcaption>图 6b: 前 12 步。每个叶子: push → 收集 → pop。pop 到空 path 之后换第一个字母。</figcaption></figure>
+<figcaption>path 的变化。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(4ⁿ · n)</code>, Space <code>O(n)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">letter_combinations</span>(digits):</span><span class="l">    <span class="k">if</span> <span class="k">not</span> digits:</span><span class="l">        <span class="r">return</span> []</span><span class="l">    PHONE = {<span class="s">&quot;2&quot;</span>: <span class="s">&quot;abc&quot;</span>, <span class="s">&quot;3&quot;</span>: <span class="s">&quot;def&quot;</span>, <span class="s">&quot;4&quot;</span>: <span class="s">&quot;ghi&quot;</span>, <span class="s">&quot;5&quot;</span>: <span class="s">&quot;jkl&quot;</span>,</span><span class="l">             <span class="s">&quot;6&quot;</span>: <span class="s">&quot;mno&quot;</span>, <span class="s">&quot;7&quot;</span>: <span class="s">&quot;pqrs&quot;</span>, <span class="s">&quot;8&quot;</span>: <span class="s">&quot;tuv&quot;</span>, <span class="s">&quot;9&quot;</span>: <span class="s">&quot;wxyz&quot;</span>}</span><span class="l">    res, path = [], []</span><span class="l">    <span class="k">def</span> <span class="f">dfs</span>(idx):                      <span class="c"># idx: 正在决定第几位数字</span></span><span class="l">        <span class="k">if</span> idx == <span class="t">len</span>(digits):</span><span class="l">            res.<span class="f">append</span>(<span class="s">&quot;&quot;</span>.<span class="f">join</span>(path))</span><span class="l">            <span class="r">return</span></span><span class="l">        <span class="k">for</span> ch <span class="k">in</span> PHONE[digits[idx]]:  <span class="c"># choices 由层数 idx 决定, 不用 start</span></span><span class="l">            path.<span class="f">append</span>(ch)</span><span class="l">            <span class="f">dfs</span>(idx + 1)</span><span class="l">            path.<span class="f">pop</span>()</span><span class="l">    <span class="f">dfs</span>(0)</span><span class="l">    <span class="r">return</span> res</span></div>
-<p>Time O(4^n · n): n = <code>len(digits)</code>, 每位最多 4 个字母, 叶子 ≤ 4^n 个, 每个 join 花 O(n)。Space O(n)。</p>
-<p class="note"><b>记:</b>每一位有各自的候选集: 递归的参数是层数 <code>idx</code>, choices = 第 idx 层的候选; 层数固定 = 笛卡尔积。</p>
-<h2>7. Word Search: grid 上的 backtracking, 原地标记再恢复</h2>
-<p>题: 在字符 grid 里找 <code>word</code>, 路径是相邻格子 (上下左右), 同一个格子不能用两次。例: board = <code>ABA / BBD</code>, word = <code>ABAD</code> → True。</p>
-<p>Brute force: 从每个格子出发枚举所有长度为 L 的路径, 每步 4 个方向, O(R·C·4^L), 最后才比较字母。浪费有两处: 字母不对了还继续走; 每一步都允许走回头路。</p>
-<p>关键观察: 这是 Permutations 的 grid 版本。path = 走过的格子序列, "同一格不能用两次" 就是 <code>used[]</code>。grid 里可以直接把 board 当 used: 做选择时把 <code>board[r][c]</code> 改成 <code>"#"</code>, 撤销时改回原字母。没有额外的 visited set。剪枝: 越界 / 字母不对 / 已经是 <code>#</code> 都在同一个 <code>if</code> 里返回 False。</p>
+</details>
+<p class="note"><b>记:</b>每一层的选项不一样: 第 idx 层就从第 idx 组里选。</p>
+<h2>7. Word Search</h2>
+<h3>题目在问什么</h3>
+<p>一个字母 grid 和一个单词 word。能不能从某个格子出发, 每一步走到上下左右相邻的格子, 依次拼出 word? <b>同一个格子在一条路径里只能用一次</b>。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 358" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Word Search examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">grid 里每个格子一个字母。能不能从某个格子出发, 每步走到上下左右相邻的格子, 拼出 word? 同一个格子不能用两次</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  word = &quot;ABCCED&quot;  →  True</text>
+<text x="40" y="103" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">row 0</text>
+<rect x="104" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="121.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">A</text>
+<rect x="138" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="155.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">B</text>
+<rect x="172" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="189.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">C</text>
+<rect x="206" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="223.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">E</text>
+<text x="40" y="149" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">row 1</text>
+<rect x="104" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">S</text>
+<rect x="138" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="155.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">F</text>
+<rect x="172" y="134" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="189.0" y="150.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">C</text>
+<rect x="206" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="223.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">S</text>
+<text x="40" y="195" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">row 2</text>
+<rect x="104" y="180" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="196.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">A</text>
+<rect x="138" y="180" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="155.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">D</text>
+<rect x="172" y="180" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="189.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">E</text>
+<rect x="206" y="180" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="223.0" y="196.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">E</text>
+<text x="40" y="226" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">A(0,0) → B(0,1) → C(0,2) → C(1,2) → E(2,2) → D(2,1)</text>
+<line x1="40" y1="250" x2="640" y2="250" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="270" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  word = &quot;ABCB&quot;  →  False</text>
+<text x="40" y="290" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">A → B → C 之后, 下一个 B 只能是刚用过的 (0,1), 不允许重复使用</text>
+<line x1="40" y1="314" x2="640" y2="314" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="329" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="336" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">路径</text></svg>
+<figcaption>两个例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>从每个格子出发, 枚举所有可能的路径。不剪枝的话路径数量是指数级的。</p>
+<h3>Intuition: grid 上的 backtracking</h3>
+<p>从每个格子出发试一次。每一步: 当前格子的字母必须等于 <code>word[i]</code>, 否则这条路不通, 立即返回 (这就是剪枝)。</p>
+<p>相等的话, 往四个方向找 <code>word[i+1]</code>。</p>
+<p>"同一个格子不能用两次": 走进一个格子时, 把它临时改成 <code>'#'</code>, 这样后面的路径不会再走进来。<b>退回时一定要恢复原来的字母</b>, 因为别的路径 (从别的方向来的) 可能还要用它。这就是 backtracking 的"撤销选择"。</p>
+<p>和 12 里的 Number of Islands 对比: 那题淹掉之后不恢复, 因为每个格子只需要访问一次; 这题要恢复, 因为同一个格子可以出现在不同的路径里。</p>
+<h3>算法</h3>
+<ol><li><code>dfs(r, c, i)</code>: i == len(word) 返回 True。越界或者 <code>board[r][c] != word[i]</code>, 返回 False。</li><li><code>tmp = board[r][c]</code>, <code>board[r][c] = '#'</code>。</li><li>四个方向有一个 <code>dfs(..., i + 1)</code> 返回 True, 结果就是 True。</li><li><code>board[r][c] = tmp</code> (恢复), 返回结果。对每个格子调用 dfs(r, c, 0)。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 376" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Word Search: 用 board 本身当 used[]</title><desc>同一个 board 在 DFS 不同时刻的四个快照: 标记 # 和恢复。</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">board = A B A / B B D · word = ABAD · 做选择 = 把格子改成 #, 撤销 = 改回原字母</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central"># 的位置 = path 走过的格子, 所以 "同一格不能用两次" 不需要额外的 used 或 set</text>
@@ -1660,7 +1917,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="330" y="341" width="16" height="14" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="352" y="348" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">当前 / 刚恢复的格子</text>
 </svg>
-<figcaption>图 7a: 同一个 board 在 DFS 不同时刻的四个快照。# 的个数始终等于 len(path)。</figcaption></figure>
+<figcaption>走进去时标 #, 退出来时恢复。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 968" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Word Search 的 path / board 变化</title><desc>board=ABA/BBD, word=ABAD 全部 18 步。</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">board = A B A / B B D · word = ABAD · 方向顺序: 下 上 右 左 · 从 (0,0) 开始</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">push = 标记成 # · pop = 恢复原字母 · 红色虚线格子 = 这一步走不通 (越界 / 字母不对 / 已用)</text>
@@ -2126,14 +2384,71 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="560" y="905" width="16" height="14" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="582" y="912" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">path 栈顶</text>
 </svg>
-<figcaption>图 7b: 全部 18 步。第 2-7 步走进 (1,0) 的死路再恢复; 第 9 步换方向, 第 14 步找到。右列是 board 的实时状态。</figcaption></figure>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">exist</span>(board, word):</span><span class="l">    R, C = <span class="t">len</span>(board), <span class="t">len</span>(board[0])</span><span class="l">    <span class="k">def</span> <span class="f">dfs</span>(r, c, k):          <span class="c"># k: 已经匹配了 word[:k]; 现在要让 (r, c) 匹配 word[k]</span></span><span class="l">        <span class="k">if</span> k == <span class="t">len</span>(word):     <span class="c"># 结束条件: word 全部匹配</span></span><span class="l">            <span class="r">return</span> <span class="k">True</span></span><span class="l">        <span class="k">if</span> <span class="k">not</span> (0 &lt;= r &lt; R <span class="k">and</span> 0 &lt;= c &lt; C) <span class="k">or</span> board[r][c] != word[k]:</span><span class="l">            <span class="r">return</span> <span class="k">False</span>       <span class="c"># 剪枝: 越界 / 字母不对 / 已经被标记成 &quot;#&quot;</span></span><span class="l">        board[r][c] = <span class="s">&quot;#&quot;</span>      <span class="c"># 做选择: 原地标记, 当作 used[] (字母里不会有 &quot;#&quot;)</span></span><span class="l">        found = (<span class="f">dfs</span>(r + 1, c, k + 1) <span class="k">or</span> <span class="f">dfs</span>(r - 1, c, k + 1) <span class="k">or</span></span><span class="l">                 <span class="f">dfs</span>(r, c + 1, k + 1) <span class="k">or</span> <span class="f">dfs</span>(r, c - 1, k + 1))</span><span class="l">        board[r][c] = word[k]  <span class="c"># 撤销: 恢复原字母; 找到了也要恢复, 不能留着改过的 board</span></span><span class="l">        <span class="r">return</span> found</span><span class="l">    <span class="r">return</span> <span class="t">any</span>(<span class="f">dfs</span>(r, c, 0) <span class="k">for</span> r <span class="k">in</span> <span class="t">range</span>(R) <span class="k">for</span> c <span class="k">in</span> <span class="t">range</span>(C))</span></div>
-<p>Time O(R·C·3^L): R·C 个起点, 每个起点最多 L 层, 除第一步外每步最多 3 个方向 (第 4 个是来的方向, 已经是 #)。Space O(L): 只有递归栈, 原地标记不需要 O(R·C) 的 visited。</p>
-<p class="note"><b>记:</b>grid + 路径不能重复用: 原地改成 <code>#</code> 当 used, 递归之后改回。找到答案也要先恢复再 return。</p>
-<h2>8. N-Queens: 多个约束 => 多个 set</h2>
-<p>题: n×n 棋盘放 n 个皇后, 互相不能同行、同列、同一条对角线。返回所有摆法。<code>n = 4</code> 有 2 个解。</p>
-<p>Brute force: 从 16 格里选 4 个, C(16,4) = 1820 种, 逐一检查。每行恰好放一个后是 4^4 = 256 种; 再要求列不重复就是 4! = 24 种 (和 Permutations 一样); 对角线冲突则要靠剪枝在中途发现。</p>
-<p>关键观察: 一行放一个皇后, 所以 path[r] = 第 r 行的列, 层数 = 行数, 这就是 Permutations (列不能重复) 再加两个约束。同一条 <code>\</code> 对角线上所有格子 <code>r − c</code> 相同; 同一条 <code>/</code> 对角线上 <code>r + c</code> 相同。所以用三个 set (<code>cols</code> / <code>diag</code> / <code>anti</code>) 记录已占用的值, 检查一个格子只要 3 次 O(1) 查询。做选择要往三个 set 各 add, 撤销要各 remove。</p>
+<figcaption>path 和 board 的变化, 每一步都画出来了。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(m·n · 3^L)</code>, L 是单词长度 (除了第一步, 每步最多 3 个方向, 不能走回头)。Space <code>O(L)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">exist</span>(board, word):</span><span class="l">    R, C = <span class="t">len</span>(board), <span class="t">len</span>(board[0])</span><span class="l">    <span class="c"># k: 已经匹配了 word[:k]; 现在要让 (r, c) 匹配 word[k]</span></span><span class="l">    <span class="k">def</span> <span class="f">dfs</span>(r, c, k):</span><span class="l">        <span class="k">if</span> k == <span class="t">len</span>(word):     <span class="c"># 结束条件: word 全部匹配</span></span><span class="l">            <span class="r">return</span> <span class="k">True</span></span><span class="l">        <span class="k">if</span> <span class="k">not</span> (0 &lt;= r &lt; R <span class="k">and</span> 0 &lt;= c &lt; C) <span class="k">or</span> board[r][c] != word[k]:</span><span class="l">            <span class="r">return</span> <span class="k">False</span>       <span class="c"># 剪枝: 越界 / 字母不对 / 已经被标记成 &quot;#&quot;</span></span><span class="l">        <span class="c"># 做选择: 原地标记, 当作 used[] (字母里不会有 &quot;#&quot;)</span></span><span class="l">        board[r][c] = <span class="s">&quot;#&quot;</span></span><span class="l">        found = (<span class="f">dfs</span>(r + 1, c, k + 1) <span class="k">or</span> <span class="f">dfs</span>(r - 1, c, k + 1) <span class="k">or</span></span><span class="l">                 <span class="f">dfs</span>(r, c + 1, k + 1) <span class="k">or</span> <span class="f">dfs</span>(r, c - 1, k + 1))</span><span class="l">        <span class="c"># 撤销: 恢复原字母; 找到了也要恢复, 不能留着改过的 board</span></span><span class="l">        board[r][c] = word[k]</span><span class="l">        <span class="r">return</span> found</span><span class="l">    <span class="r">return</span> <span class="t">any</span>(<span class="f">dfs</span>(r, c, 0) <span class="k">for</span> r <span class="k">in</span> <span class="t">range</span>(R) <span class="k">for</span> c <span class="k">in</span> <span class="t">range</span>(C))</span></div>
+</details>
+<p class="note"><b>记:</b>grid 上的路径搜索、格子不能重复用: 进去时标记, 出来时恢复。</p>
+<h2>8. N-Queens</h2>
+<h3>题目在问什么</h3>
+<p>在 n × n 的棋盘上放 n 个皇后, 让它们互相攻击不到。皇后能攻击同一行、同一列、同一条斜线 (两个方向) 上的任何棋子。返回所有的放法。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>N-Queens examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">在 n × n 的棋盘上放 n 个皇后, 让它们互相攻击不到 (同一行、同一列、同一条斜线都不能有两个)。返回所有放法</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  n = 4  →  2 种放法 (下面是其中一种)</text>
+<text x="40" y="103" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">row 0</text>
+<rect x="104" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">.</text>
+<rect x="138" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="155.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">Q</text>
+<rect x="172" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="189.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">.</text>
+<rect x="206" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="223.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">.</text>
+<text x="40" y="149" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">row 1</text>
+<rect x="104" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">.</text>
+<rect x="138" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="155.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">.</text>
+<rect x="172" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="189.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">.</text>
+<rect x="206" y="134" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="223.0" y="150.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">Q</text>
+<text x="40" y="195" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">row 2</text>
+<rect x="104" y="180" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="121.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">Q</text>
+<rect x="138" y="180" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="155.0" y="196.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">.</text>
+<rect x="172" y="180" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="189.0" y="196.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">.</text>
+<rect x="206" y="180" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="223.0" y="196.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">.</text>
+<text x="40" y="241" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">row 3</text>
+<rect x="104" y="226" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="242.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">.</text>
+<rect x="138" y="226" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="155.0" y="242.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">.</text>
+<rect x="172" y="226" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="189.0" y="242.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">Q</text>
+<rect x="206" y="226" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="223.0" y="242.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">.</text>
+<text x="40" y="272" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">每行、每列、每条斜线都只有一个 Q。另一种放法是它的左右镜像</text>
+<line x1="40" y1="296" x2="640" y2="296" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="311" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="318" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">皇后</text></svg>
+<figcaption>例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>在 n² 个格子里选 n 个放皇后, 再检查。n = 8 时组合数超过 40 亿。</p>
+<h3>Intuition: 一行放一个, 用三个 set 检查冲突</h3>
+<p>每一行一定恰好有一个皇后 (不然有两个在同一行)。所以按行来: decision tree 的第 r 层, 决定第 r 行的皇后放在哪一列。</p>
+<p>放之前检查会不会被攻击。如果每次都扫一遍已经放的皇后, 是 <code>O(n)</code>。用三个 set 可以 <code>O(1)</code>:</p>
+<ul><li><code>cols</code>: 已经被占的列。</li><li><code>diag</code>: 已经被占的 "\" 斜线。同一条这种斜线上 <code>r - c</code> 相同。</li><li><code>anti</code>: 已经被占的 "/" 斜线。同一条这种斜线上 <code>r + c</code> 相同。</li></ul>
+<p>放下皇后时把它的列、两条斜线加进三个 set; 退回时删掉。</p>
+<p>剪枝的效果: 8 皇后实际只访问了 2057 个节点, 而不是 8⁸ ≈ 1677 万。</p>
+<h3>算法</h3>
+<ol><li><code>dfs(r)</code>: r == n, 记录当前的棋盘。</li><li>对每一列 c: c 在 cols、r - c 在 diag、r + c 在 anti, 有一个就跳过。</li><li>否则三个 set 加进去, 记录 path[r] = c, dfs(r + 1), 再从三个 set 删掉。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 470" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>N-Queens: 三个 set 把 "是否冲突" 变成 O(1)</title><desc>n=4, 前两行已放皇后, 第 2 行每一列的检查过程。</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">n = 4 · 已放: (0,1) 和 (1,3) · 现在要放第 r = 2 行 · 每行恰好一个皇后, 所以 path[r] = 列</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">同一列: c 相同 · 同一条 \ 对角线: r - c 相同 · 同一条 / 对角线: r + c 相同</text>
@@ -2210,7 +2525,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="161.6" y="429" width="18" height="14" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="5 3"/>
 <text x="185.6" y="436" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">被攻击 =&gt; 剪枝</text>
 </svg>
-<figcaption>图 8a: 前两行已放 (0,1) 和 (1,3); 第 2 行四列里只有 c=0 通过三个 set 的检查。</figcaption></figure>
+<figcaption>4 × 4 棋盘, 加上三个 set 的逐列检查。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 1054" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>N-Queens 的 path / 三个 set 变化</title><desc>n=4 前 17 步。</desc><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrowR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
 <text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">n = 4 · path[r] = 第 r 行的列 · 每步先查 3 个 set, 冲突就剪枝, 不冲突就 push 并同时 add 到 3 个 set</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">红色虚线格子 = 想放的列被挡住 (原因写在左边); pop 时三个 set 一起还原</text>
@@ -2465,13 +2781,16 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <rect x="560" y="991" width="16" height="14" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="582" y="998" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">path 栈顶</text>
 </svg>
-<figcaption>图 8b: 前 17 步。右列是三个 set 的实时内容; 红色虚线格子 = 被某个 set 挡住的列。</figcaption></figure>
+<figcaption>path 和三个 set 的变化。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time 上界 <code>O(n!)</code>, 实际因为剪枝小很多。Space <code>O(n)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">solve_n_queens</span>(n):</span><span class="l">    res, path = [], []    <span class="c"># path[r] = 第 r 行皇后所在的列</span></span><span class="l">                          <span class="c"># 三个 set: 已占用的 列 / r - c (\ 对角线) / r + c (/ 对角线)</span></span><span class="l">    cols, diag, anti = <span class="t">set</span>(), <span class="t">set</span>(), <span class="t">set</span>()</span><span class="l">    <span class="k">def</span> <span class="f">dfs</span>(r):</span><span class="l">        <span class="k">if</span> r == n:        <span class="c"># n 行都放好了</span></span><span class="l">            res.<span class="f">append</span>([<span class="s">&quot;.&quot;</span> * c + <span class="s">&quot;Q&quot;</span> + <span class="s">&quot;.&quot;</span> * (n - c - 1) <span class="k">for</span> c <span class="k">in</span> path])</span><span class="l">            <span class="r">return</span></span><span class="l">        <span class="k">for</span> c <span class="k">in</span> <span class="t">range</span>(n):</span><span class="l">            <span class="k">if</span> c <span class="k">in</span> cols <span class="k">or</span> (r - c) <span class="k">in</span> diag <span class="k">or</span> (r + c) <span class="k">in</span> anti:</span><span class="l">                <span class="k">continue</span>  <span class="c"># 剪枝: 同列或同一条对角线</span></span><span class="l">                          <span class="c"># 做选择: 三个 set 各 add 一个值, path 也要 append</span></span><span class="l">            cols.<span class="f">add</span>(c); diag.<span class="f">add</span>(r - c); anti.<span class="f">add</span>(r + c)</span><span class="l">            path.<span class="f">append</span>(c)</span><span class="l">            <span class="f">dfs</span>(r + 1)</span><span class="l">                          <span class="c"># 撤销: 三个 set 和 path 全部还原</span></span><span class="l">            path.<span class="f">pop</span>()</span><span class="l">            cols.<span class="f">remove</span>(c); diag.<span class="f">remove</span>(r - c); anti.<span class="f">remove</span>(r + c)</span><span class="l">    <span class="f">dfs</span>(0)</span><span class="l">    <span class="r">return</span> res</span></div>
-<p>Time O(n!) 上界 (第 r 行至多还有 n−r 列可选)。实际远小: n = 4 只访问 17 个节点 (4! = 24 个叶子位置); n = 8 访问 2057 个节点, 而 8! = 40320。Space O(n): path + 三个 set + 递归栈。</p>
-<p class="note"><b>记:</b>放置类约束题: 把每条约束写成一个 set (key = 它禁止的东西), 检查 O(1); 撤销时所有 set 同步还原。</p>
-<h2>9. 识别信号: 看到什么 → 试什么</h2>
-<table><tr><th>特征</th><th>做法</th><th>complexity 从 X 降到 Y</th></tr><tr><td>要 <b>所有</b> 组合 / 排列 / 子集 / 路径 (输出是指数级)</td><td>backtracking 模板: path + 做选择 / 递归 / 撤销</td><td>下限是输出大小; 剪枝把节点数从 "所有候选" 降到 "接近答案数"</td></tr><tr><td>无序, 每个元素选或不选 (Subsets, Combinations)</td><td><code>range(start, n)</code>, 递归传 <code>i+1</code></td><td>n^n 或带重复 → 2^n, 没有 [1,2] / [2,1] 重复</td></tr><tr><td>有序, 元素不可重复用 (Permutations)</td><td>每层 <code>range(n)</code> + <code>used[]</code></td><td>n^n → n!</td></tr><tr><td>元素可重复用, 要凑 target (Combination Sum)</td><td>sort + 递归传 <code>i</code> + <code>remain</code>, <code>c &gt; remain</code> 就 break</td><td>每个数的次数全枚举 → 超过 target 的分支全部不展开</td></tr><tr><td>候选有重复值, 答案要去重 (Combination Sum II, Subsets II)</td><td>sort + 同层 <code>i &gt; start and a[i] == a[i-1]</code> 跳过</td><td>生成再用 set 去重 → 重复子树根本不展开</td></tr><tr><td>构造的串 / 序列有前缀合法性 (括号)</td><td>把条件写成 push 之前的 <code>if</code></td><td>2^(2n) 个串逐个检查 → Catalan(n) 个叶子, 无废叶子</td></tr><tr><td>每一位有各自的候选集 (电话号码)</td><td>递归参数 = 层数 <code>idx</code>, 无剪枝</td><td>嵌套 for 层数不固定 → 递归; 复杂度 = 候选数的乘积</td></tr><tr><td>grid 上找路径, 格子不能重复用 (Word Search)</td><td>原地改成 <code>#</code>, 递归后改回; 不匹配立刻 return</td><td>visited set O(R·C) → 原地 O(1) 额外空间; 4^L → 3^L</td></tr><tr><td>放置问题, 约束可写成 "某个值不能重复" (N-Queens, Sudoku)</td><td>每条约束一个 set, 做选择 add / 撤销 remove</td><td>检查冲突 O(n) → O(1)</td></tr><tr><td>只问 <b>能不能</b> / <b>有几个</b> / 最优值, 且子问题会重复</td><td>不是 backtracking: 加 memo 变 DP</td><td>指数 → 多项式 (状态数)</td></tr></table>
-<p class="note"><b>记:</b>题目要 "列出所有" → 画 decision tree, 问自己三件事: path 是什么, choices 是什么, 什么时候收集; 再问: 哪些分支可以在 push 之前就判死刑?</p>
+</details>
+<p class="note"><b>记:</b>多个约束: 每个约束一个 set, 放之前 O(1) 检查, 放下 add, 退回 remove。</p>
+<h2>9. 识别信号: 看到什么, 就想到 backtracking</h2>
+<table><tr><th>题目特征</th><th>做法</th><th>complexity</th></tr><tr><td>"所有子集 / 所有组合"</td><td>start index 只往后选; 每个节点都记录</td><td><code>O(n · 2ⁿ)</code></td></tr><tr><td>"所有排列"</td><td>每层从头选, used 跳过</td><td><code>O(n · n!)</code></td></tr><tr><td>和为 target 的组合, 可以重复选</td><td>递归传 i (不是 i + 1), 排序后 break 剪枝</td><td>decision tree 大小</td></tr><tr><td>输入有重复, 输出要去重</td><td>排序 + 同层 i > start and a[i] == a[i-1] 跳过</td><td>去掉重复的子树</td></tr><tr><td>生成所有合法的 xxx (括号、IP 地址)</td><td>push 之前检查约束, 只走合法的分支</td><td>只和答案个数有关</td></tr><tr><td>每一位的选项来自不同的集合</td><td>第 idx 层从第 idx 组里选</td><td><code>O(∏ 每组大小)</code></td></tr><tr><td>grid 上找路径, 格子不能重复用</td><td>进去标记 #, 出来恢复</td><td><code>O(m·n · 3^L)</code></td></tr><tr><td>棋盘放置, 多个约束</td><td>每个约束一个 set, O(1) 检查</td><td>剪枝后远小于 <code>O(n!)</code></td></tr><tr><td>只要答案的个数 / 最优值, 不要列出来</td><td>多半是 DP (见 14、15)</td><td>指数 → 多项式</td></tr></table>
+<p>一句话: 题目要"列出所有", 就是 backtracking。先画出 decision tree, 想清楚 path、choices、结束条件, 再想哪些分支可以提前剪掉。</p>
 <h2>以后再学</h2>
-<p>Sudoku Solver (N-Queens 的 rows / cols / boxes 三个 set)、Palindrome Partitioning 和 Restore IP Addresses (choices = 下一段切多长)、bitmask 版 N-Queens、给 backtracking 加 memo 变成 DP。思路都已经在上面的模板里。</p>
+<p>Sudoku Solver (行、列、九宫格三个 set)、Palindrome Partitioning 和 Restore IP Addresses (选项是"下一段切多长")、给 backtracking 加 memo 变成 DP。</p>
 </article></body></html>
