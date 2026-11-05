@@ -24,14 +24,98 @@ figure svg{width:100%;height:auto;display:block}
 figcaption{color:#52514e;font-size:14px;padding:4px 6px 0}
 table{border-collapse:collapse;margin:10px 0;font-size:15px}
 td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
+details{margin:12px 0;border:1px dashed var(--box);border-radius:6px;padding:4px 12px}
+summary{cursor:pointer;color:var(--sub);font-size:15px}
+ol,ul{padding-left:24px}li{margin:4px 0}
 </style></head><body><article contenteditable="true">
 <h1>06 · Stack</h1>
-<p class="main">主线: stack = "最近的、还没被匹配/处理完的东西"。后进先出 (LIFO) 正好对应嵌套结构 —— 括号、表达式、子字符串、路径、碰撞 —— 遇到 '开' 就把现场 push, 遇到 '关' 就 pop 回来, 用 O(1) 取代 '往回扫'。</p>
-<p class="main">概念链: 括号匹配 → Min Stack (元素带额外状态) → Decode String (push 外层上下文) → RPN (栈里存操作数) → Basic Calculator II (延迟 + -, 立即 * /) → Basic Calculator (括号 = push result 和 sign) → Asteroid Collision (碰撞抵消) → Remove Duplicates II (存 (char, count)) → Simplify Path。Monotonic stack 单独在 07。</p>
-<h2>0. 第一性原理:brute force 在浪费什么,stack 怎么消掉</h2>
-<p>先问一个最小的问题:<code>s</code> 里每个 <code>')'</code> 该和哪个 <code>'('</code> 配对?规则只有一句 —— 左边<b>最近的、还没被配对过的</b> <code>'('</code>。</p>
-<p>brute force:每个 <code>')'</code> 都从自己的位置往左扫,跳过已经用掉的,找到第一个可用的 <code>'('</code>。一次扫描 O(n),n 个 <code>')'</code>,共 O(n²)。浪费的是:<b>左边哪些 '(' 还没被用掉,这份信息每次都重新扫一遍才知道</b>,而这个集合其实只在两种时刻变化 —— 读到 '(' 时加一个,读到 ')' 时拿走最近的那个。</p>
-<p>stack 把这份信息一直维护着:栈里存的就是 "往左扫会依次碰到的候选",而且已经按 "最近优先" 排好,栈顶就是最近的。读到 <code>')'</code> 直接 pop,O(1)。后开的先关(LIFO),所以嵌套结构(括号、表达式、递归调用)天然是 stack。</p>
+<h2>这篇讲什么</h2>
+<p><b>Stack</b> (栈) 是一种只能从顶上放、从顶上拿的容器: 最后放进去的, 最先拿出来 (LIFO, last in first out)。Python 里用 list 就行: <code>append</code> 是放, <code>pop()</code> 是拿, <code>stack[-1]</code> 是看栈顶。都是 <code>O(1)</code>。</p>
+<p>什么时候想到 stack? 当你从左往右扫的时候, 需要记住"<b>最近的、还没处理完的</b>东西", 而且后来的要先处理。最典型的就是<b>嵌套结构</b>: 括号、嵌套的字符串、表达式里的括号、目录的进入和退出。它们都是"最里面的先结束"。</p>
+<p>不用 stack 的 brute force, 通常是每遇到一个"结束"的东西, 就往回扫去找它对应的"开始", <code>O(n²)</code>。stack 让"往回找"变成看一眼栈顶, <code>O(1)</code>。</p>
+<table><tr><th>#</th><th>题目</th><th>考过的公司数</th><th>相比上一题多了什么</th></tr><tr><td>1</td><td>Valid Parentheses</td><td>90</td><td>模板题: 栈顶就是最内层还没关的括号</td></tr><tr><td>2</td><td>Min Stack</td><td>36</td><td>每个元素带上额外的信息</td></tr><tr><td>3</td><td>Decode String</td><td>40</td><td>遇到 [ 把当前状态存起来, 遇到 ] 拿回来</td></tr><tr><td>4</td><td>Evaluate Reverse Polish Notation</td><td>19</td><td>栈里存算好的数</td></tr><tr><td>5</td><td>Basic Calculator II</td><td>26</td><td>运算优先级: 乘除立刻算, 加减先存着</td></tr><tr><td>6</td><td>Basic Calculator</td><td>22</td><td>加上括号: 和第 3 题一样存状态</td></tr><tr><td>7</td><td>Asteroid Collision</td><td>35</td><td>新来的和栈顶反复"抵消"</td></tr><tr><td>8</td><td>Remove All Adjacent Duplicates II</td><td>18</td><td>栈里存 (字符, 个数)</td></tr><tr><td>9</td><td>Simplify Path</td><td>21</td><td>目录的进入和退出</td></tr></table>
+<p>每道题的顺序: <b>题目在问什么 → 看例子 → brute force → intuition → 算法 → 手动走一遍 → 复杂度</b>。代码放在最后, 默认折叠。</p>
+<p>另一类用 stack 的题是 monotonic stack (找下一个更大的数), 单独放在 07。</p>
+<h2>1. Valid Parentheses</h2>
+<h3>题目在问什么</h3>
+<p>字符串里只有 <code>( ) [ ] { }</code> 六种字符。判断它是不是合法的: 每个开括号都要被<b>同类型</b>的闭括号关上, 而且<b>后开的必须先关</b>。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 450" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Valid Parentheses examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">字符串只有 ( ) [ ] { }。每个开括号都要被同类型的闭括号关上, 而且要按正确的顺序 (里面的先关)</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  &quot;()[]{}&quot;  →  True</text>
+<rect x="40" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="57.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">(</text>
+<text x="57.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="91.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">)</text>
+<text x="91.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="108" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="125.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[</text>
+<text x="125.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="142" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="159.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">]</text>
+<text x="159.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="176" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="193.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">{</text>
+<text x="193.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="210" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="227.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">}</text>
+<text x="227.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">5</text>
+<text x="268" y="103" font-size="14" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">三对, 各自配好</text>
+<line x1="40" y1="150" x2="640" y2="150" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="170" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  &quot;{[()]}&quot;  →  True</text>
+<rect x="40" y="196" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="57.0" y="212.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">{</text>
+<text x="57.0" y="238" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="196" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="91.0" y="212.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[</text>
+<text x="91.0" y="238" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="108" y="196" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="125.0" y="212.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">(</text>
+<text x="125.0" y="238" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="142" y="196" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="159.0" y="212.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">)</text>
+<text x="159.0" y="238" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="176" y="196" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="193.0" y="212.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">]</text>
+<text x="193.0" y="238" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="210" y="196" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="227.0" y="212.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">}</text>
+<text x="227.0" y="238" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">5</text>
+<text x="268" y="211" font-size="14" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">一层套一层, 最里面的先关</text>
+<line x1="40" y1="258" x2="640" y2="258" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="278" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 3:  &quot;([)]&quot;  →  False</text>
+<rect x="40" y="320" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="336.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">(</text>
+<text x="57.0" y="362" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="320" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="91.0" y="336.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">[</text>
+<text x="91.0" y="362" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="108" y="320" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.0" y="336.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">)</text>
+<text x="125.0" y="362" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="142" y="320" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="159.0" y="336.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">]</text>
+<text x="159.0" y="362" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<path d="M77 312 L77 304 L139 304 L139 312" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="200" y="306" font-size="12" fill="#712B13" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">[ 还没关, 就来了 ) ✗</text>
+<text x="40" y="382" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">数量是够的 (一个 ( 一个 ) 一个 [ 一个 ]), 但顺序不对: 后开的 [ 必须先关</text>
+<line x1="40" y1="406" x2="640" y2="406" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="421" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="428" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">配好的</text>
+<rect x="109" y="421" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
+<text x="130" y="428" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">顺序错了</text></svg>
+<figcaption>三个例子。</figcaption></figure>
+<p>Example 3 说明, 只数个数是不够的, 顺序也要对。</p>
+<h3>Brute force</h3>
+<p>每遇到一个闭括号, 就往左扫, 找离它最近的、还没配对的开括号, 检查类型是否一致。每次往左扫 <code>O(n)</code>, 共 <code>O(n²)</code>。</p>
+<p>浪费在哪: 每次都从头往左扫, 但其实我们每次要找的都是"<b>最近的</b>还没配对的开括号"。</p>
+<h3>Intuition: 把还没配对的开括号放进 stack</h3>
+<p>从左往右扫, 把还没配对的开括号按顺序放进 stack。那么 stack 顶上的, 就是最近的、还没配对的开括号, 正是我们要找的。</p>
+<p>遇到闭括号, 看一眼栈顶: 类型对上, 就 pop 掉 (这一对配好了); 对不上或者栈是空的, 就不合法。</p>
+<p>为什么是 stack? 因为括号的规则是"后开的先关", 和 stack "后放的先拿" 完全一样。</p>
+<h3>算法</h3>
+<ol><li><code>stack = []</code>, 准备一个 dict: 闭括号 → 对应的开括号。</li><li>遇到开括号: push。</li><li>遇到闭括号: 栈空, 或者栈顶不是对应的开括号, 返回 False; 否则 pop。</li><li>扫完后, 栈必须是空的 (没有多出来的开括号)。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 330" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif'><title>stack_core</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">s = ( ( ( ) ) ) · 每个 ')' 要配的 = 左边最近的、还没被配对的 '('</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">最近 = 栈顶 · 后开的先关 (LIFO) ⇔ 括号嵌套</text>
 <rect x="60" y="130" width="38" height="34" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
@@ -64,14 +148,7 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="40" y="262" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">brute force: 每个 ')' 往左扫, 找最近没用过的 '(' → 每个 O(n), 共 O(n²)</text>
 <text x="40" y="284" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">stack: 栈本身就是 '往左扫会依次碰到的候选', 已按最近优先排好 → pop 一次 O(1), 共 O(n)</text>
 <text x="40" y="306" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶 (橙色 ring) 永远是最近的、还没处理完的那个</text></svg>
-<figcaption>stack 里存的是 "往左扫会碰到的候选", 最近的在栈顶。嵌套的括号配对永远是 "最内层先配", 正好是 LIFO。</figcaption></figure>
-<div class="code"><span class="l"><span class="c"># O(n^2): 每个 &#x27;)&#x27; 都往左扫, 找最近的、还没被用掉的 &#x27;(&#x27;</span></span><span class="l"><span class="k">def</span> <span class="f">match_brute</span>(s):</span><span class="l">    used, pairs = <span class="t">set</span>(), []</span><span class="l">    <span class="k">for</span> j, ch <span class="k">in</span> <span class="t">enumerate</span>(s):</span><span class="l">        <span class="k">if</span> ch == <span class="s">&#x27;)&#x27;</span>:</span><span class="l">            <span class="c"># 往左扫 —— 每个 &#x27;)&#x27; 都重扫一遍</span></span><span class="l">            <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(j - 1, -1, -1):</span><span class="l">                <span class="k">if</span> s[i] == <span class="s">&#x27;(&#x27;</span> <span class="k">and</span> i <span class="k">not</span> <span class="k">in</span> used:</span><span class="l">                    used.<span class="f">add</span>(i)</span><span class="l">                    pairs.<span class="f">append</span>((i, j))</span><span class="l">                    <span class="k">break</span></span><span class="l">    <span class="r">return</span> pairs</span><span class="l"></span><span class="l"><span class="c"># O(n): 栈 = &quot;往左扫会依次碰到的候选&quot;, 已经按&quot;最近优先&quot;排好</span></span><span class="l"><span class="k">def</span> <span class="f">match_stack</span>(s):</span><span class="l">    stack, pairs = [], []</span><span class="l">    <span class="k">for</span> j, ch <span class="k">in</span> <span class="t">enumerate</span>(s):</span><span class="l">        <span class="k">if</span> ch == <span class="s">&#x27;(&#x27;</span>:</span><span class="l">            stack.<span class="f">append</span>(j)              <span class="c"># 还没被匹配的 &#x27;(&#x27; 入栈, 栈顶 = 最近的</span></span><span class="l">        <span class="k">elif</span> ch == <span class="s">&#x27;)&#x27;</span> <span class="k">and</span> stack:</span><span class="l">            <span class="c"># pop = 最近的、没被用掉的 &#x27;(&#x27; , O(1), 不用扫</span></span><span class="l">            pairs.<span class="f">append</span>((stack.<span class="f">pop</span>(), j))</span><span class="l">    <span class="r">return</span> pairs</span><span class="l"></span><span class="l"><span class="c"># 通用模板 —— 三种形状, 后面每道题都是其中一种:</span></span><span class="l"><span class="c">#   1) 开/关配对: 开 → push 现场; 关 → pop 回来配</span></span><span class="l"><span class="c">#      (Valid Parentheses, Decode String, Calculator, Simplify Path)</span></span><span class="l"><span class="c">#   2) 操作数/运算符: 操作数 → push; 运算符 → pop 几个, 算完 push 回去</span></span><span class="l"><span class="c">#      (RPN, Calculator II)</span></span><span class="l"><span class="c">#   3) 新元素 vs 栈顶: while 冲突/抵消: pop; 然后 push 新元素</span></span><span class="l"><span class="c">#      (Asteroid, Remove Duplicates)</span></span><span class="l"><span class="c"># 变体: push 的不是单个值而是 (val, extra) 元组</span></span><span class="l"><span class="c">#      (Min Stack, Remove Duplicates II, Decode String)</span></span></div>
-<p>时间:每个元素最多 push 一次、pop 一次,所以不管 while 套多深,总共 O(n)。空间:栈最深 O(n)。</p>
-<p class="note"><b>记:</b>看到 "最近的、还没处理完的"、"嵌套"、"撤销上一步" → 想 stack。它把 "往回扫" 的 O(n) 换成 pop 的 O(1)。</p>
-<h2>1. Valid Parentheses:栈顶 = 最内层没闭合的开括号</h2>
-<p><b>题目:</b>字符串只含 <code>()[]{}</code>,判断括号是否正确闭合、嵌套。例:<code>"{[()]}"</code> → True,<code>"([)]"</code> → False。</p>
-<p><b>Brute force:</b>反复 <code>s.replace("()", "")</code>(以及 <code>[]</code>、<code>{}</code>)直到不再变化,看是否剩空串。每轮扫 O(n),最多 n/2 轮,O(n²)。浪费:每次删完又从头扫,而每次能被删掉的,一定是 <b>最内层、紧挨着的一对</b> —— 那正是 "最近没配对的开括号"。</p>
-<p><b>关键观察:</b>读到闭括号时,能和它配的只有 "最近一个没闭合的开括号"。如果它不配,后面再也没机会修正(交叉了)。所以 push 开括号,闭括号时和栈顶比。</p>
+<figcaption>stack 里存的是"往左扫会碰到的候选", 最近的在栈顶。嵌套的括号永远是最内层先配, 正好是 LIFO。</figcaption></figure>
 <figure><svg width="100%" viewBox="0 0 680 330" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif'><title>valid_core</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">invariant: stack 从底到顶 = 还没闭合的开括号, 栈顶是最内层的</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">读到闭括号时, 它只能和栈顶配对 · 四种情况:</text>
 <text x="40" y="70" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">① 开括号</text>
@@ -122,7 +199,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="520" y="246" font-size="12" fill="#993C1D" font-weight="500" text-anchor="start" dominant-baseline="central">not stack</text>
 <text x="520" y="266" font-size="12" fill="#993C1D" font-weight="400" text-anchor="start" dominant-baseline="central">多余闭括号 → False</text>
 <text x="40" y="304" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">走完以后: stack 非空 → 有开括号一直没被闭合 → False · 空 → True</text></svg>
-<figcaption>invariant: stack = 还没闭合的开括号。闭括号只和栈顶比, 四种情况各有固定动作。</figcaption></figure>
+<figcaption>stack = 还没关的开括号。闭括号只和栈顶比。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 878" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif'><title>valid_trace</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">s = "{[()]}" · 每一步: 开括号 push → 闭括号 pop 栈顶并检查配对</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">invariant: stack = 还没闭合的开括号, 栈顶 (橙色 ring) = 最内层</text>
 <text x="44" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">输入</text>
@@ -218,14 +296,59 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="390.4" y="858" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里其他的</text>
 <rect x="471.4" y="854" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="468.4" y="848" width="20" height="20" rx="5" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="496.4" y="858" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶</text></svg>
-<figcaption>trace: {[()]} 三层嵌套, 栈深到 3 再逐层 pop 回空。每个 pop 掉的开括号都在左边虚线处标明配对。</figcaption></figure>
+<figcaption>"{[()]}": 三层嵌套, 栈深到 3, 再一层一层 pop 回空。pop 掉的开括号在左边标出了和谁配对。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n)</code>: 每个字符最多 push 一次、pop 一次。Space <code>O(n)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">is_valid</span>(s):</span><span class="l">    pair = {<span class="s">&#x27;)&#x27;</span>: <span class="s">&#x27;(&#x27;</span>, <span class="s">&#x27;]&#x27;</span>: <span class="s">&#x27;[&#x27;</span>, <span class="s">&#x27;}&#x27;</span>: <span class="s">&#x27;{&#x27;</span>}</span><span class="l">    <span class="c"># invariant: 从底到顶 = 还没闭合的开括号, 栈顶是最内层的</span></span><span class="l">    stack = []</span><span class="l">    <span class="k">for</span> ch <span class="k">in</span> s:</span><span class="l">        <span class="c"># 闭括号: 只能和&quot;最近一个没闭合的开括号&quot;配对</span></span><span class="l">        <span class="k">if</span> ch <span class="k">in</span> pair:</span><span class="l">            <span class="c"># 栈空 = 多余的闭括号; pop 出来不对 = 交叉</span></span><span class="l">            <span class="k">if</span> <span class="k">not</span> stack <span class="k">or</span> stack.<span class="f">pop</span>() != pair[ch]:</span><span class="l">                <span class="r">return</span> <span class="k">False</span></span><span class="l">        <span class="k">else</span>:</span><span class="l">            stack.<span class="f">append</span>(ch)             <span class="c"># 开括号: 先存着, 等后面的闭括号来找它</span></span><span class="l">    <span class="r">return</span> <span class="k">not</span> stack                     <span class="c"># 结尾栈非空 = 有开括号一直没被闭合</span></span></div>
-<p><b>时间 O(n):</b>每个字符 push / pop 最多一次。<b>空间 O(n):</b>全是开括号时栈里有 n 个。</p>
-<p class="note"><b>记:</b>栈空时来闭括号 → False;结尾栈非空 → False;pop 出来不配 → False。三个 False 出口,一个 True 出口 (<code>not stack</code>)。</p>
-<h2>2. Min Stack:每个元素带额外状态 (val, min_so_far)</h2>
-<p><b>题目:</b>设计一个 stack,支持 <code>push / pop / top / get_min</code>,全部 O(1)。例:push 5, 3, 7 后 get_min = 3;pop 两次后 get_min = 5。</p>
-<p><b>Brute force:</b><code>get_min()</code> 里 <code>min(self.stack)</code>,O(n)。想到只存一个 <code>min</code> 变量,但 pop 掉最小值后,不知道新的最小值是谁,还得重扫 O(n)。浪费(丢掉的信息):<b>"栈只有这么高时的最小值"</b> 每次 pop 都丢了,下次要再算。</p>
-<p><b>关键观察:</b>栈里每个元素下面的东西在它存在期间都不会变。所以 "从栈底到它的最小值" 在 push 时算一次,就永远对。把它和元素一起存成 <code>(val, min_so_far)</code>。这是 stack 的第一个变体:<b>push 的不是单个值,而是值加额外状态</b>。</p>
+</details>
+<p class="note"><b>记:</b>嵌套结构 / 括号配对: 还没处理完的放进 stack, 栈顶就是最近的那个。</p>
+<h2>把第 1 题抽象一下: 什么时候用 stack</h2>
+<p>第 1 题的结构是: 从左往右扫, 每个"开始"先存起来, 等到对应的"结束"出现时再处理, 而且最近开始的最先结束。</p>
+<p>后面的题都是这个结构, 区别在于 stack 里存什么:</p>
+<ul><li>存元素本身 (第 1、4、7、9 题)</li><li>存元素 + 额外信息, 比如当时的最小值、连续个数 (第 2、8 题)</li><li>存"进入括号之前的状态", 出括号时恢复 (第 3、6 题)</li></ul>
+<details><summary>对比: 往左扫找配对 (brute force) 和 用 stack</summary>
+<div class="code"><span class="l"><span class="c"># O(n^2): 每个 &#x27;)&#x27; 都往左扫, 找最近的、还没被用掉的 &#x27;(&#x27;</span></span><span class="l"><span class="k">def</span> <span class="f">match_brute</span>(s):</span><span class="l">    used, pairs = <span class="t">set</span>(), []</span><span class="l">    <span class="k">for</span> j, ch <span class="k">in</span> <span class="t">enumerate</span>(s):</span><span class="l">        <span class="k">if</span> ch == <span class="s">&#x27;)&#x27;</span>:</span><span class="l">            <span class="c"># 往左扫 —— 每个 &#x27;)&#x27; 都重扫一遍</span></span><span class="l">            <span class="k">for</span> i <span class="k">in</span> <span class="t">range</span>(j - 1, -1, -1):</span><span class="l">                <span class="k">if</span> s[i] == <span class="s">&#x27;(&#x27;</span> <span class="k">and</span> i <span class="k">not</span> <span class="k">in</span> used:</span><span class="l">                    used.<span class="f">add</span>(i)</span><span class="l">                    pairs.<span class="f">append</span>((i, j))</span><span class="l">                    <span class="k">break</span></span><span class="l">    <span class="r">return</span> pairs</span><span class="l"></span><span class="l"><span class="c"># O(n): 栈 = &quot;往左扫会依次碰到的候选&quot;, 已经按&quot;最近优先&quot;排好</span></span><span class="l"><span class="k">def</span> <span class="f">match_stack</span>(s):</span><span class="l">    stack, pairs = [], []</span><span class="l">    <span class="k">for</span> j, ch <span class="k">in</span> <span class="t">enumerate</span>(s):</span><span class="l">        <span class="k">if</span> ch == <span class="s">&#x27;(&#x27;</span>:</span><span class="l">            stack.<span class="f">append</span>(j)              <span class="c"># 还没被匹配的 &#x27;(&#x27; 入栈, 栈顶 = 最近的</span></span><span class="l">        <span class="k">elif</span> ch == <span class="s">&#x27;)&#x27;</span> <span class="k">and</span> stack:</span><span class="l">            <span class="c"># pop = 最近的、没被用掉的 &#x27;(&#x27; , O(1), 不用扫</span></span><span class="l">            pairs.<span class="f">append</span>((stack.<span class="f">pop</span>(), j))</span><span class="l">    <span class="r">return</span> pairs</span></div>
+</details>
+<p class="note"><b>记:</b>看到"最近的、还没处理完的"或者嵌套结构, 就想 stack。关键是想清楚 stack 里存什么。</p>
+<h2>2. Min Stack</h2>
+<h3>题目在问什么</h3>
+<p>设计一个 stack, 支持 <code>push</code>、<code>pop</code>、<code>top</code>, 再加一个 <code>getMin</code>: 返回当前栈里最小的数。<b>每个操作都要 <code>O(1)</code></b>。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 312" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Min Stack examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">设计一个 stack, 支持 push / pop / top, 外加 getMin (返回当前栈里最小的数)。每个操作都要 O(1)</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  依次 push 5, 3, 7, 3, 然后 pop 三次</text>
+<text x="40" y="103" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">push 完</text>
+<rect x="104" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<rect x="138" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="155.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="172" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="189.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">7</text>
+<rect x="206" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="223.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="40" y="149" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">pop 两次</text>
+<rect x="104" y="134" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="121.0" y="150.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<rect x="138" y="134" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="155.0" y="150.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="40" y="195" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">再 pop</text>
+<rect x="104" y="180" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="121.0" y="196.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<text x="40" y="226" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">getMin: push 完是 3; pop 两次后还是 3; 再 pop 一次变成 5</text>
+<text x="40" y="244" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">难点在 pop: 最小值 3 被 pop 掉以后, 怎么 O(1) 知道下一个最小值是谁?</text>
+<line x1="40" y1="268" x2="640" y2="268" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="283" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="290" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">当前最小值</text></svg>
+<figcaption>例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>getMin 时把栈扫一遍, <code>O(n)</code>。不满足要求。</p>
+<p>另一个想法: 用一个变量 <code>cur_min</code> 记最小值, push 时更新。但 pop 掉的恰好是最小值时, 不知道新的最小值是谁, 还是要扫一遍。</p>
+<h3>Intuition: 每个元素记住"它放进来的时候, 栈里的最小值"</h3>
+<p>关键观察: stack 只能从顶上拿。所以当某个元素在栈顶时, 它下面的元素和它被放进来那一刻<b>完全一样</b>。</p>
+<p>那么在 push 的时候, 就把"包括我在内, 当前栈里的最小值"和元素一起存进去: <code>(val, min_so_far)</code>。之后任何时候, 栈顶的 min_so_far 就是整个栈的最小值。pop 掉以后, 新的栈顶自带它那一刻的最小值, 也是对的。</p>
+<h3>算法</h3>
+<ol><li>push(x): 新的最小值 = <code>min(x, 栈顶的 min)</code> (栈空时就是 x)。push <code>(x, 新的最小值)</code>。</li><li>pop(): 直接 pop。</li><li>top(): 返回栈顶的 val。</li><li>getMin(): 返回栈顶的 min。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 336" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif'><title>minstack_core</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">要求: push / pop / top / get_min 全部 O(1)</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop 掉当前最小值之后, 新的最小值是谁? —— 必须在 push 的时候就记下来</text>
 <text x="40" y="70" font-size="14" fill="#993C1D" font-weight="500" text-anchor="start" dominant-baseline="central">只存一个 min 变量 (错)</text>
@@ -263,7 +386,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="358" y="246" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">min_so_far 只取决于它下面的元素 → 写入后不再变</text>
 <text x="40" y="292" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">栈的每个元素都是一个 '快照': 记着 '栈只有到它为止这么高时' 的答案</text>
 <text x="40" y="314" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop 掉它, 快照一起走, 下面元素的快照原封不动 —— 这就是 '每个元素带额外状态'</text></svg>
-<figcaption>单变量 min 在 pop 后失效; 每个元素自带 min_so_far, pop 后下面元素的 min 本来就是对的。</figcaption></figure>
+<figcaption>只用一个变量记 min, pop 之后就失效了; 每个元素自带 min_so_far, pop 之后下面的元素的 min 本来就是对的。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 978" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif'><title>minstack_trace</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">ops: push 5, push 3, push 7, getMin, pop, pop, getMin</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">stack 每个元素 = (val, min_so_far) · min_so_far = 从栈底到它自己的最小值</text>
 <text x="44" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">操作</text>
@@ -369,14 +493,40 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="390.4" y="958" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里其他的</text>
 <rect x="471.4" y="954" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="468.4" y="948" width="20" height="20" rx="5" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="496.4" y="958" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶</text></svg>
-<figcaption>trace: 每次 push 的 cur_min 只看栈顶的 min; pop 时 (7,3)、(3,3) 带着自己的 min 一起走。</figcaption></figure>
+<figcaption>每次 push 的 min 只看栈顶的 min; pop 时 (7,3)、(3,3) 带着自己的 min 一起走。</figcaption></figure>
+<h3>复杂度</h3>
+<p>每个操作 Time <code>O(1)</code>。Space <code>O(n)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">class</span> MinStack:</span><span class="l">    <span class="k">def</span> <span class="f">__init__</span>(<span class="t">self</span>):</span><span class="l">        <span class="c"># 每个元素 (val, min_so_far): min_so_far = 从栈底到它自己的最小值</span></span><span class="l">        <span class="t">self</span>.stack = []</span><span class="l"></span><span class="l">    <span class="k">def</span> <span class="f">push</span>(<span class="t">self</span>, val):</span><span class="l">        <span class="c"># 只看下面的元素, 写入后永不改变</span></span><span class="l">        cur_min = <span class="t">min</span>(val, <span class="t">self</span>.stack[-1][1]) <span class="k">if</span> <span class="t">self</span>.stack <span class="k">else</span> val</span><span class="l">        <span class="t">self</span>.stack.<span class="f">append</span>((val, cur_min))</span><span class="l"></span><span class="l">    <span class="k">def</span> <span class="f">pop</span>(<span class="t">self</span>):</span><span class="l">        <span class="c"># min_so_far 跟着元素一起走; 新栈顶的 min_so_far 本来就是对的</span></span><span class="l">        <span class="t">self</span>.stack.<span class="f">pop</span>()</span><span class="l"></span><span class="l">    <span class="k">def</span> <span class="f">top</span>(<span class="t">self</span>):</span><span class="l">        <span class="r">return</span> <span class="t">self</span>.stack[-1][0]</span><span class="l"></span><span class="l">    <span class="k">def</span> <span class="f">get_min</span>(<span class="t">self</span>):</span><span class="l">        <span class="r">return</span> <span class="t">self</span>.stack[-1][1]         <span class="c"># O(1): 不用扫整个栈</span></span></div>
-<p><b>时间:</b>四个操作都 O(1)。<b>空间 O(n):</b>每个元素多存一个 int。(另一种写法:再开一个 min 栈,只在 <code>val <= 当前 min</code> 时 push,省空间,但核心思想一样。)</p>
-<p class="note"><b>记:</b>"O(1) 取某个聚合量(min/max)且支持撤销" → 栈元素带 <code>(val, 聚合量)</code>,聚合量只依赖下面的元素。</p>
-<h2>3. Decode String:遇到 '[' push 外层上下文,遇到 ']' pop 回来</h2>
-<p><b>题目:</b><code>k[encoded]</code> 表示 encoded 重复 k 次,可以嵌套。例:<code>"3[a2[c]]"</code> → <code>"accaccacc"</code>。</p>
-<p><b>Brute force:</b>反复用正则找最内层 <code>\d+\[[a-z]*\]</code> 展开替换,直到没有括号。每轮扫整个字符串,嵌套 d 层就是 d 轮,O(n·d) 再加上字符串反复重建。浪费:"最内层" 其实就是 "最近开的、还没关的 '['" —— 和括号匹配同一个问题。</p>
-<p><b>关键观察:</b>进入 <code>[</code> 时,外层有两件事被暂停了:外层已经拼好的字符串 <code>prev_str</code>,和这个括号的重复次数 <code>k</code>。把它们作为一个<b>现场</b> push 进栈,内层从空字符串开始拼。读到 <code>]</code>,pop 现场,把内层结果接回去:<code>cur = prev_str + cur * k</code>。这是 stack 的第二个变体:<b>栈里存的是被暂停的外层上下文</b>。</p>
+</details>
+<p class="note"><b>记:</b>stack 的每个元素可以带额外信息。因为栈顶下面的部分不会变, "放进来那一刻的信息"一直有效。</p>
+<h2>3. Decode String</h2>
+<h3>题目在问什么</h3>
+<p>编码规则是 <code>k[s]</code>: 把 s 重复 k 次。可以嵌套, 比如 <code>3[a2[c]]</code>。把字符串完全展开。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 264" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Decode String examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">k[s] 表示把 s 重复 k 次。可以嵌套。把字符串展开</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  &quot;3[a]2[bc]&quot;  →  &quot;aaabcbc&quot;</text>
+<text x="40" y="82" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">3[a] → aaa,  2[bc] → bcbc,  接起来</text>
+<line x1="40" y1="106" x2="640" y2="106" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="126" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  &quot;3[a2[c]]&quot;  →  &quot;accaccacc&quot;</text>
+<text x="40" y="146" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">先展开里面: 2[c] → cc, 于是变成 3[acc] → accaccacc</text>
+<text x="40" y="164" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">嵌套时必须先算里面, 再算外面</text>
+<line x1="40" y1="188" x2="640" y2="188" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="208" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 3:  &quot;2[abc]3[cd]ef&quot;  →  &quot;abcabccdcdcdef&quot;</text>
+<text x="40" y="228" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">括号外面的普通字母 ef 直接接上</text>
+<line x1="40" y1="252" x2="640" y2="252" stroke="#B4B2A9" stroke-dasharray="4 4"/></svg>
+<figcaption>三个例子。</figcaption></figure>
+<p>Example 2 说明, 嵌套时必须先展开里面的, 再展开外面的。</p>
+<h3>Brute force</h3>
+<p>反复找最里面的一对 <code>[ ]</code> (里面没有别的括号), 展开它, 拼回字符串, 再找下一个。每次查找和拼接都是 <code>O(长度)</code>, 嵌套多时很慢。</p>
+<h3>Intuition: 进括号前把"外面的状态"存起来</h3>
+<p>从左往右读。用 <code>cur</code> 记当前这一层已经拼出来的字符串, <code>k</code> 记刚读到的数字。</p>
+<p>遇到 <code>[</code>: 要进入新的一层了。但外面这一层还没完, 它的 cur 和 k 要先存起来, 进去以后才能回来接着拼。于是 push <code>(cur, k)</code>, 然后 cur 清空, 开始拼里面这一层。</p>
+<p>遇到 <code>]</code>: 里面这一层拼完了。pop 出外面的 <code>(prev, k)</code>, 把里面的 cur 重复 k 次接到 prev 后面, 这就是外面这一层新的 cur。</p>
+<p>和第 1 题一样: 最后进入的一层最先结束, 所以用 stack。</p>
+<h3>算法</h3>
+<ol><li><code>cur = ""</code>, <code>k = 0</code>, <code>stack = []</code>。</li><li>数字: <code>k = k * 10 + 数字</code> (数字可能有好几位)。</li><li><code>[</code>: push <code>(cur, k)</code>, 然后 <code>cur = ""</code>, <code>k = 0</code>。</li><li><code>]</code>: <code>prev, times = stack.pop()</code>, <code>cur = prev + cur * times</code>。</li><li>字母: <code>cur += 字母</code>。最后返回 cur。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 374" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif'><title>decode_core</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">s = 3[a2[c]] · 每个 '[' 开一层新上下文, 每个 ']' 回到外层</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">stack 存 '外层的现场' = (prev_str, k) · cur = 当前这层已拼出的字符串</text>
 <rect x="40" y="76" width="34" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
@@ -412,7 +562,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="210" y="306" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">('', 3) = 进外层之前的 cur 是 '', 这个 [ ] 重复 3 次</text>
 <text x="210" y="330" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">读到 ']' → pop ('a', 2):</text>
 <text x="210" y="352" font-size="14" fill="#0F6E56" font-weight="500" text-anchor="start" dominant-baseline="central">cur = prev_str + cur × k = 'a' + 'c' × 2 = 'acc'</text></svg>
-<figcaption>每个 '[' 开一层: stack 存 (prev_str, k); 读到 ']' 时 pop 最近的一层, 把内层的 cur 重复 k 次接到 prev_str 后面。</figcaption></figure>
+<figcaption>每个 [ 开一层: stack 存 (prev_str, k); 读到 ] 时 pop 最近的一层, 把里面的 cur 重复 k 次接到 prev_str 后面。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 858" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif'><title>decode_trace</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">s = "3[a2[c]]" · '[' 把 (cur, num) push 进 stack, 然后重新开始; ']' pop 回来</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">cur = 当前这层拼出的字符串 · num = 正在读的数字 · stack 元素 = (prev_str, k)</text>
 <text x="44" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">输入</text>
@@ -513,14 +664,65 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="390.4" y="838" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里其他的</text>
 <rect x="471.4" y="834" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="468.4" y="828" width="20" height="20" rx="5" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="496.4" y="838" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶</text></svg>
-<figcaption>trace: 3[a2[c]] —— stack 深度最多 2, 每个 ']' pop 回一层, cur 从 'c' → 'acc' → 'accaccacc'。</figcaption></figure>
+<figcaption>3[a2[c]]: stack 最深 2 层, 每个 ] pop 回一层, cur 从 'c' 变成 'acc' 再变成 'accaccacc'。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n + 输出长度)</code>。Space <code>O(n + 输出长度)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">decode_string</span>(s):</span><span class="l">    <span class="c"># 每层存 (prev_str, k): 进入 &#x27;[&#x27; 之前外层拼好的字符串, 和这个 &#x27;[&#x27; 的重复次数</span></span><span class="l">    stack = []</span><span class="l">    <span class="c"># cur = 当前这层 [] 里已经拼出的字符串; num = 正在读的数字</span></span><span class="l">    cur, num = <span class="s">&quot;&quot;</span>, 0</span><span class="l">    <span class="k">for</span> ch <span class="k">in</span> s:</span><span class="l">        <span class="k">if</span> ch.<span class="f">isdigit</span>():</span><span class="l">            num = num * 10 + <span class="t">int</span>(ch)     <span class="c"># 多位数 &quot;12[a]&quot;</span></span><span class="l">        <span class="k">elif</span> ch == <span class="s">&#x27;[&#x27;</span>:</span><span class="l">            stack.<span class="f">append</span>((cur, num))     <span class="c"># 保存外层现场</span></span><span class="l">            cur, num = <span class="s">&quot;&quot;</span>, 0             <span class="c"># 进入内层: 从空字符串重新拼</span></span><span class="l">        <span class="k">elif</span> ch == <span class="s">&#x27;]&#x27;</span>:</span><span class="l">            prev_str, k = stack.<span class="f">pop</span>()    <span class="c"># 回到外层</span></span><span class="l">            <span class="c"># 内层拼好的 cur 重复 k 次, 接在外层字符串后面</span></span><span class="l">            cur = prev_str + cur * k</span><span class="l">        <span class="k">else</span>:</span><span class="l">            cur += ch</span><span class="l">    <span class="r">return</span> cur</span></div>
-<p><b>时间:</b>每个字符处理一次,加上每个 <code>]</code> 构造一次新字符串,长度之和约为输出长度 (嵌套层数不多时看作 O(输出长度))。<b>空间:</b>栈深 = 嵌套层数,加上 cur。</p>
-<p class="note"><b>记:</b>"嵌套结构 + 内层先算完" → '开' 时 push 外层现场并清零,'关' 时 pop 并把内层结果合并回去。</p>
-<h2>4. Evaluate Reverse Polish Notation:栈里存已经算好的操作数</h2>
-<p><b>题目:</b>后缀表达式求值。例:<code>["4","13","5","/","+","2","*"]</code> = (4 + 13/5) × 2 = 12。</p>
-<p><b>Brute force:</b>在 tokens 里反复找第一个运算符,把它和前面两个数替换成结果(list 切片),O(n²)。浪费:每次要找 "第一个运算符",而它前面的两个操作数就是 "左边最近算好的两个数"。</p>
-<p><b>关键观察:</b>后缀式里,运算符出现时,它的两个操作数就是左边最近的两个值 —— 栈顶两个。所以数字 push,运算符 pop 两次算完再 push 回去,栈里始终是 "已算好、等待被消耗" 的值。注意顺序:先 pop 的是右操作数 <code>b</code>,后 pop 的是左操作数 <code>a</code>,减法和除法写 <code>a - b</code>、<code>a / b</code>。</p>
+</details>
+<p class="note"><b>记:</b>嵌套结构: 进入新的一层前, 把当前层的状态 push; 离开时 pop 回来, 合并结果。</p>
+<h2>4. Evaluate Reverse Polish Notation</h2>
+<h3>题目在问什么</h3>
+<p>RPN (逆波兰表达式) 把运算符写在两个操作数<b>后面</b>: <code>2 1 +</code> 就是 2 + 1。给一个 token 列表, 算出结果。除法向 0 取整。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 350" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Evaluate RPN examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">Reverse Polish Notation: 运算符写在两个操作数后面。例如 &quot;2 1 +&quot; 表示 2 + 1。算出结果 (除法向 0 取整)</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  [&quot;2&quot;,&quot;1&quot;,&quot;+&quot;,&quot;3&quot;,&quot;*&quot;]  →  9</text>
+<rect x="40" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="57.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="91.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="91.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="108" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">+</text>
+<text x="125.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="142" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="159.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="159.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="176" y="88" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="193.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">*</text>
+<text x="193.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
+<text x="40" y="150" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">2 1 + → 3;  再 3 3 * → 9。也就是 (2 + 1) × 3</text>
+<line x1="40" y1="174" x2="640" y2="174" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="194" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  [&quot;4&quot;,&quot;13&quot;,&quot;5&quot;,&quot;/&quot;,&quot;+&quot;]  →  6</text>
+<rect x="40" y="220" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="236.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<text x="57.0" y="262" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="220" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="91.0" y="236.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">13</text>
+<text x="91.0" y="262" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="108" y="220" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.0" y="236.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<text x="125.0" y="262" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="142" y="220" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="159.0" y="236.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">/</text>
+<text x="159.0" y="262" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="176" y="220" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="193.0" y="236.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">+</text>
+<text x="193.0" y="262" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
+<text x="40" y="282" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">13 5 / → 2 (13 / 5 = 2.6, 向 0 取整);  再 4 2 + → 6。也就是 4 + 13 / 5</text>
+<line x1="40" y1="306" x2="640" y2="306" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="321" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="54" y="328" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">token</text></svg>
+<figcaption>两个例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>反复找第一个运算符, 用它前面两个数算出结果, 替换回列表。每次替换 <code>O(n)</code>, 共 <code>O(n²)</code>。</p>
+<h3>Intuition</h3>
+<p>读到运算符时, 它要用的两个操作数, 恰好是<b>最近</b>算出来的两个数。所以把数都放进 stack: 读到数就 push; 读到运算符就 pop 两个, 算完 push 回去。</p>
+<p>注意顺序: 先 pop 出来的是<b>右边</b>的操作数 b, 后 pop 的是左边的 a。减法和除法要算 <code>a - b</code>、<code>a / b</code>。</p>
+<h3>算法</h3>
+<ol><li>数字: push。</li><li>运算符: <code>b = pop()</code>, <code>a = pop()</code>, push <code>a op b</code>。除法用 <code>int(a / b)</code> 向 0 取整。</li><li>最后栈里只剩一个数, 就是结果。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 360" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif'><title>rpn_core</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">后缀表达式: 运算符出现时, 它的两个操作数 = 左边最近算好的两个 = 栈顶两个</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">tokens = [2, 1, +, 3, *] · 先看 '+':</text>
 <text x="60" y="82" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">读到 '+' 之前</text>
@@ -548,7 +750,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="40" y="292" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">为什么是栈: 括号让表达式嵌套, 后缀式把嵌套摊平 —— 最近算好的结果马上被下一个运算符消耗</text>
 <text x="40" y="314" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">顺序: b 先 pop, a 后 pop, 算 a - b / a ÷ b (减法除法不能交换)</text>
 <text x="40" y="338" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">除法: int(a / b) 向 0 取整, 不能写 a // b (-7 // 2 = -4, 但要 -3)</text></svg>
-<figcaption>读到 '+': pop 两个 (先 b 后 a), 算出 a + b, push 回去。栈永远是 '已算好的值'。</figcaption></figure>
+<figcaption>读到 +: pop 两个 (先 b 后 a), 算出 a + b, push 回去。栈里永远是"已经算好的值"。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 1208" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif'><title>rpn_trace</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">tokens = [4, 13, 5, /, +, 2, *] = (4 + 13 / 5) × 2</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">数字 → push · 运算符 → pop b, pop a, push (a 运算 b)</text>
 <text x="44" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">输入</text>
@@ -663,14 +866,36 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="390.4" y="1188" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里其他的</text>
 <rect x="471.4" y="1184" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="468.4" y="1178" width="20" height="20" rx="5" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="496.4" y="1188" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶</text></svg>
-<figcaption>trace: 每个运算符 pop 两个 push 一个, 栈高度 -1; 最后栈里剩 [12]。</figcaption></figure>
+<figcaption>每个运算符 pop 两个、push 一个, 栈高度减 1; 最后栈里剩 [12]。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n)</code>, Space <code>O(n)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">eval_rpn</span>(tokens):</span><span class="l">    <span class="c"># invariant: 栈里 = 已经算出来的操作数, 栈顶是最近算出的</span></span><span class="l">    stack = []</span><span class="l">    <span class="k">for</span> t <span class="k">in</span> tokens:</span><span class="l">        <span class="k">if</span> t <span class="k">in</span> (<span class="s">&quot;+&quot;</span>, <span class="s">&quot;-&quot;</span>, <span class="s">&quot;*&quot;</span>, <span class="s">&quot;/&quot;</span>):    <span class="c"># 运算符: 它的两个操作数一定是栈顶两个</span></span><span class="l">            b = stack.<span class="f">pop</span>()              <span class="c"># 先 pop 出来的是右操作数</span></span><span class="l">            a = stack.<span class="f">pop</span>()              <span class="c"># 再 pop 出来的是左操作数</span></span><span class="l">            <span class="k">if</span> t == <span class="s">&quot;+&quot;</span>: stack.<span class="f">append</span>(a + b)</span><span class="l">            <span class="c"># 顺序: a - b, 不是 b - a</span></span><span class="l">            <span class="k">elif</span> t == <span class="s">&quot;-&quot;</span>: stack.<span class="f">append</span>(a - b)</span><span class="l">            <span class="k">elif</span> t == <span class="s">&quot;*&quot;</span>: stack.<span class="f">append</span>(a * b)</span><span class="l">            <span class="c"># 向 0 取整; 不能用 // (负数会向下取整)</span></span><span class="l">            <span class="k">else</span>: stack.<span class="f">append</span>(<span class="t">int</span>(a / b))</span><span class="l">        <span class="k">else</span>:</span><span class="l">            stack.<span class="f">append</span>(<span class="t">int</span>(t))         <span class="c"># 数字: 先存着, 等运算符来取</span></span><span class="l">    <span class="r">return</span> stack[0]</span></div>
-<p><b>时间 O(n):</b>每个 token 处理一次。<b>空间 O(n):</b>最坏全是数字在栈里。</p>
-<p class="note"><b>记:</b>表达式求值的最小模板: <b>操作数栈</b>。pop 顺序 b 先 a 后; 除法用 <code>int(a / b)</code> 向 0 取整。</p>
-<h2>5. Basic Calculator II:延迟处理 + -,立即处理 * /</h2>
-<p><b>题目:</b>字符串里只有非负整数和 <code>+ - * /</code>(无括号,整数除向 0 取整),求值。例:<code>"3+5*2-6/3"</code> = 3 + 10 - 2 = 11。</p>
-<p><b>Brute force:</b>两遍扫描,第一遍把所有 <code>* /</code> 算掉并重建表达式,第二遍从左到右算 <code>+ -</code>;或者反复找优先级最高的运算符替换,O(n²)。浪费:优先级信息是 "晚到" 的 —— 读到 <code>-</code> 时,不知道后面是不是 <code>*</code>。</p>
-<p><b>关键观察:</b>整个表达式是若干 <b>项 (term)</b> 的和,项与项之间只有 <code>+ -</code>。<code>* /</code> 只在项内部起作用。所以:读到 <code>+ -</code> 时只把这一项 <b>带符号 push</b>(延迟,等项算完);读到 <code>* /</code> 时,左操作数正好是栈顶那一项,<b>立即</b>和它合并。最后 <code>sum(stack)</code>。技巧:变量 <code>op</code> 记着 "<code>num</code> 前面的运算符",等读到下一个运算符(或结尾)才处理 <code>op num</code>。</p>
+</details>
+<p class="note"><b>记:</b>后缀表达式: 数 push, 运算符 pop 两个算完 push 回去。先 pop 的是右操作数。</p>
+<h2>5. Basic Calculator II</h2>
+<h3>题目在问什么</h3>
+<p>字符串里有非负整数、<code>+ - * /</code> 和空格, <b>没有括号</b>。按正常优先级 (先乘除、后加减) 算出结果。除法向 0 取整。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 182" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Basic Calculator II examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">字符串里有非负整数和 + - * / 和空格, 没有括号。按正常的运算优先级 (先乘除后加减) 算出结果, 除法向 0 取整</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  &quot;3+2*2&quot;  →  7</text>
+<text x="40" y="82" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">先算 2*2 = 4, 再 3 + 4 = 7。如果从左往右直接算, 会得到 (3+2)*2 = 10, 错</text>
+<line x1="40" y1="106" x2="640" y2="106" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="126" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  &quot;3+5*2-6/3&quot;  →  11</text>
+<text x="40" y="146" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">3 + 10 - 2 = 11</text>
+<line x1="40" y1="170" x2="640" y2="170" stroke="#B4B2A9" stroke-dasharray="4 4"/></svg>
+<figcaption>两个例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>先扫一遍把所有 * / 算掉, 再扫一遍算 + -。或者反复找优先级最高的运算符替换。</p>
+<h3>Intuition: 加减先存着, 乘除马上算</h3>
+<p>难点是优先级: 读到 <code>3 + 2</code> 时不能马上加, 因为后面可能是 <code>* 2</code>。</p>
+<p>换个角度看: 整个表达式其实是若干"项"相加, 每一项是由 * / 连起来的。比如 <code>3 + 5*2 - 6/3</code> = <code>3</code> + <code>(5*2)</code> + <code>(-6/3)</code>。</p>
+<p>所以用一个 stack 存每一项:</p>
+<ul><li>一个数前面是 <code>+</code>: push 这个数 (新的一项)。</li><li>前面是 <code>-</code>: push 它的相反数 (把减法当成加一个负数)。</li><li>前面是 <code>*</code> 或 <code>/</code>: 它属于上一项, pop 出栈顶, 乘或除完再 push 回去。</li></ul>
+<p>最后把 stack 里所有项加起来。</p>
+<h3>算法</h3>
+<ol><li><code>num = 0</code>, <code>op = '+'</code> (第一个数前面假装有个 +)。</li><li>读到数字就拼进 num。读到运算符 (或者到了字符串末尾) 时, 按<b>上一个</b>运算符 op 处理 num: + push, - push 负数, * / 和栈顶合并。然后 op 换成当前的运算符, num 清零。</li><li>返回 <code>sum(stack)</code>。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 408" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif'><title>calc2_core</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">s = 2 - 3 * 2 · 乘除优先级更高 → '+ -' 不能边读边算, 要等后面有没有 '* /'</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">做法: 每一项带符号 push 进 stack; '* /' 立刻和栈顶这一项合并; 最后 sum(stack)</text>
 <text x="40" y="70" font-size="14" fill="#993C1D" font-weight="500" text-anchor="start" dominant-baseline="central">边读边算 (错)</text>
@@ -713,7 +938,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="485" y="348" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">stack = 项</text>
 <text x="40" y="366" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">延迟处理 '+ -' = 先把项存进栈, 等整项算完</text>
 <text x="40" y="386" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">立即处理 '* /' = 栈顶那一项就是它的左操作数</text></svg>
-<figcaption>边读边算会把 2-3*2 算成 -2; 按项切开, + - 项 push, * / 与栈顶合并, 最后求和得 -4。</figcaption></figure>
+<figcaption>从左往右直接算会把 2-3*2 算成 -2; 按项切开, 加减项 push, 乘除和栈顶合并, 最后求和得到 -4。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 888" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif'><title>calc2_trace</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">s = "3+5*2-6/3" · op = 上一个运算符, num 属于它; 读到下一个运算符时才处理 "op num"</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">+ - → 带符号 push · * / → pop 栈顶, 算完 push 回去</text>
 <text x="44" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">读到</text>
@@ -807,14 +1033,35 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="390.4" y="868" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里其他的</text>
 <rect x="471.4" y="864" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="468.4" y="858" width="20" height="20" rx="5" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="496.4" y="868" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶</text></svg>
-<figcaption>trace: 3+5*2-6/3。'*' 时 pop 5 算成 10 再 push; '/' 时 pop -6 算成 -2 再 push; 最后 sum(stack)=11。</figcaption></figure>
+<figcaption>3+5*2-6/3: 遇到 * 时 pop 出 5 算成 10 再 push; 遇到 / 时 pop 出 -6 算成 -2 再 push; 最后 sum = 11。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n)</code>, Space <code>O(n)</code> (可以只用一个变量记最后一项, 降到 <code>O(1)</code>)。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">calculate</span>(s):</span><span class="l">    <span class="c"># op = num 前面的运算符; 要等 num 读完 (遇到下一个运算符) 才能处理它</span></span><span class="l">    stack, num, op = [], 0, <span class="s">&#x27;+&#x27;</span></span><span class="l">    <span class="k">for</span> i, ch <span class="k">in</span> <span class="t">enumerate</span>(s):</span><span class="l">        <span class="k">if</span> ch.<span class="f">isdigit</span>():</span><span class="l">            num = num * 10 + <span class="t">int</span>(ch)</span><span class="l">        <span class="c"># 读到下一个运算符 (或到结尾): 处理 &quot;op num&quot;</span></span><span class="l">        <span class="k">if</span> ch <span class="k">in</span> <span class="s">&#x27;+-*/&#x27;</span> <span class="k">or</span> i == <span class="t">len</span>(s) - 1:</span><span class="l">            <span class="c"># + - 先记成带符号的项, 后面可能有 * / 抢先</span></span><span class="l">            <span class="k">if</span> op == <span class="s">&#x27;+&#x27;</span>:   stack.<span class="f">append</span>(num)</span><span class="l">            <span class="k">elif</span> op == <span class="s">&#x27;-&#x27;</span>: stack.<span class="f">append</span>(-num)</span><span class="l">            <span class="c"># * / 立即和栈顶那一项合并</span></span><span class="l">            <span class="k">elif</span> op == <span class="s">&#x27;*&#x27;</span>: stack.<span class="f">append</span>(stack.<span class="f">pop</span>() * num)</span><span class="l">            <span class="k">else</span>:           stack.<span class="f">append</span>(<span class="t">int</span>(stack.<span class="f">pop</span>() / num))</span><span class="l">            op, num = ch, 0</span><span class="l">    <span class="r">return</span> <span class="t">sum</span>(stack)                    <span class="c"># 栈里全是 &quot;项&quot;, 最后一次性相加</span></span></div>
-<p><b>时间 O(n):</b>每个字符一次,每项 push / pop 常数次。<b>空间 O(n):</b>项的个数。(因为只关心最后一项,也可以用 <code>last</code> 变量代替栈做到 O(1) 空间,但栈版本是下一题的基础。)</p>
-<p class="note"><b>记:</b><b>延迟处理</b>: 优先级低的 (+ -) 先存起来; <b>立即处理</b>: 优先级高的 (* /) 马上和栈顶合并。最后一遍 <code>sum</code>。</p>
-<h2>6. Basic Calculator:括号 = push 当前 (result, sign),出括号时 pop 回来</h2>
-<p><b>题目:</b>字符串含非负整数、<code>+ -</code>、括号和空格,求值。例:<code>"1-(2+(3-1))"</code> = 1 - (2 + 2) = -3。</p>
-<p><b>Brute force:</b>反复找最内层括号,算出值,替换回字符串,O(n·d)(d 为嵌套深度,最坏 O(n²))。浪费:"最内层括号" 又是 "最近开的、还没关的 '('"。</p>
-<p><b>关键观察:</b>只有 <code>+ -</code>,没有优先级问题,所以不需要 "项" 的栈,一个累加器 <code>result</code> 加一个 <code>sign</code> 就够。括号的作用是:<b>括号整体是一个数,前面带着符号</b>。读到 <code>(</code>:把外层现场 <code>(result, sign)</code> push 进栈,内层从 0 重新算(和 Decode String 同一招)。读到 <code>)</code>:先把括号内最后一个数并进来,pop 现场,<code>result = prev_result + prev_sign * result</code>。和上一题相比,栈里放的不再是 "项",而是 "外层的现场"。</p>
+</details>
+<p class="note"><b>记:</b>有优先级的表达式: 加减的项先 push, 乘除马上和栈顶合并, 最后求和。</p>
+<h2>6. Basic Calculator</h2>
+<h3>题目在问什么</h3>
+<p>字符串里有非负整数、<code>+ -</code>、<b>括号</b>和空格 (没有 * /)。算出结果。括号可以嵌套, 括号前面可以是负号。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 182" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Basic Calculator examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">字符串里有非负整数、+ -、括号和空格 (没有 * /)。算出结果。负号也可以出现在括号前面</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  &quot;1-(2+3)&quot;  →  -4</text>
+<text x="40" y="82" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">括号里先算出 5, 外面是 1 - 5 = -4。注意括号前的减号会把括号里每一项都变号</text>
+<line x1="40" y1="106" x2="640" y2="106" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="126" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  &quot;(1+(4+5+2)-3)+(6+8)&quot;  →  23</text>
+<text x="40" y="146" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">(1 + 11 - 3) + 14 = 9 + 14 = 23, 括号可以嵌套</text>
+<line x1="40" y1="170" x2="640" y2="170" stroke="#B4B2A9" stroke-dasharray="4 4"/></svg>
+<figcaption>两个例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>反复找最里面的一对括号, 算出里面的值, 替换回去。<code>O(n²)</code>。</p>
+<h3>Intuition: 和第 3 题一样, 进括号前存状态</h3>
+<p>没有括号时很简单: 用 <code>result</code> 记到目前为止的结果, <code>sign</code> 记下一个数前面是 + 还是 -, 读到数就 <code>result += sign * num</code>。</p>
+<p>加上括号: 遇到 <code>(</code> 时, 括号里是一个独立的小表达式, 要先算。外面的 result 和括号前的 sign 要存起来。于是 push <code>(result, sign)</code>, 然后 result 清零, 开始算括号里面。</p>
+<p>遇到 <code>)</code>: 括号里算完了, 值是 result。pop 出外面的 <code>(prev_result, prev_sign)</code>, 合并: <code>result = prev_result + prev_sign * result</code>。</p>
+<p>这和第 3 题 Decode String 是同一个结构: 进入一层前存状态, 出来时取回状态并合并。</p>
+<h3>算法</h3>
+<ol><li><code>result = 0</code>, <code>sign = 1</code>, <code>num = 0</code>。</li><li>数字: 拼进 num。<code>+</code> / <code>-</code>: 先 <code>result += sign * num</code>, num 清零, 再设 sign = 1 或 -1。</li><li><code>(</code>: push <code>(result, sign)</code>, 然后 result = 0, sign = 1。</li><li><code>)</code>: 先把 num 加进 result, 然后 pop 出 (prev, s), <code>result = prev + s * result</code>。</li><li>最后 <code>result += sign * num</code>。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 345" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif'><title>calc_core</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">s = 1 - (2 + 3) · 括号 = 一个新的子问题: 进括号时 push 外层现场, 出括号时 pop 回来</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">现场 = (result, sign): 外层累加到哪, 以及 '(' 前面的符号</text>
 <text x="40" y="70" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">① 读完 '1 -', 还没读 '('</text>
@@ -840,7 +1087,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="40" y="271" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">pop (prev_result, prev_sign) = (1, -1)</text>
 <text x="40" y="297" font-size="14" fill="#0F6E56" font-weight="500" text-anchor="start" dominant-baseline="central">result = prev_result + prev_sign × result = 1 + (-1) × 5 = -4</text>
 <text x="40" y="323" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">整个括号 = 一个数, 带上 '(' 前面的符号 · 嵌套多深, 栈就有多深</text></svg>
-<figcaption>1-(2+3): 读 '(' 时 push (1,-1) 并清零; 括号内算出 5; 读 ')' 时 pop, 1 + (-1)×5 = -4。</figcaption></figure>
+<figcaption>1-(2+3): 读 ( 时 push (1, -1) 并清零; 括号里算出 5; 读 ) 时 pop, 1 + (-1) × 5 = -4。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 768" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif'><title>calc_trace</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">s = "1-(2+(3-1))" · stack 元素 = (result, sign) = '(' 之前的现场</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">'(' push 现场并清零 · ')' 先并入 num, 再 pop 现场: result = prev_result + prev_sign × result</text>
 <text x="44" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">读到</text>
@@ -935,14 +1183,70 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="390.4" y="748" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里其他的</text>
 <rect x="471.4" y="744" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="468.4" y="738" width="20" height="20" rx="5" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="496.4" y="748" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶</text></svg>
-<figcaption>trace: 1-(2+(3-1)) 嵌套两层, 栈深到 2。每个 ')' 先并入 num 再 pop 现场合并。</figcaption></figure>
+<figcaption>1-(2+(3-1)): 嵌套两层, 栈深到 2。每个 ) 先把 num 加进去, 再 pop 合并。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n)</code>, Space <code>O(括号深度)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">calculate</span>(s):</span><span class="l">    stack = []</span><span class="l">    <span class="c"># result = 当前括号层已累加的值; sign = num 前面的符号 (+1 / -1)</span></span><span class="l">    result, num, sign = 0, 0, 1</span><span class="l">    <span class="k">for</span> ch <span class="k">in</span> s:</span><span class="l">        <span class="k">if</span> ch.<span class="f">isdigit</span>():</span><span class="l">            num = num * 10 + <span class="t">int</span>(ch)</span><span class="l">        <span class="k">elif</span> ch <span class="k">in</span> <span class="s">&#x27;+-&#x27;</span>:</span><span class="l">            result += sign * num         <span class="c"># 把刚读完的 num 并进 result</span></span><span class="l">            num, sign = 0, (1 <span class="k">if</span> ch == <span class="s">&#x27;+&#x27;</span> <span class="k">else</span> -1)</span><span class="l">        <span class="k">elif</span> ch == <span class="s">&#x27;(&#x27;</span>:</span><span class="l">            <span class="c"># 保存外层: 外层累加到哪了, 以及 &#x27;(&#x27; 前面的符号</span></span><span class="l">            stack.<span class="f">append</span>((result, sign))</span><span class="l">            result, sign = 0, 1          <span class="c"># 括号内部从 0 重新算</span></span><span class="l">        <span class="k">elif</span> ch == <span class="s">&#x27;)&#x27;</span>:</span><span class="l">            result += sign * num         <span class="c"># 先把括号内最后一个 num 并进来</span></span><span class="l">            num = 0</span><span class="l">            prev_result, prev_sign = stack.<span class="f">pop</span>()</span><span class="l">            <span class="c"># 整个括号当成一个数, 乘上 &#x27;(&#x27; 前面的符号</span></span><span class="l">            result = prev_result + prev_sign * result</span><span class="l">    <span class="r">return</span> result + sign * num</span></div>
-<p><b>时间 O(n):</b>每个字符一次。<b>空间 O(d):</b>栈深 = 括号嵌套深度。</p>
-<p class="note"><b>记:</b><code>(</code> 压栈 <code>(result, sign)</code> 并清零; <code>)</code> 弹出并合并: <code>result = prev_result + prev_sign * result</code>。Calculator III (带 * / 和括号) = 这两题合起来: 递归或再叠一层栈,模板不变。</p>
-<h2>7. Asteroid Collision:新元素和栈顶 "冲突" 就 pop</h2>
-<p><b>题目:</b>数组里每个数是一颗小行星,绝对值是大小,正数向右、负数向左,速度相同。相撞时小的炸,一样大都炸,求最后剩下的。例:<code>[5, 10, -8, -12, 3]</code> → <code>[-12, 3]</code>。</p>
-<p><b>Brute force:</b>反复扫描数组,找到第一对 <code>a[i] > 0 > a[i+1]</code>,按规则删掉,重复直到没有相撞,O(n²)。浪费:每次从头扫,但相撞只可能发生在 "当前最右边活着的向右的那个" 和 "新来的向左的" 之间。</p>
-<p><b>关键观察:</b>从左到右处理,栈里是 "到目前为止活着的"。新来的 <code>x</code> 只可能和栈顶相撞,而且只有 <code>栈顶 > 0 且 x < 0</code> 才撞。撞完如果栈顶炸了,露出来的下一个又是 "最近的",继续比 —— 用 <code>while</code>。这是 stack 的第三种形状:<b>新元素和栈顶冲突就 pop,直到不冲突才 push</b>。</p>
+</details>
+<p class="note"><b>记:</b>表达式里的括号: ( 时 push (result, sign) 并清零, ) 时 pop 合并。和 Decode String 是同一个套路。</p>
+<h2>7. Asteroid Collision</h2>
+<h3>题目在问什么</h3>
+<p>一排小行星, 每个用一个整数表示: 绝对值是大小, 正数向右飞, 负数向左飞。两颗<b>迎面</b>相撞时, 小的爆炸; 一样大就一起爆炸。同方向的永远不会撞。求最后剩下的小行星。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 482" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Asteroid Collision examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">每个数是一颗小行星: 绝对值是大小, 正号向右飞, 负号向左飞。迎面相撞时小的爆炸, 一样大就都爆炸。求最后剩下的</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  [5,10,-5]  →  [5,10]</text>
+<rect x="40" y="104" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="57.0" y="120.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<text x="57.0" y="146" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="104" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="91.0" y="120.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">10</text>
+<text x="91.0" y="146" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="108" y="104" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">-5</text>
+<text x="125.0" y="146" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<path d="M111 96 L111 88 L139 88 L139 96" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="166" y="90" font-size="12" fill="#712B13" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">-5 撞上 10, 5 &lt; 10, -5 爆炸</text>
+<line x1="40" y1="166" x2="640" y2="166" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="186" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  [8,-8]  →  []</text>
+<rect x="40" y="228" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="244.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">8</text>
+<text x="57.0" y="270" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="228" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="91.0" y="244.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">-8</text>
+<text x="91.0" y="270" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<path d="M43 220 L43 212 L105 212 L105 220" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="132" y="214" font-size="12" fill="#712B13" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">一样大, 一起爆炸</text>
+<line x1="40" y1="290" x2="640" y2="290" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="310" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 3:  [10,2,-5]  →  [10]</text>
+<rect x="40" y="352" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="57.0" y="368.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">10</text>
+<text x="57.0" y="394" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="74" y="352" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="91.0" y="368.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="91.0" y="394" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="108" y="352" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.0" y="368.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">-5</text>
+<text x="125.0" y="394" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<path d="M77 344 L77 336 L139 336 L139 344" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="166" y="338" font-size="12" fill="#712B13" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">-5 先撞掉 2, 再撞 10 时自己爆炸</text>
+<text x="40" y="414" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">一颗向左飞的可以连续撞掉好几颗。而 [-2, 3] 这种 (左边的向左、右边的向右) 永远不会相撞</text>
+<line x1="40" y1="438" x2="640" y2="438" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="453" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="460" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">最后剩下的</text>
+<rect x="133" y="453" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
+<text x="154" y="460" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">相撞</text></svg>
+<figcaption>三个例子。</figcaption></figure>
+<p>只有"左边的向右飞、右边的向左飞"才会相撞。Example 3 里一颗向左飞的可以连续撞掉好几颗。</p>
+<h3>Brute force</h3>
+<p>反复扫整个数组, 找相邻的一对 (正, 负), 让它们相撞, 直到没有可以撞的。每轮 <code>O(n)</code>, 最多 n 轮, <code>O(n²)</code>。</p>
+<h3>Intuition: 新来的只会和"最近的幸存者"相撞</h3>
+<p>从左往右处理。已经处理过的、目前还活着的小行星放在 stack 里。一颗新的小行星来了:</p>
+<ul><li>如果它向右飞, 或者栈顶向左飞, 不会撞, 直接 push。</li><li>如果它向左飞, 而栈顶向右飞, 会撞。比较大小: 栈顶小, 栈顶爆炸 (pop), 新的继续和下一个栈顶撞; 一样大, 都爆炸; 新的小, 新的爆炸。</li></ul>
+<p>为什么只看栈顶? 因为新来的向左飞, 第一个碰到的一定是它左边最近的那个幸存者, 也就是栈顶。</p>
+<h3>算法</h3>
+<ol><li>对每颗 a: 当 <code>a < 0</code> 且栈顶 <code>> 0</code>: 比较 <code>-a</code> 和栈顶。</li><li>栈顶小: pop, 继续比较 (while 循环)。一样大: pop, a 也没了, 停。栈顶大: a 没了, 停。</li><li>a 还活着, push。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 372" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif'><title>asteroid_core</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">正数向右飞, 负数向左飞 · 只有 '栈顶向右 + 新来的向左' 才会相撞</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">stack 里是 '目前活着、且互相不会再撞' 的 asteroid</text>
 <text x="40" y="66" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶 3, 新来 5</text>
@@ -993,7 +1297,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="460" y="292" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">不 push, stack 不变</text>
 <text x="40" y="326" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">while 的条件: alive and x &lt; 0 and stack and stack[-1] &gt; 0</text>
 <text x="40" y="350" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">x 之所以能反复和新的栈顶比, 是因为栈顶炸掉后, 露出来的就是 '下一个最近的'</text></svg>
-<figcaption>只有 '栈顶向右 + 新来的向左' 会撞; 撞的时候三种结果, 对应 pop / 同归于尽 / 新的消失。</figcaption></figure>
+<figcaption>只有"栈顶向右 + 新来的向左"会撞; 撞的时候三种结果, 分别是 pop / 一起爆炸 / 新的消失。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 698" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif'><title>asteroid_trace</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">asteroids = [5, 10, -8, -12, 3] · 正数向右, 负数向左</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">只有 '栈顶 &gt; 0 且 新来的 &lt; 0' 才撞 · 撞完谁小谁炸, 一样大都炸</text>
 <text x="44" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">输入</text>
@@ -1087,14 +1392,74 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="390.4" y="678" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里其他的</text>
 <rect x="471.4" y="674" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="468.4" y="668" width="20" height="20" rx="5" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="496.4" y="678" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶</text></svg>
-<figcaption>trace: -8 撞不过 10 被炸; -12 连炸 10 和 5 (一个 while 里 pop 两次) 后 push; 3 与 -12 相背, 直接 push。</figcaption></figure>
+<figcaption>-8 撞不过 10 被炸掉; -12 连续撞掉 10 和 5 (一个 while 里 pop 两次) 后 push; 3 和 -12 方向相背, 直接 push。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n)</code>: 每颗最多 push 一次、pop 一次。Space <code>O(n)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">asteroid_collision</span>(asteroids):</span><span class="l">    <span class="c"># invariant: 栈里没有会相撞的一对 (栈顶向右 + 下一个向左)</span></span><span class="l">    stack = []</span><span class="l">    <span class="k">for</span> a <span class="k">in</span> asteroids:</span><span class="l">        alive = <span class="k">True</span></span><span class="l">        <span class="c"># 只有 &quot;栈顶向右 + 新来的向左&quot; 才会撞</span></span><span class="l">        <span class="k">while</span> alive <span class="k">and</span> a &lt; 0 <span class="k">and</span> stack <span class="k">and</span> stack[-1] &gt; 0:</span><span class="l">            <span class="c"># 栈顶更小: 栈顶炸掉, 新来的继续去撞下一个</span></span><span class="l">            <span class="k">if</span> stack[-1] &lt; -a:</span><span class="l">                stack.<span class="f">pop</span>()</span><span class="l">            <span class="k">elif</span> stack[-1] == -a:        <span class="c"># 一样大: 同归于尽</span></span><span class="l">                stack.<span class="f">pop</span>()</span><span class="l">                alive = <span class="k">False</span></span><span class="l">            <span class="k">else</span>:                        <span class="c"># 栈顶更大: 新来的炸掉</span></span><span class="l">                alive = <span class="k">False</span></span><span class="l">        <span class="k">if</span> alive:</span><span class="l">            stack.<span class="f">append</span>(a)</span><span class="l">    <span class="r">return</span> stack</span></div>
-<p><b>时间 O(n):</b>每颗行星最多 push 一次、pop 一次(while 的总迭代数被 pop 次数限制)。<b>空间 O(n)。</b></p>
-<p class="note"><b>记:</b><code>while 冲突: pop</code> 再 <code>push</code>。一个元素可能 pop 好几个,但摊销下来每个元素只 pop 一次 → O(n)。</p>
-<h2>8. Remove All Adjacent Duplicates II:栈元素存 (char, count)</h2>
-<p><b>题目:</b>反复删除 <code>s</code> 中连续 k 个相同字符,直到不能再删。例:<code>s = "abbbaac", k = 3</code> → <code>"c"</code>(删 bbb 后 a 和 aa 相邻,凑成 aaa 再删)。</p>
-<p><b>Brute force:</b>反复扫描找连续 k 个相同的删掉,每轮 O(n),最多 n/k 轮,O(n²/k)。浪费:删掉一段后,左右两边变成相邻,但这件事要靠重新扫描才发现。</p>
-<p><b>关键观察:</b>用栈的话,删掉一段就是 pop,下面的元素自动变成栈顶,和后面的新字符继续比较 —— "相邻" 关系被栈结构保持着。如果栈里只存单个字符,凑够 k 个要回头数 O(k);所以栈元素存 <code>[char, count]</code>(连续的一段),栈顶的 count 直接就是答案。这和 Min Stack 是同一个套路:<b>额外状态跟着元素一起存</b>。</p>
+</details>
+<p class="note"><b>记:</b>新元素和"最近的幸存者"反复抵消: 用 stack, while 循环和栈顶比, 能消就 pop。</p>
+<h2>8. Remove All Adjacent Duplicates in String II</h2>
+<h3>题目在问什么</h3>
+<p>给一个字符串 s 和整数 k。只要有 k 个<b>相同的字符连在一起</b>, 就把它们删掉, 左右两边接上。接上之后可能又凑出 k 个, 继续删, 直到删不动为止。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 204" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Remove All Adjacent Duplicates II examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">只要有 k 个相同的字符连在一起, 就把它们删掉。删完以后左右两边接起来, 可能又凑成 k 个, 继续删, 直到删不动</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example:  s = &quot;deeedbbcccbdaa&quot;, k = 3  →  &quot;aa&quot;</text>
+<rect x="40" y="88" width="30" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="55.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">d</text>
+<text x="55.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">0</text>
+<rect x="70" y="88" width="30" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="85.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">e</text>
+<text x="85.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="100" y="88" width="30" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="115.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">e</text>
+<text x="115.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="130" y="88" width="30" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="145.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">e</text>
+<text x="145.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="160" y="88" width="30" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="175.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">d</text>
+<text x="175.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="190" y="88" width="30" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="205.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">b</text>
+<text x="205.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">5</text>
+<rect x="220" y="88" width="30" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="235.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">b</text>
+<text x="235.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">6</text>
+<rect x="250" y="88" width="30" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="265.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">c</text>
+<text x="265.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">7</text>
+<rect x="280" y="88" width="30" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="295.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">c</text>
+<text x="295.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">8</text>
+<rect x="310" y="88" width="30" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="325.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">c</text>
+<text x="325.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">9</text>
+<rect x="340" y="88" width="30" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="355.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">b</text>
+<text x="355.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">10</text>
+<rect x="370" y="88" width="30" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="385.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">d</text>
+<text x="385.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">11</text>
+<rect x="400" y="88" width="30" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="415.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">a</text>
+<text x="415.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">12</text>
+<rect x="430" y="88" width="30" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="445.0" y="104.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">a</text>
+<text x="445.0" y="130" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central" style="white-space:pre">13</text>
+<text x="40" y="150" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">删 eee → &quot;ddbbcccbdaa&quot;;  删 ccc → &quot;ddbbbdaa&quot;;  删 bbb → &quot;dddaa&quot;;  删 ddd → &quot;aa&quot;</text>
+<text x="40" y="168" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">每删一次, 两边接上可能又凑出新的 k 个</text>
+<line x1="40" y1="192" x2="640" y2="192" stroke="#B4B2A9" stroke-dasharray="4 4"/></svg>
+<figcaption>例子: 每删一次, 两边接上可能又凑出新的 k 个。</figcaption></figure>
+<h3>Brute force</h3>
+<p>反复扫字符串, 找连续 k 个相同的, 删掉, 重新扫。每次 <code>O(n)</code>, 最多删 n/k 次, <code>O(n²/k)</code>。</p>
+<h3>Intuition: stack 里存 (字符, 连续个数)</h3>
+<p>从左往右, 用 stack 记录"目前还留着的字符串"。但如果 stack 只存字符, 每次都要往回数有几个相同的。</p>
+<p>所以存 <code>[字符, 连续个数]</code>: 新来的字符和栈顶字符一样, 就把栈顶的个数加 1; 不一样, push <code>[字符, 1]</code>。个数到了 k, 就把这一项整个 pop 掉。</p>
+<p>pop 之后, 下面那一项自动成了栈顶。如果后面来的字符和它一样, 就会继续累加, 这正好对应"删完两边接上"。</p>
+<h3>算法</h3>
+<ol><li>对每个字符 c: 栈顶字符是 c, 个数加 1; 否则 push <code>[c, 1]</code>。</li><li>栈顶个数 == k: pop。</li><li>最后把每项的 <code>字符 × 个数</code> 拼起来。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 352" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif'><title>dup2_core</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">s = abbbaac, k = 3 · 删掉 bbb 以后, 左边的 a 和右边的 aa 变成相邻 → 还要继续合并</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">stack 每个元素存一整段 [char, count], 栈顶 = 当前最右边的连续段</text>
 <text x="40" y="70" font-size="14" fill="#993C1D" font-weight="500" text-anchor="start" dominant-baseline="central">只存 char (需要回头数)</text>
@@ -1134,7 +1499,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="605" y="248" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">读到 a</text>
 <text x="40" y="306" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">删掉一段 = pop 一个元素 · 左右两段自动相邻, 因为它们在栈里本来就上下挨着</text>
 <text x="40" y="330" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">额外状态 (count) 跟着元素存进栈 —— 和 Min Stack 的 (val, min) 是同一个套路</text></svg>
-<figcaption>只存 char 要回头数; 存 (char, count), count 到 k 就整段 pop, 下面的段自动接上。</figcaption></figure>
+<figcaption>只存字符的话要回头数; 存 (字符, 个数), 个数到 k 就整段 pop, 下面的段自动接上。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 788" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif'><title>dup2_trace</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">s = "abbbaac", k = 3 · stack 元素 = (char, count)</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">和栈顶同字符 → count += 1 · count == k → pop 整段 · 否则 push (ch, 1)</text>
 <text x="44" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">输入</text>
@@ -1231,14 +1597,36 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="390.4" y="768" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里其他的</text>
 <rect x="471.4" y="764" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="468.4" y="758" width="20" height="20" rx="5" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="496.4" y="768" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶</text></svg>
-<figcaption>trace: abbbaac, k=3。(b,3) 凑够被 pop, 露出 (a,1); 后面的 a 把它加到 (a,2) 再到 (a,3) 又被 pop。</figcaption></figure>
+<figcaption>abbbaac, k = 3: (b,3) 凑够被 pop, 露出 (a,1); 后面的 a 把它加到 (a,2), 再到 (a,3), 又被 pop。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n)</code>, Space <code>O(n)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">remove_duplicates</span>(s, k):</span><span class="l">    <span class="c"># 每个元素 [char, count]: 栈顶这一段 char 已经连续出现 count 次</span></span><span class="l">    stack = []</span><span class="l">    <span class="k">for</span> ch <span class="k">in</span> s:</span><span class="l">        <span class="k">if</span> stack <span class="k">and</span> stack[-1][0] == ch:</span><span class="l">            stack[-1][1] += 1            <span class="c"># 和栈顶同字符: 这一段变长 (不用回头数)</span></span><span class="l">            <span class="c"># 凑够 k 个: 整段删掉, 它下面的段自然变成相邻</span></span><span class="l">            <span class="k">if</span> stack[-1][1] == k:</span><span class="l">                stack.<span class="f">pop</span>()</span><span class="l">        <span class="k">else</span>:</span><span class="l">            stack.<span class="f">append</span>([ch, 1])</span><span class="l">    <span class="r">return</span> <span class="s">&quot;&quot;</span>.<span class="f">join</span>(c * n <span class="k">for</span> c, n <span class="k">in</span> stack)</span></div>
-<p><b>时间 O(n):</b>每个字符处理一次,push / pop 各最多一次。<b>空间 O(n)。</b>(k = 2 就是 Remove All Adjacent Duplicates In String:栈里存字符,和栈顶相同就 pop。)</p>
-<p class="note"><b>记:</b>"删掉一段后两边会合并" → stack,元素存 <code>(值, 连续次数)</code>。删除 = pop,合并 = 下一个元素和新栈顶比。</p>
-<h2>9. Simplify Path:目录栈,'..' = pop</h2>
-<p><b>题目:</b>把 Unix 绝对路径化简成规范形式。例:<code>"/a/./b/../../c/"</code> → <code>"/c"</code>。<code>'.'</code> 是当前目录,<code>'..'</code> 是上一级,多个 <code>'/'</code> 当作一个。</p>
-<p><b>Brute force:</b>反复用字符串替换去掉 <code>"/./"</code>、<code>"//"</code> 和 <code>"/x/../"</code>,每轮 O(n),可能 O(n) 轮 → O(n²)。浪费:<code>"/x/.."</code> 里的 x 就是 "最近进入的目录"。</p>
-<p><b>关键观察:</b>走路径就是在目录树里移动:进目录 = push,<code>'..'</code> = 回上一层 = pop(已在根就不动)。<code>split('/')</code> 之后每个 part 只有三类:<code>'..'</code> → pop;空串或 <code>'.'</code> → 什么都不做;其余 → push。</p>
+</details>
+<p class="note"><b>记:</b>连续相同的元素要整段处理: stack 里存 (值, 连续个数)。</p>
+<h2>9. Simplify Path</h2>
+<h3>题目在问什么</h3>
+<p>给一个 Unix 风格的绝对路径, 化简它: <code>.</code> 表示当前目录 (不动), <code>..</code> 表示回到上一级, 连续的 <code>/</code> 当成一个。结果以 <code>/</code> 开头, 末尾没有 <code>/</code>。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 246" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Simplify Path examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">Unix 路径化简: &#x27;.&#x27; 表示当前目录, &#x27;..&#x27; 表示上一级, 多个 &#x27;/&#x27; 当一个。返回最简的绝对路径</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  &quot;/home//foo/&quot;  →  &quot;/home/foo&quot;</text>
+<text x="40" y="82" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">连续的 // 当成一个 /, 末尾的 / 去掉</text>
+<line x1="40" y1="106" x2="640" y2="106" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="126" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  &quot;/a/./b/../../c/&quot;  →  &quot;/c&quot;</text>
+<text x="40" y="146" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">进 a → 原地 (.) → 进 b → 退回 a (..) → 退回根 (..) → 进 c</text>
+<line x1="40" y1="170" x2="640" y2="170" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="190" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 3:  &quot;/../&quot;  →  &quot;/&quot;</text>
+<text x="40" y="210" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">已经在根目录了, 再 .. 还是根目录</text>
+<line x1="40" y1="234" x2="640" y2="234" stroke="#B4B2A9" stroke-dasharray="4 4"/></svg>
+<figcaption>三个例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>反复用字符串替换去掉 <code>/./</code>、<code>//</code>、<code>/xxx/../</code>。规则多, 容易漏, 而且每次替换 <code>O(n)</code>。</p>
+<h3>Intuition: stack 就是"当前所在的目录链"</h3>
+<p>先用 <code>split('/')</code> 把路径切成一段一段。然后想象自己在走目录: 进入一个目录就 push 它的名字; <code>..</code> 就是退回上一级, pop; <code>.</code> 和空字符串 (连续 / 切出来的) 不动。</p>
+<p>走完之后, stack 从底到顶就是最终所在的目录。用 <code>'/' + '/'.join(stack)</code> 拼起来。</p>
+<h3>算法</h3>
+<ol><li><code>for part in path.split('/')</code>:</li><li><code>part == '..'</code>: 栈不空就 pop。<code>part</code> 是空串或 <code>'.'</code>: 跳过。其他: push。</li><li>返回 <code>'/' + '/'.join(stack)</code>。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 304" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif'><title>path_core</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">path = /a/./b/../../c/ · split('/') 之后每个 part 只有三种</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">parts = ['', 'a', '.', 'b', '..', '..', 'c', ''] · stack = 当前目录的每一层</text>
 <text x="40" y="70" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">目录名 (a, b, c)</text>
@@ -1283,7 +1671,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="460" y="214" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">'//' 切出空串; '.' = 当前目录</text>
 <text x="40" y="258" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">返回 '/' + '/'.join(stack) · stack 为空时就是 '/'</text>
 <text x="40" y="282" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">Unix 路径 = 目录栈: 进目录 push, '..' pop · 和 '最近没处理的' 是同一个结构</text></svg>
-<figcaption>split('/') 后三类 part: 目录名 push, '..' pop, 空串/'.' 不动。栈就是当前所在的目录链。</figcaption></figure>
+<figcaption>split 之后有三类: 目录名 push, '..' pop, 空串和 '.' 不动。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 678" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif'><title>path_trace</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">path = "/a/./b/../../c/" · split('/') 之后跳过空串, 逐个 part 处理</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">目录名 → push · '..' → pop (栈空则忽略) · '.' → 不动</text>
 <text x="44" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">输入</text>
@@ -1361,25 +1750,15 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="390.4" y="658" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里其他的</text>
 <rect x="471.4" y="654" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="468.4" y="648" width="20" height="20" rx="5" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="496.4" y="658" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶</text></svg>
-<figcaption>trace: /a/./b/../../c/ —— 进 a, 进 b, 两次 '..' 回到根, 再进 c。</figcaption></figure>
+<figcaption>/a/./b/../../c/: 进 a, 进 b, 两次 .. 回到根, 再进 c。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n)</code>, Space <code>O(n)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">simplify_path</span>(path):</span><span class="l">    <span class="c"># invariant: 栈 = 当前目录从根到现在的每一层名字</span></span><span class="l">    stack = []</span><span class="l">    <span class="k">for</span> part <span class="k">in</span> path.<span class="f">split</span>(<span class="s">&#x27;/&#x27;</span>):         <span class="c"># &quot;//&quot; 会切出空串 &#x27;&#x27;</span></span><span class="l">        <span class="k">if</span> part == <span class="s">&#x27;..&#x27;</span>:</span><span class="l">            <span class="k">if</span> stack:</span><span class="l">                stack.<span class="f">pop</span>()              <span class="c"># 回上一层; 已经在根 &#x27;/&#x27; 就忽略</span></span><span class="l">        <span class="k">elif</span> part <span class="k">and</span> part != <span class="s">&#x27;.&#x27;</span>:       <span class="c"># &#x27;&#x27; 和 &#x27;.&#x27; 什么都不做; 其余是目录名</span></span><span class="l">            stack.<span class="f">append</span>(part)</span><span class="l">    <span class="r">return</span> <span class="s">&#x27;/&#x27;</span> + <span class="s">&#x27;/&#x27;</span>.<span class="f">join</span>(stack)</span></div>
-<p><b>时间 O(n):</b>split 和 join 各 O(n),每个 part 常数次栈操作。<b>空间 O(n)。</b></p>
-<p class="note"><b>记:</b>"路径 / 导航 / 撤销上一步" → stack。<code>'..'</code> 就是 undo。Backspace String Compare 也是同一个模板: 字母 push, <code>'#'</code> pop。</p>
-<h2>10. 识别信号:看到什么 → 试什么</h2>
-<table>
-<tr><th>题目特征</th><th>做法</th><th>complexity</th></tr>
-<tr><td>括号 / 标签 / 开-关配对,要求嵌套正确</td><td>push 开,闭时和栈顶比 (Valid Parentheses, Minimum Remove to Make Valid)</td><td>O(n²) 反复替换 → O(n)</td></tr>
-<tr><td>"O(1) 取 min/max" 且支持 pop</td><td>元素存 <code>(val, min_so_far)</code> (Min Stack, Max Stack)</td><td>O(n) 每次扫 → O(1)</td></tr>
-<tr><td>嵌套 + 内层结果要合并回外层 (<code>k[...]</code>、括号表达式)</td><td>开: push 外层现场并清零; 关: pop 并合并 (Decode String, Calculator)</td><td>O(n·d) 反复展开 → O(n)</td></tr>
-<tr><td>后缀 / 前缀表达式</td><td>数字 push, 运算符 pop 两个 (b 先 a 后) 再 push (RPN)</td><td>O(n²) 反复收缩 → O(n)</td></tr>
-<tr><td>表达式有优先级 (* / 高于 + -)</td><td>+ - 带符号 push (延迟), * / 与栈顶合并 (立即), 最后 sum (Calculator II)</td><td>O(n²) 多轮替换 → O(n)</td></tr>
-<tr><td>相邻元素相互 "抵消 / 碰撞",抵消后左右又相邻</td><td>while 新元素和栈顶冲突: pop; 然后 push (Asteroid, Remove Duplicates)</td><td>O(n²) 反复扫描 → O(n)</td></tr>
-<tr><td>"连续 k 个相同" 要被删除</td><td>栈元素存 <code>(char, count)</code> (Remove Duplicates II)</td><td>O(n²/k) → O(n)</td></tr>
-<tr><td>路径 / 导航 / undo / backspace</td><td>目录或字符 push, <code>'..'</code> / <code>'#'</code> pop (Simplify Path, Backspace Compare)</td><td>O(n²) 反复替换 → O(n)</td></tr>
-<tr><td>函数调用 / 日志 start-end 嵌套</td><td>start push, end pop (Exclusive Time of Functions)</td><td>O(n·d) → O(n)</td></tr>
-<tr><td>递归 DFS 爆栈 / 想手动控制</td><td>用显式 stack 代替递归</td><td>同 O(n), 避免 recursion limit</td></tr>
-</table>
-<p>通用判断:题目出现 <b>"最近的 / 上一个 / 还没处理完 / 嵌套 / 撤销"</b>,就问自己 "栈里应该存什么"。栈里存的东西有四类:(1) 开括号 / 位置 (2) 已算好的值 (3) 被暂停的外层现场 (4) 带额外状态的元组。</p>
+</details>
+<p class="note"><b>记:</b>进入 / 退出、前进 / 撤销 (目录、浏览器历史、undo): 用 stack。</p>
+<h2>10. 识别信号: 看到什么, 就想到 stack</h2>
+<table><tr><th>题目特征</th><th>做法</th><th>complexity</th></tr><tr><td>括号配对 / 合法性</td><td>开括号 push, 闭括号和栈顶比</td><td><code>O(n²)</code> → <code>O(n)</code></td></tr><tr><td>要 O(1) 拿到栈里的最小 / 最大值</td><td>每个元素存 (val, min_so_far)</td><td>getMin <code>O(n)</code> → <code>O(1)</code></td></tr><tr><td>嵌套结构展开: k[...]、括号表达式</td><td>进一层 push 当前状态, 出来 pop 合并</td><td><code>O(n²)</code> → <code>O(n)</code></td></tr><tr><td>后缀表达式</td><td>数 push, 运算符 pop 两个</td><td><code>O(n)</code></td></tr><tr><td>有优先级的表达式, 没有括号</td><td>加减项 push, 乘除和栈顶合并, 最后求和</td><td><code>O(n)</code></td></tr><tr><td>新元素和最近的元素反复抵消 / 碰撞</td><td>while 和栈顶比, 能消就 pop</td><td><code>O(n²)</code> → <code>O(n)</code></td></tr><tr><td>连续 k 个相同就消掉</td><td>stack 存 (值, 个数)</td><td><code>O(n²/k)</code> → <code>O(n)</code></td></tr><tr><td>进入 / 退出、前进 / 撤销</td><td>stack 就是当前的路径</td><td><code>O(n)</code></td></tr><tr><td>找每个元素"下一个更大 / 更小"的</td><td>monotonic stack → 07</td><td><code>O(n²)</code> → <code>O(n)</code></td></tr></table>
 <h2>以后再学</h2>
-<p>Monotonic stack (Next Greater Element, Largest Rectangle in Histogram, Daily Temperatures) 在 07 单独讲; Basic Calculator III 是这里 5 + 6 的合并; Number of Atoms、Parsing Boolean Expression 是 "开括号 push 上下文" 的更大变体。</p>
+<p>Basic Calculator III (同时有括号和 * /, 把第 5、6 题合起来); Number of Atoms (嵌套的化学式); 用 stack 模拟 recursion (iterative DFS)。</p>
 </article></body></html>

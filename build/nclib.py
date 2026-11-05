@@ -109,7 +109,7 @@ def examples_svg(path, title, head, blocks, legend=None):
             yy += 18
         y = yy + 6
     S.line(40, y, 640, y)
-    leg = legend or [("new", "答案"), ("ring", "答案的范围"), ("rem", "看起来像, 但不对")]
+    leg = legend if legend is not None else [("new", "答案"), ("ring", "答案的范围"), ("rem", "看起来像, 但不对")]
     x = 40
     for role, text in leg:
         if role == "ring":
@@ -121,7 +121,7 @@ def examples_svg(path, title, head, blocks, legend=None):
                        % (x - 7, y + 15, f, s, ' stroke-dasharray="3 2"' if role == "rem" else ""))
         S.t(x + 14, y + 22, text, 12, SUB)
         x += 14 + _w(text, 12) + 26
-    h = y + 44
+    h = y + (44 if leg else 12)
     svg = ('<svg width="100%%" viewBox="0 0 680 %d" xmlns="http://www.w3.org/2000/svg" role="img" '
            'font-family="%s"><title>%s</title>%s</svg>\n' % (h, FONT, html.escape(title), "\n".join(S.p)))
     os.makedirs(os.path.dirname(path), exist_ok=True)

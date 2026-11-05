@@ -1,0 +1,11 @@
+<svg width="100%" viewBox="0 0 680 246" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Simplify Path examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">Unix 路径化简: &#x27;.&#x27; 表示当前目录, &#x27;..&#x27; 表示上一级, 多个 &#x27;/&#x27; 当一个。返回最简的绝对路径</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  &quot;/home//foo/&quot;  →  &quot;/home/foo&quot;</text>
+<text x="40" y="82" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">连续的 // 当成一个 /, 末尾的 / 去掉</text>
+<line x1="40" y1="106" x2="640" y2="106" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="126" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  &quot;/a/./b/../../c/&quot;  →  &quot;/c&quot;</text>
+<text x="40" y="146" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">进 a → 原地 (.) → 进 b → 退回 a (..) → 退回根 (..) → 进 c</text>
+<line x1="40" y1="170" x2="640" y2="170" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="190" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 3:  &quot;/../&quot;  →  &quot;/&quot;</text>
+<text x="40" y="210" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">已经在根目录了, 再 .. 还是根目录</text>
+<line x1="40" y1="234" x2="640" y2="234" stroke="#B4B2A9" stroke-dasharray="4 4"/></svg>

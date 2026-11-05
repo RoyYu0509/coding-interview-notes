@@ -1,0 +1,12 @@
+<svg width="100%" viewBox="0 0 680 264" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Decode String examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">k[s] 表示把 s 重复 k 次。可以嵌套。把字符串展开</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 1:  &quot;3[a]2[bc]&quot;  →  &quot;aaabcbc&quot;</text>
+<text x="40" y="82" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">3[a] → aaa,  2[bc] → bcbc,  接起来</text>
+<line x1="40" y1="106" x2="640" y2="106" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="126" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 2:  &quot;3[a2[c]]&quot;  →  &quot;accaccacc&quot;</text>
+<text x="40" y="146" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">先展开里面: 2[c] → cc, 于是变成 3[acc] → accaccacc</text>
+<text x="40" y="164" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">嵌套时必须先算里面, 再算外面</text>
+<line x1="40" y1="188" x2="640" y2="188" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="208" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">Example 3:  &quot;2[abc]3[cd]ef&quot;  →  &quot;abcabccdcdcdef&quot;</text>
+<text x="40" y="228" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">括号外面的普通字母 ef 直接接上</text>
+<line x1="40" y1="252" x2="640" y2="252" stroke="#B4B2A9" stroke-dasharray="4 4"/></svg>
