@@ -97,6 +97,9 @@ figure svg{width:100%;height:auto;display:block}
 figcaption{color:#52514e;font-size:14px;padding:4px 6px 0}
 table{border-collapse:collapse;margin:10px 0;font-size:15px}
 td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
+details{margin:12px 0;border:1px dashed var(--box);border-radius:6px;padding:4px 12px}
+summary{cursor:pointer;color:var(--sub);font-size:15px}
+ol,ul{padding-left:24px}li{margin:4px 0}
 '''
 
 

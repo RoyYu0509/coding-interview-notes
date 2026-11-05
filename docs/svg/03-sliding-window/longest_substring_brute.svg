@@ -1,0 +1,119 @@
+<svg width="100%" viewBox="0 0 680 582" xmlns="http://www.w3.org/2000/svg" role="img" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Brute force on pwwkew</title><defs><marker id="arr_52514E" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_898781" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_D85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">s = &quot;pwwkew&quot; · brute force: 每个起点 left 都从 left 开始往右一个一个加, 遇到重复就停</text>
+<text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">每一行 = 一个起点 left。格子里的字符都被&quot;检查了一次有没有重复&quot;</text>
+<text x="40" y="66" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">起点</text>
+<text x="112" y="66" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">从 left 往右检查</text>
+<text x="344" y="66" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">这一行的结果</text>
+<line x1="40" y1="76" x2="640" y2="76" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="102" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">left = 0</text>
+<rect x="112" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="129.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">p</text>
+<rect x="146" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="163.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">w</text>
+<rect x="180" y="88" width="34" height="30" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/>
+<text x="197.0" y="104.0" font-size="15" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central">w</text>
+<rect x="214" y="88" width="34" height="30" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="231.0" y="104.0" font-size="15" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">k</text>
+<rect x="248" y="88" width="34" height="30" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="265.0" y="104.0" font-size="15" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">e</text>
+<rect x="282" y="88" width="34" height="30" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="299.0" y="104.0" font-size="15" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">w</text>
+<text x="344" y="96" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="400" dominant-baseline="central">&quot;pw&quot; 不重复, 长度 2</text>
+<text x="344" y="114" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">s[2] = &#x27;w&#x27; 撞上重复, 停</text>
+<line x1="40" y1="148" x2="640" y2="148" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="174" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">left = 1</text>
+<rect x="112" y="160" width="34" height="30" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="129.0" y="176.0" font-size="15" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">p</text>
+<rect x="146" y="160" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<rect x="143" y="157" width="40" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="163.0" y="176.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">w</text>
+<rect x="180" y="160" width="34" height="30" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/>
+<text x="197.0" y="176.0" font-size="15" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central">w</text>
+<rect x="214" y="160" width="34" height="30" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="231.0" y="176.0" font-size="15" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">k</text>
+<rect x="248" y="160" width="34" height="30" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="265.0" y="176.0" font-size="15" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">e</text>
+<rect x="282" y="160" width="34" height="30" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="299.0" y="176.0" font-size="15" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">w</text>
+<text x="344" y="168" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="400" dominant-baseline="central">&quot;w&quot; 不重复, 长度 1</text>
+<text x="344" y="186" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">s[2] = &#x27;w&#x27; 撞上重复, 停</text>
+<text x="344" y="204" font-size="12" fill="#B5700F" text-anchor="start" font-weight="400" dominant-baseline="central">1 个格子是重复劳动</text>
+<line x1="40" y1="220" x2="640" y2="220" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="246" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">left = 2</text>
+<rect x="112" y="232" width="34" height="30" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="129.0" y="248.0" font-size="15" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">p</text>
+<rect x="146" y="232" width="34" height="30" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="163.0" y="248.0" font-size="15" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">w</text>
+<rect x="180" y="232" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="197.0" y="248.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">w</text>
+<rect x="214" y="232" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="231.0" y="248.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">k</text>
+<rect x="248" y="232" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="265.0" y="248.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">e</text>
+<rect x="282" y="232" width="34" height="30" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/>
+<text x="299.0" y="248.0" font-size="15" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central">w</text>
+<text x="344" y="240" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="400" dominant-baseline="central">&quot;wke&quot; 不重复, 长度 3</text>
+<text x="344" y="258" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">s[5] = &#x27;w&#x27; 撞上重复, 停</text>
+<line x1="40" y1="292" x2="640" y2="292" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="318" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">left = 3</text>
+<rect x="112" y="304" width="34" height="30" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="129.0" y="320.0" font-size="15" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">p</text>
+<rect x="146" y="304" width="34" height="30" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="163.0" y="320.0" font-size="15" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">w</text>
+<rect x="180" y="304" width="34" height="30" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="197.0" y="320.0" font-size="15" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">w</text>
+<rect x="214" y="304" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<rect x="211" y="301" width="40" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="231.0" y="320.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">k</text>
+<rect x="248" y="304" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<rect x="245" y="301" width="40" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="265.0" y="320.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">e</text>
+<rect x="282" y="304" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="299.0" y="320.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">w</text>
+<text x="344" y="312" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="400" dominant-baseline="central">&quot;kew&quot; 不重复, 长度 3</text>
+<text x="344" y="330" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">走到结尾, 停</text>
+<text x="344" y="348" font-size="12" fill="#B5700F" text-anchor="start" font-weight="400" dominant-baseline="central">2 个格子是重复劳动</text>
+<line x1="40" y1="364" x2="640" y2="364" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="390" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">left = 4</text>
+<rect x="112" y="376" width="34" height="30" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="129.0" y="392.0" font-size="15" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">p</text>
+<rect x="146" y="376" width="34" height="30" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="163.0" y="392.0" font-size="15" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">w</text>
+<rect x="180" y="376" width="34" height="30" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="197.0" y="392.0" font-size="15" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">w</text>
+<rect x="214" y="376" width="34" height="30" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="231.0" y="392.0" font-size="15" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">k</text>
+<rect x="248" y="376" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<rect x="245" y="373" width="40" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="265.0" y="392.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">e</text>
+<rect x="282" y="376" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<rect x="279" y="373" width="40" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="299.0" y="392.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">w</text>
+<text x="344" y="384" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="400" dominant-baseline="central">&quot;ew&quot; 不重复, 长度 2</text>
+<text x="344" y="402" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">走到结尾, 停</text>
+<text x="344" y="420" font-size="12" fill="#B5700F" text-anchor="start" font-weight="400" dominant-baseline="central">2 个格子是重复劳动</text>
+<line x1="40" y1="436" x2="640" y2="436" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="462" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">left = 5</text>
+<rect x="112" y="448" width="34" height="30" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="129.0" y="464.0" font-size="15" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">p</text>
+<rect x="146" y="448" width="34" height="30" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="163.0" y="464.0" font-size="15" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">w</text>
+<rect x="180" y="448" width="34" height="30" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="197.0" y="464.0" font-size="15" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">w</text>
+<rect x="214" y="448" width="34" height="30" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="231.0" y="464.0" font-size="15" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">k</text>
+<rect x="248" y="448" width="34" height="30" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="265.0" y="464.0" font-size="15" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">e</text>
+<rect x="282" y="448" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<rect x="279" y="445" width="40" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="299.0" y="464.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">w</text>
+<text x="344" y="456" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="400" dominant-baseline="central">&quot;w&quot; 不重复, 长度 1</text>
+<text x="344" y="474" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">走到结尾, 停</text>
+<text x="344" y="492" font-size="12" fill="#B5700F" text-anchor="start" font-weight="400" dominant-baseline="central">1 个格子是重复劳动</text>
+<line x1="40" y1="508" x2="640" y2="508" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="530" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">一共检查了 15 次, 其中 6 次 (橙色圈) 是&quot;上一行已经确认不重复, 这一行又从头确认一遍&quot;。最长 = 3</text>
+<rect x="33" y="553" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="54" y="560" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">这一行新检查的字符</text>
+<rect x="177" y="553" width="14" height="14" rx="3" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="198" y="560" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">上一行已确认过, 又检查一遍</text>
+<rect x="370.2" y="553" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/>
+<text x="391.2" y="560" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">撞上的重复字符</text></svg>

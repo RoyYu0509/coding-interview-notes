@@ -24,126 +24,253 @@ figure svg{width:100%;height:auto;display:block}
 figcaption{color:#52514e;font-size:14px;padding:4px 6px 0}
 table{border-collapse:collapse;margin:10px 0;font-size:15px}
 td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
+details{margin:12px 0;border:1px dashed var(--box);border-radius:6px;padding:4px 12px}
+summary{cursor:pointer;color:var(--sub);font-size:15px}
+ol,ul{padding-left:24px}li{margin:4px 0}
 </style></head><body><article contenteditable="true">
 <h1>03 · Sliding Window</h1>
-<p class="main">主线: window 的合法性对"缩小/扩大"是单调的 → left 永远不用回退 → 双指针各走 n 步, 把枚举所有 (left, right) 的 O(n²) 降成 O(n)。</p>
-<p class="main">概念链: Longest Substring Without Repeating (模板) → Max Consecutive Ones III (合法 = 违规数 ≤ k) → Longest Repeating Character Replacement (合法条件要算一下) → Permutation in String (固定长度) → Minimum Size Subarray Sum (求最短: 合法才缩) → Minimum Window Substring (need / missing) → Subarray Product Less Than K (计数) → Subarrays with K Different Integers (exactly K = atMost(K) - atMost(K-1))</p>
-<h2>0. 第一性原理: brute force 在浪费什么</h2>
-<p>连续 subarray / substring 的问题, brute force 都是: 枚举每个 (left, right), 检查 window 合不合法, 更新答案。枚举 <code>O(n^2)</code> 个 window, 每个检查 <code>O(n)</code>, 合起来 <code>O(n^2)</code> ~ <code>O(n^3)</code> (检查用增量维护可以压到 <code>O(n^2)</code>)。</p>
-<p>浪费在哪: <b>(left, right) 和 (left, right+1) 是两个高度重叠的 window, 却被当成两个独立的问题。</b>更关键的是, 合法性有方向: 如果 [left..right] 已经不合法, 那 [left..right+1], [left..right+2] ... 一定也不合法 (window 越大越差)。这些格子 brute force 全都还要看一遍。</p>
-<figure><svg width="100%" viewBox="0 0 680 470" xmlns="http://www.w3.org/2000/svg" role="img" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>brute force 看所有 (left, right); sliding window 只沿着合法边界走</title><defs><marker id="arr_52514E" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_898781" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_D85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">例: s = &quot;pwwkew&quot; · window s[left..right] 合法 = 没有重复字符 · 每一格 = 一个 (left, right)</text>
-<text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">合法性对&quot;缩小 window&quot;封闭: [left..right] 合法 → 它的任何子区间也合法</text>
-<text x="202.0" y="64" font-size="12" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">right →</text>
-<text x="117.0" y="84" font-size="12" fill="#0B0B0B" text-anchor="middle" font-weight="500" dominant-baseline="central">0:p</text>
-<text x="151.0" y="84" font-size="12" fill="#0B0B0B" text-anchor="middle" font-weight="500" dominant-baseline="central">1:w</text>
-<text x="185.0" y="84" font-size="12" fill="#0B0B0B" text-anchor="middle" font-weight="500" dominant-baseline="central">2:w</text>
-<text x="219.0" y="84" font-size="12" fill="#0B0B0B" text-anchor="middle" font-weight="500" dominant-baseline="central">3:k</text>
-<text x="253.0" y="84" font-size="12" fill="#0B0B0B" text-anchor="middle" font-weight="500" dominant-baseline="central">4:e</text>
-<text x="287.0" y="84" font-size="12" fill="#0B0B0B" text-anchor="middle" font-weight="500" dominant-baseline="central">5:w</text>
-<text x="40" y="92" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">left ↓</text>
-<text x="92" y="117.0" font-size="12" fill="#0B0B0B" text-anchor="end" font-weight="500" dominant-baseline="central">0:p</text>
-<rect x="100" y="100" width="34" height="34" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="117.0" y="118.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">✓</text>
-<rect x="134" y="100" width="34" height="34" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="151.0" y="118.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">✓</text>
-<rect x="168" y="100" width="34" height="34" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/>
-<text x="185.0" y="118.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central">✗</text>
-<rect x="202" y="100" width="34" height="34" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/>
-<text x="219.0" y="118.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central">✗</text>
-<rect x="236" y="100" width="34" height="34" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/>
-<text x="253.0" y="118.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central">✗</text>
-<rect x="270" y="100" width="34" height="34" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/>
-<text x="287.0" y="118.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central">✗</text>
-<text x="92" y="151.0" font-size="12" fill="#0B0B0B" text-anchor="end" font-weight="500" dominant-baseline="central">1:w</text>
-<rect x="100" y="134" width="34" height="34" rx="0" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
-<rect x="134" y="134" width="34" height="34" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="151.0" y="152.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">✓</text>
-<rect x="168" y="134" width="34" height="34" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/>
-<text x="185.0" y="152.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central">✗</text>
-<rect x="202" y="134" width="34" height="34" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/>
-<text x="219.0" y="152.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central">✗</text>
-<rect x="236" y="134" width="34" height="34" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/>
-<text x="253.0" y="152.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central">✗</text>
-<rect x="270" y="134" width="34" height="34" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/>
-<text x="287.0" y="152.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central">✗</text>
-<text x="92" y="185.0" font-size="12" fill="#0B0B0B" text-anchor="end" font-weight="500" dominant-baseline="central">2:w</text>
-<rect x="100" y="168" width="34" height="34" rx="0" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
-<rect x="134" y="168" width="34" height="34" rx="0" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
-<rect x="168" y="168" width="34" height="34" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="185.0" y="186.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">✓</text>
-<rect x="202" y="168" width="34" height="34" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="219.0" y="186.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">✓</text>
-<rect x="236" y="168" width="34" height="34" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="253.0" y="186.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">✓</text>
-<rect x="270" y="168" width="34" height="34" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/>
-<text x="287.0" y="186.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central">✗</text>
-<text x="92" y="219.0" font-size="12" fill="#0B0B0B" text-anchor="end" font-weight="500" dominant-baseline="central">3:k</text>
-<rect x="100" y="202" width="34" height="34" rx="0" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
-<rect x="134" y="202" width="34" height="34" rx="0" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
-<rect x="168" y="202" width="34" height="34" rx="0" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
-<rect x="202" y="202" width="34" height="34" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="219.0" y="220.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">✓</text>
-<rect x="236" y="202" width="34" height="34" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="253.0" y="220.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">✓</text>
-<rect x="270" y="202" width="34" height="34" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="287.0" y="220.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">✓</text>
-<text x="92" y="253.0" font-size="12" fill="#0B0B0B" text-anchor="end" font-weight="500" dominant-baseline="central">4:e</text>
-<rect x="100" y="236" width="34" height="34" rx="0" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
-<rect x="134" y="236" width="34" height="34" rx="0" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
-<rect x="168" y="236" width="34" height="34" rx="0" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
-<rect x="202" y="236" width="34" height="34" rx="0" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
-<rect x="236" y="236" width="34" height="34" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="253.0" y="254.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">✓</text>
-<rect x="270" y="236" width="34" height="34" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="287.0" y="254.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">✓</text>
-<text x="92" y="287.0" font-size="12" fill="#0B0B0B" text-anchor="end" font-weight="500" dominant-baseline="central">5:w</text>
-<rect x="100" y="270" width="34" height="34" rx="0" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
-<rect x="134" y="270" width="34" height="34" rx="0" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
-<rect x="168" y="270" width="34" height="34" rx="0" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
-<rect x="202" y="270" width="34" height="34" rx="0" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
-<rect x="236" y="270" width="34" height="34" rx="0" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
-<rect x="270" y="270" width="34" height="34" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="287.0" y="288.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">✓</text>
-<rect x="100" y="100" width="34" height="34" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<rect x="134" y="100" width="34" height="34" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<rect x="168" y="100" width="34" height="34" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<rect x="168" y="134" width="34" height="34" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<rect x="168" y="168" width="34" height="34" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<rect x="202" y="168" width="34" height="34" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<rect x="236" y="168" width="34" height="34" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<rect x="270" y="168" width="34" height="34" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<rect x="270" y="202" width="34" height="34" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="340" y="110" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">brute force: 试遍所有 (left, right)</text>
-<text x="340" y="130" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">= 上三角全部 21 格 → O(n²) 个 window</text>
-<text x="340" y="150" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">每个 window 还要重新检查一遍 → O(n²) ~ O(n³)</text>
-<text x="340" y="190" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">sliding window: 只走有 ring 的 9 格</text>
-<text x="340" y="210" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">路径: (0,0) → (0,1) → (0,2) → (1,2) → (2,2)</text>
-<text x="340" y="226" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">         (2,3) → (2,4) → (2,5) → (3,5)</text>
-<text x="340" y="252" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">right 只往右, left 只往下, 从不回头</text>
-<text x="340" y="290" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">为什么 left 不用回退:</text>
-<text x="340" y="310" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">(left=1, right=2) 已经 ✗, right 再往右,</text>
-<text x="340" y="326" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">(left=1, right=3..5) 一定也 ✗ (超集更差)</text>
-<text x="340" y="342" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">→ 小于等于当前 left 的起点不会再合法</text>
-<text x="340" y="358" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">→ left 只需要向右走, 总共最多 n 步</text>
-<text x="340" y="394" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">每个 right 对应的最小合法 left</text>
-<text x="340" y="410" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">随 right 单调不减 → 双指针共 2n 步</text>
-<rect x="33" y="439" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
-<text x="54" y="446" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">合法</text>
-<rect x="93" y="439" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/>
-<text x="114" y="446" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">不合法</text>
-<rect x="165" y="439" width="14" height="14" rx="3" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="186" y="446" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">sliding window 走过的格</text></svg>
-<figcaption>核心: 每个格子是一个 (left, right)。合法区域有一条单调的边界, sliding window 的两个指针沿着这条边界走, 一共 9 步, 不看另外 12 个格子。</figcaption></figure>
-<p>所以 left 的走法是: right 每扩一步, left 只可能不动或向右, <b>永远不回退</b>。right 最多走 n 步, left 最多走 n 步, while 循环虽然嵌在 for 里面, 但所有 while 加起来最多 n 次 → 总共 <code>O(n)</code> (amortized)。</p>
-<p>前提只有一条: <b>合法性单调</b>。求最长时是"window 越大越容易不合法" (重复字符、0 太多、乘积太大); 求最短时是"window 越大越容易合法" (正数的和 ≥ target、覆盖了 t)。两种方向对应两个模板:</p>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">window_longest</span>(arr):</span><span class="l">    left = 0</span><span class="l">    state = ...                      <span class="c"># window 内的统计量 (计数 / 和 / 积 ...)</span></span><span class="l">    best = 0</span><span class="l">    <span class="k">for</span> right, x <span class="k">in</span> <span class="t">enumerate</span>(arr):  <span class="c"># right 只增不减</span></span><span class="l">        <span class="c"># 1. x 进 window: 更新 state</span></span><span class="l">        <span class="k">while</span> window 不合法:          <span class="c"># 2. 不合法 -&gt; 缩 left, 直到重新合法</span></span><span class="l">            <span class="c"># 把 arr[left] 移出 state</span></span><span class="l">            left += 1                <span class="c"># left 也只增不减</span></span><span class="l">        best = <span class="t">max</span>(best, right - left + 1)   <span class="c"># 3. 此刻 window 合法, 更新答案</span></span><span class="l">    <span class="r">return</span> best</span></div>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">window_shortest</span>(arr):</span><span class="l">    left = 0</span><span class="l">    best = <span class="t">inf</span></span><span class="l">    <span class="k">for</span> right, x <span class="k">in</span> <span class="t">enumerate</span>(arr):</span><span class="l">        <span class="c"># x 进 window</span></span><span class="l">        <span class="k">while</span> window 合法:            <span class="c"># 合法了: 先记答案, 再尽量缩短</span></span><span class="l">            best = <span class="t">min</span>(best, right - left + 1)</span><span class="l">            <span class="c"># 把 arr[left] 移出 state</span></span><span class="l">            left += 1</span><span class="l">    <span class="r">return</span> best</span></div>
-<p>三个固定动作: <b>right 进 → 检查 → 动 left</b>。每一题只是把"state 是什么"和"合法条件是什么"换掉。</p>
-<p class="note"><b>记:</b>sliding window = 合法性单调 + 两个只增不减的指针。最长: 不合法才缩, 缩完记答案。最短: 合法才缩, 缩之前记答案。反例: 数组里有负数时, 加一个数可能变好也可能变坏, 单调性消失, 要改用 prefix sum + Hash Table (见 04 · Prefix Sum)。</p>
-<h2>1. Longest Substring Without Repeating Characters: 最基础的模板题</h2>
-<p>题目: 给定字符串 <code>s</code>, 求不含重复字符的最长 substring 的长度。例: <code>"pwwkew"</code> → 3 ("wke")。</p>
-<p>Brute force: 枚举所有 (left, right), 用 set 检查有没有重复, <code>O(n^2)</code> 个 window × <code>O(n)</code> 检查 = <code>O(n^3)</code>。浪费: 如果 s[left..right] 已经有重复, 把 right 再往右扩没有意义, 但它还是会被试一遍。</p>
-<p>关键观察: 合法 = 没有重复, 而"window 变大 → 更容易有重复"。所以一旦 right 扩进来的 ch 让 window 重复了, 就只往右缩 left, 缩到 ch 不再重复为止。而且只有刚进来的 ch 可能重复, 因为进来之前 window 是合法的。</p>
+<h2>这篇讲什么</h2>
+<p>面试里有一大类题是这样问的: 给你一个数组或字符串, 在里面找<b>一段连续的</b>部分, 满足某个条件, 然后问"最长是多少""最短是多少"或者"一共有多少段"。</p>
+<p>这里"连续的一段"有专门的叫法。在数组里叫 <b>subarray</b>, 在字符串里叫 <b>substring</b>。比如 <code>"abcde"</code> 里, <code>"bcd"</code> 是 substring, <code>"ace"</code> 不是, 因为它跳过了字符。跳着取的那种叫 subsequence, 不在这篇的范围里。</p>
+<p>这类题最直接的做法是把所有"连续的一段"都列出来, 一段一段检查。长度为 n 的数组有大约 <code>n²/2</code> 段, 所以至少 <code>O(n²)</code>。<b>Sliding Window</b> 就是专门把这类题从 <code>O(n²)</code> 降到 <code>O(n)</code> 的方法。</p>
+<p>名字的意思很形象: 想象数组上放了一个可以伸缩的框 (window), 框住的那一段就是当前在看的 subarray。框的右边 (right) 一格一格往右推, 框的左边 (left) 在需要的时候也往右收。两条边都只往右走, 不回头。整篇就是在讲: <b>为什么可以不回头, 以及什么时候不能用</b>。</p>
+<p>这篇的题都来自公司高频题统计。第 1 题 Longest Substring Without Repeating Characters 在 470 家公司的总榜排第 4, 有 95 家公司考过。后面 7 道题每一道都是在第 1 题上改一个条件:</p>
+<table>
+<tr><th>#</th><th>题目</th><th>考过的公司数</th><th>相比上一题多了什么</th></tr>
+<tr><td>1</td><td>Longest Substring Without Repeating Characters</td><td>95</td><td>模板题: 求最长, 条件是"没有重复"</td></tr>
+<tr><td>2</td><td>Max Consecutive Ones III</td><td>21</td><td>条件换成"0 的个数 ≤ k"</td></tr>
+<tr><td>3</td><td>Longest Repeating Character Replacement</td><td>18</td><td>条件要多想一步才能写出来</td></tr>
+<tr><td>4</td><td>Permutation in String</td><td>16</td><td>框的长度是固定的</td></tr>
+<tr><td>5</td><td>Minimum Size Subarray Sum</td><td>15</td><td>求最短, 方向反过来</td></tr>
+<tr><td>6</td><td>Minimum Window Substring</td><td>32</td><td>求最短 + 判断条件变复杂</td></tr>
+<tr><td>7</td><td>Subarray Product Less Than K</td><td>21</td><td>不求长度, 求个数</td></tr>
+<tr><td>8</td><td>Subarrays with K Different Integers</td><td>15</td><td>"恰好 k" 不能直接做, 要拆开</td></tr>
+</table>
+<p>每道题都按同一个顺序讲: <b>题目在问什么 → 看例子 → brute force → 从 brute force 里找 intuition → 算法 → 手动走一遍 → 复杂度</b>。代码放在最后, 默认折叠。理解了算法以后, 代码你自己就能写出来。</p>
+<p>前置知识: 只需要会用 dict 计数 (见 01 · Hash Table)。</p>
+<h2>1. Longest Substring Without Repeating Characters</h2>
+<h3>题目在问什么</h3>
+<p>给一个字符串 <code>s</code>。在里面找一段<b>连续的</b> substring, 要求这一段里<b>每个字符最多出现一次</b>。问: 满足要求的 substring 最长有多长。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 504" xmlns="http://www.w3.org/2000/svg" role="img" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Longest Substring examples</title><defs><marker id="arr_52514E" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_898781" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_D85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">找最长的一段连续字符, 段里没有任何字符出现两次</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">Example 1:  s = &quot;abcabcbb&quot;  →  3</text>
+<text x="57.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">0</text>
+<text x="91.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">1</text>
+<text x="125.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">2</text>
+<text x="159.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">3</text>
+<text x="193.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">4</text>
+<text x="227.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">5</text>
+<text x="261.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">6</text>
+<text x="295.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">7</text>
+<rect x="40" y="104" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="57.0" y="120.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">a</text>
+<rect x="74" y="104" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="91.0" y="120.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">b</text>
+<rect x="108" y="104" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="125.0" y="120.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">c</text>
+<rect x="142" y="104" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="159.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">a</text>
+<rect x="176" y="104" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="193.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">b</text>
+<rect x="210" y="104" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="227.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">c</text>
+<rect x="244" y="104" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="261.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">b</text>
+<rect x="278" y="104" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="295.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">b</text>
+<path d="M43 96 L43 88 L173 88 L173 96" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="336" y="90" font-size="12" fill="#712B13" text-anchor="start" font-weight="400" dominant-baseline="central">&quot;abca&quot;: a 出现两次 ✗</text>
+<rect x="37" y="101" width="108" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="336" y="119" font-size="14" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central">&quot;abc&quot;: a, b, c 各一次, 长度 3</text>
+<line x1="40" y1="176" x2="640" y2="176" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="196" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">Example 2:  s = &quot;bbbbb&quot;  →  1</text>
+<text x="57.0" y="282" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">0</text>
+<text x="91.0" y="282" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">1</text>
+<text x="125.0" y="282" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">2</text>
+<text x="159.0" y="282" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">3</text>
+<text x="193.0" y="282" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">4</text>
+<rect x="40" y="238" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="57.0" y="254.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">b</text>
+<rect x="74" y="238" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="91.0" y="254.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">b</text>
+<rect x="108" y="238" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.0" y="254.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">b</text>
+<rect x="142" y="238" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="159.0" y="254.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">b</text>
+<rect x="176" y="238" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="193.0" y="254.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">b</text>
+<path d="M43 230 L43 222 L105 222 L105 230" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="234" y="224" font-size="12" fill="#712B13" text-anchor="start" font-weight="400" dominant-baseline="central">&quot;bb&quot;: b 出现两次 ✗</text>
+<rect x="37" y="235" width="40" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="234" y="253" font-size="14" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central">&quot;b&quot;: 再长就是 &quot;bb&quot;, 重复了</text>
+<line x1="40" y1="310" x2="640" y2="310" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="330" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">Example 3:  s = &quot;pwwkew&quot;  →  3</text>
+<text x="57.0" y="416" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">0</text>
+<text x="91.0" y="416" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">1</text>
+<text x="125.0" y="416" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">2</text>
+<text x="159.0" y="416" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">3</text>
+<text x="193.0" y="416" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">4</text>
+<text x="227.0" y="416" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">5</text>
+<rect x="40" y="372" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="388.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">p</text>
+<rect x="74" y="372" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="91.0" y="388.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">w</text>
+<rect x="108" y="372" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="125.0" y="388.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">w</text>
+<rect x="142" y="372" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="159.0" y="388.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">k</text>
+<rect x="176" y="372" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="193.0" y="388.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">e</text>
+<rect x="210" y="372" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="227.0" y="388.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">w</text>
+<path d="M77 364 L77 356 L139 356 L139 364" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="268" y="358" font-size="12" fill="#712B13" text-anchor="start" font-weight="400" dominant-baseline="central">&quot;ww&quot;: 相邻两个 w ✗</text>
+<rect x="105" y="369" width="108" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="268" y="387" font-size="14" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central">&quot;wke&quot;, 长度 3</text>
+<text x="40" y="438" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">注意: &quot;pwke&quot; 不算 —— 它跳过了 index 2 的 w, 不是连续的一段 (那叫 subsequence, 不是 substring)</text>
+<line x1="40" y1="462" x2="640" y2="462" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="33" y="477" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="54" y="484" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">答案 substring / subarray</text>
+<rect x="231.6" y="477" width="14" height="14" rx="3" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="252.6" y="484" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">答案的范围</text>
+<rect x="327.6" y="477" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/>
+<text x="348.6" y="484" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">看起来像, 但不对 (原因写在右边)</text></svg>
+<figcaption>三个例子。绿色是答案。红色虚线是"看起来可以, 但其实不满足要求"的段, 原因写在右边。</figcaption></figure>
+<p>从例子里能看出两件事。第一, "连续"很重要: Example 3 里 <code>"pwke"</code> 虽然没有重复字符, 但它不连续, 不算。第二, 答案只要长度, 不要具体是哪一段。</p>
+<h3>Brute force: 每个起点都试一遍</h3>
+<p>最直接的想法: 对每一个起点 <code>left</code>, 从它开始一个字符一个字符往右加, 用一个 set 记住已经见过的字符。一旦遇到 set 里已经有的字符, 说明重复了, 这个起点就到头了, 记下长度, 换下一个起点。</p>
+<figure><svg width="100%" viewBox="0 0 680 582" xmlns="http://www.w3.org/2000/svg" role="img" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Brute force on pwwkew</title><defs><marker id="arr_52514E" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_898781" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_D85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">s = &quot;pwwkew&quot; · brute force: 每个起点 left 都从 left 开始往右一个一个加, 遇到重复就停</text>
+<text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">每一行 = 一个起点 left。格子里的字符都被&quot;检查了一次有没有重复&quot;</text>
+<text x="40" y="66" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">起点</text>
+<text x="112" y="66" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">从 left 往右检查</text>
+<text x="344" y="66" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">这一行的结果</text>
+<line x1="40" y1="76" x2="640" y2="76" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="102" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">left = 0</text>
+<rect x="112" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="129.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">p</text>
+<rect x="146" y="88" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="163.0" y="104.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">w</text>
+<rect x="180" y="88" width="34" height="30" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/>
+<text x="197.0" y="104.0" font-size="15" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central">w</text>
+<rect x="214" y="88" width="34" height="30" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="231.0" y="104.0" font-size="15" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">k</text>
+<rect x="248" y="88" width="34" height="30" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="265.0" y="104.0" font-size="15" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">e</text>
+<rect x="282" y="88" width="34" height="30" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="299.0" y="104.0" font-size="15" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">w</text>
+<text x="344" y="96" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="400" dominant-baseline="central">&quot;pw&quot; 不重复, 长度 2</text>
+<text x="344" y="114" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">s[2] = &#x27;w&#x27; 撞上重复, 停</text>
+<line x1="40" y1="148" x2="640" y2="148" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="174" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">left = 1</text>
+<rect x="112" y="160" width="34" height="30" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="129.0" y="176.0" font-size="15" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">p</text>
+<rect x="146" y="160" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<rect x="143" y="157" width="40" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="163.0" y="176.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">w</text>
+<rect x="180" y="160" width="34" height="30" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/>
+<text x="197.0" y="176.0" font-size="15" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central">w</text>
+<rect x="214" y="160" width="34" height="30" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="231.0" y="176.0" font-size="15" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">k</text>
+<rect x="248" y="160" width="34" height="30" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="265.0" y="176.0" font-size="15" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">e</text>
+<rect x="282" y="160" width="34" height="30" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="299.0" y="176.0" font-size="15" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">w</text>
+<text x="344" y="168" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="400" dominant-baseline="central">&quot;w&quot; 不重复, 长度 1</text>
+<text x="344" y="186" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">s[2] = &#x27;w&#x27; 撞上重复, 停</text>
+<text x="344" y="204" font-size="12" fill="#B5700F" text-anchor="start" font-weight="400" dominant-baseline="central">1 个格子是重复劳动</text>
+<line x1="40" y1="220" x2="640" y2="220" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="246" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">left = 2</text>
+<rect x="112" y="232" width="34" height="30" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="129.0" y="248.0" font-size="15" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">p</text>
+<rect x="146" y="232" width="34" height="30" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="163.0" y="248.0" font-size="15" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">w</text>
+<rect x="180" y="232" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="197.0" y="248.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">w</text>
+<rect x="214" y="232" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="231.0" y="248.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">k</text>
+<rect x="248" y="232" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="265.0" y="248.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">e</text>
+<rect x="282" y="232" width="34" height="30" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/>
+<text x="299.0" y="248.0" font-size="15" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central">w</text>
+<text x="344" y="240" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="400" dominant-baseline="central">&quot;wke&quot; 不重复, 长度 3</text>
+<text x="344" y="258" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">s[5] = &#x27;w&#x27; 撞上重复, 停</text>
+<line x1="40" y1="292" x2="640" y2="292" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="318" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">left = 3</text>
+<rect x="112" y="304" width="34" height="30" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="129.0" y="320.0" font-size="15" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">p</text>
+<rect x="146" y="304" width="34" height="30" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="163.0" y="320.0" font-size="15" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">w</text>
+<rect x="180" y="304" width="34" height="30" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="197.0" y="320.0" font-size="15" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">w</text>
+<rect x="214" y="304" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<rect x="211" y="301" width="40" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="231.0" y="320.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">k</text>
+<rect x="248" y="304" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<rect x="245" y="301" width="40" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="265.0" y="320.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">e</text>
+<rect x="282" y="304" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="299.0" y="320.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">w</text>
+<text x="344" y="312" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="400" dominant-baseline="central">&quot;kew&quot; 不重复, 长度 3</text>
+<text x="344" y="330" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">走到结尾, 停</text>
+<text x="344" y="348" font-size="12" fill="#B5700F" text-anchor="start" font-weight="400" dominant-baseline="central">2 个格子是重复劳动</text>
+<line x1="40" y1="364" x2="640" y2="364" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="390" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">left = 4</text>
+<rect x="112" y="376" width="34" height="30" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="129.0" y="392.0" font-size="15" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">p</text>
+<rect x="146" y="376" width="34" height="30" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="163.0" y="392.0" font-size="15" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">w</text>
+<rect x="180" y="376" width="34" height="30" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="197.0" y="392.0" font-size="15" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">w</text>
+<rect x="214" y="376" width="34" height="30" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="231.0" y="392.0" font-size="15" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">k</text>
+<rect x="248" y="376" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<rect x="245" y="373" width="40" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="265.0" y="392.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">e</text>
+<rect x="282" y="376" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<rect x="279" y="373" width="40" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="299.0" y="392.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">w</text>
+<text x="344" y="384" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="400" dominant-baseline="central">&quot;ew&quot; 不重复, 长度 2</text>
+<text x="344" y="402" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">走到结尾, 停</text>
+<text x="344" y="420" font-size="12" fill="#B5700F" text-anchor="start" font-weight="400" dominant-baseline="central">2 个格子是重复劳动</text>
+<line x1="40" y1="436" x2="640" y2="436" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="462" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">left = 5</text>
+<rect x="112" y="448" width="34" height="30" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="129.0" y="464.0" font-size="15" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">p</text>
+<rect x="146" y="448" width="34" height="30" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="163.0" y="464.0" font-size="15" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">w</text>
+<rect x="180" y="448" width="34" height="30" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="197.0" y="464.0" font-size="15" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">w</text>
+<rect x="214" y="448" width="34" height="30" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="231.0" y="464.0" font-size="15" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">k</text>
+<rect x="248" y="448" width="34" height="30" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<text x="265.0" y="464.0" font-size="15" fill="#B4B2A9" text-anchor="middle" font-weight="500" dominant-baseline="central">e</text>
+<rect x="282" y="448" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<rect x="279" y="445" width="40" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="299.0" y="464.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">w</text>
+<text x="344" y="456" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="400" dominant-baseline="central">&quot;w&quot; 不重复, 长度 1</text>
+<text x="344" y="474" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">走到结尾, 停</text>
+<text x="344" y="492" font-size="12" fill="#B5700F" text-anchor="start" font-weight="400" dominant-baseline="central">1 个格子是重复劳动</text>
+<line x1="40" y1="508" x2="640" y2="508" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="530" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">一共检查了 15 次, 其中 6 次 (橙色圈) 是&quot;上一行已经确认不重复, 这一行又从头确认一遍&quot;。最长 = 3</text>
+<rect x="33" y="553" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="54" y="560" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">这一行新检查的字符</text>
+<rect x="177" y="553" width="14" height="14" rx="3" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="198" y="560" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">上一行已确认过, 又检查一遍</text>
+<rect x="370.2" y="553" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/>
+<text x="391.2" y="560" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">撞上的重复字符</text></svg>
+<figcaption>Brute force 在 "pwwkew" 上的全过程。每一行是一个起点。橙色圈出来的格子是重复劳动。</figcaption></figure>
+<p>一共有 n 个起点, 每个起点最多往右走 n 步, 所以是 <code>O(n²)</code>。</p>
+<p>看橙色圈的格子。比如 <code>left = 3</code> 那一行: 它检查 k, e, w 有没有重复。但上一行 <code>left = 2</code> 已经确认过 <code>"wkew"</code> 前面的 <code>"wke"</code> 不重复了。一段不重复的字符串, 去掉开头一个字符, 剩下的当然也不重复。所以 k 和 e 根本不用再查一遍。</p>
+<h3>Intuition: 换起点的时候, 不要从头再来</h3>
+<p>把上面的观察说完整:</p>
+<ol><li>假设当前这一段 <code>s[left..right]</code> 没有重复。</li><li>现在想把 right 往右扩一格, 加进来一个新字符 <code>ch</code>。</li><li>如果 ch 在这一段里没出现过, 那新的一段也没有重复, 继续扩就行。</li><li>如果 ch 在这一段里已经出现过, 那么<b>只要这一段还包含着旧的那个 ch, 它就一定有重复</b>。这时候再往右扩是没用的, 只会继续重复。唯一的办法是把左边收进来, 直到把旧的 ch 扔出去。</li><li>收完之后, 这一段又没有重复了。接着扩 right。</li></ol>
+<p>关键在第 4 步: left 只会往右收, 从来不需要回到左边去。因为左边那些起点, 在它们自己那一轮已经"试过并且失败了"。这就是 brute force 里橙色那部分重复劳动被省掉的原因。</p>
+<p>这个"右边扩、左边收、两边都不回头"的框, 就是 <b>sliding window</b>。</p>
+<h3>算法</h3>
+<p>用一个 dict <code>cnt</code> 记录 window 里每个字符出现了几次。</p>
+<ol><li><code>left = 0</code>, <code>best = 0</code>。</li><li>right 从 0 走到 n-1。每一步把 <code>ch = s[right]</code> 放进 window: <code>cnt[ch] += 1</code>。</li><li>如果 <code>cnt[ch] > 1</code>, 说明 ch 重复了。不断把最左边的字符 <code>s[left]</code> 移出 window (<code>cnt[s[left]] -= 1</code>, <code>left += 1</code>), 直到 <code>cnt[ch]</code> 回到 1。</li><li>这时 window 一定没有重复。用它的长度 <code>right - left + 1</code> 更新 best。</li></ol>
+<p>为什么第 3 步只需要检查 ch: 在 ch 进来之前, window 是没有重复的。所以如果现在有重复, 一定是刚进来的 ch 造成的。</p>
 <figure><svg width="100%" viewBox="0 0 680 412" xmlns="http://www.w3.org/2000/svg" role="img" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>为什么只有新进来的 ch 可能重复</title><defs><marker id="arr_52514E" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_898781" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_D85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">s = &quot;pwwkew&quot;, right = 5, ch = &#x27;w&#x27; · 进来之前 window = s[2..4] = &quot;wke&quot; 是合法的</text>
 <text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">旧 window 没有重复 → 新出现的重复一定涉及 ch → 只检查 cnt[ch] &gt; 1</text>
 <text x="40" y="83" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">① 进来之前</text>
@@ -206,7 +333,9 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="303.6" y="388" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">window 里其他的</text>
 <rect x="412.8" y="381" width="14" height="14" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
 <text x="433.8" y="388" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">window 外</text></svg>
-<figcaption>核心: 只有新进来的 ch 能造成重复, pop 到 cnt[ch] 回到 1 就重新合法。</figcaption></figure>
+<figcaption>核心: 只有新进来的 ch 可能造成重复, 把左边收到 cnt[ch] 回到 1, window 就又合法了。</figcaption></figure>
+<h3>手动走一遍</h3>
+<p>还是用 <code>"pwwkew"</code>。每一行是 right 走的一步。第 2 列是 ch 刚放进来的样子, 第 3 列是收完 left 之后的样子, 最右边是算长度。</p>
 <figure><svg width="100%" viewBox="0 0 680 676" xmlns="http://www.w3.org/2000/svg" role="img" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Longest Substring Without Repeating Characters trace</title><defs><marker id="arr_52514E" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_898781" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_D85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">s = &quot;pwwkew&quot; · 每一步: ch 进 window → cnt[ch] &gt; 1 就缩 left → 更新 best</text>
 <text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">cnt = window 里每个字符出现的次数 · len = right - left + 1</text>
 <text x="40" y="72" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">当前输入</text>
@@ -441,14 +570,204 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="433.8" y="654" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">window 外</text>
 <rect x="507.0" y="647" width="14" height="14" rx="3" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="528.0" y="654" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">当前最优 window</text></svg>
-<figcaption>运行流程: right = 2 时 'w' 重复, 一次 pop 了两个 (p, w); right = 5 时又 pop 了一个 w。</figcaption></figure>
+<figcaption>right = 2 时第二个 w 进来, 和旧的 w 重复, 左边一次收掉 p 和 w 两个字符。right = 5 时又遇到 w, 再收掉一个 w。</figcaption></figure>
+<p>对比 brute force 的图: 这里 right 走了 6 步, left 一共只往右移了 3 次, 每个字符最多进一次、出一次。</p>
+<h3>复杂度</h3>
+<p>Time <code>O(n)</code>。right 走 n 步, left 加起来最多也只走 n 步。虽然代码里 while 写在 for 里面, 但 while 一共最多执行 n 次, 不是每一轮 n 次。Space <code>O(Σ)</code>, Σ 是字符集大小, 因为 cnt 里最多存这么多种字符。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">length_of_longest_substring</span>(s):</span><span class="l">    cnt = <span class="t">defaultdict</span>(<span class="t">int</span>)        <span class="c"># window 里每个字符出现几次</span></span><span class="l">    left = best = 0</span><span class="l">    <span class="k">for</span> right, ch <span class="k">in</span> <span class="t">enumerate</span>(s):</span><span class="l">        cnt[ch] += 1              <span class="c"># ch 进 window</span></span><span class="l">        <span class="k">while</span> cnt[ch] &gt; 1:        <span class="c"># 不合法: ch 重复 (进来之前合法, 所以只可能是 ch)</span></span><span class="l">            cnt[s[left]] -= 1     <span class="c"># 最左边的字符出 window</span></span><span class="l">            left += 1</span><span class="l">        best = <span class="t">max</span>(best, right - left + 1)</span><span class="l">    <span class="r">return</span> best</span></div>
-<p>Time <code>O(n)</code>: right 走 n 步, left 最多走 n 步。Space <code>O(Σ)</code>: cnt 最多存字符集大小那么多项 (ASCII 最多 128)。</p>
-<p class="note"><b>记:</b>最长 + 没有重复: cnt[ch] > 1 就缩 left。这是所有"最长"题的母版。</p>
-<h2>2. Max Consecutive Ones III: 合法条件换成"违规数 ≤ k"</h2>
-<p>题目: 0/1 数组 <code>nums</code>, 最多把 k 个 0 翻成 1, 求最长的连续 1 的长度。例: <code>nums = [1,1,0,0,1,1,0], k = 2</code> → 6。</p>
-<p>Brute force: 枚举 (left, right), 数 window 里 0 的个数, ≤ k 就合法, <code>O(n^2)</code>。浪费同上: 相邻 window 重叠, 数 0 的工作被重复做。</p>
-<p>关键观察: "最多翻 k 个 0" 翻译成 "window 里 0 的个数 ≤ k"。相比上一题: <b>state 从 Hash Table cnt 换成一个整数 zeros, while 条件从 cnt[ch] > 1 换成 zeros > k</b>, 其余一行不变。</p>
+</details>
+<p class="note"><b>记:</b>求最长 + 不能重复: 右边一格一格加进来。一旦重复, 就收左边, 直到不重复。left 永远不回头, 所以是 O(n)。</p>
+<h2>把第 1 题抽象一下: Sliding Window 什么时候能用</h2>
+<p>第 1 题里, left 能"永远不回头", 是因为一条性质: <b>一段如果已经不合法 (有重复), 那把它再往右扩, 还是不合法</b>。反过来, 一段如果合法, 把它从左边缩短一点, 还是合法。</p>
+<p>下面这张图把所有可能的 (left, right) 画成一个表格。每个格子是一段 substring。绿色是合法的段, 红色是不合法的。因为上面那条性质, 合法区和不合法区之间是一条阶梯状的边界。brute force 把每个格子都看一遍; sliding window 只沿着边界走。</p>
+<figure><svg width="100%" viewBox="0 0 680 470" xmlns="http://www.w3.org/2000/svg" role="img" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>brute force 看所有 (left, right); sliding window 只沿着合法边界走</title><defs><marker id="arr_52514E" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_898781" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_D85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">例: s = &quot;pwwkew&quot; · window s[left..right] 合法 = 没有重复字符 · 每一格 = 一个 (left, right)</text>
+<text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">合法性对&quot;缩小 window&quot;封闭: [left..right] 合法 → 它的任何子区间也合法</text>
+<text x="202.0" y="64" font-size="12" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">right →</text>
+<text x="117.0" y="84" font-size="12" fill="#0B0B0B" text-anchor="middle" font-weight="500" dominant-baseline="central">0:p</text>
+<text x="151.0" y="84" font-size="12" fill="#0B0B0B" text-anchor="middle" font-weight="500" dominant-baseline="central">1:w</text>
+<text x="185.0" y="84" font-size="12" fill="#0B0B0B" text-anchor="middle" font-weight="500" dominant-baseline="central">2:w</text>
+<text x="219.0" y="84" font-size="12" fill="#0B0B0B" text-anchor="middle" font-weight="500" dominant-baseline="central">3:k</text>
+<text x="253.0" y="84" font-size="12" fill="#0B0B0B" text-anchor="middle" font-weight="500" dominant-baseline="central">4:e</text>
+<text x="287.0" y="84" font-size="12" fill="#0B0B0B" text-anchor="middle" font-weight="500" dominant-baseline="central">5:w</text>
+<text x="40" y="92" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">left ↓</text>
+<text x="92" y="117.0" font-size="12" fill="#0B0B0B" text-anchor="end" font-weight="500" dominant-baseline="central">0:p</text>
+<rect x="100" y="100" width="34" height="34" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="117.0" y="118.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">✓</text>
+<rect x="134" y="100" width="34" height="34" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="151.0" y="118.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">✓</text>
+<rect x="168" y="100" width="34" height="34" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/>
+<text x="185.0" y="118.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central">✗</text>
+<rect x="202" y="100" width="34" height="34" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/>
+<text x="219.0" y="118.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central">✗</text>
+<rect x="236" y="100" width="34" height="34" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/>
+<text x="253.0" y="118.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central">✗</text>
+<rect x="270" y="100" width="34" height="34" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/>
+<text x="287.0" y="118.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central">✗</text>
+<text x="92" y="151.0" font-size="12" fill="#0B0B0B" text-anchor="end" font-weight="500" dominant-baseline="central">1:w</text>
+<rect x="100" y="134" width="34" height="34" rx="0" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<rect x="134" y="134" width="34" height="34" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="151.0" y="152.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">✓</text>
+<rect x="168" y="134" width="34" height="34" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/>
+<text x="185.0" y="152.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central">✗</text>
+<rect x="202" y="134" width="34" height="34" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/>
+<text x="219.0" y="152.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central">✗</text>
+<rect x="236" y="134" width="34" height="34" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/>
+<text x="253.0" y="152.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central">✗</text>
+<rect x="270" y="134" width="34" height="34" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/>
+<text x="287.0" y="152.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central">✗</text>
+<text x="92" y="185.0" font-size="12" fill="#0B0B0B" text-anchor="end" font-weight="500" dominant-baseline="central">2:w</text>
+<rect x="100" y="168" width="34" height="34" rx="0" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<rect x="134" y="168" width="34" height="34" rx="0" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<rect x="168" y="168" width="34" height="34" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="185.0" y="186.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">✓</text>
+<rect x="202" y="168" width="34" height="34" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="219.0" y="186.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">✓</text>
+<rect x="236" y="168" width="34" height="34" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="253.0" y="186.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">✓</text>
+<rect x="270" y="168" width="34" height="34" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/>
+<text x="287.0" y="186.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central">✗</text>
+<text x="92" y="219.0" font-size="12" fill="#0B0B0B" text-anchor="end" font-weight="500" dominant-baseline="central">3:k</text>
+<rect x="100" y="202" width="34" height="34" rx="0" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<rect x="134" y="202" width="34" height="34" rx="0" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<rect x="168" y="202" width="34" height="34" rx="0" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<rect x="202" y="202" width="34" height="34" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="219.0" y="220.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">✓</text>
+<rect x="236" y="202" width="34" height="34" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="253.0" y="220.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">✓</text>
+<rect x="270" y="202" width="34" height="34" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="287.0" y="220.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">✓</text>
+<text x="92" y="253.0" font-size="12" fill="#0B0B0B" text-anchor="end" font-weight="500" dominant-baseline="central">4:e</text>
+<rect x="100" y="236" width="34" height="34" rx="0" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<rect x="134" y="236" width="34" height="34" rx="0" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<rect x="168" y="236" width="34" height="34" rx="0" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<rect x="202" y="236" width="34" height="34" rx="0" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<rect x="236" y="236" width="34" height="34" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="253.0" y="254.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">✓</text>
+<rect x="270" y="236" width="34" height="34" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="287.0" y="254.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">✓</text>
+<text x="92" y="287.0" font-size="12" fill="#0B0B0B" text-anchor="end" font-weight="500" dominant-baseline="central">5:w</text>
+<rect x="100" y="270" width="34" height="34" rx="0" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<rect x="134" y="270" width="34" height="34" rx="0" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<rect x="168" y="270" width="34" height="34" rx="0" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<rect x="202" y="270" width="34" height="34" rx="0" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<rect x="236" y="270" width="34" height="34" rx="0" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
+<rect x="270" y="270" width="34" height="34" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="287.0" y="288.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">✓</text>
+<rect x="100" y="100" width="34" height="34" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="134" y="100" width="34" height="34" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="168" y="100" width="34" height="34" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="168" y="134" width="34" height="34" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="168" y="168" width="34" height="34" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="202" y="168" width="34" height="34" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="236" y="168" width="34" height="34" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="270" y="168" width="34" height="34" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<rect x="270" y="202" width="34" height="34" rx="4" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="340" y="110" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">brute force: 试遍所有 (left, right)</text>
+<text x="340" y="130" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">= 上三角全部 21 格 → O(n²) 个 window</text>
+<text x="340" y="150" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">每个 window 还要重新检查一遍 → O(n²) ~ O(n³)</text>
+<text x="340" y="190" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">sliding window: 只走有 ring 的 9 格</text>
+<text x="340" y="210" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">路径: (0,0) → (0,1) → (0,2) → (1,2) → (2,2)</text>
+<text x="340" y="226" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">         (2,3) → (2,4) → (2,5) → (3,5)</text>
+<text x="340" y="252" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">right 只往右, left 只往下, 从不回头</text>
+<text x="340" y="290" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">为什么 left 不用回退:</text>
+<text x="340" y="310" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">(left=1, right=2) 已经 ✗, right 再往右,</text>
+<text x="340" y="326" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">(left=1, right=3..5) 一定也 ✗ (超集更差)</text>
+<text x="340" y="342" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">→ 小于等于当前 left 的起点不会再合法</text>
+<text x="340" y="358" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">→ left 只需要向右走, 总共最多 n 步</text>
+<text x="340" y="394" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">每个 right 对应的最小合法 left</text>
+<text x="340" y="410" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">随 right 单调不减 → 双指针共 2n 步</text>
+<rect x="33" y="439" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="54" y="446" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">合法</text>
+<rect x="93" y="439" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/>
+<text x="114" y="446" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">不合法</text>
+<rect x="165" y="439" width="14" height="14" rx="3" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="186" y="446" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">sliding window 走过的格</text></svg>
+<figcaption>每个格子是一个 (left, right)。sliding window 的两个指针沿着合法区的边界走, 一共 9 步, 另外 12 个格子不用看。</figcaption></figure>
+<p>所以判断一道题能不能用 sliding window, 就问一个问题: <b>把 window 往右扩一格, "合法"只会往一个方向变吗?</b></p>
+<ul><li>求<b>最长</b>的题: window 越大越容易不合法 (重复、0 太多、乘积太大)。做法是: 不合法了才收左边, 收完再记答案。</li><li>求<b>最短</b>的题: window 越大越容易合法 (和够大、覆盖了所有字符)。做法是: 一合法就记答案, 然后收左边看看还能不能更短。第 5 题会讲。</li><li>如果扩一格可能变好也可能变坏 (比如数组里有负数), 这条性质就没了, 不能用 sliding window。要改用 04 · Prefix Sum。</li></ul>
+<p>后面每道题都是同一个骨架, 只换两样东西: <b>window 里要记什么 (state)</b>, 和<b>什么叫合法</b>。</p>
+<details><summary>通用模板 (最长 / 最短 两个版本)</summary>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">window_longest</span>(arr):</span><span class="l">    left = 0</span><span class="l">    state = ...                      <span class="c"># window 内的统计量 (计数 / 和 / 积 ...)</span></span><span class="l">    best = 0</span><span class="l">    <span class="k">for</span> right, x <span class="k">in</span> <span class="t">enumerate</span>(arr):  <span class="c"># right 只增不减</span></span><span class="l">        <span class="c"># 1. x 进 window: 更新 state</span></span><span class="l">        <span class="k">while</span> window 不合法:          <span class="c"># 2. 不合法 -&gt; 缩 left, 直到重新合法</span></span><span class="l">            <span class="c"># 把 arr[left] 移出 state</span></span><span class="l">            left += 1                <span class="c"># left 也只增不减</span></span><span class="l">        best = <span class="t">max</span>(best, right - left + 1)   <span class="c"># 3. 此刻 window 合法, 更新答案</span></span><span class="l">    <span class="r">return</span> best</span></div>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">window_shortest</span>(arr):</span><span class="l">    left = 0</span><span class="l">    best = <span class="t">inf</span></span><span class="l">    <span class="k">for</span> right, x <span class="k">in</span> <span class="t">enumerate</span>(arr):</span><span class="l">        <span class="c"># x 进 window</span></span><span class="l">        <span class="k">while</span> window 合法:            <span class="c"># 合法了: 先记答案, 再尽量缩短</span></span><span class="l">            best = <span class="t">min</span>(best, right - left + 1)</span><span class="l">            <span class="c"># 把 arr[left] 移出 state</span></span><span class="l">            left += 1</span><span class="l">    <span class="r">return</span> best</span></div>
+</details>
+<p class="note"><b>记:</b>sliding window 能用的前提: 合法性随 window 变大只往一个方向变。两个指针都只往右走, 所以 O(n)。</p>
+<h2>2. Max Consecutive Ones III</h2>
+<h3>题目在问什么</h3>
+<p>给一个只有 0 和 1 的数组 <code>nums</code>, 和一个整数 <code>k</code>。你最多可以把 k 个 0 改成 1。问: 改完之后, 最长能得到多长的一段连续的 1。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 352" xmlns="http://www.w3.org/2000/svg" role="img" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Max Consecutive Ones III examples</title><defs><marker id="arr_52514E" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_898781" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_D85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">最多把 k 个 0 改成 1, 问最长能得到多长的一段连续 1</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">Example 1:  nums = [1,1,1,0,0,0,1,1,1,1,0], k = 2  →  6</text>
+<text x="55.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">0</text>
+<text x="85.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">1</text>
+<text x="115.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">2</text>
+<text x="145.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">3</text>
+<text x="175.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">4</text>
+<text x="205.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">5</text>
+<text x="235.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">6</text>
+<text x="265.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">7</text>
+<text x="295.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">8</text>
+<text x="325.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">9</text>
+<text x="355.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">10</text>
+<rect x="40" y="104" width="30" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="55.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<rect x="70" y="104" width="30" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="85.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<rect x="100" y="104" width="30" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="115.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<rect x="130" y="104" width="30" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="145.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<rect x="160" y="104" width="30" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="175.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<rect x="190" y="104" width="30" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="205.0" y="120.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<rect x="220" y="104" width="30" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="235.0" y="120.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<rect x="250" y="104" width="30" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="265.0" y="120.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<rect x="280" y="104" width="30" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="295.0" y="120.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<rect x="310" y="104" width="30" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="325.0" y="120.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<rect x="340" y="104" width="30" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="355.0" y="120.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<path d="M43 96 L43 88 L217 88 L217 96" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="394" y="90" font-size="12" fill="#712B13" text-anchor="start" font-weight="400" dominant-baseline="central">这一段有 3 个 0, 只能改 2 个 ✗</text>
+<rect x="187" y="101" width="186" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="394" y="119" font-size="14" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central">index 5 和 10 的 0 改成 1 → 6 个 1</text>
+<line x1="40" y1="176" x2="640" y2="176" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="196" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">Example 2:  nums = [0,0,1,1], k = 0  →  2</text>
+<text x="57.0" y="282" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">0</text>
+<text x="91.0" y="282" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">1</text>
+<text x="125.0" y="282" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">2</text>
+<text x="159.0" y="282" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">3</text>
+<rect x="40" y="238" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="254.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<rect x="74" y="238" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="91.0" y="254.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">0</text>
+<rect x="108" y="238" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="125.0" y="254.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<rect x="142" y="238" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="159.0" y="254.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<rect x="105" y="235" width="74" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="200" y="253" font-size="14" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central">一个 0 都不能改, 只能用原本的 1,1</text>
+<line x1="40" y1="310" x2="640" y2="310" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="33" y="325" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="54" y="332" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">答案 substring / subarray</text>
+<rect x="231.6" y="325" width="14" height="14" rx="3" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="252.6" y="332" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">答案的范围</text>
+<rect x="327.6" y="325" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/>
+<text x="348.6" y="332" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">看起来像, 但不对 (原因写在右边)</text></svg>
+<figcaption>两个例子。绿色是答案那一段。</figcaption></figure>
+<p>换个角度看例子 1: 答案那一段 <code>[0,1,1,1,1,0]</code> 本来不全是 1, 但里面只有 2 个 0, 正好够 k = 2 次修改。所以题目其实在问: <b>找最长的一段, 里面 0 的个数不超过 k</b>。真的去改数组是不需要的。</p>
+<h3>Brute force</h3>
+<p>和第 1 题一样: 每个起点往右扩, 数 0 的个数, 超过 k 就停。<code>O(n²)</code>。浪费也一样: 换起点时把中间那段的 0 又数了一遍。</p>
+<h3>Intuition</h3>
+<p>和第 1 题是同一个结构。一段里 0 已经超过 k 个了, 再往右扩, 0 只会更多, 不会变少。所以合法性是单调的, 可以用 sliding window。</p>
+<p>和第 1 题的区别只有两处: window 里要记的东西从"每个字符几次"变成了"有几个 0" (一个整数 <code>zeros</code>); 不合法的条件从"有字符重复"变成了 <code>zeros > k</code>。</p>
+<h3>算法</h3>
+<ol><li>right 往右走, 遇到 0 就 <code>zeros += 1</code>。</li><li>当 <code>zeros > k</code> 时, 收左边: 如果 <code>nums[left]</code> 是 0 就 <code>zeros -= 1</code>, 然后 <code>left += 1</code>。一直收到 <code>zeros ≤ k</code>。</li><li>用 <code>right - left + 1</code> 更新 best。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 346" xmlns="http://www.w3.org/2000/svg" role="img" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Max Consecutive Ones III 的合法条件</title><defs><marker id="arr_52514E" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_898781" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_D85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">把&quot;最多翻 k 个 0&quot;翻译成 window 的合法条件: window 里 0 的个数 ≤ k</text>
 <text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">nums = [1,1,0,0,1,1,0], k = 2 · 最长的合法 window = nums[0..5]</text>
 <text x="40" y="85" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">window 内容</text>
@@ -497,7 +816,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="268.2" y="322" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">window 外</text>
 <rect x="341.4" y="315" width="14" height="14" rx="3" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="362.4" y="322" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">最长 window</text></svg>
-<figcaption>核心: 翻转 = window 里 0 的个数不超过 k, 所以只需要数 0。</figcaption></figure>
+<figcaption>核心: "能翻 k 个" 等价于 "window 里 0 的个数 ≤ k", 所以只需要数 0。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 764" xmlns="http://www.w3.org/2000/svg" role="img" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Max Consecutive Ones III trace</title><defs><marker id="arr_52514E" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_898781" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_D85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">nums = [1,1,0,0,1,1,0], k = 2 · 每一步: x 进 window → zeros &gt; k 就缩 left → 更新 best</text>
 <text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">zeros = window 里 0 的个数 (= 需要翻转的次数, 预算是 k)</text>
 <text x="40" y="72" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">当前输入</text>
@@ -800,14 +1120,79 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="433.8" y="742" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">window 外</text>
 <rect x="507.0" y="735" width="14" height="14" rx="3" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="528.0" y="742" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">当前最优 window</text></svg>
-<figcaption>运行流程: right = 6 时 zeros = 3 > k = 2, 缩 left 直到把一个 0 踢出去。</figcaption></figure>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">longest_ones</span>(nums, k):</span><span class="l">    zeros = 0                     <span class="c"># window 里 0 的个数 = 需要翻转的次数</span></span><span class="l">    left = best = 0</span><span class="l">    <span class="k">for</span> right, x <span class="k">in</span> <span class="t">enumerate</span>(nums):</span><span class="l">        <span class="k">if</span> x == 0:</span><span class="l">            zeros += 1</span><span class="l">        <span class="k">while</span> zeros &gt; k:          <span class="c"># 不合法: 要翻的 0 超过预算 k</span></span><span class="l">            <span class="k">if</span> nums[left] == 0:</span><span class="l">                zeros -= 1</span><span class="l">            left += 1</span><span class="l">        best = <span class="t">max</span>(best, right - left + 1)</span><span class="l">    <span class="r">return</span> best</span></div>
+<figcaption>right = 6 时 zeros = 3 > k = 2, 收左边直到扔掉一个 0。</figcaption></figure>
+<h3>复杂度</h3>
 <p>Time <code>O(n)</code>, Space <code>O(1)</code>。</p>
-<p class="note"><b>记:</b>"最多 k 次修改 / 删除 / 翻转" → window 里违规元素的个数 ≤ k。同一个模板还能做 Longest Subarray of 1's After Deleting One Element (k = 1) 和 Fruit Into Baskets (种类数 ≤ 2)。</p>
-<h2>3. Longest Repeating Character Replacement: 合法条件需要推一步</h2>
-<p>题目: 字符串 <code>s</code> (大写字母), 最多替换 k 个字符, 求能得到的最长的"全是同一个字符"的 substring 长度。例: <code>s = "AABABBA", k = 1</code> → 4。</p>
-<p>Brute force: 枚举 (left, right), 统计 window 里出现最多的字符个数, <code>O(n^2)</code> 个 window。</p>
-<p>关键观察: 一个 window 能变成全同字符, 最省的做法是保留出现最多的字符, 其余都替换。所以<b>需替换数 = len - max_count</b>, 合法 ⇔ len - max_count ≤ k。相比上一题, 违规数不再是单独维护的整数, 而是由 window 长度和 cnt 里的最大值算出来。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">longest_ones</span>(nums, k):</span><span class="l">    zeros = 0                     <span class="c"># window 里 0 的个数 = 需要翻转的次数</span></span><span class="l">    left = best = 0</span><span class="l">    <span class="k">for</span> right, x <span class="k">in</span> <span class="t">enumerate</span>(nums):</span><span class="l">        <span class="k">if</span> x == 0:</span><span class="l">            zeros += 1</span><span class="l">        <span class="k">while</span> zeros &gt; k:          <span class="c"># 不合法: 要翻的 0 超过预算 k</span></span><span class="l">            <span class="k">if</span> nums[left] == 0:</span><span class="l">                zeros -= 1</span><span class="l">            left += 1</span><span class="l">        best = <span class="t">max</span>(best, right - left + 1)</span><span class="l">    <span class="r">return</span> best</span></div>
+</details>
+<p class="note"><b>记:</b>"最多改 / 删 / 翻 k 个" → 找最长的一段, 里面"需要改的"不超过 k 个。</p>
+<h2>3. Longest Repeating Character Replacement</h2>
+<h3>题目在问什么</h3>
+<p>给一个只有大写字母的字符串 <code>s</code>, 和整数 <code>k</code>。你最多可以把 k 个字符改成任意字母。问: 改完之后, 最长能得到多长的一段<b>全是同一个字母</b>的 substring。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 352" xmlns="http://www.w3.org/2000/svg" role="img" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Longest Repeating Character Replacement examples</title><defs><marker id="arr_52514E" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_898781" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_D85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">最多把 k 个字符改成别的字母, 问最长能得到多长的一段&quot;全是同一个字母&quot;</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">Example 1:  s = &quot;ABAB&quot;, k = 2  →  4</text>
+<text x="57.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">0</text>
+<text x="91.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">1</text>
+<text x="125.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">2</text>
+<text x="159.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">3</text>
+<rect x="40" y="104" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="57.0" y="120.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">A</text>
+<rect x="74" y="104" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="91.0" y="120.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">B</text>
+<rect x="108" y="104" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="125.0" y="120.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">A</text>
+<rect x="142" y="104" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="159.0" y="120.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">B</text>
+<rect x="37" y="101" width="142" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="200" y="119" font-size="14" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central">把两个 B 改成 A → &quot;AAAA&quot;</text>
+<line x1="40" y1="176" x2="640" y2="176" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="196" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">Example 2:  s = &quot;AABABBA&quot;, k = 1  →  4</text>
+<text x="57.0" y="282" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">0</text>
+<text x="91.0" y="282" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">1</text>
+<text x="125.0" y="282" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">2</text>
+<text x="159.0" y="282" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">3</text>
+<text x="193.0" y="282" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">4</text>
+<text x="227.0" y="282" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">5</text>
+<text x="261.0" y="282" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">6</text>
+<rect x="40" y="238" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="57.0" y="254.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">A</text>
+<rect x="74" y="238" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="91.0" y="254.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">A</text>
+<rect x="108" y="238" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="125.0" y="254.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">B</text>
+<rect x="142" y="238" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="159.0" y="254.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">A</text>
+<rect x="176" y="238" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="193.0" y="254.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">B</text>
+<rect x="210" y="238" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="227.0" y="254.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">B</text>
+<rect x="244" y="238" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="261.0" y="254.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">A</text>
+<path d="M43 230 L43 222 L207 222 L207 230" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="302" y="224" font-size="12" fill="#712B13" text-anchor="start" font-weight="400" dominant-baseline="central">&quot;AABAB&quot;: 要改 2 个 B, 超过 k = 1 ✗</text>
+<rect x="37" y="235" width="142" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="302" y="253" font-size="14" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central">&quot;AABA&quot;: 把 1 个 B 改成 A → &quot;AAAA&quot;</text>
+<line x1="40" y1="310" x2="640" y2="310" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="33" y="325" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="54" y="332" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">答案 substring / subarray</text>
+<rect x="231.6" y="325" width="14" height="14" rx="3" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="252.6" y="332" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">答案的范围</text>
+<rect x="327.6" y="325" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/>
+<text x="348.6" y="332" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">看起来像, 但不对 (原因写在右边)</text></svg>
+<figcaption>两个例子。</figcaption></figure>
+<p>例子 2 里 <code>"AABA"</code> 可以, 因为只要改 1 个 B。<code>"AABAB"</code> 不行, 因为要改 2 个 B, 超过了 k = 1。</p>
+<h3>Brute force</h3>
+<p>每个起点往右扩, 每扩一格就重新算一遍"这一段要改几个字符"。<code>O(n²)</code> 段。</p>
+<h3>Intuition</h3>
+<p>先回答一个更小的问题: <b>给定一段, 最少要改几个字符才能变成全是同一个字母?</b></p>
+<p>答案是: 保留出现次数最多的那个字母, 其他的全改掉。比如 <code>"AABA"</code> 里 A 出现 3 次, 最多, 那就把剩下的 1 个改成 A。所以要改的个数 = <code>这一段的长度 - 出现最多的字母的次数</code>。</p>
+<p>于是"合法"就是 <code>长度 - 最多的次数 ≤ k</code>。和第 2 题比, 这里的"违规数"不是直接数出来的, 而是从 cnt 算出来的。</p>
+<p>它也是单调的: window 往右扩一格, 长度加 1, 最多的次数最多也只加 1, 所以"要改的个数"只会不变或变大。</p>
+<h3>算法</h3>
+<ol><li>用 dict <code>cnt</code> 记 window 里每个字母的次数。right 往右走, <code>cnt[ch] += 1</code>。</li><li>当 <code>(right - left + 1) - max(cnt.values()) > k</code> 时, 收左边。</li><li>用当前长度更新 best。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 384" xmlns="http://www.w3.org/2000/svg" role="img" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Longest Repeating Character Replacement 的合法条件</title><defs><marker id="arr_52514E" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_898781" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_D85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">window 里出现最多的字符保持不动, 其余字符都替换成它 → 需替换数 = len - max</text>
 <text x="40" y="38" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">合法 ⇔ len - max ≤ k  (k = 1)</text>
 <text x="40" y="86" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">window</text>
@@ -848,7 +1233,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="303.6" y="360" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">window 里其他的</text>
 <rect x="412.8" y="353" width="14" height="14" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
 <text x="433.8" y="360" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">window 外</text></svg>
-<figcaption>核心: 合法 ⇔ len - max ≤ k; 再进一个字符只会让 len - max 不变或变大, 所以单调。</figcaption></figure>
+<figcaption>核心: 合法 ⇔ 长度 - 最多的次数 ≤ k。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 764" xmlns="http://www.w3.org/2000/svg" role="img" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Longest Repeating Character Replacement trace</title><defs><marker id="arr_52514E" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_898781" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_D85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">s = &quot;AABABBA&quot;, k = 1 · 每一步: ch 进 window → (len - max) &gt; k 就缩 left → 更新 best</text>
 <text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">len - max = 需替换数 = window 长度 - 出现最多的字符个数 (max = max(cnt.values()))</text>
 <text x="40" y="72" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">当前输入</text>
@@ -1149,14 +1535,89 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="433.8" y="742" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">window 外</text>
 <rect x="507.0" y="735" width="14" height="14" rx="3" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="528.0" y="742" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">当前最优 window</text></svg>
-<figcaption>运行流程: right = 4 和 right = 6 时 len - max = 2 > k = 1, pop 掉最左边直到合法。</figcaption></figure>
+<figcaption>right = 4 和 right = 6 时要改 2 个 > k = 1, 收掉最左边一个字符就重新合法。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(26n) = O(n)</code>, 每次 <code>max(cnt.values())</code> 最多看 26 个字母。Space <code>O(26)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">character_replacement</span>(s, k):</span><span class="l">    cnt = <span class="t">defaultdict</span>(<span class="t">int</span>)</span><span class="l">    left = best = 0</span><span class="l">    <span class="k">for</span> right, ch <span class="k">in</span> <span class="t">enumerate</span>(s):</span><span class="l">        cnt[ch] += 1</span><span class="l">        <span class="c"># window 长度 - 出现最多的字符数 = 需要替换的字符数</span></span><span class="l">        <span class="k">while</span> (right - left + 1) - <span class="t">max</span>(cnt.<span class="f">values</span>()) &gt; k:</span><span class="l">            cnt[s[left]] -= 1     <span class="c"># 注意: 不 del, 值变 0 不影响 max</span></span><span class="l">            left += 1</span><span class="l">        best = <span class="t">max</span>(best, right - left + 1)</span><span class="l">    <span class="r">return</span> best</span></div>
-<p>Time <code>O(26 n) = O(n)</code> (每次 max(cnt.values()) 最多 26 项), Space <code>O(26)</code>。</p>
-<p class="note"><b>记:</b>合法条件不一定是单个计数器: 可以是 len - max(cnt) 这种由 state 算出来的量, 只要它随 window 变大单调不降就能用同一个模板。</p>
-<h2>4. Permutation in String: 固定长度 window</h2>
-<p>题目: 判断 <code>s2</code> 里有没有 substring 是 <code>s1</code> 的 permutation。例: <code>s1 = "ab", s2 = "eidbaoo"</code> → True ("ba")。</p>
-<p>Brute force: 对 s2 的每个长度 m 的 substring 排序后和 sorted(s1) 比较, <code>O(n × m log m)</code>。浪费: 相邻两个 window 只差头尾各一个字符, 却整个重排。</p>
-<p>关键观察: permutation ⇔ 每个字母的个数相同, 且长度必须恰好 m。窗口长度<b>固定</b>, 所以不用 while 缩 left, 只需要每进一个就出一个 (if right >= m)。相比上一题: while 变成 if, 合法条件变成 win == need。</p>
+</details>
+<p class="note"><b>记:</b>合法条件可以是从 state 算出来的量 (长度 - 最多的次数), 只要它随 window 变大只会变坏, 就能用同一个骨架。</p>
+<h2>4. Permutation in String</h2>
+<h3>题目在问什么</h3>
+<p>给两个字符串 <code>s1</code> 和 <code>s2</code>。问: s2 里有没有一段连续的 substring, 它是 s1 的某种重新排列 (permutation)。也就是: 长度和 s1 一样, 每个字母出现的次数也和 s1 一样, 只是顺序可以不同。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 370" xmlns="http://www.w3.org/2000/svg" role="img" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Permutation in String examples</title><defs><marker id="arr_52514E" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_898781" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_D85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">s2 里有没有一段连续的、长度和 s1 一样的 substring, 字母和 s1 完全一样 (顺序可以不同)</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">Example 1:  s1 = &quot;ab&quot;, s2 = &quot;eidbaoo&quot;  →  True</text>
+<text x="57.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">0</text>
+<text x="91.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">1</text>
+<text x="125.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">2</text>
+<text x="159.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">3</text>
+<text x="193.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">4</text>
+<text x="227.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">5</text>
+<text x="261.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">6</text>
+<rect x="40" y="104" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">e</text>
+<rect x="74" y="104" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="91.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">i</text>
+<rect x="108" y="104" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">d</text>
+<rect x="142" y="104" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="159.0" y="120.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">b</text>
+<rect x="176" y="104" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="193.0" y="120.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">a</text>
+<rect x="210" y="104" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="227.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">o</text>
+<rect x="244" y="104" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="261.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">o</text>
+<rect x="139" y="101" width="74" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="302" y="119" font-size="14" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central">&quot;ba&quot; 是 &quot;ab&quot; 换了顺序 ✓</text>
+<line x1="40" y1="176" x2="640" y2="176" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="196" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">Example 2:  s1 = &quot;ab&quot;, s2 = &quot;eidboaoo&quot;  →  False</text>
+<text x="57.0" y="282" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">0</text>
+<text x="91.0" y="282" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">1</text>
+<text x="125.0" y="282" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">2</text>
+<text x="159.0" y="282" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">3</text>
+<text x="193.0" y="282" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">4</text>
+<text x="227.0" y="282" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">5</text>
+<text x="261.0" y="282" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">6</text>
+<text x="295.0" y="282" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">7</text>
+<rect x="40" y="238" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="254.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">e</text>
+<rect x="74" y="238" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="91.0" y="254.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">i</text>
+<rect x="108" y="238" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.0" y="254.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">d</text>
+<rect x="142" y="238" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="159.0" y="254.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">b</text>
+<rect x="176" y="238" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="193.0" y="254.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">o</text>
+<rect x="210" y="238" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="227.0" y="254.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">a</text>
+<rect x="244" y="238" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="261.0" y="254.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">o</text>
+<rect x="278" y="238" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="295.0" y="254.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">o</text>
+<path d="M145 230 L145 222 L241 222 L241 230" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="336" y="224" font-size="12" fill="#712B13" text-anchor="start" font-weight="400" dominant-baseline="central">b 和 a 被 o 隔开, 长度 3 ≠ 2 ✗</text>
+<text x="40" y="304" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">长度为 2 的段: ei, id, db, bo, oa, ao, oo —— 没有一段恰好是一个 a 加一个 b</text>
+<line x1="40" y1="328" x2="640" y2="328" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="33" y="343" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="54" y="350" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">答案 substring / subarray</text>
+<rect x="231.6" y="343" width="14" height="14" rx="3" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="252.6" y="350" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">答案的范围</text>
+<rect x="327.6" y="343" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/>
+<text x="348.6" y="350" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">看起来像, 但不对 (原因写在右边)</text></svg>
+<figcaption>两个例子。</figcaption></figure>
+<p>这题和前面三题有一个明显的不同: 要找的那一段<b>长度是固定的</b>, 必须正好等于 <code>len(s1)</code>。</p>
+<h3>Brute force</h3>
+<p>s2 里每个长度为 m (m = len(s1)) 的段都拿出来, 排个序, 和排好序的 s1 比。一共 n 段, 每段排序 <code>O(m log m)</code>。</p>
+<p>浪费在哪: 相邻两段只差两个字符, 左边出去一个、右边进来一个, 中间 m-2 个字符都一样, 却每次都重新排序。</p>
+<h3>Intuition</h3>
+<p>两个字符串互为 permutation, 等价于<b>每个字母的出现次数都一样</b>。所以不用排序, 比两个计数表就行。</p>
+<p>框的长度固定为 m, 所以 left 不用"收到合法为止", 而是每次 right 进来一个, left 就跟着出去一个, 框一直保持 m 长。每滑一格只改两个计数, 是 <code>O(1)</code> 的。</p>
+<h3>算法</h3>
+<ol><li><code>need</code> = s1 里每个字母的次数。<code>win</code> = 当前框里每个字母的次数。</li><li>right 往右走, 把 <code>s2[right]</code> 加进 win。</li><li>如果框的长度超过了 m (也就是 <code>right ≥ m</code>), 把 <code>s2[right - m]</code> 从 win 里减掉。</li><li>如果 <code>win == need</code>, 返回 True。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 416" xmlns="http://www.w3.org/2000/svg" role="img" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>固定长度 window: 每滑一步 O(1) 更新</title><defs><marker id="arr_52514E" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_898781" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_D85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">s1 = &quot;ab&quot;, m = 2 · need = {a:1, b:1} · s2 = &quot;eidbaoo&quot;</text>
 <text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">window 长度恒为 m: 每滑一格 = 右边进 1 个 + 左边出 1 个, 不用重新数 m 个字符</text>
 <rect x="40" y="72" width="22" height="26" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
@@ -1238,7 +1699,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="303.6" y="392" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">window 里其他的</text>
 <rect x="412.8" y="385" width="14" height="14" rx="3" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="433.8" y="392" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">win == need 的 window</text></svg>
-<figcaption>核心: window 长度恒为 m, 每滑一格 = 右进一个 + 左出一个, 更新是 O(1)。</figcaption></figure>
+<figcaption>核心: 框的长度恒为 m, 每滑一格 = 右边进一个 + 左边出一个。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 588" xmlns="http://www.w3.org/2000/svg" role="img" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Permutation in String trace</title><defs><marker id="arr_52514E" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_898781" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_D85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">s1 = &quot;ab&quot; (m = 2), s2 = &quot;eidbaoo&quot; · 每一步: 右边进一个 → 满了 m+1 个就左边出一个 → win == need ?</text>
 <text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">window 长度固定 = m = 2, 不需要 while; need = s1 里每个字母的个数, win = window 里每个字母的个数</text>
 <text x="40" y="72" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">当前输入</text>
@@ -1456,16 +1918,89 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="433.8" y="566" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">window 外</text>
 <rect x="507.0" y="559" width="14" height="14" rx="3" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="528.0" y="566" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">当前最优 window</text></svg>
-<figcaption>运行流程: right = 2 起 window 满了, 每步先进后出; right = 4 时 win == need。</figcaption></figure>
+<figcaption>right = 2 起框满了, 之后每步先进后出。right = 4 时框是 "ba", 计数和 need 一样。</figcaption></figure>
+<p>Find All Anagrams in a String 是同一题, 区别只是不在第一次找到时返回, 而是把所有起点都记下来。</p>
+<h3>复杂度</h3>
+<p>Time <code>O(26n)</code>, 每步比较两个长度 26 的表。Space <code>O(26)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">check_inclusion</span>(s1, s2):</span><span class="l">    m = <span class="t">len</span>(s1)</span><span class="l">    need = [0] * 26               <span class="c"># s1 里每个字母要几个</span></span><span class="l">    win = [0] * 26                <span class="c"># 当前 window 里每个字母有几个</span></span><span class="l">    <span class="k">for</span> ch <span class="k">in</span> s1:</span><span class="l">        need[<span class="t">ord</span>(ch) - 97] += 1</span><span class="l">    <span class="k">for</span> right, ch <span class="k">in</span> <span class="t">enumerate</span>(s2):</span><span class="l">        win[<span class="t">ord</span>(ch) - 97] += 1                 <span class="c"># 右边进一个</span></span><span class="l">        <span class="k">if</span> right &gt;= m:                         <span class="c"># window 变成 m + 1 了</span></span><span class="l">            win[<span class="t">ord</span>(s2[right - m]) - 97] -= 1  <span class="c"># 左边出一个 (left = right - m)</span></span><span class="l">        <span class="k">if</span> win == need:                        <span class="c"># 长度恒为 m 且计数相同 = permutation</span></span><span class="l">            <span class="r">return</span> <span class="k">True</span></span><span class="l">    <span class="r">return</span> <span class="k">False</span></span></div>
-<p>Find All Anagrams in a String 是同一个模板, 唯一改动是不 return, 把起点收集起来:</p>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">find_anagrams</span>(s, p):</span><span class="l">    m = <span class="t">len</span>(p)</span><span class="l">    need, win, res = [0] * 26, [0] * 26, []</span><span class="l">    <span class="k">for</span> ch <span class="k">in</span> p:</span><span class="l">        need[<span class="t">ord</span>(ch) - 97] += 1</span><span class="l">    <span class="k">for</span> right, ch <span class="k">in</span> <span class="t">enumerate</span>(s):</span><span class="l">        win[<span class="t">ord</span>(ch) - 97] += 1</span><span class="l">        <span class="k">if</span> right &gt;= m:</span><span class="l">            win[<span class="t">ord</span>(s[right - m]) - 97] -= 1</span><span class="l">        <span class="k">if</span> win == need:</span><span class="l">            res.<span class="f">append</span>(right - m + 1)          <span class="c"># 唯一区别: 不 return, 记下起点</span></span><span class="l">    <span class="r">return</span> res</span></div>
-<p>Time <code>O(26 n)</code> (每步比较两个长度 26 的 list), Space <code>O(26)</code>。</p>
-<p class="note"><b>记:</b>固定长度 m: 进一个、出一个, window 大小恒定。同类: Maximum Average Subarray I, Maximum Points You Can Obtain from Cards (取反: 找长度 n-k 的最小和)。</p>
-<h2>5. Minimum Size Subarray Sum: 求最短, "合法才缩"</h2>
-<p>题目: 正整数数组 <code>nums</code> 和 <code>target</code>, 求和 ≥ target 的最短连续 subarray 的长度。例: <code>target = 7, nums = [2,3,1,2,4,3]</code> → 2 ([4,3])。</p>
-<p>Brute force: 枚举 (left, right) 求和, <code>O(n^2)</code>。</p>
-<p>关键观察: 全是正数 → window 越大和越大, 所以<b>合法性方向反过来了: 越大越容易合法</b>。right 扩到刚合法时, 当前 window 是一个候选, 再缩 left 只会让它更短, 所以"合法就缩", 缩一次记一次答案。相比前面: while 条件取反, <b>记答案挪到 while 里面</b>。</p>
+</details>
+<p class="note"><b>记:</b>长度固定为 m 的连续段: 右边进一个, 左边出一个, 用计数表代替排序。</p>
+<h2>5. Minimum Size Subarray Sum</h2>
+<h3>题目在问什么</h3>
+<p>给一个<b>全是正整数</b>的数组 <code>nums</code> 和一个 <code>target</code>。找一段连续的 subarray, 它的和 ≥ target, 而且越短越好。问最短长度。找不到就返回 0。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 370" xmlns="http://www.w3.org/2000/svg" role="img" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Minimum Size Subarray Sum examples</title><defs><marker id="arr_52514E" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_898781" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_D85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">全是正整数。找一段连续的数, 加起来 ≥ target, 而且越短越好</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">Example 1:  target = 7, nums = [2,3,1,2,4,3]  →  2</text>
+<text x="57.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">0</text>
+<text x="91.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">1</text>
+<text x="125.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">2</text>
+<text x="159.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">3</text>
+<text x="193.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">4</text>
+<text x="227.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">5</text>
+<rect x="40" y="104" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">2</text>
+<rect x="74" y="104" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="91.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">3</text>
+<rect x="108" y="104" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<rect x="142" y="104" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="159.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">2</text>
+<rect x="176" y="104" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="193.0" y="120.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">4</text>
+<rect x="210" y="104" width="34" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="227.0" y="120.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">3</text>
+<path d="M43 96 L43 88 L173 88 L173 96" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="268" y="90" font-size="12" fill="#712B13" text-anchor="start" font-weight="400" dominant-baseline="central">2+3+1+2 = 8 ≥ 7 也行, 但长度 4 不是最短</text>
+<rect x="173" y="101" width="74" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="268" y="119" font-size="14" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central">4 + 3 = 7 ≥ 7, 长度 2</text>
+<line x1="40" y1="176" x2="640" y2="176" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="196" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">Example 2:  target = 11, nums = [1,1,1,1,1,1,1,1]  →  0</text>
+<text x="57.0" y="282" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">0</text>
+<text x="91.0" y="282" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">1</text>
+<text x="125.0" y="282" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">2</text>
+<text x="159.0" y="282" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">3</text>
+<text x="193.0" y="282" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">4</text>
+<text x="227.0" y="282" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">5</text>
+<text x="261.0" y="282" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">6</text>
+<text x="295.0" y="282" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">7</text>
+<rect x="40" y="238" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="254.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<rect x="74" y="238" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="91.0" y="254.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<rect x="108" y="238" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.0" y="254.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<rect x="142" y="238" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="159.0" y="254.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<rect x="176" y="238" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="193.0" y="254.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<rect x="210" y="238" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="227.0" y="254.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<rect x="244" y="238" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="261.0" y="254.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<rect x="278" y="238" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="295.0" y="254.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<text x="40" y="304" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">全部加起来才 8 &lt; 11, 没有任何一段够大 → 返回 0</text>
+<line x1="40" y1="328" x2="640" y2="328" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="33" y="343" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="54" y="350" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">答案 substring / subarray</text>
+<rect x="231.6" y="343" width="14" height="14" rx="3" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="252.6" y="350" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">答案的范围</text>
+<rect x="327.6" y="343" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/>
+<text x="348.6" y="350" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">看起来像, 但不对 (原因写在右边)</text></svg>
+<figcaption>两个例子。</figcaption></figure>
+<p>这次要的是<b>最短</b>。例子 1 里 <code>[2,3,1,2]</code> 的和也够大, 但它有 4 个数, 而 <code>[4,3]</code> 只要 2 个。</p>
+<h3>Brute force</h3>
+<p>每个起点往右加, 加到和 ≥ target 就停, 记下长度。<code>O(n²)</code>。</p>
+<h3>Intuition: 方向反过来了</h3>
+<p>前四题都是"window 越大越容易<b>不合法</b>"。这题因为全是正数, window 越大和越大, 所以是"window 越大越容易<b>合法</b>"。方向反过来了。</p>
+<p>于是做法也反过来:</p>
+<ol><li>right 往右扩, 直到和刚好 ≥ target。这时找到了一个候选答案, 记下长度。</li><li>既然已经合法了, 就试着从左边收: 收掉一个, 和变小了, 如果还 ≥ target, 说明更短的也行, 再记一次。</li><li>一直收到和 < target 为止, 然后继续扩 right。</li></ol>
+<p>和"求最长"的模板相比, 区别有两个: while 的条件反过来 (合法才收), 以及<b>记答案的位置挪到了 while 里面</b> (每收一次之前都记一次)。</p>
+<h3>算法</h3>
+<ol><li><code>total</code> = 框里的数加起来。right 往右走, <code>total += nums[right]</code>。</li><li>当 <code>total ≥ target</code> 时: 先用 <code>right - left + 1</code> 更新 best (取 min), 再 <code>total -= nums[left]</code>, <code>left += 1</code>。</li><li>最后 best 还是无穷大就返回 0。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 472" xmlns="http://www.w3.org/2000/svg" role="img" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>求最长 vs 求最短: 记答案的位置不同</title><defs><marker id="arr_52514E" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_898781" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_D85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">两种模板只差一件事: while 条件是&quot;不合法&quot;还是&quot;合法&quot;, 以及记答案放在 while 的外面还是里面</text>
 <rect x="40" y="50" width="280" height="132" rx="6" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
 <text x="54" y="70" font-size="14" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central">最长: 合法时记答案</text>
@@ -1531,7 +2066,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="178.8" y="448" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">window 里其他的</text>
 <rect x="288.0" y="441" width="14" height="14" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
 <text x="309.0" y="448" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">window 外</text></svg>
-<figcaption>核心: 最长和最短的模板只差 while 的条件和"记答案"的位置。</figcaption></figure>
+<figcaption>核心: 最长和最短的模板只差两处: while 的条件, 以及"记答案"放在哪里。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 724" xmlns="http://www.w3.org/2000/svg" role="img" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Minimum Size Subarray Sum trace</title><defs><marker id="arr_52514E" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_898781" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_D85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">target = 7, nums = [2,3,1,2,4,3] · 每一步: x 进 window → total ≥ target 就 (记答案, 缩 left) 重复</text>
 <text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">total = window 里所有数相加 · 合法 = total ≥ target</text>
 <text x="40" y="72" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">当前输入</text>
@@ -1762,14 +2298,86 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="303.6" y="702" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">window 里其他的</text>
 <rect x="412.8" y="695" width="14" height="14" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
 <text x="433.8" y="702" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">window 外</text></svg>
-<figcaption>运行流程: right = 4 和 right = 5 时, 合法后连续缩了两次, 每次缩之前都记一次 best。</figcaption></figure>
+<figcaption>right = 4 和 right = 5 时, 合法后连续收了两次, 每收一次之前都记一次 best。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n)</code>, Space <code>O(1)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">min_subarray_len</span>(target, nums):</span><span class="l">    total = 0                     <span class="c"># window 里所有数相加 (nums 全是正数)</span></span><span class="l">    left = 0</span><span class="l">    best = <span class="t">inf</span></span><span class="l">    <span class="k">for</span> right, x <span class="k">in</span> <span class="t">enumerate</span>(nums):</span><span class="l">        total += x</span><span class="l">        <span class="k">while</span> total &gt;= target:    <span class="c"># 合法 (够大了): 先记答案, 再试着缩短</span></span><span class="l">            best = <span class="t">min</span>(best, right - left + 1)</span><span class="l">            total -= nums[left]</span><span class="l">            left += 1</span><span class="l">    <span class="r">return</span> 0 <span class="k">if</span> best == <span class="t">inf</span> <span class="k">else</span> best</span></div>
-<p>Time <code>O(n)</code>, Space <code>O(1)</code>。(另有 prefix sum + 二分的 <code>O(n log n)</code> 解法, 这里不展开。)</p>
-<p class="note"><b>记:</b>求最短: while 合法: 记答案, 然后 left += 1。别把记答案放到 while 外面, 会漏掉连续缩两次的情况。</p>
-<h2>6. Minimum Window Substring: 最短 + 覆盖, 用 need / missing 做 O(1) 判断</h2>
-<p>题目: 字符串 <code>s</code> 和 <code>t</code>, 求 s 中包含 t 所有字符 (含重复次数) 的最短 substring。例: <code>s = "ABAECBA", t = "ABC"</code> → "CBA"。</p>
-<p>Brute force: 枚举 (left, right), 用两个 Counter 比较, <code>O(n^2 × |t|)</code>。</p>
-<p>关键观察: 和上一题同构 (越大越容易合法, 求最短), 难点只在"怎么 O(1) 判断 window 覆盖了 t"。用 <code>need[c]</code> 记还缺几个 c, 用 <code>missing</code> 记所有还缺的字符总数, <code>missing == 0</code> 就是合法。只有"缺的"字符进来才让 missing 减 1; 只有出去后变成"缺"的字符才让 missing 加 1。</p>
+</details>
+<p class="note"><b>记:</b>求最短: 合法了就记答案, 然后收左边看看还能不能更短。记答案要写在 while 里面。</p>
+<h2>6. Minimum Window Substring</h2>
+<h3>题目在问什么</h3>
+<p>给字符串 <code>s</code> 和 <code>t</code>。在 s 里找最短的一段 substring, 它要包含 t 里的每一个字符。t 里重复的字符要重复包含, 比如 t = "AAB", 那这一段里至少要有 2 个 A 和 1 个 B。找不到就返回空字符串。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 388" xmlns="http://www.w3.org/2000/svg" role="img" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Minimum Window Substring examples</title><defs><marker id="arr_52514E" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_898781" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_D85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">在 s 里找最短的一段连续 substring, 它包含 t 的每一个字符 (t 里重复的字符要重复包含)</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">Example 1:  s = &quot;ADOBECODEBANC&quot;, t = &quot;ABC&quot;  →  &quot;BANC&quot;</text>
+<text x="55.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">0</text>
+<text x="85.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">1</text>
+<text x="115.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">2</text>
+<text x="145.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">3</text>
+<text x="175.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">4</text>
+<text x="205.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">5</text>
+<text x="235.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">6</text>
+<text x="265.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">7</text>
+<text x="295.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">8</text>
+<text x="325.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">9</text>
+<text x="355.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">10</text>
+<text x="385.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">11</text>
+<text x="415.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">12</text>
+<rect x="40" y="104" width="30" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="55.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">A</text>
+<rect x="70" y="104" width="30" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="85.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">D</text>
+<rect x="100" y="104" width="30" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="115.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">O</text>
+<rect x="130" y="104" width="30" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="145.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">B</text>
+<rect x="160" y="104" width="30" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="175.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">E</text>
+<rect x="190" y="104" width="30" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="205.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">C</text>
+<rect x="220" y="104" width="30" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="235.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">O</text>
+<rect x="250" y="104" width="30" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="265.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">D</text>
+<rect x="280" y="104" width="30" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="295.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">E</text>
+<rect x="310" y="104" width="30" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="325.0" y="120.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">B</text>
+<rect x="340" y="104" width="30" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="355.0" y="120.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">A</text>
+<rect x="370" y="104" width="30" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="385.0" y="120.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">N</text>
+<rect x="400" y="104" width="30" height="30" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="415.0" y="120.0" font-size="15" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central">C</text>
+<path d="M43 96 L43 88 L217 88 L217 96" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="454" y="90" font-size="12" fill="#712B13" text-anchor="start" font-weight="400" dominant-baseline="central">&quot;ADOBEC&quot; 也包含 A, B, C, 但长度 6</text>
+<rect x="307" y="101" width="126" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="40" y="170" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">答案 &quot;BANC&quot; (index 9..12): 含 B, A, C, 长度 4, 是所有&quot;包含 A,B,C 的段&quot;里最短的</text>
+<line x1="40" y1="194" x2="640" y2="194" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="214" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">Example 2:  s = &quot;a&quot;, t = &quot;aa&quot;  →  &quot;&quot;</text>
+<text x="57.0" y="300" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">0</text>
+<rect x="40" y="256" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="272.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">a</text>
+<text x="40" y="322" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">t 要两个 a, s 只有一个 a → 不存在, 返回空字符串</text>
+<line x1="40" y1="346" x2="640" y2="346" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="33" y="361" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="54" y="368" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">答案 substring / subarray</text>
+<rect x="231.6" y="361" width="14" height="14" rx="3" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="252.6" y="368" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">答案的范围</text>
+<rect x="327.6" y="361" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/>
+<text x="348.6" y="368" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">看起来像, 但不对 (原因写在右边)</text></svg>
+<figcaption>两个例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>枚举每一段, 用两个 Counter 比较这一段是否覆盖了 t。<code>O(n²)</code> 段, 每段比较还要时间。</p>
+<h3>Intuition</h3>
+<p>和第 5 题同一个结构: 框越大越容易覆盖 t (越容易合法), 要求最短。所以还是"扩到合法, 然后收到不合法"。</p>
+<p>难点只有一个: <b>怎么快速知道当前框是否覆盖了 t</b>。每次都把两个计数表完整比一遍太慢。</p>
+<p>办法是记一个总数: <code>missing</code> = 框里还缺几个 t 需要的字符。一开始 <code>missing = len(t)</code>。再用 <code>need[c]</code> 记字符 c 还缺几个。</p>
+<ol><li>一个字符进框时, 如果它正好是缺的 (<code>need[c] > 0</code>), missing 减 1。不管缺不缺, need[c] 都减 1。need[c] 变成负数表示框里这个字符多了。</li><li>一个字符出框时, need[c] 加 1。如果加完变成正数, 说明它从"够了"变成了"缺了", missing 加 1。</li><li><code>missing == 0</code> 就是合法。这样判断合不合法只要看一个数。</li></ol>
+<h3>算法</h3>
+<ol><li>right 往右走, 按上面第 1 条更新 need 和 missing。</li><li>当 <code>missing == 0</code>: 用当前框更新答案 (记下起点和长度), 然后按第 2 条把 <code>s[left]</code> 移出去, <code>left += 1</code>。</li><li>最后返回记下的那一段。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 400" xmlns="http://www.w3.org/2000/svg" role="img" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>need / missing: 怎么 O(1) 判断 window 覆盖了 t</title><defs><marker id="arr_52514E" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_898781" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_D85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">t = &quot;ABC&quot; → need 起始 = {A:1, B:1, C:1}, missing = 3 · 每进一个字符 need[ch] -= 1, 每出一个 need[ch] += 1</text>
 <text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">不用每次比较两个 Counter: 只在&quot;缺的&quot;字符进来时 missing -1, &quot;不缺&quot;的字符出去时 missing 不变</text>
 <rect x="40" y="60" width="290" height="230" rx="6" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
@@ -1821,7 +2429,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="153.6" y="376" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">刚好 (= 0)</text>
 <rect x="232.2" y="369" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
 <text x="253.2" y="376" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">多出来 (&lt; 0)</text></svg>
-<figcaption>核心: need[c] > 0 = 缺, = 0 = 刚好, < 0 = 多余; missing 只统计缺的。</figcaption></figure>
+<figcaption>核心: need[c] > 0 表示缺, = 0 表示刚好, < 0 表示多了。missing 只统计缺的。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 820" xmlns="http://www.w3.org/2000/svg" role="img" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Minimum Window Substring trace</title><defs><marker id="arr_52514E" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_898781" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_D85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">s = &quot;ABAECBA&quot;, t = &quot;ABC&quot;, missing 起始 = len(t) = 3 · 每一步: ch 进 → missing == 0 就 (记答案, 缩 left) 重复</text>
 <text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">need[c] &gt; 0: 还缺 c · = 0: 刚好 · &lt; 0: window 里多了 · missing = 还缺的字符总个数</text>
 <text x="40" y="72" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">当前输入</text>
@@ -2116,14 +2725,54 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="303.6" y="798" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">window 里其他的</text>
 <rect x="412.8" y="791" width="14" height="14" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
 <text x="433.8" y="798" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">window 外</text></svg>
-<figcaption>运行流程: right = 4 时 window 合法, 连续 pop 两次 (第二次 B 变成缺的, 停); right = 6 时又连续 pop 两次, 得到 "CBA"。</figcaption></figure>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">min_window</span>(s, t):</span><span class="l">    need = <span class="t">Counter</span>(t)             <span class="c"># &gt;0: 还缺; =0: 刚好; &lt;0: window 里多了</span></span><span class="l">    missing = <span class="t">len</span>(t)              <span class="c"># 还缺的字符总个数 (重复的字符按个数算)</span></span><span class="l">    left = 0</span><span class="l">    best_len, best_start = <span class="t">inf</span>, 0</span><span class="l">    <span class="k">for</span> right, ch <span class="k">in</span> <span class="t">enumerate</span>(s):</span><span class="l">        <span class="k">if</span> need[ch] &gt; 0:          <span class="c"># ch 是&quot;缺的&quot;, 才让 missing 减 1</span></span><span class="l">            missing -= 1</span><span class="l">        need[ch] -= 1</span><span class="l">        <span class="k">while</span> missing == 0:       <span class="c"># 合法: window 覆盖了 t</span></span><span class="l">            <span class="k">if</span> right - left + 1 &lt; best_len:</span><span class="l">                best_len, best_start = right - left + 1, left</span><span class="l">            need[s[left]] += 1    <span class="c"># s[left] 出 window</span></span><span class="l">            <span class="k">if</span> need[s[left]] &gt; 0: <span class="c"># 出去之后变成&quot;缺&quot;了 -&gt; 不合法</span></span><span class="l">                missing += 1</span><span class="l">            left += 1</span><span class="l">    <span class="r">return</span> <span class="s">&quot;&quot;</span> <span class="k">if</span> best_len == <span class="t">inf</span> <span class="k">else</span> s[best_start:best_start + best_len]</span></div>
+<figcaption>right = 4 时框覆盖了 t, 连续收两次 (第二次把 B 收走后变成缺 B, 停)。right = 6 时又收两次, 得到 "CBA"。</figcaption></figure>
+<h3>复杂度</h3>
 <p>Time <code>O(|s| + |t|)</code>, Space <code>O(Σ)</code>。</p>
-<p class="note"><b>记:</b>覆盖 / 包含类: need 做差额 + missing 做总缺口, 合法判断从 O(Σ) 降到 O(1)。</p>
-<h2>7. Subarray Product Less Than K: 计数, 一个 right 贡献一批答案</h2>
-<p>题目: 正整数数组 <code>nums</code>, 求乘积 < k 的连续 subarray 的个数。例: <code>nums = [10,5,2,6], k = 100</code> → 8。</p>
-<p>Brute force: 枚举起点, 往右乘到 ≥ k 为止, <code>O(n^2)</code>。</p>
-<p>关键观察: 乘积随 window 变大单调递增 (正整数), 所以是"最长"型模板。但这次不是求最长, 而是求个数: <b>固定 right, 合法的 left 是连续的一段 left..right</b>, 所以以 right 结尾的合法 subarray 恰好有 right - left + 1 个。相比前面: <code>best = max(...)</code> 换成 <code>ans += right - left + 1</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">min_window</span>(s, t):</span><span class="l">    need = <span class="t">Counter</span>(t)             <span class="c"># &gt;0: 还缺; =0: 刚好; &lt;0: window 里多了</span></span><span class="l">    missing = <span class="t">len</span>(t)              <span class="c"># 还缺的字符总个数 (重复的字符按个数算)</span></span><span class="l">    left = 0</span><span class="l">    best_len, best_start = <span class="t">inf</span>, 0</span><span class="l">    <span class="k">for</span> right, ch <span class="k">in</span> <span class="t">enumerate</span>(s):</span><span class="l">        <span class="k">if</span> need[ch] &gt; 0:          <span class="c"># ch 是&quot;缺的&quot;, 才让 missing 减 1</span></span><span class="l">            missing -= 1</span><span class="l">        need[ch] -= 1</span><span class="l">        <span class="k">while</span> missing == 0:       <span class="c"># 合法: window 覆盖了 t</span></span><span class="l">            <span class="k">if</span> right - left + 1 &lt; best_len:</span><span class="l">                best_len, best_start = right - left + 1, left</span><span class="l">            need[s[left]] += 1    <span class="c"># s[left] 出 window</span></span><span class="l">            <span class="k">if</span> need[s[left]] &gt; 0: <span class="c"># 出去之后变成&quot;缺&quot;了 -&gt; 不合法</span></span><span class="l">                missing += 1</span><span class="l">            left += 1</span><span class="l">    <span class="r">return</span> <span class="s">&quot;&quot;</span> <span class="k">if</span> best_len == <span class="t">inf</span> <span class="k">else</span> s[best_start:best_start + best_len]</span></div>
+</details>
+<p class="note"><b>记:</b>"包含 t 的所有字符": 用 need 记每种字符还缺几个, 用 missing 记一共还缺几个。missing == 0 就是合法。</p>
+<h2>7. Subarray Product Less Than K</h2>
+<h3>题目在问什么</h3>
+<p>给一个<b>全是正整数</b>的数组 <code>nums</code> 和整数 <code>k</code>。数一数: 有多少段连续的 subarray, 乘积 < k。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 254" xmlns="http://www.w3.org/2000/svg" role="img" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Subarray Product Less Than K examples</title><defs><marker id="arr_52514E" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_898781" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_D85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">全是正整数。数一数: 有多少段连续的数, 乘起来 &lt; k</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">Example:  nums = [10,5,2,6], k = 100  →  8</text>
+<text x="57.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">0</text>
+<text x="91.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">1</text>
+<text x="125.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">2</text>
+<text x="159.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">3</text>
+<rect x="40" y="104" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">10</text>
+<rect x="74" y="104" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="91.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">5</text>
+<rect x="108" y="104" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">2</text>
+<rect x="142" y="104" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="159.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">6</text>
+<path d="M43 96 L43 88 L139 88 L139 96" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="200" y="90" font-size="12" fill="#712B13" text-anchor="start" font-weight="400" dominant-baseline="central">10 × 5 × 2 = 100, 不 &lt; 100 ✗</text>
+<text x="40" y="170" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">合法的 8 段: [10]  [5]  [2]  [6]  [10,5]=50  [5,2]=10  [2,6]=12  [5,2,6]=60</text>
+<text x="40" y="188" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">答案是&quot;个数&quot;, 不是长度: 同一个数可以出现在很多段里</text>
+<line x1="40" y1="212" x2="640" y2="212" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="33" y="227" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="54" y="234" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">答案 substring / subarray</text>
+<rect x="231.6" y="227" width="14" height="14" rx="3" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="252.6" y="234" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">答案的范围</text>
+<rect x="327.6" y="227" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/>
+<text x="348.6" y="234" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">看起来像, 但不对 (原因写在右边)</text></svg>
+<figcaption>例子。</figcaption></figure>
+<p>这题第一次问的是<b>个数</b>, 不是长度。同一个元素可以出现在很多段里, 每一段都要算一次。</p>
+<h3>Brute force</h3>
+<p>每个起点往右乘, 乘到 ≥ k 就停, 停之前每一段都计一次数。<code>O(n²)</code>。</p>
+<h3>Intuition: 每一段按它的右端点来数</h3>
+<p>全是正数, 所以框越大乘积越大, 和前四题一样是"越大越容易不合法", 可以按"最长"的方式维护框。</p>
+<p>问题是怎么数个数。关键想法: <b>每一段都有唯一的右端点。按右端点分组来数, 就不会重复也不会漏。</b></p>
+<p>固定 right。sliding window 收完之后, <code>[left..right]</code> 是以 right 结尾的最长合法段。那么从它里面任取一个起点 (left, left+1, ..., right), 得到的段都更短, 乘积更小, 所以也都合法。这样的起点有 <code>right - left + 1</code> 个。</p>
+<p>所以和前面的唯一区别: 把 <code>best = max(best, 长度)</code> 换成 <code>ans += right - left + 1</code>。</p>
+<h3>算法</h3>
+<ol><li><code>prod</code> = 框里的数乘起来。right 往右走, <code>prod *= nums[right]</code>。</li><li>当 <code>prod ≥ k</code> 时, 收左边: <code>prod //= nums[left]</code>, <code>left += 1</code>。</li><li><code>ans += right - left + 1</code>。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 422" xmlns="http://www.w3.org/2000/svg" role="img" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>计数: 以 right 结尾的合法 subarray 个数 = right - left + 1</title><defs><marker id="arr_52514E" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_898781" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_D85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">nums = [10,5,2,6], k = 100, right = 3 (x = 6), 缩完之后 left = 1 · window = [5,2,6], prod = 60</text>
 <text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">固定右端点 right, 合法的起点是连续的一段 left..right (起点越靠左乘积越大, 单调)</text>
 <rect x="70" y="70" width="40" height="30" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
@@ -2160,7 +2809,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="216.0" y="398" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">新进来的 6</text>
 <rect x="292.2" y="391" width="14" height="14" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
 <text x="313.2" y="398" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">已被缩掉</text></svg>
-<figcaption>核心: 以 right 结尾的 subarray 按起点数, 起点 left..right 都合法。</figcaption></figure>
+<figcaption>核心: 以 right 结尾的段, 起点可以是 left..right 中的任何一个, 一共 right - left + 1 段。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 676" xmlns="http://www.w3.org/2000/svg" role="img" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Subarray Product Less Than K trace</title><defs><marker id="arr_52514E" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_898781" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_D85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">nums = [10,5,2,6,1,3], k = 100 · 每一步: x 进 (prod *= x) → prod ≥ k 就缩 left (prod //= nums[left])</text>
 <text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">ans += right - left + 1 = 以 right 结尾的合法 subarray 个数 (起点 left..right 各一个)</text>
 <text x="40" y="72" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">当前输入</text>
@@ -2391,14 +3041,72 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="303.6" y="654" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">window 里其他的</text>
 <rect x="412.8" y="647" width="14" height="14" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
 <text x="433.8" y="654" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">window 外</text></svg>
-<figcaption>运行流程 (nums = [10,5,2,6,1,3]): 每步新增的 subarray 都列出来了, 总数 1+2+2+3+4+4 = 16。</figcaption></figure>
-<div class="code"><span class="l"><span class="k">def</span> <span class="f">num_subarray_product_less_than_k</span>(nums, k):</span><span class="l">    <span class="k">if</span> k &lt;= 1:                    <span class="c"># 正整数的乘积 &gt;= 1, 一个都不合法</span></span><span class="l">        <span class="r">return</span> 0</span><span class="l">    prod = 1                      <span class="c"># window 里所有数相乘</span></span><span class="l">    left = ans = 0</span><span class="l">    <span class="k">for</span> right, x <span class="k">in</span> <span class="t">enumerate</span>(nums):</span><span class="l">        prod *= x</span><span class="l">        <span class="k">while</span> prod &gt;= k:          <span class="c"># 不合法: 乘积太大</span></span><span class="l">            prod //= nums[left]</span><span class="l">            left += 1</span><span class="l">        ans += right - left + 1   <span class="c"># 以 right 结尾的合法 subarray 数 (起点 left..right)</span></span><span class="l">    <span class="r">return</span> ans</span></div>
+<figcaption>nums = [10,5,2,6,1,3]: 每一步新增的段都列出来了, 总数 1+2+2+3+4+4 = 16。</figcaption></figure>
+<h3>复杂度</h3>
 <p>Time <code>O(n)</code>, Space <code>O(1)</code>。</p>
-<p class="note"><b>记:</b>求个数: 每个 subarray 只按右端点数一次, ans += right - left + 1。要求 "全是正数" 才单调。</p>
-<h2>8. Subarrays with K Different Integers: exactly K = atMost(K) - atMost(K-1)</h2>
-<p>题目: 整数数组 <code>nums</code>, 求恰好有 k 种不同整数的连续 subarray 个数。例: <code>nums = [1,2,1,2,3], k = 2</code> → 7。</p>
-<p>Brute force: 枚举 (left, right), 用 set 数种类, <code>O(n^2)</code>。</p>
-<p>关键观察: "恰好 K 种" 不单调 (window 扩大种类可能多一, 缩小可能少一, 两个方向都会破坏), 模板用不了。但"最多 K 种"单调, 并且能用上一题的计数写法。而<b>恰好 K = 最多 K - 最多 (K-1)</b>。相比上一题: 写一个 at_most(k), 调用两次相减。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">num_subarray_product_less_than_k</span>(nums, k):</span><span class="l">    <span class="k">if</span> k &lt;= 1:                    <span class="c"># 正整数的乘积 &gt;= 1, 一个都不合法</span></span><span class="l">        <span class="r">return</span> 0</span><span class="l">    prod = 1                      <span class="c"># window 里所有数相乘</span></span><span class="l">    left = ans = 0</span><span class="l">    <span class="k">for</span> right, x <span class="k">in</span> <span class="t">enumerate</span>(nums):</span><span class="l">        prod *= x</span><span class="l">        <span class="k">while</span> prod &gt;= k:          <span class="c"># 不合法: 乘积太大</span></span><span class="l">            prod //= nums[left]</span><span class="l">            left += 1</span><span class="l">        ans += right - left + 1   <span class="c"># 以 right 结尾的合法 subarray 数 (起点 left..right)</span></span><span class="l">    <span class="r">return</span> ans</span></div>
+</details>
+<p class="note"><b>记:</b>求个数: 按右端点分组, 每个 right 贡献 right - left + 1 段。前提还是合法性单调 (这里靠"全是正数")。</p>
+<h2>8. Subarrays with K Different Integers</h2>
+<h3>题目在问什么</h3>
+<p>给一个整数数组 <code>nums</code> 和整数 <code>k</code>。数一数: 有多少段连续的 subarray, 里面<b>恰好</b>有 k 种不同的数字。</p>
+<h3>看例子</h3>
+<figure><svg width="100%" viewBox="0 0 680 388" xmlns="http://www.w3.org/2000/svg" role="img" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Subarrays with K Different Integers examples</title><defs><marker id="arr_52514E" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_898781" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_D85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">数一数: 有多少段连续的数, 里面恰好有 k 种不同的数字</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">Example 1:  nums = [1,2,1,2,3], k = 2  →  7</text>
+<text x="57.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">0</text>
+<text x="91.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">1</text>
+<text x="125.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">2</text>
+<text x="159.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">3</text>
+<text x="193.0" y="148" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">4</text>
+<rect x="40" y="104" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<rect x="74" y="104" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="91.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">2</text>
+<rect x="108" y="104" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<rect x="142" y="104" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="159.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">2</text>
+<rect x="176" y="104" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="193.0" y="120.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">3</text>
+<path d="M111 96 L111 88 L207 88 L207 96" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="234" y="90" font-size="12" fill="#712B13" text-anchor="start" font-weight="400" dominant-baseline="central">[1,2,3] 有 3 种 ✗</text>
+<text x="40" y="170" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">恰好 2 种的 7 段: [1,2]  [2,1]  [1,2]  [2,3]  [1,2,1]  [2,1,2]  [1,2,1,2]</text>
+<line x1="40" y1="194" x2="640" y2="194" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="214" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">Example 2:  nums = [1,2,1,3,4], k = 3  →  3</text>
+<text x="57.0" y="300" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">0</text>
+<text x="91.0" y="300" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">1</text>
+<text x="125.0" y="300" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">2</text>
+<text x="159.0" y="300" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">3</text>
+<text x="193.0" y="300" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">4</text>
+<rect x="40" y="256" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="272.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<rect x="74" y="256" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="91.0" y="272.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">2</text>
+<rect x="108" y="256" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.0" y="272.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">1</text>
+<rect x="142" y="256" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="159.0" y="272.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">3</text>
+<rect x="176" y="256" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="193.0" y="272.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">4</text>
+<text x="40" y="322" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">恰好 3 种的 3 段: [1,2,1,3]  [2,1,3]  [1,3,4]</text>
+<line x1="40" y1="346" x2="640" y2="346" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="33" y="361" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.8"/>
+<text x="54" y="368" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">答案 substring / subarray</text>
+<rect x="231.6" y="361" width="14" height="14" rx="3" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="252.6" y="368" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">答案的范围</text>
+<rect x="327.6" y="361" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="3 2"/>
+<text x="348.6" y="368" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">看起来像, 但不对 (原因写在右边)</text></svg>
+<figcaption>两个例子。</figcaption></figure>
+<h3>Brute force</h3>
+<p>每个起点往右扩, 用 set 数种类, 种类恰好 k 就计数, 超过 k 就停。<code>O(n²)</code>。</p>
+<h3>Intuition: "恰好" 不单调, 但 "最多" 单调</h3>
+<p>先试试直接套第 7 题。问题出在"恰好 k 种"不是单调的: 一段只有 1 种 (少了), 往右扩可能变成 2 种 (刚好), 再扩可能变成 3 种 (多了)。扩大既可能让它变合法, 也可能让它变不合法, left 不知道该怎么动。</p>
+<p>但是 "<b>最多</b> k 种" 是单调的: 一段已经超过 k 种了, 再扩只会更多。所以"最多 k 种的段有几个"可以直接用第 7 题的方法数。</p>
+<p>然后用一个减法: <code>恰好 k 种 = 最多 k 种 - 最多 (k-1) 种</code>。最多 k 种的段, 去掉最多 k-1 种的段, 剩下的就是恰好 k 种的。</p>
+<h3>算法</h3>
+<ol><li>写一个函数 <code>at_most(k)</code>: 用第 7 题的方法数"种类 ≤ k 的段有几个"。window 里用 dict 计数, <code>len(cnt)</code> 就是种类数, 某个数的次数减到 0 时要把它从 dict 里删掉。</li><li>答案 = <code>at_most(k) - at_most(k - 1)</code>。</li></ol>
 <figure><svg width="100%" viewBox="0 0 680 328" xmlns="http://www.w3.org/2000/svg" role="img" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>exactly K = atMost(K) - atMost(K-1)</title><defs><marker id="arr_52514E" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_898781" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_D85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">nums = [1,2,1,2,3], k = 2 · 全部 subarray 里, 按&quot;不同数字的种类数&quot;分类</text>
 <text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">&quot;恰好 K 种&quot; 本身不单调, 不能直接滑: window 扩大可能 K → K+1, 缩小可能 K → K-1, 两个方向都会破坏</text>
 <text x="40" y="56" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">&quot;最多 K 种&quot; 单调: 扩大只会让种类变多 → 超了就缩 left, 是标准模板</text>
@@ -2419,7 +3127,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="159.0" y="304" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">种类恰好 K</text>
 <rect x="235.2" y="297" width="14" height="14" rx="3" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="256.2" y="304" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">答案</text></svg>
-<figcaption>核心: atMost(2) 里 = 种类 ≤ 1 的 (5 个) + 种类恰好 2 的 (7 个)。</figcaption></figure>
+<figcaption>核心: 种类 ≤ 2 的 12 段 = 种类 ≤ 1 的 5 段 + 种类恰好 2 的 7 段。</figcaption></figure>
+<h3>手动走一遍</h3>
 <figure><svg width="100%" viewBox="0 0 680 588" xmlns="http://www.w3.org/2000/svg" role="img" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Subarrays with K Different Integers trace</title><defs><marker id="arr_52514E" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_898781" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arr_D85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">nums = [1,2,1,2,3], k = 2 · 同一个 right 同时跑两个 window: 最多 2 种 (atMost(2)) 和 最多 1 种 (atMost(1))</text>
 <text x="40" y="38" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">a2 = 以 right 结尾、最多 2 种的 subarray 数 · a1 = 最多 1 种 · 恰好 2 种 = a2 - a1</text>
 <text x="40" y="72" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">当前输入</text>
@@ -2590,24 +3299,28 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="303.6" y="566" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">window 里其他的</text>
 <rect x="412.8" y="559" width="14" height="14" rx="3" fill="#FFFFFF" stroke="#D3D1C7" stroke-width="0.8"/>
 <text x="433.8" y="566" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">window 外</text></svg>
-<figcaption>运行流程: 同一个 right 上两个 window (最多 2 种 / 最多 1 种) 各自缩, 每步的差就是以 right 结尾、恰好 2 种的个数。</figcaption></figure>
+<figcaption>同一个 right 上有两个框 (最多 2 种 / 最多 1 种), 各自收左边。每一步两者的差, 就是以 right 结尾、恰好 2 种的段数。</figcaption></figure>
+<h3>复杂度</h3>
+<p>Time <code>O(n)</code> (扫两遍), Space <code>O(k)</code>。</p>
+<details><summary>参考代码 (先自己按上面的算法步骤写, 写不出来再展开)</summary>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">subarrays_with_k_distinct</span>(nums, k):</span><span class="l">    <span class="k">def</span> <span class="f">at_most</span>(k):               <span class="c"># 最多 k 种不同数字的 subarray 个数</span></span><span class="l">        cnt = <span class="t">defaultdict</span>(<span class="t">int</span>)</span><span class="l">        left = total = 0</span><span class="l">        <span class="k">for</span> right, x <span class="k">in</span> <span class="t">enumerate</span>(nums):</span><span class="l">            cnt[x] += 1</span><span class="l">            <span class="k">while</span> <span class="t">len</span>(cnt) &gt; k:   <span class="c"># 不合法: 种类超过 k</span></span><span class="l">                cnt[nums[left]] -= 1</span><span class="l">                <span class="k">if</span> cnt[nums[left]] == 0:</span><span class="l">                    <span class="k">del</span> cnt[nums[left]]   <span class="c"># 必须 del: len(cnt) 就是种类数</span></span><span class="l">                left += 1</span><span class="l">            total += right - left + 1     <span class="c"># 以 right 结尾的合法 subarray 数</span></span><span class="l">        <span class="r">return</span> total</span><span class="l">    <span class="r">return</span> <span class="f">at_most</span>(k) - <span class="f">at_most</span>(k - 1)    <span class="c"># exactly k = (&lt;= k) - (&lt;= k-1)</span></span></div>
-<p>Time <code>O(n)</code> (两次扫描), Space <code>O(k)</code>。</p>
-<p class="note"><b>记:</b>"恰好 K" 不单调 → 拆成 atMost(K) - atMost(K-1)。同类: Binary Subarrays With Sum, Count Number of Nice Subarrays。</p>
-<h2>9. 识别信号: 看到什么 → 试什么</h2>
+</details>
+<p class="note"><b>记:</b>"恰好 k" 不单调, 拆成 atMost(k) - atMost(k-1), 两个都能用 sliding window 数。</p>
+<h2>9. 识别信号: 看到什么, 就想到 sliding window</h2>
+<p>读完上面 8 题以后, 这张表用来做最后的整理。面试时看到左边的特征, 先试右边的做法。</p>
 <table>
 <tr><th>题目特征</th><th>做法</th><th>complexity</th></tr>
-<tr><td>连续 subarray / substring + 求<b>最长</b>, 合法性"越大越容易不合法"</td><td>for right: 进 → while 不合法: 缩 left → 记答案</td><td><code>O(n^2)</code> → <code>O(n)</code></td></tr>
-<tr><td>连续 + 求<b>最短</b>, 合法性"越大越容易合法" (正数和 ≥ target, 覆盖 t)</td><td>while 合法: 先记答案, 再缩 left</td><td><code>O(n^2)</code> → <code>O(n)</code></td></tr>
-<tr><td>"最多修改 / 翻转 / 替换 k 个"</td><td>window 里违规数 ≤ k, state 只维护违规数 (或 cnt)</td><td><code>O(n^2)</code> → <code>O(n)</code></td></tr>
-<tr><td>长度<b>恰好</b>是 m, 或"连续 m 个"</td><td>固定 window: 进一个, if right >= m 出一个</td><td><code>O(n × m)</code> → <code>O(n)</code></td></tr>
-<tr><td>包含 / 覆盖 t 的所有字符</td><td>need Counter + missing 总缺口, missing == 0 为合法</td><td><code>O(n^2 × |t|)</code> → <code>O(|s| + |t|)</code></td></tr>
-<tr><td>求<b>个数</b>, 且合法性单调 (正数乘积 / 和, 最多 K 种)</td><td>ans += right - left + 1</td><td><code>O(n^2)</code> → <code>O(n)</code></td></tr>
-<tr><td>"恰好 K" 个 (种类 / 奇数 / 和)</td><td>atMost(K) - atMost(K-1)</td><td><code>O(n^2)</code> → <code>O(n)</code></td></tr>
-<tr><td>数组有<b>负数</b>, 或求"和恰好等于 k"</td><td>合法性不单调, 不能用 sliding window → prefix sum + Hash Table (见 04 · Prefix Sum)</td><td><code>O(n^2)</code> → <code>O(n)</code></td></tr>
-<tr><td>求每个 window 里的<b>最大 / 最小</b> (Sliding Window Maximum)</td><td>window 本身是固定的, 但要 monotonic deque (见 Monotonic Stack / Queue 那一篇)</td><td><code>O(nk)</code> → <code>O(n)</code></td></tr>
+<tr><td>连续 subarray / substring + 求<b>最长</b>, 而且 window 越大越容易不合法</td><td>right 进 → 不合法就收 left → 记答案</td><td><code>O(n^2)</code> → <code>O(n)</code></td></tr>
+<tr><td>连续 + 求<b>最短</b>, 而且 window 越大越容易合法 (正数和 ≥ target, 覆盖 t)</td><td>合法就先记答案, 再收 left</td><td><code>O(n^2)</code> → <code>O(n)</code></td></tr>
+<tr><td>"最多修改 / 翻转 / 替换 k 个"</td><td>window 里需要改的个数 ≤ k</td><td><code>O(n^2)</code> → <code>O(n)</code></td></tr>
+<tr><td>长度<b>固定</b>为 m</td><td>右边进一个, 左边出一个</td><td><code>O(n × m)</code> → <code>O(n)</code></td></tr>
+<tr><td>包含 / 覆盖 t 的所有字符</td><td>need 记每种缺几个 + missing 记一共缺几个</td><td><code>O(n^2 × |t|)</code> → <code>O(|s| + |t|)</code></td></tr>
+<tr><td>求<b>个数</b>, 合法性单调</td><td>每个 right 贡献 right - left + 1 段</td><td><code>O(n^2)</code> → <code>O(n)</code></td></tr>
+<tr><td>"恰好 k 个"</td><td>atMost(k) - atMost(k-1)</td><td><code>O(n^2)</code> → <code>O(n)</code></td></tr>
+<tr><td>数组有<b>负数</b>, 或者求"和恰好等于 k"</td><td>合法性不单调, 不能用 sliding window → 04 · Prefix Sum</td><td><code>O(n^2)</code> → <code>O(n)</code></td></tr>
+<tr><td>求每个 window 里的<b>最大 / 最小值</b></td><td>需要 monotonic deque → 07 · Monotonic Stack / Queue</td><td><code>O(nk)</code> → <code>O(n)</code></td></tr>
 </table>
-<p>判断能不能用的一句话: <b>把 right 往右推一格, 合法性只会往一个方向变吗?</b> 是 → sliding window; 否 (有负数 / 恰好) → 换思路或拆成 atMost。</p>
-<h2>以后再学 (一行)</h2>
-<p>Longest Substring with At Least K Repeating Characters (合法性不单调, 要枚举种类数或分治)、Substring with Concatenation of All Words (按 word 长度分多个起点各滑一遍)。</p>
+<p>一句话判断: <b>把 right 往右推一格, "合法"只会往一个方向变吗?</b> 是, 就用 sliding window。不是 (有负数、要"恰好"), 就换方法或者拆成 atMost。</p>
+<h2>以后再学</h2>
+<p>Longest Substring with At Least K Repeating Characters (合法性不单调, 要枚举种类数或分治)、Substring with Concatenation of All Words (按 word 长度分几个起点各滑一遍)。</p>
 </article></body></html>
