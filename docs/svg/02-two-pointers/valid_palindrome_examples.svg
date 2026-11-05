@@ -1,0 +1,27 @@
+<svg width="100%" viewBox="0 0 680 362" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Valid Palindrome examples</title><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">只看字母和数字, 不分大小写, 正着读和反着读一样就是 palindrome (回文)</text>
+<line x1="40" y1="42" x2="640" y2="42" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="62" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">Example 1:  &quot;A man, a plan, a canal: Panama&quot;  →  True</text>
+<text x="40" y="82" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">去掉空格和标点, 全变小写: &quot;amanaplanacanalpanama&quot;, 反过来也一样</text>
+<line x1="40" y1="106" x2="640" y2="106" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="126" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">Example 2:  &quot;race a car&quot;  →  False</text>
+<text x="40" y="146" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">变成 &quot;raceacar&quot;, 反过来是 &quot;racaecar&quot;, 不一样</text>
+<line x1="40" y1="170" x2="640" y2="170" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="190" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central">II, Example:  &quot;abca&quot;  →  True (最多删一个字符)</text>
+<rect x="40" y="232" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="57.0" y="248.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">a</text>
+<text x="57.0" y="274" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">0</text>
+<rect x="74" y="232" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="91.0" y="248.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">b</text>
+<text x="91.0" y="274" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">1</text>
+<rect x="108" y="232" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="125.0" y="248.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">c</text>
+<text x="125.0" y="274" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">2</text>
+<rect x="142" y="232" width="34" height="30" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.8"/>
+<text x="159.0" y="248.0" font-size="15" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central">a</text>
+<text x="159.0" y="274" font-size="11" fill="#52514E" text-anchor="middle" font-weight="400" dominant-baseline="central">3</text>
+<path d="M111 224 L111 216 L139 216 L139 224" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="200" y="218" font-size="12" fill="#712B13" text-anchor="start" font-weight="400" dominant-baseline="central">删掉 c</text>
+<text x="40" y="294" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">删掉 index 2 的 c 得到 &quot;aba&quot;, 是回文。&quot;abc&quot; 删哪个都不行 → False</text>
+<line x1="40" y1="318" x2="640" y2="318" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<rect x="33" y="333" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
+<text x="54" y="340" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central">要删掉的字符</text></svg>
