@@ -1480,3 +1480,204 @@ def _erase_by_start(iv):
 assert _erase_by_start(_iv) == 3
 # Min arrows 和 Non-overlapping 的关系: 闭区间相接算重叠 => 一支箭 = 一个共点的组
 print("doc examples ok")
+
+
+# ====================================================================== 生成 HTML
+doc = d.Doc("10 · Intervals")
+doc.main("主线: interval 题只有一个动作 —— <b>先排序, 再从左到右扫一遍, 每个 interval 只和 \"上一个状态\" 比较</b>。"
+         "排序把 \"任意两个 interval 的关系\" (n² 对) 压成 \"相邻的关系\" (n 对)。剩下的只是: 按谁排序, 以及 \"上一个状态\" 存什么。")
+doc.main("概念链: overlap 条件 → Merge Intervals (按 start) → Insert Interval (已排序, 三段) → "
+         "Non-overlapping Intervals (按 end 贪心) → Minimum Arrows (同一个贪心, 改一个符号) → "
+         "Meeting Rooms (相邻比较) → Meeting Rooms II (同时进行的最大数: heap / 扫描线) → "
+         "Interval List Intersections (两个列表, 双指针) → My Calendar I (在线, bisect 找邻居)")
+
+# ---------------------------------------------------------------- 0
+doc.h2("0. 第一性原理: 先定义 \"重叠\", 再用排序把 n² 对压成 n 对")
+doc.p("<b>Brute force。</b>n 个 interval, 想合并 / 找冲突 / 数同时进行几个。最朴素的做法: 每一对都比一次, 共 n(n-1)/2 对, "
+      "<code>O(n²)</code>。合并题更糟: 合并出一个新 interval 后, 它又可能和别的重叠, 要重新比, 反复直到没有变化。")
+doc.p("<b>先把 \"重叠\" 写成一个式子。</b>不重叠只有两种: a 整个在 b 左边 (<code>a.end &lt; b.start</code>), "
+      "或整个在 b 右边 (<code>b.end &lt; a.start</code>)。取反就是重叠条件。闭区间时首尾相接 (<code>a.end == b.start</code>) 也算重叠; "
+      "半开区间 <code>[start, end)</code> 则不算, 要把 <code>≤</code> 换成 <code>&lt;</code>。每道题先看清是哪种。")
+doc.svg(SLUG + "/overlap_core.svg", "四种位置关系都代入同一个式子。绿色是交集 (后面 Interval List Intersections 直接用它); 红色虚线是空隙。")
+doc.code(CODE["overlap"])
+doc.p("<b>brute force 在浪费什么。</b>它丢掉了 \"位置\" 这个信息: 数轴上离得很远的两个 interval, 一眼就知道不重叠, 却还是要比一次。"
+      "按 start 排序之后, \"位置\" 变成了 \"顺序\": 序列里隔得远的, 数轴上也隔得远。")
+doc.p("<b>为什么只和 \"上一个合并结果\" 比。</b>按 start 排序后处理 cur 时, 三个事实: "
+      "(1) cur.start ≥ 之前所有 interval 的 start; (2) res 里的块互不重叠, 从左到右排好; (3) res[-1].end 是 res 里最大的 end。"
+      "所以 cur.start 只要 ≤ res[-1].end 就和 res[-1] 重叠; 一旦 cur.start &gt; res[-1].end, 它比 res 里所有块的 end 都大, 不可能和更早的块重叠。")
+doc.svg(SLUG + "/sort_core.svg", "排序之后, 比 res[-1] 一次就能回答 \"和前面有没有重叠\"。")
+doc.p("<b>三个通用模板。</b>选哪个, 取决于题目要的是什么:")
+doc.code('''
+# A. 按 start 排序, 只和 res[-1] 比        -> 合并 / 冲突检测 / 插入
+intervals.sort(key=lambda x: x[0])
+for s, e in intervals:
+    if res and s <= res[-1][1]: res[-1][1] = max(res[-1][1], e)
+    else:                       res.append([s, e])
+
+# B. 按 end 排序, 贪心 (keep_end)          -> 最多保留几个 / 最少箭 / 最少删除
+intervals.sort(key=lambda x: x[1])
+for s, e in intervals:
+    if s >= keep_end: keep_end = e          # 保留; 否则丢掉
+
+# C. 拆成事件, 扫描线                      -> 同一时刻最多几个
+events = [(s, 1) for s, e in iv] + [(e, -1) for s, e in iv]
+events.sort()                               # 同一时刻 -1 排在 +1 前
+for t, delta in events: cur += delta; best = max(best, cur)
+''')
+doc.p("<b>按 start 还是按 end 排?</b>要 \"延展\" (合并, 越并越长) 就按 start, 因为 cur.start 单调不减, 前面的块永远不会再被碰到。"
+      "要 \"尽早释放\" (在所有选择里挑最先结束的, 给后面留空间) 就按 end。")
+doc.note("Interval 题 = 排序 + 扫一遍。排序键: 合并 / 冲突用 start, 贪心选择用 end。先看清闭区间还是半开区间, 决定 ≤ 还是 &lt;。")
+
+# ---------------------------------------------------------------- 1
+doc.h2("1. Merge Intervals: 按 start 排序, 只和 res[-1] 比")
+doc.p("<b>题目。</b>合并所有重叠的 interval。<code>[[1,3],[2,6],[8,10],[15,18]] → [[1,6],[8,10],[15,18]]</code>。"
+      "注意 <code>[[1,4],[4,5]] → [[1,5]]</code>: 闭区间, 首尾相接也合并。")
+doc.p("<b>Brute force。</b>每对比一次重叠, 重叠就合并成一个, 然后重新来过, 直到一整轮都没有变化。最多 n 轮, 每轮 n² 对, 最坏 <code>O(n³)</code>。"
+      "浪费: 合并之后已经确定不会再碰的块, 每一轮还在重复比较。")
+doc.p("<b>关键观察。</b>按 start 排序后, 合并结果是一条从左到右的链, 新来的 interval 只可能碰最后一块 (第 0 节)。"
+      "重叠时只需要把最后一块的 end 拉长; 不重叠就新开一块。")
+doc.svg(SLUG + "/merge_core.svg", "三种情况。重点是第二行: cur 被 res[-1] 整个包住时, 如果直接写 end = e 会把大块缩小, 必须取 max。")
+doc.svg(SLUG + "/merge_trace.svg", "5 个 interval, 排序后一遍扫完: 第 2 个和第 5 个被吞进前一块, 第 3、4 个各自新开一块。")
+doc.code(CODE["merge"])
+doc.p("<b>复杂度。</b>时间 <code>O(n log n)</code>, 全部来自排序, 扫描只有 <code>O(n)</code>。空间 <code>O(n)</code> (输出 res; 排序本身的额外空间忽略不计)。")
+doc.note("Merge = 按 start 排序 + 和 res[-1] 比。重叠: end = max(res[-1].end, e); 不重叠: append。O(n²) 降到 O(n log n)。")
+
+# ---------------------------------------------------------------- 2
+doc.h2("2. Insert Interval: 已经有序, 就不用再排, 三段扫描")
+doc.p("<b>题目。</b>intervals 已按 start 排序且互不重叠, 再插入一个 new, 需要时合并。"
+      "<code>[[1,3],[6,9]]</code> 插入 <code>[2,5]</code> → <code>[[1,5],[6,9]]</code>。")
+doc.p("<b>Brute force。</b>append 之后整体套用上一题: 排序 + 合并, <code>O(n log n)</code>。浪费: 输入本来就有序, 却又排了一次。")
+doc.p("<b>相比上一题多了什么条件, 改哪里。</b>有序 → 去掉 sort。而且 new 吞掉的一定是一段连续的 interval, 所以按位置分成三段, "
+      "<code>i</code> 只往右走一遍: "
+      "① 左边 (<code>end &lt; new.start</code>, 原样放进 res); ② 重叠 (<code>start ≤ new.end</code>, 吞进 new, new 越吞越大); "
+      "③ 右边 (放 new, 再接上剩下的)。注意不是在和 res[-1] 比, 而是把 new 当成 \"正在扩张的那一块\"。")
+doc.svg(SLUG + "/insert_core.svg", "三段的边界由 new.start 和 new.end 两条竖线决定。红色的三个 interval 被 new 吞掉, 合成 [3,10]。")
+doc.svg(SLUG + "/insert_trace.svg", "new = [4,8]。前三步 [1,2] 在左边, [3,5] [6,7] [8,10] 依次被吞 (new 从 [4,8] 变 [3,8] 再变 [3,10]), 最后 [12,16] 在右边。")
+doc.code(CODE["insert"])
+doc.p("<b>复杂度。</b>时间 <code>O(n)</code>, 每个 interval 只被三个 while 里的一个访问一次, 没有排序。空间 <code>O(n)</code> (输出)。")
+doc.note("输入已排序: 不要再 sort。三段: 左边 end &lt; new.start → 重叠 start ≤ new.end (new 取 min / max 吞进来) → 右边。O(n log n) 降到 O(n)。")
+
+# ---------------------------------------------------------------- 3
+doc.h2("3. Non-overlapping Intervals: 改成按 end 排序, 贪心保留")
+doc.p("<b>题目。</b>最少删掉几个 interval, 剩下的互不重叠。首尾相接不算重叠。"
+      "<code>[[1,2],[2,3],[3,4],[1,3]] → 1</code> (删 <code>[1,3]</code>)。等价于: 最多保留几个互不重叠的。")
+doc.p("<b>Brute force。</b>枚举每个 interval 留不留, <code>O(2ⁿ)</code>。DP 版 (按 end 排序后, 每个 interval 找前面能接上的最长链) 是 <code>O(n²)</code>。"
+      "浪费: 没有利用 \"先选哪个\" 的结构, 每个选择都要回头比。")
+doc.p("<b>相比上一题, 变了什么。</b>不再合并, 而是 <b>选</b>。每次选 end 最小的: 它占用的时间最短, 给后面留的空间最大。"
+      "(交换论证: 任何最优方案里, 第一个选中的换成 end 最小的那个, 后面的照样不冲突, 不会变差。)"
+      "按 start 排会出错: start 最小的可能是个很长的 interval, 一选它就挡住后面一串。"
+      "代码里改两处: 排序键 start → end; 判断从 \"重叠就合并\" 变成 \"不重叠就保留, 重叠就丢弃\"。")
+doc.svg(SLUG + "/erase_core.svg", "同一组数据。按 start 排先选长的 A (end = 11) 挡住 B C D, 删 3 个; 按 end 排先选 B, 后面 C D 首尾相接, 只删 A。")
+doc.svg(SLUG + "/erase_trace.svg", "keep_end 是已保留的最后一个 interval 的 end (虚线)。[1,4] 的 start 1 &lt; keep_end 3 被丢掉; [3,5] 的 start 3 = keep_end 3, 首尾相接, 保留。")
+doc.code(CODE["erase"])
+doc.p("<b>复杂度。</b>时间 <code>O(n log n)</code> (排序), 扫描 <code>O(n)</code>。空间 <code>O(1)</code> 额外 (不算排序)。")
+doc.note("\"最多保留 / 最少删除\" = 按 end 排序, keep_end 贪心: s ≥ keep_end 保留并更新, 否则删。O(2ⁿ) 或 O(n²) 降到 O(n log n)。")
+
+# ---------------------------------------------------------------- 4
+doc.h2("4. Minimum Number of Arrows to Burst Balloons: 同一个贪心, 改一个符号")
+doc.p("<b>题目。</b>气球是数轴上的闭区间 <code>[start, end]</code>, 一支箭射在 x 处会射穿所有 <code>start ≤ x ≤ end</code> 的气球。最少几支箭。"
+      "<code>[[10,16],[2,8],[1,6],[7,12]] → 2</code> (射在 6 和 12)。")
+doc.p("<b>Brute force。</b>枚举箭的位置组合 (候选位置只需要考虑各气球的 end): <code>O(2ⁿ)</code>。浪费: 没看出一支箭 = 一组两两共点的气球, 问题其实是 \"最少分几组\"。")
+doc.p("<b>关键观察。</b>和上一题是同一个问题: 最少箭数 = 最多两两不共点的气球数。按 end 排序, 第一个气球 A 的 end 最小, "
+      "射在 A.end 上: 任何射中 A 的位置都 ≤ A.end, 右移到 A.end 不会丢掉其他气球 (它们的 end 都 ≥ A.end), 还可能多射中。"
+      "然后跳过所有 <code>start ≤ arrow_x</code> 的气球。"
+      "<b>和上一题唯一的区别是符号</b>: 这里首尾相接的气球共享一个点, 一支箭能射穿, 所以新射一支的条件是 <code>s &gt; arrow_x</code> (严格大于); 上一题首尾相接不算重叠, 保留的条件是 <code>s ≥ keep_end</code>。")
+doc.svg(SLUG + "/arrows_core.svg", "x = 3 在 A 的内部, 射中 A、B; 右移到 A.end = 6, 射中 A、B、C, 不会丢掉任何一个。")
+doc.svg(SLUG + "/arrows_trace.svg", "5 个气球按 end 排序: [1,6] 开第一支箭 (x = 6), [2,8] 被射穿, [7,12] 的 start 7 &gt; 6 开第二支 (x = 12), [10,16] 被射穿, [15,20] 开第三支。")
+doc.code(CODE["arrows"])
+doc.p("<b>复杂度。</b>时间 <code>O(n log n)</code>, 空间 <code>O(1)</code> 额外。")
+doc.note("Arrows = 按 end 排序, 箭射在第一个气球的 end, 之后 s ≤ arrow_x 的都被带走; 条件 s &gt; arrow_x (闭区间相接共点)。")
+
+# ---------------------------------------------------------------- 5
+doc.h2("5. Meeting Rooms: 按 start 排序, 只比较相邻的两个")
+doc.p("<b>题目。</b>一个人能不能参加所有会议 (没有任何两场时间重叠)。<code>[[0,30],[5,10],[15,20]] → False</code>, <code>[[7,10],[2,4]] → True</code>。会议是半开的: 一场 10 点结束, 下一场 10 点开始, 不冲突。")
+doc.p("<b>Brute force。</b>所有会议两两比较, <code>O(n²)</code>。")
+doc.p("<b>关键观察。</b>按 start 排序后, 只需要比较相邻的一对。如果所有相邻对都不重叠, 每场的 start 都 ≥ 前一场的 end, 整条链从左到右首尾相接, 不可能有隔着的重叠; "
+      "反过来, 只要存在重叠, 总有一个相邻对先暴露 (例如 [0,30] 和 [15,20] 重叠, 但 [0,30] 和 [5,10] 已经先重叠了)。"
+      "和 Merge 的差别: 不需要维护 res, 只看 <code>start &lt; prev.end</code> (半开, 所以是严格小于)。")
+doc.svg(SLUG + "/rooms1_core.svg", "上: 有重叠时, 相邻对一定先暴露。下: 所有相邻对都首尾相接, 整条链排开, 没有隔着的重叠。")
+doc.svg(SLUG + "/rooms1_trace.svg", "排序后三对: (2,4)(7,10) 没冲突; (7,10)(10,13) 首尾相接没冲突; (10,13)(12,15) 的 12 &lt; 13, 冲突, 返回 False。")
+doc.code(CODE["rooms1"])
+doc.p("<b>复杂度。</b>时间 <code>O(n log n)</code>, 空间 <code>O(1)</code> 额外。")
+doc.note("\"有没有冲突\" = 按 start 排序, 比较相邻对: start &lt; prev.end (半开区间)。O(n²) 降到 O(n log n)。")
+
+# ---------------------------------------------------------------- 6
+doc.h2("6. Meeting Rooms II: 从 \"有没有重叠\" 变成 \"最多几个同时进行\"")
+doc.p("<b>题目。</b>最少需要几间会议室。<code>[[0,30],[5,10],[15,20]] → 2</code>。本节的例子: <code>[[0,30],[5,10],[15,20],[10,25],[22,28]] → 3</code>。")
+doc.p("<b>Brute force。</b>对每个会议, 数有几个会议和它重叠, 取最大: <code>O(n²)</code>。或者对每个时间点数有几场在进行: <code>O(n × 时间范围)</code>。"
+      "浪费: 重叠的会议在每个会议下被重复数。")
+doc.p("<b>关键观察。</b>答案就是 \"某一时刻同时进行的会议数\" 的最大值: 想象一根竖线从左到右扫过时间轴, 它同时切到的横条数的最大值。"
+      "同一时刻正在进行的会议互相冲突, 必须各占一间房; 取最大值恰好够用。下面两种算法, 都是在算这个最大值。")
+doc.svg(SLUG + "/rooms2_core.svg", "t = 17 时 [0,30] [10,25] [15,20] 同时进行, 3 场; t = 7 只有 2 场。所有 t 里最大的是 3。")
+doc.h3("做法 A: min-heap 存每个房间的 end")
+doc.p("按 start 顺序处理会议。每间在用的房间, 只需要记一个数: 当前会议什么时候结束。把这些 end 放进 min-heap。新会议 start = s 来了, "
+      "看堆顶 (最早结束的房间): 如果 <code>ends[0] ≤ s</code>, 这间房已空, 复用 (pop 旧 end); 否则所有房间都占着, 开新房。"
+      "为什么只看堆顶: 最早空出来的都还没空, 其他房间更不会空。无论复用还是新开, 这场会议的 end 都 push 进去, 最后 heap 的大小就是同时用着的房间数。")
+doc.svg(SLUG + "/rooms2_heap_trace.svg", "heap 画成 tree, 每行: 先 pop (虚线扔到左边, 写明原因) 再 push。[10,25] 开始时 ends[0] = 10 ≤ 10, 复用; [15,20] 时 ends[0] = 25 &gt; 15, 开第 3 间。")
+doc.code(CODE["rooms2_heap"])
+doc.p("<b>复杂度。</b>时间 <code>O(n log n)</code> (排序 + n 次 heap 操作, heap 大小 ≤ 房间数)。空间 <code>O(k)</code>, k = 房间数。")
+doc.h3("做法 B: 扫描线 (sweep line)")
+doc.p("把每场会议拆成两个事件: start 处 <code>+1</code>, end 处 <code>-1</code>。所有事件按时间排序, 从左到右扫, 累加 delta 得到 cur (此刻同时进行的会议数), "
+      "cur 的最大值就是答案。关键细节: 同一时刻要先处理 <code>-1</code> 再处理 <code>+1</code> (会议在 10 结束、另一场在 10 开始, 不冲突)。"
+      "元组排序 <code>(t, -1) &lt; (t, 1)</code> 自动满足。")
+doc.svg(SLUG + "/rooms2_sweep_trace.svg", "上: 5 场会议和事件竖线。中: cur 的阶梯, 最高是 3。下: 排序后的 10 个事件, 每格一步; t = 10 处先 -1 再 +1。")
+doc.code(CODE["rooms2_sweep"])
+doc.p("<b>复杂度。</b>时间 <code>O(n log n)</code> (排序 2n 个事件), 空间 <code>O(n)</code>。")
+doc.p("<b>怎么选。</b>只要一个数字 (最大并发数): 扫描线更短, 且是通用套路 (航班乘客 / 拼车 / 最大在线人数)。"
+      "要真的分配房间 (哪场会议在哪间) 或房间有编号: 用 heap。")
+doc.note("\"最多几个同时进行\" = 事件 +1 / -1 排序扫描, 或 sort(start) + min-heap 存 end (堆顶 ≤ s 就复用)。O(n²) 降到 O(n log n)。")
+
+# ---------------------------------------------------------------- 7
+doc.h2("7. Interval List Intersections: 两个有序列表, 双指针")
+doc.p("<b>题目。</b>A 和 B 各自是排好序、内部互不重叠的 interval 列表, 求两个列表的所有交集。"
+      "<code>A = [[0,2],[5,10],[13,23],[24,25]], B = [[1,5],[8,12],[15,24],[25,26]]</code> → "
+      "<code>[[1,2],[5,5],[8,10],[15,23],[24,24],[25,25]]</code>。")
+doc.p("<b>Brute force。</b>A 里每个和 B 里每个比一次, <code>O(m × n)</code>。浪费: 两个列表都有序, 还去比相隔很远的。")
+doc.p("<b>关键观察。</b>两个 interval 的交集是 <code>[max(start), min(end)]</code>, 合法当且仅当 <code>lo ≤ hi</code> (就是第 0 节的 overlap 条件)。"
+      "然后让哪个指针前进? <b>end 小的那个</b>: 它的右端比对方更靠左, 对方后面的 interval 都在对方右边, 所以它不可能再和对方后面的任何一个相交, 可以放心丢掉。"
+      "这和 Non-overlapping 里按 end 贪心是同一个道理。")
+doc.svg(SLUG + "/intersect_core.svg", "上: [5,10] 和 [8,12] 交于 [8,10]; a 先结束, 它够不到 b 的下一个 [15,24], i += 1。下: 13 &gt; 12 没有交集, b 先结束, j += 1。")
+doc.svg(SLUG + "/intersect_trace.svg", "5 步走完。注意第 2 步交集是单点 [5,5] (闭区间, lo = hi 也合法); 第 4 步 13 &gt; 12 没有交集, 但指针照样前进。")
+doc.code(CODE["intersect"])
+doc.p("<b>复杂度。</b>时间 <code>O(m + n)</code>, 每一步有一个指针前进, 最多 m + n 步。不需要排序 (输入已有序)。空间 <code>O(1)</code> 额外 (不算输出)。")
+doc.note("两个有序列表 → 双指针。交集 = [max(start), min(end)], lo ≤ hi 才收下; end 小的那个前进。O(mn) 降到 O(m+n)。")
+
+# ---------------------------------------------------------------- 8
+doc.h2("8. My Calendar I: 在线版本, 有序数组 + bisect 找邻居")
+doc.p("<b>题目。</b>设计 <code>book(start, end)</code>, 区间是半开的 <code>[start, end)</code>; 如果和已有预订重叠返回 False, 否则记下并返回 True。"
+      "会议一个个到来, 不能事先排序。例: <code>book(10,20) book(15,25) book(20,30) book(5,10) book(8,12) book(30,35)</code> → "
+      "<code>True False True True False True</code>。")
+doc.p("<b>Brute force。</b>每次 book 把所有已有预订扫一遍:")
+doc.code(CODE["calendar_brute"])
+doc.p("每次 <code>O(n)</code>, n 次 book 总共 <code>O(n²)</code>。浪费: 已订的互不重叠, 却每次都全比。")
+doc.p("<b>相比前面, 多了什么条件。</b>数据是一个个来的, 不能先排序, 所以改成 <b>始终保持有序</b>: 用 <code>bisect_left</code> 在 starts 里找到新预订该插入的位置 i, "
+      "已订的互不重叠, 所以只需要检查两个邻居: 前一场 (<code>ends[i-1] &gt; start</code> 则冲突) 和后一场 (<code>starts[i] &lt; end</code> 则冲突); 更远的都在这两场的外侧, 不可能碰到。"
+      "半开区间, 所以用严格不等号。")
+doc.svg(SLUG + "/calendar_core.svg", "两次 book: [32,38) 夹在 [22,30) 和 [40,45) 之间, 两个邻居都不冲突; [28,36) 的 28 &lt; prev.end 30, 冲突。")
+doc.svg(SLUG + "/calendar_trace.svg", "连续 6 次调用。第 3 次 prev.end = 20 ≤ start = 20, 半开区间首尾相接, 可以; 第 5 次 [8,12] 和 [5,10] 冲突。")
+doc.code(CODE["calendar"])
+doc.p("<b>复杂度。</b>查找冲突 <code>O(log n)</code>; <code>list.insert</code> 是 <code>O(n)</code> (内存搬移, 实际很快)。总体每次 book <code>O(n)</code> 但常数很小。"
+      "面试可以说: 换成平衡树 / TreeMap 可以做到整体 <code>O(log n)</code>; Python 标准库没有, 用 bisect 就够了。")
+doc.note("在线 + 要查冲突 = 保持有序, bisect 定位, 只比 prev 和 next 两个邻居。半开区间: prev.end &gt; start 或 next.start &lt; end 才冲突。")
+
+# ---------------------------------------------------------------- 9
+doc.h2("9. 识别信号: 看到什么 → 试什么")
+doc.raw('''<table>
+<tr><th>题目特征</th><th>做法</th><th>complexity</th></tr>
+<tr><td>合并 / 压缩重叠的区间</td><td>按 start 排序, 只和 res[-1] 比, 重叠则 end = max</td><td>O(n²) 或 O(n³) → O(n log n)</td></tr>
+<tr><td>已排序、不重叠的列表里插入一个</td><td>三段: 左边 end &lt; new.start / 重叠 start ≤ new.end 吞进 new / 右边</td><td>O(n log n) → O(n)</td></tr>
+<tr><td>最多保留几个不重叠 / 最少删除 / 最少箭 / 最少分几组</td><td>按 end 排序, keep_end (或 arrow_x) 贪心; 注意首尾相接算不算重叠</td><td>O(2ⁿ) 或 O(n²) → O(n log n)</td></tr>
+<tr><td>能不能参加所有会议 / 有没有冲突</td><td>按 start 排序, 比较相邻对</td><td>O(n²) → O(n log n)</td></tr>
+<tr><td>同一时刻最多几个 (房间 / 车辆 / 并发)</td><td>事件 +1 / -1 排序扫描; 或 sort(start) + min-heap 存 end</td><td>O(n²) → O(n log n)</td></tr>
+<tr><td>两个有序列表求交集</td><td>双指针, 交集 [max(start), min(end)], end 小的前进</td><td>O(mn) → O(m + n)</td></tr>
+<tr><td>在线逐个插入, 查冲突</td><td>保持有序, bisect 定位, 只比 prev 和 next</td><td>每次 O(n) → 查找 O(log n)</td></tr>
+<tr><td>不知道按 start 还是 end 排</td><td>要延展 / 合并 → start; 要尽早释放 / 选最多 → end</td><td>排序 O(n log n)</td></tr>
+</table>''')
+doc.p("每题动笔前先问两件事: (1) 区间是闭的还是半开的, 首尾相接算不算重叠 (决定 <code>≤</code> 还是 <code>&lt;</code>); (2) 排序键是 start 还是 end。"
+      "本篇里: Merge 相接算重叠 (<code>s ≤ end</code>); Non-overlapping 相接不算 (<code>s ≥ keep_end</code> 保留); Arrows 相接共点 (<code>s &gt; arrow_x</code> 才新射); "
+      "Meeting Rooms 相接不冲突 (<code>start &lt; prev.end</code> 才冲突); 交集 <code>lo ≤ hi</code> 允许单点; My Calendar 半开, 严格不等号。")
+doc.h2("以后再学")
+doc.p("Meeting Rooms III (两个 heap: 空闲房间号 + 占用中的 (end, 房间号)) · Employee Free Time (把所有人的 interval 先当 Merge 合并, 相邻两块之间的空隙就是答案) · "
+      "带权的区间调度 (按 end 排序 + DP + bisect) · My Calendar II / III (需要计数, 用扫描线 / segment tree)。")
+
+doc.write("docs/%s.html" % SLUG)

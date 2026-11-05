@@ -975,7 +975,7 @@ def fig_add_core():
     for cx, lab in [(420, "b"), (500, "d"), (580, "m")]:
         s.arrow(500, 120, cx, 160)
         s.circ(cx, 176, 12, lab, "new")
-    s.t(536, 140, "'.'", 14, BLACK, 500)
+    s.t(560, 130, "'.'", 14, BLACK, 500)
     s.t(360, 208, "any(dfs(ch, i+1)", 12, BLACK, mono=True)
     s.t(360, 224, "    for ch in node.children.values())", 12, BLACK, mono=True)
     s.t(360, 246, "每个 child 都可能匹配, 最多 26 条路", 12)

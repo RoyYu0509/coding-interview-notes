@@ -16,12 +16,12 @@
 <text x="96" y="96" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">前 3 个先到, 把 m, o 的 top3 填满 -&gt; mouse, mousepad 到 m, o 时已满, 被忽略</text>
 <line x1="150" y1="140" x2="150" y2="184" stroke="#898781" stroke-width="1"/>
 <line x1="150" y1="184" x2="150" y2="228" stroke="#898781" stroke-width="1"/>
-<line x1="150" y1="228" x2="240" y2="272" stroke="#898781" stroke-width="1"/>
 <line x1="150" y1="228" x2="60" y2="272" stroke="#898781" stroke-width="1"/>
 <line x1="150" y1="228" x2="150" y2="272" stroke="#898781" stroke-width="1"/>
-<line x1="150" y1="272" x2="180" y2="316" stroke="#898781" stroke-width="1"/>
+<line x1="150" y1="228" x2="240" y2="272" stroke="#898781" stroke-width="1"/>
 <line x1="240" y1="272" x2="240" y2="316" stroke="#898781" stroke-width="1"/>
 <line x1="150" y1="272" x2="120" y2="316" stroke="#898781" stroke-width="1"/>
+<line x1="150" y1="272" x2="180" y2="316" stroke="#898781" stroke-width="1"/>
 <line x1="240" y1="316" x2="240" y2="360" stroke="#898781" stroke-width="1"/>
 <rect x="131" y="130" width="38" height="20" rx="10" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="150" y="140" font-size="12" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">root</text>
@@ -29,18 +29,18 @@
 <text x="150" y="184" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">m</text>
 <circle cx="150" cy="228" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="150" y="228" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">o</text>
-<circle cx="240" cy="272" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="240" y="272" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">u</text>
 <circle cx="60" cy="272" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="60" y="272" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">b</text>
 <circle cx="150" cy="272" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="150" y="272" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">n</text>
-<circle cx="180" cy="316" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="180" y="316" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">i</text>
+<circle cx="240" cy="272" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="240" y="272" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">u</text>
 <circle cx="240" cy="316" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="240" y="316" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">s</text>
 <circle cx="120" cy="316" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="120" y="316" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">e</text>
+<circle cx="180" cy="316" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="180" y="316" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">i</text>
 <circle cx="240" cy="360" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="240" y="360" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">e</text>
 <circle cx="60" cy="306" r="11" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 3"/>
