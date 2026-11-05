@@ -851,6 +851,10 @@ def kth_draw(s, row, top, rh):
         s.cell(bx, base - (i + 1) * ch, cw, ch, str(v), PLAIN, ring=False)
     if row["stack"]:
         s.t(bx + cw + 8, base - len(row["stack"]) * ch + ch / 2, "← top", 12, fill=SUB)
+    if row["kind"] == "pop":   # 刚 pop 的那个: 虚线扔到 stack 右边 (它原来在新栈顶的正上方)
+        py = base - (len(row["stack"]) + 1) * ch
+        s.cell(bx + cw + 20, py, 32, ch, str(row["cur"]), RED, dash="4 3")
+        s.line(bx + cw + 3, py + ch / 2, bx + cw + 18, py + ch / 2, "#D85A30", 1.5, "5 3", "arrowO")
     x = 372
     mid = top + rh / 2
     if row["kind"] == "push":
@@ -876,7 +880,7 @@ run_trace("kth_smallest_trace.svg", "Kth Smallest in BST 的 iterative inorder t
           [40, 94, 262, 372], ["step", "tree", "stack (底→顶)", "操作"],
           kth_draw,
           [("答案 = 3: 第 3 次 pop 出来的数 (pop 顺序 1, 2, 3 = 从小到大)", True, INK)],
-          [(GREEN, True, "刚 pop 的"), (DONE, False, "已 pop"), (PLAIN, False, "在 stack 里")],
+          [(GREEN, True, "刚 pop 的"), (RED, False, "pop 出 stack"), (DONE, False, "已 pop"), (PLAIN, False, "在 stack 里")],
           dx=30, dy=30, tree_x=84, min_rh=122, state_fn=kth_state, label_fn=lambda row: {})
 
 # ----------------------------------------------------------- trace: serialize

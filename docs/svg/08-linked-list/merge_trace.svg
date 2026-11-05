@@ -1,0 +1,147 @@
+<svg width="100%" viewBox="0 0 680 606" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Merge Two Sorted Lists trace</title><defs><marker id="a898781" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5"/></marker><marker id="a0F6E56" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5"/></marker><marker id="aD85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5"/></marker><marker id="aEF9F27" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#EF9F27" stroke-width="1.5"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">l1 = 1 → 2 → 4, l2 = 1 → 3 → 4 · 每一步: 比较两个头, 小的接到结果后面, 那条 list 往后走一个</text>
+<text x="40" y="44" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">这一步</text>
+<text x="130" y="44" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">两条输入 (橙圈 = 下一轮的头)</text>
+<text x="300" y="44" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">结果</text>
+<text x="500" y="44" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">比较</text>
+<line x1="40" y1="54" x2="640" y2="54" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="78" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">取 1</text>
+<text x="40" y="96" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">来自 l1</text>
+<rect x="130" y="66" width="40" height="30" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
+<text x="150.0" y="82.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="176" y="66" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<rect x="173" y="63" width="46" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="196.0" y="82.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="222" y="66" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="242.0" y="82.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="130" y="102" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<rect x="127" y="99" width="46" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="150.0" y="118.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="176" y="102" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="196.0" y="118.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="222" y="102" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="242.0" y="118.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<text x="114" y="81" font-size="11" fill="#52514E" text-anchor="end" font-weight="400" dominant-baseline="central" style="white-space:pre">l1</text>
+<text x="114" y="117" font-size="11" fill="#52514E" text-anchor="end" font-weight="400" dominant-baseline="central" style="white-space:pre">l2</text>
+<rect x="300" y="84" width="40" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="320.0" y="100.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="500" y="76" font-size="13" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">头: l1 = 1, l2 = 1</text>
+<text x="500" y="94" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">1 ≤ 1 → 取 l1 的 1</text>
+<line x1="40" y1="150" x2="640" y2="150" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="174" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">取 1</text>
+<text x="40" y="192" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">来自 l2</text>
+<rect x="130" y="162" width="40" height="30" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
+<text x="150.0" y="178.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="176" y="162" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<rect x="173" y="159" width="46" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="196.0" y="178.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="222" y="162" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="242.0" y="178.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="130" y="198" width="40" height="30" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
+<text x="150.0" y="214.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="176" y="198" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<rect x="173" y="195" width="46" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="196.0" y="214.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="222" y="198" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="242.0" y="214.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<text x="114" y="177" font-size="11" fill="#52514E" text-anchor="end" font-weight="400" dominant-baseline="central" style="white-space:pre">l1</text>
+<text x="114" y="213" font-size="11" fill="#52514E" text-anchor="end" font-weight="400" dominant-baseline="central" style="white-space:pre">l2</text>
+<rect x="300" y="180" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="320.0" y="196.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="330" y="180" width="40" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="350.0" y="196.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<text x="500" y="172" font-size="13" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">头: l1 = 2, l2 = 1</text>
+<text x="500" y="190" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">2 &gt; 1 → 取 l2 的 1</text>
+<line x1="40" y1="246" x2="640" y2="246" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="270" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">取 2</text>
+<text x="40" y="288" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">来自 l1</text>
+<rect x="130" y="258" width="40" height="30" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
+<text x="150.0" y="274.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="176" y="258" width="40" height="30" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
+<text x="196.0" y="274.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="222" y="258" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<rect x="219" y="255" width="46" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="242.0" y="274.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="130" y="294" width="40" height="30" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
+<text x="150.0" y="310.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="176" y="294" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<rect x="173" y="291" width="46" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="196.0" y="310.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="222" y="294" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="242.0" y="310.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<text x="114" y="273" font-size="11" fill="#52514E" text-anchor="end" font-weight="400" dominant-baseline="central" style="white-space:pre">l1</text>
+<text x="114" y="309" font-size="11" fill="#52514E" text-anchor="end" font-weight="400" dominant-baseline="central" style="white-space:pre">l2</text>
+<rect x="300" y="276" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="320.0" y="292.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="330" y="276" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="350.0" y="292.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="360" y="276" width="40" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="380.0" y="292.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<text x="500" y="268" font-size="13" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">头: l1 = 2, l2 = 3</text>
+<text x="500" y="286" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">2 ≤ 3 → 取 l1 的 2</text>
+<line x1="40" y1="342" x2="640" y2="342" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="366" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">取 3</text>
+<text x="40" y="384" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">来自 l2</text>
+<rect x="130" y="354" width="40" height="30" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
+<text x="150.0" y="370.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="176" y="354" width="40" height="30" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
+<text x="196.0" y="370.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="222" y="354" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<rect x="219" y="351" width="46" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="242.0" y="370.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="130" y="390" width="40" height="30" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
+<text x="150.0" y="406.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="176" y="390" width="40" height="30" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
+<text x="196.0" y="406.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="222" y="390" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<rect x="219" y="387" width="46" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="242.0" y="406.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<text x="114" y="369" font-size="11" fill="#52514E" text-anchor="end" font-weight="400" dominant-baseline="central" style="white-space:pre">l1</text>
+<text x="114" y="405" font-size="11" fill="#52514E" text-anchor="end" font-weight="400" dominant-baseline="central" style="white-space:pre">l2</text>
+<rect x="300" y="372" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="320.0" y="388.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="330" y="372" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="350.0" y="388.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="360" y="372" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="380.0" y="388.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="390" y="372" width="40" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="410.0" y="388.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<text x="500" y="364" font-size="13" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">头: l1 = 4, l2 = 3</text>
+<text x="500" y="382" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">4 &gt; 3 → 取 l2 的 3</text>
+<line x1="40" y1="438" x2="640" y2="438" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="462" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">取 4</text>
+<text x="40" y="480" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">来自 l1</text>
+<rect x="130" y="450" width="40" height="30" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
+<text x="150.0" y="466.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="176" y="450" width="40" height="30" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
+<text x="196.0" y="466.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="222" y="450" width="40" height="30" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
+<text x="242.0" y="466.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="130" y="486" width="40" height="30" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
+<text x="150.0" y="502.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="176" y="486" width="40" height="30" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
+<text x="196.0" y="502.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="222" y="486" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<rect x="219" y="483" width="46" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="242.0" y="502.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<text x="114" y="465" font-size="11" fill="#52514E" text-anchor="end" font-weight="400" dominant-baseline="central" style="white-space:pre">l1</text>
+<text x="114" y="501" font-size="11" fill="#52514E" text-anchor="end" font-weight="400" dominant-baseline="central" style="white-space:pre">l2</text>
+<rect x="300" y="468" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="320.0" y="484.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="330" y="468" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="350.0" y="484.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="360" y="468" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="380.0" y="484.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="390" y="468" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="410.0" y="484.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="420" y="468" width="40" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="440.0" y="484.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<text x="500" y="460" font-size="13" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">头: l1 = 4, l2 = 4</text>
+<text x="500" y="478" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">4 ≤ 4 → 取 l1 的 4</text>
+<line x1="40" y1="534" x2="640" y2="534" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="556" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">l1 走完了, 把 l2 剩下的 [4] 直接接上:  1 → 1 → 2 → 3 → 4 → 4</text>
+<rect x="33" y="579" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D"/>
+<text x="54" y="586" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">已经取走的</text>
+<rect x="133" y="579" width="14" height="14" rx="3" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="154" y="586" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">下一轮要比较的头</text>
+<rect x="269" y="579" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="290" y="586" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">这一步接上的</text></svg>

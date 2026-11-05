@@ -70,6 +70,9 @@
 <rect x="262" y="276" width="36" height="22" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="280.0" y="287.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
 <text x="306" y="287.0" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">← top</text>
+<rect x="318" y="254" width="32" height="22" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="334.0" y="265.0" font-size="14" text-anchor="middle" fill="#712B13" dominant-baseline="central">1</text>
+<line x1="301" y1="265.0" x2="316" y2="265.0" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#arrowO)"/>
 <text x="372" y="266.0" font-size="14" text-anchor="start" fill="#085041" font-weight="600" dominant-baseline="central">pop → 1 (第 1 小)</text>
 <text x="372" y="288.0" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">k = 3 - 1 = 2</text>
 <text x="372" y="310.0" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">node = 1.right = None</text>
@@ -101,6 +104,9 @@
 <rect x="262" y="434" width="36" height="22" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="280.0" y="445.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
 <text x="306" y="445.0" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">← top</text>
+<rect x="318" y="412" width="32" height="22" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="334.0" y="423.0" font-size="14" text-anchor="middle" fill="#712B13" dominant-baseline="central">2</text>
+<line x1="301" y1="423.0" x2="316" y2="423.0" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#arrowO)"/>
 <text x="372" y="402.0" font-size="14" text-anchor="start" fill="#085041" font-weight="600" dominant-baseline="central">pop → 2 (第 2 小)</text>
 <text x="372" y="424.0" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">k = 2 - 1 = 1</text>
 <text x="372" y="446.0" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">node = 2.right = None</text>
@@ -130,6 +136,9 @@
 <rect x="262" y="592" width="36" height="22" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="280.0" y="603.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">5</text>
 <text x="306" y="603.0" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">← top</text>
+<rect x="318" y="570" width="32" height="22" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="334.0" y="581.0" font-size="14" text-anchor="middle" fill="#712B13" dominant-baseline="central">3</text>
+<line x1="301" y1="581.0" x2="316" y2="581.0" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#arrowO)"/>
 <text x="372" y="538.0" font-size="14" text-anchor="start" fill="#085041" font-weight="600" dominant-baseline="central">pop → 3 (第 3 小)</text>
 <text x="372" y="560.0" font-size="14" text-anchor="start" fill="#712B13" font-weight="600" dominant-baseline="central">k = 1 - 1 = 0</text>
 <text x="372" y="582.0" font-size="14" text-anchor="start" fill="#712B13" font-weight="600" dominant-baseline="central">k == 0 → return 3</text>
@@ -139,10 +148,13 @@
 <circle cx="48" cy="672" r="11" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="48" y="672" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central"></text>
 <text x="64" y="672" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">刚 pop 的</text>
-<circle cx="143" cy="672" r="7" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
-<text x="143" y="672" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central"></text>
-<text x="159" y="672" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">已 pop</text>
-<circle cx="218" cy="672" r="7" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="218" y="672" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central"></text>
-<text x="234" y="672" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">在 stack 里</text>
+<circle cx="143" cy="672" r="7" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="143" y="672" font-size="14" text-anchor="middle" fill="#712B13" dominant-baseline="central"></text>
+<text x="159" y="672" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">pop 出 stack</text>
+<circle cx="260" cy="672" r="7" fill="#D3D1C7" stroke="#A9A79E" stroke-width="1"/>
+<text x="260" y="672" font-size="14" text-anchor="middle" fill="#6B6A65" dominant-baseline="central"></text>
+<text x="276" y="672" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">已 pop</text>
+<circle cx="335" cy="672" r="7" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="335" y="672" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central"></text>
+<text x="351" y="672" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">在 stack 里</text>
 </svg>

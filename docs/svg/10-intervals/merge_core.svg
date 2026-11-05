@@ -66,7 +66,7 @@
 <text x="282.9" y="245" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="500" fill="#444441">1,10</text>
 <text x="142" y="275" text-anchor="end" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">cur</text>
 <rect x="198.3" y="264" width="24.2" height="22" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
-<text x="227.5" y="275" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="500" fill="#712B13">2,3</text>
+<text x="210.4" y="275" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="500" fill="#712B13">2,3</text>
 <text x="142" y="305" text-anchor="end" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">max</text>
 <rect x="174.2" y="294" width="217.5" height="22" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
 <text x="282.9" y="305" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="500" fill="#085041">1,10</text>

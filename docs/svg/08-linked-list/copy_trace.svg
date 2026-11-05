@@ -1,0 +1,40 @@
+<svg width="100%" viewBox="0 0 680 322" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Copy List with Random Pointer trace</title><defs><marker id="a898781" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5"/></marker><marker id="a0F6E56" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5"/></marker><marker id="aD85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5"/></marker><marker id="aEF9F27" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#EF9F27" stroke-width="1.5"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">原 list: 7 → 13 → 11, random: 7→None, 13→7, 11→13 · 两遍: 先建所有新 node, 再按 old2new 连 next 和 random</text>
+<text x="40" y="48" font-size="13" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">原 list</text>
+<rect x="130" y="40" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="150.0" y="56.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">7</text>
+<rect x="196" y="40" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="216.0" y="56.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">13</text>
+<rect x="262" y="40" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="282.0" y="56.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">11</text>
+<path d="M170 55.0 L194 55.0" fill="none" stroke="#898781" stroke-width="1.4" marker-end="url(#a898781)"/>
+<path d="M236 55.0 L260 55.0" fill="none" stroke="#898781" stroke-width="1.4" marker-end="url(#a898781)"/>
+<path d="M216.0 70 Q186.0 94 156.0 72" fill="none" stroke="#D85A30" stroke-width="1.4" marker-end="url(#aD85A30)"/>
+<path d="M282.0 70 Q252.0 94 222.0 72" fill="none" stroke="#D85A30" stroke-width="1.4" marker-end="url(#aD85A30)"/>
+<text x="420" y="55" font-size="12" fill="#B5700F" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">橙色弯箭头 = random</text>
+<line x1="40" y1="110" x2="640" y2="110" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="134" font-size="13" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">第 1 遍</text>
+<rect x="130" y="122" width="40" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="150.0" y="138.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">7&#x27;</text>
+<rect x="196" y="122" width="40" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="216.0" y="138.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">13&#x27;</text>
+<rect x="262" y="122" width="40" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="282.0" y="138.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">11&#x27;</text>
+<text x="420" y="130" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">old2new = {7: 7&#x27;, 13: 13&#x27;, 11: 11&#x27;}</text>
+<text x="420" y="148" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">只建 node, 不连任何箭头</text>
+<line x1="40" y1="176" x2="640" y2="176" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="200" font-size="13" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">第 2 遍</text>
+<rect x="130" y="190" width="40" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="150.0" y="206.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">7&#x27;</text>
+<rect x="196" y="190" width="40" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="216.0" y="206.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">13&#x27;</text>
+<rect x="262" y="190" width="40" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="282.0" y="206.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">11&#x27;</text>
+<path d="M170 205.0 L194 205.0" fill="none" stroke="#0F6E56" stroke-width="2.2" marker-end="url(#a0F6E56)"/>
+<path d="M236 205.0 L260 205.0" fill="none" stroke="#0F6E56" stroke-width="2.2" marker-end="url(#a0F6E56)"/>
+<path d="M216.0 220 Q186.0 244 156.0 222" fill="none" stroke="#D85A30" stroke-width="1.4" marker-end="url(#aD85A30)"/>
+<path d="M282.0 220 Q252.0 244 222.0 222" fill="none" stroke="#D85A30" stroke-width="1.4" marker-end="url(#aD85A30)"/>
+<text x="420" y="198" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">13&#x27;.random = old2new[13.random]</text>
+<text x="420" y="216" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">         = old2new[7] = 7&#x27;</text>
+<text x="420" y="236" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">next 同理</text>
+<line x1="40" y1="276" x2="640" y2="276" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="298" font-size="12" fill="#0B0B0B" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">为什么要两遍: 连 13&#x27;.random 的时候, 7&#x27; 必须已经存在。第 1 遍先把所有新 node 建好, 第 2 遍查表一定查得到</text></svg>

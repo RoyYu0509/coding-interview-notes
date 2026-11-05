@@ -54,13 +54,11 @@
 <text x="278.9" y="124" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="500" fill="#8A5200">end=8</text>
 <text x="142" y="151" text-anchor="end" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">intervals</text>
 <rect x="166.1" y="140" width="16.1" height="22" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="187.2" y="151" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="500" fill="#444441">1,2</text>
 <rect x="198.3" y="140" width="32.2" height="22" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
 <text x="214.4" y="151" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="500" fill="#712B13">3,5</text>
 <rect x="246.7" y="140" width="16.1" height="22" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
-<text x="267.8" y="151" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="500" fill="#712B13">6,7</text>
 <rect x="278.9" y="140" width="32.2" height="22" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
-<text x="316.1" y="151" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="500" fill="#712B13">8,10</text>
+<text x="295" y="151" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="500" fill="#712B13">8,10</text>
 <rect x="343.3" y="140" width="64.4" height="22" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="375.6" y="151" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="500" fill="#444441">12,16</text>
 <text x="142" y="181" text-anchor="end" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">new</text>
@@ -69,14 +67,13 @@
 <text x="246.7" y="181" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="500" fill="#085041">4,8</text>
 <text x="142" y="211" text-anchor="end" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">三段</text>
 <rect x="150" y="200" width="48.3" height="22" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="203.3" y="211" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="500" fill="#444441">① 左边</text>
+<text x="174.2" y="211" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="500" fill="#444441">① 左边</text>
 <rect x="198.3" y="200" width="112.8" height="22" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
 <text x="254.7" y="211" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="500" fill="#712B13">② 重叠</text>
 <rect x="311.1" y="200" width="128.9" height="22" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="375.6" y="211" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="500" fill="#444441">③ 右边</text>
 <text x="142" y="241" text-anchor="end" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">结果</text>
 <rect x="166.1" y="230" width="16.1" height="22" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="187.2" y="241" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="500" fill="#444441">1,2</text>
 <rect x="198.3" y="230" width="112.8" height="22" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
 <text x="254.7" y="241" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="500" fill="#085041">3,10</text>
 <rect x="343.3" y="230" width="64.4" height="22" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>

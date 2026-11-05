@@ -1,0 +1,62 @@
+<svg width="100%" viewBox="0 0 680 348" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Reverse Nodes in k-Group trace</title><defs><marker id="a898781" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5"/></marker><marker id="a0F6E56" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5"/></marker><marker id="aD85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5"/></marker><marker id="aEF9F27" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#EF9F27" stroke-width="1.5"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">1 → 2 → 3 → 4 → 5, k = 2 · 每次往后数 k 个; 够了就把这一段反转, 再把它接回前后</text>
+<text x="40" y="44" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">这一步</text>
+<text x="170" y="44" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">list</text>
+<text x="520" y="44" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">说明</text>
+<line x1="40" y1="54" x2="640" y2="54" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="78" font-size="13" fill="#0B0B0B" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">初始</text>
+<rect x="170" y="80" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="190.0" y="96.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="236" y="80" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="256.0" y="96.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="302" y="80" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="322.0" y="96.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="368" y="80" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="388.0" y="96.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="434" y="80" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="454.0" y="96.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<path d="M210 95.0 L234 95.0" fill="none" stroke="#898781" stroke-width="1.4" marker-end="url(#a898781)"/>
+<path d="M276 95.0 L300 95.0" fill="none" stroke="#898781" stroke-width="1.4" marker-end="url(#a898781)"/>
+<path d="M342 95.0 L366 95.0" fill="none" stroke="#898781" stroke-width="1.4" marker-end="url(#a898781)"/>
+<path d="M408 95.0 L432 95.0" fill="none" stroke="#898781" stroke-width="1.4" marker-end="url(#a898781)"/>
+<text x="520" y="76" font-size="13" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">k = 2, 每 2 个一组</text>
+<text x="520" y="94" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">5 不够一组, 不动</text>
+<line x1="40" y1="128" x2="640" y2="128" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="152" font-size="13" fill="#0B0B0B" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">反转第 1 组 [1,2]</text>
+<rect x="170" y="154" width="40" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="190.0" y="170.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="236" y="154" width="40" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="256.0" y="170.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="302" y="154" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="322.0" y="170.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="368" y="154" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="388.0" y="170.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="434" y="154" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="454.0" y="170.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<path d="M210 169.0 L234 169.0" fill="none" stroke="#898781" stroke-width="1.4" marker-end="url(#a898781)"/>
+<path d="M276 169.0 L300 169.0" fill="none" stroke="#898781" stroke-width="1.4" marker-end="url(#a898781)"/>
+<path d="M342 169.0 L366 169.0" fill="none" stroke="#898781" stroke-width="1.4" marker-end="url(#a898781)"/>
+<path d="M408 169.0 L432 169.0" fill="none" stroke="#898781" stroke-width="1.4" marker-end="url(#a898781)"/>
+<text x="520" y="150" font-size="13" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">组内 = reverseList</text>
+<text x="520" y="168" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">dummy 接到新头 2</text>
+<line x1="40" y1="202" x2="640" y2="202" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="226" font-size="13" fill="#0B0B0B" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">反转第 2 组 [3,4]</text>
+<rect x="170" y="228" width="40" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="190.0" y="244.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="236" y="228" width="40" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="256.0" y="244.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="302" y="228" width="40" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="322.0" y="244.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="368" y="228" width="40" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="388.0" y="244.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="434" y="228" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="454.0" y="244.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<path d="M210 243.0 L234 243.0" fill="none" stroke="#898781" stroke-width="1.4" marker-end="url(#a898781)"/>
+<path d="M276 243.0 L300 243.0" fill="none" stroke="#898781" stroke-width="1.4" marker-end="url(#a898781)"/>
+<path d="M342 243.0 L366 243.0" fill="none" stroke="#898781" stroke-width="1.4" marker-end="url(#a898781)"/>
+<path d="M408 243.0 L432 243.0" fill="none" stroke="#898781" stroke-width="1.4" marker-end="url(#a898781)"/>
+<text x="520" y="224" font-size="13" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">1 接到新头 4</text>
+<text x="520" y="242" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">只剩 5, 不够 k, 结束</text>
+<line x1="40" y1="276" x2="640" y2="276" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="298" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">结果 2 → 1 → 4 → 3 → 5</text>
+<rect x="33" y="321" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="328" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">已经反转好的组</text></svg>

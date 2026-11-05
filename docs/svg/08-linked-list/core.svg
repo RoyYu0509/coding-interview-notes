@@ -1,0 +1,43 @@
+<svg width="100%" viewBox="0 0 680 346" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Linked list first principles</title><defs><marker id="a898781" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5"/></marker><marker id="a0F6E56" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5"/></marker><marker id="aD85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5"/></marker><marker id="aEF9F27" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#EF9F27" stroke-width="1.5"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">linked list 只能顺着 next 往后走。所有操作的本质: 改某个 node 的 next 之前, 先把以后还要用的 node 存下来</text>
+<text x="40" y="44" font-size="14" fill="#712B13" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">错误: 直接改 curr.next = prev</text>
+<rect x="60" y="70" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="80.0" y="86.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="126" y="70" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="146.0" y="86.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="192" y="70" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="212.0" y="86.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<path d="M166 94 L190 94" fill="none" stroke="#D85A30" stroke-width="1.4" stroke-dasharray="4 3" marker-end="url(#aD85A30)"/>
+<text x="80.0" y="114" font-size="12" fill="#B5700F" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">prev</text>
+<text x="146.0" y="114" font-size="12" fill="#B5700F" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">curr</text>
+<path d="M130 78 L98 78" fill="none" stroke="#0F6E56" stroke-width="2.2" marker-end="url(#a0F6E56)"/>
+<text x="300" y="85" font-size="12" fill="#712B13" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">2 的 next 改成指向 1 之后, 再也找不到 3 了 (红虚线断了)</text>
+<line x1="40" y1="128" x2="640" y2="128" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="150" font-size="14" fill="#085041" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">正确: 先 nxt = curr.next, 再改</text>
+<rect x="60" y="176" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="80.0" y="192.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="126" y="176" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="146.0" y="192.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="192" y="176" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="212.0" y="192.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<path d="M126 184 L102 184" fill="none" stroke="#0F6E56" stroke-width="2.2" marker-end="url(#a0F6E56)"/>
+<text x="80.0" y="220" font-size="12" fill="#B5700F" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">prev</text>
+<text x="146.0" y="220" font-size="12" fill="#B5700F" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">curr</text>
+<text x="212.0" y="220" font-size="12" fill="#B5700F" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">nxt</text>
+<text x="300" y="191" font-size="12" fill="#085041" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">nxt 记住了 3, 改完 2 的 next 还能继续往后走</text>
+<line x1="40" y1="234" x2="640" y2="234" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="256" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">dummy node: 在 head 前面放一个假的 node</text>
+<rect x="60" y="282" width="40" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="80.0" y="298.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">D</text>
+<rect x="126" y="282" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="146.0" y="298.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="192" y="282" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="212.0" y="298.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="258" y="282" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="278.0" y="298.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<path d="M100 297.0 L124 297.0" fill="none" stroke="#898781" stroke-width="1.4" marker-end="url(#a898781)"/>
+<path d="M166 297.0 L190 297.0" fill="none" stroke="#898781" stroke-width="1.4" marker-end="url(#a898781)"/>
+<path d="M232 297.0 L256 297.0" fill="none" stroke="#898781" stroke-width="1.4" marker-end="url(#a898781)"/>
+<text x="80.0" y="326" font-size="12" fill="#B5700F" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">dummy</text>
+<text x="146.0" y="326" font-size="12" fill="#B5700F" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">head</text>
+<text x="370" y="290" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">删掉 / 换掉第一个 node 时, 不用特判 &quot;head 变了&quot;</text>
+<text x="370" y="308" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">最后返回 dummy.next 就是新的 head</text></svg>

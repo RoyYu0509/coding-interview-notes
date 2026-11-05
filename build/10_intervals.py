@@ -396,6 +396,11 @@ def grid(sv, tl, y0, y1, every=2):
         t += 1
 
 
+def lab_w(lab):
+    """12px 500 字重下标签的大致宽度 (逗号比数字窄)"""
+    return sum(12 if ord(c) > 255 else (3.6 if c in ",. " else 6.8) for c in lab)
+
+
 def bar(sv, tl, y, s, e, role="old", label=None, h=22, ring=False, dash=False, sw=1, text=True,
         label_fill=None):
     x0, x1 = tl.x(s), tl.x(e)
@@ -409,7 +414,7 @@ def bar(sv, tl, y, s, e, role="old", label=None, h=22, ring=False, dash=False, s
     if text:
         lab = "%s,%s" % (s, e) if label is None else label
         if lab:
-            need = 6.8 * sum(2 if ord(c) > 255 else 1 for c in lab) + 6
+            need = lab_w(lab) + 6
             if x1 - x0 >= need:
                 sv.text((x0 + x1) / 2, y + h / 2, lab, 12, label_fill or ROLE[role][2], "middle", 500)
             else:  # 横条太短: 标签放到右边
@@ -490,6 +495,14 @@ def trace(name, title, desc, headlines, tl, rows, answer, leg, axis_every=2, rx=
             for b in bars:
                 s, e, role, label = b[:4]
                 opts = b[4] if len(b) > 4 else {}
+                # 横条太短、标签要放到右边时, 若会压到同一行的下一块, 就不画标签 (位置和前面几步一致)
+                lab_ = "%s,%s" % (s, e) if label is None else label
+                if lab_ and not opts.get("text") is False:
+                    need_ = lab_w(lab_) + 6
+                    if tl.x(e) - tl.x(s) < need_:
+                        lx0, lx1 = max(tl.x(e), tl.x(s) + 4) + 5, max(tl.x(e), tl.x(s) + 4) + 5 + need_ - 6
+                        if any(o is not b and tl.x(o[0]) < lx1 and tl.x(o[1]) > lx0 for o in bars):
+                            label = ""
                 bar(sv, tl, ly, s, e, role, label, **opts)
         # 右: 计算
         ry = y + 12

@@ -165,7 +165,7 @@
 <text x="351.4" y="515" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="500" fill="#444441">20,30</text>
 <text x="142" y="545" text-anchor="end" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">book</text>
 <rect x="214.4" y="534" width="32.2" height="22" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
-<text x="251.7" y="545" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="500" fill="#712B13">8,12</text>
+<text x="230.6" y="545" text-anchor="middle" dominant-baseline="central" font-size="12" font-weight="500" fill="#712B13">8,12</text>
 <text x="458" y="506" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">bisect_left → i = 1</text>
 <text x="458" y="525" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">prev.end = 10 &gt; start = 8</text>
 <text x="458" y="544" text-anchor="start" dominant-baseline="central" font-size="12" font-weight="400" fill="#52514E">next.start = 10 &lt; end = 12</text>

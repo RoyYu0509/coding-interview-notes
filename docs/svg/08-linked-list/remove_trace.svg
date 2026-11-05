@@ -1,0 +1,90 @@
+<svg width="100%" viewBox="0 0 680 402" xmlns="http://www.w3.org/2000/svg" role="img" font-family="ui-sans-serif, system-ui, -apple-system, PingFang SC, sans-serif"><title>Remove Nth Node From End trace</title><defs><marker id="a898781" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5"/></marker><marker id="a0F6E56" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#0F6E56" stroke-width="1.5"/></marker><marker id="aD85A30" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5"/></marker><marker id="aEF9F27" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M2 1L8 5L2 9" fill="none" stroke="#EF9F27" stroke-width="1.5"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">1 → 2 → 3 → 4 → 5, n = 2 (删倒数第 2 个, 也就是 4) · D 是 dummy</text>
+<text x="40" y="44" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">这一步</text>
+<text x="130" y="44" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">list (fast = 橙圈)</text>
+<text x="575" y="44" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">计算</text>
+<line x1="40" y1="54" x2="640" y2="54" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="78" font-size="13" fill="#0B0B0B" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">fast 先走</text>
+<text x="40" y="96" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">n+1 = 3 步</text>
+<rect x="130" y="80" width="40" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="150.0" y="96.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">D</text>
+<rect x="196" y="80" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="216.0" y="96.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="262" y="80" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="282.0" y="96.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="328" y="80" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<rect x="325" y="77" width="46" height="36" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="348.0" y="96.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="394" y="80" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="414.0" y="96.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="460" y="80" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="480.0" y="96.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<path d="M170 95.0 L194 95.0" fill="none" stroke="#898781" stroke-width="1.4" marker-end="url(#a898781)"/>
+<path d="M236 95.0 L260 95.0" fill="none" stroke="#898781" stroke-width="1.4" marker-end="url(#a898781)"/>
+<path d="M302 95.0 L326 95.0" fill="none" stroke="#898781" stroke-width="1.4" marker-end="url(#a898781)"/>
+<path d="M368 95.0 L392 95.0" fill="none" stroke="#898781" stroke-width="1.4" marker-end="url(#a898781)"/>
+<path d="M434 95.0 L458 95.0" fill="none" stroke="#898781" stroke-width="1.4" marker-end="url(#a898781)"/>
+<text x="150.0" y="124" font-size="12" fill="#B5700F" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">slow</text>
+<text x="348.0" y="124" font-size="12" fill="#B5700F" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">fast</text>
+<text x="575" y="76" font-size="13" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">隔了 3 格</text>
+<text x="575" y="94" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">slow 在 D</text>
+<line x1="40" y1="146" x2="640" y2="146" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="170" font-size="13" fill="#0B0B0B" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">一起走到</text>
+<text x="40" y="188" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">fast = None</text>
+<rect x="130" y="172" width="40" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="150.0" y="188.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">D</text>
+<rect x="196" y="172" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="216.0" y="188.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="262" y="172" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="282.0" y="188.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="328" y="172" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="348.0" y="188.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="394" y="172" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="414.0" y="188.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="460" y="172" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="480.0" y="188.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<path d="M170 187.0 L194 187.0" fill="none" stroke="#898781" stroke-width="1.4" marker-end="url(#a898781)"/>
+<path d="M236 187.0 L260 187.0" fill="none" stroke="#898781" stroke-width="1.4" marker-end="url(#a898781)"/>
+<path d="M302 187.0 L326 187.0" fill="none" stroke="#898781" stroke-width="1.4" marker-end="url(#a898781)"/>
+<path d="M368 187.0 L392 187.0" fill="none" stroke="#898781" stroke-width="1.4" marker-end="url(#a898781)"/>
+<path d="M434 187.0 L458 187.0" fill="none" stroke="#898781" stroke-width="1.4" marker-end="url(#a898781)"/>
+<text x="348.0" y="216" font-size="12" fill="#B5700F" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">slow</text>
+<text x="536" y="216" font-size="12" fill="#B5700F" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">fast</text>
+<text x="522" y="187.0" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">None</text>
+<text x="575" y="168" font-size="13" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">slow 停在 3</text>
+<text x="575" y="186" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">要删 slow.next</text>
+<line x1="40" y1="238" x2="640" y2="238" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="262" font-size="13" fill="#0B0B0B" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">跳过 4</text>
+<text x="40" y="280" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">slow.next =</text>
+<text x="40" y="298" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">slow.next.next</text>
+<rect x="130" y="264" width="40" height="30" rx="4" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="150.0" y="280.0" font-size="14" fill="#085041" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">D</text>
+<rect x="196" y="264" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="216.0" y="280.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">1</text>
+<rect x="262" y="264" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="282.0" y="280.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">2</text>
+<rect x="328" y="264" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="348.0" y="280.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">3</text>
+<rect x="394" y="264" width="40" height="30" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-dasharray="3 2"/>
+<text x="414.0" y="280.0" font-size="14" fill="#712B13" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">4</text>
+<rect x="460" y="264" width="40" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A"/>
+<text x="480.0" y="280.0" font-size="14" fill="#444441" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">5</text>
+<path d="M170 279.0 L194 279.0" fill="none" stroke="#898781" stroke-width="1.4" marker-end="url(#a898781)"/>
+<path d="M236 279.0 L260 279.0" fill="none" stroke="#898781" stroke-width="1.4" marker-end="url(#a898781)"/>
+<path d="M302 279.0 L326 279.0" fill="none" stroke="#898781" stroke-width="1.4" marker-end="url(#a898781)"/>
+<path d="M348.0 264 Q414.0 234 480.0 262" fill="none" stroke="#898781" stroke-width="1.4" marker-end="url(#a898781)"/>
+<path d="M434 279.0 L458 279.0" fill="none" stroke="#898781" stroke-width="1.4" marker-end="url(#a898781)"/>
+<text x="348.0" y="308" font-size="12" fill="#B5700F" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">slow</text>
+<text x="536" y="308" font-size="12" fill="#B5700F" text-anchor="middle" font-weight="500" dominant-baseline="central" style="white-space:pre">fast</text>
+<text x="522" y="279.0" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">None</text>
+<text x="575" y="260" font-size="13" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">3 → 5</text>
+<text x="575" y="278" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">4 被删掉</text>
+<line x1="40" y1="330" x2="640" y2="330" stroke="#B4B2A9" stroke-dasharray="4 4"/>
+<text x="40" y="352" font-size="14" fill="#0B0B0B" text-anchor="start" font-weight="500" dominant-baseline="central" style="white-space:pre">返回 dummy.next:  1 → 2 → 3 → 5</text>
+<rect x="33" y="375" width="14" height="14" rx="3" fill="#E1F5EE" stroke="#0F6E56"/>
+<text x="54" y="382" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">dummy</text>
+<rect x="106.0" y="375" width="14" height="14" rx="3" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="127.0" y="382" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">fast</text>
+<rect x="172.4" y="375" width="14" height="14" rx="3" fill="#FAECE7" stroke="#993C1D"/>
+<text x="193.4" y="382" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">被删的</text>
+<line x1="247.4" y1="382" x2="263.4" y2="382" stroke="#0F6E56" stroke-width="2.2"/>
+<text x="269.4" y="382" font-size="12" fill="#52514E" text-anchor="start" font-weight="400" dominant-baseline="central" style="white-space:pre">改过的 next</text></svg>
