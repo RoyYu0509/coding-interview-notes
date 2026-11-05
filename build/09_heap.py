@@ -20,7 +20,8 @@ heapq.heappush(h, -x)
 biggest = -heapq.heappop(h)
 
 # tuple 从左到右比大小: (count, num) 先比 count, 再比 num
-heapq.heappush(h, (count, num))
+pairs = []
+heapq.heappush(pairs, (count, num))
 
 # 固定大小 k 的模板: heap 里永远只留 "最该留下的 k 个"
 for x in stream:

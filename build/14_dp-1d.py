@@ -839,7 +839,7 @@ def tr_lis():
     print("lis", dp)
     trace("lis_trace", ["nums = [10, 9, 2, 5, 3, 7, 101, 18] · dp[i] = 以 nums[i] 结尾的最长递增子序列长度",
                         "每一步: 往回看所有 j < i; 满足 nums[j] < nums[i] 的 dp[j] 里取最大 + 1 (箭头只画取最大的那个)"],
-          rows, n, 104, 38, [("i", list(range(n)), 12), ("nums", nums, 14)], cx=104 + n * 38 + 12,
+          rows, n, 104, 36, [("i", list(range(n)), 12), ("nums", nums, 14)], cx=104 + n * 36 + 10,
           final=["答案 = max(dp) = %d  (如 2, 3, 7, 18)" % max(dp)])
     return dp
 
@@ -881,7 +881,7 @@ def core_first():
         s.text(x, y0 + lvl * dy, "f%d" % n, 14, ROLE["del" if rep else "new"][2], True, "middle")
     total = len(nodes)
     cnt = {k: sum(1 for nd in nodes if nd[0] == k) for k in range(6)}
-    assert total == 15 and cnt[3] == 2 and cnt[2] == 3
+    assert total == 15 and cnt[3] == 2 and cnt[2] == 3 and cnt[1] == 5
     ybt = y0 + 4 * dy + 38
         # 右: table
     ax, cw, ty = 420, 40, 120
@@ -1094,7 +1094,7 @@ def core_stock():
     s.text(x0 + 5 * (bw + gap) + bw + 12, ylo - 10, "lo = 1", 12, SUB)
     xa = x0 + 4 * (bw + gap) + bw + 5
     s.path("M%s %s L%s %s" % (xa, ylo, xa, base - 6 * sc + 2), "#0F6E56", None, "arrG", 1.5)
-    s.text(xa + 20, 134, "profit = 6 - 1 = 5", 14, TEXT, True)
+    s.text(xa + 14, 92, "profit = 6 - 1 = 5", 14, TEXT, True)
     cx0 = 440
     s.text(cx0, 76, "同一件事的状态机视角", 14, TEXT, True)
     s.rect(cx0, 110, 100, 44, "old")

@@ -9,13 +9,13 @@
 <line x1="140.0" y1="110" x2="70.0" y2="142" stroke="#898781" stroke-width="1"/>
 <line x1="140.0" y1="110" x2="126.0" y2="142" stroke="#898781" stroke-width="1"/>
 <line x1="126.0" y1="142" x2="126.0" y2="174" stroke="#898781" stroke-width="1"/>
-<line x1="70.0" y1="142" x2="70.0" y2="174" stroke="#898781" stroke-width="1"/>
-<line x1="210.0" y1="142" x2="238.0" y2="174" stroke="#898781" stroke-width="1"/>
 <line x1="210.0" y1="142" x2="182.0" y2="174" stroke="#898781" stroke-width="1"/>
+<line x1="210.0" y1="142" x2="238.0" y2="174" stroke="#898781" stroke-width="1"/>
+<line x1="70.0" y1="142" x2="70.0" y2="174" stroke="#898781" stroke-width="1"/>
 <line x1="238.0" y1="174" x2="238" y2="206" stroke="#898781" stroke-width="1"/>
-<line x1="182.0" y1="174" x2="182" y2="206" stroke="#898781" stroke-width="1"/>
-<line x1="70.0" y1="174" x2="70" y2="206" stroke="#898781" stroke-width="1"/>
 <line x1="126.0" y1="174" x2="126" y2="206" stroke="#898781" stroke-width="1"/>
+<line x1="70.0" y1="174" x2="70" y2="206" stroke="#898781" stroke-width="1"/>
+<line x1="182.0" y1="174" x2="182" y2="206" stroke="#898781" stroke-width="1"/>
 <rect x="121.0" y="100" width="38" height="20" rx="10" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="140.0" y="110" font-size="12" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">root</text>
 <circle cx="210.0" cy="142" r="11" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
@@ -26,20 +26,20 @@
 <text x="126.0" y="142" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">d</text>
 <circle cx="126.0" cy="174" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="126.0" y="174" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">a</text>
-<circle cx="70.0" cy="174" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="70.0" y="174" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">a</text>
-<circle cx="238.0" cy="174" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="238.0" y="174" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">i</text>
 <circle cx="182.0" cy="174" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="182.0" y="174" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">a</text>
+<circle cx="238.0" cy="174" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="238.0" y="174" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">i</text>
+<circle cx="70.0" cy="174" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="70.0" y="174" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">a</text>
 <circle cx="238" cy="206" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="238" y="206" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">d</text>
-<circle cx="182" cy="206" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="182" y="206" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">d</text>
-<circle cx="70" cy="206" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="70" y="206" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">d</text>
 <circle cx="126" cy="206" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="126" y="206" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">d</text>
+<circle cx="70" cy="206" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="70" y="206" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">d</text>
+<circle cx="182" cy="206" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="182" y="206" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">d</text>
 <text x="300" y="148" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">dfs(root, 0): word[0] = '.'</text>
 <text x="300" y="170" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">分叉: root 的 3 个 child b, d, m 都要试</text>
 <line x1="40" y1="220" x2="640" y2="220" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 3"/>
@@ -47,13 +47,13 @@
 <line x1="140.0" y1="250" x2="70.0" y2="282" stroke="#898781" stroke-width="1"/>
 <line x1="140.0" y1="250" x2="126.0" y2="282" stroke="#898781" stroke-width="1"/>
 <line x1="126.0" y1="282" x2="126.0" y2="314" stroke="#898781" stroke-width="1"/>
-<line x1="70.0" y1="282" x2="70.0" y2="314" stroke="#898781" stroke-width="1"/>
-<line x1="210.0" y1="282" x2="238.0" y2="314" stroke="#898781" stroke-width="1"/>
 <line x1="210.0" y1="282" x2="182.0" y2="314" stroke="#898781" stroke-width="1"/>
+<line x1="210.0" y1="282" x2="238.0" y2="314" stroke="#898781" stroke-width="1"/>
+<line x1="70.0" y1="282" x2="70.0" y2="314" stroke="#898781" stroke-width="1"/>
 <line x1="238.0" y1="314" x2="238" y2="346" stroke="#898781" stroke-width="1"/>
-<line x1="182.0" y1="314" x2="182" y2="346" stroke="#898781" stroke-width="1"/>
-<line x1="70.0" y1="314" x2="70" y2="346" stroke="#898781" stroke-width="1"/>
 <line x1="126.0" y1="314" x2="126" y2="346" stroke="#898781" stroke-width="1"/>
+<line x1="70.0" y1="314" x2="70" y2="346" stroke="#898781" stroke-width="1"/>
+<line x1="182.0" y1="314" x2="182" y2="346" stroke="#898781" stroke-width="1"/>
 <rect x="121.0" y="240" width="38" height="20" rx="10" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="140.0" y="250" font-size="12" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">root</text>
 <circle cx="210.0" cy="282" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
@@ -64,20 +64,20 @@
 <text x="126.0" y="282" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">d</text>
 <circle cx="126.0" cy="314" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="126.0" y="314" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">a</text>
-<circle cx="70.0" cy="314" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="70.0" y="314" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">a</text>
-<circle cx="238.0" cy="314" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="238.0" y="314" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">i</text>
 <circle cx="182.0" cy="314" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="182.0" y="314" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">a</text>
+<circle cx="238.0" cy="314" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="238.0" y="314" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">i</text>
+<circle cx="70.0" cy="314" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="70.0" y="314" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">a</text>
 <circle cx="238" cy="346" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="238" y="346" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">d</text>
-<circle cx="182" cy="346" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="182" y="346" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">d</text>
-<circle cx="70" cy="346" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="70" y="346" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">d</text>
 <circle cx="126" cy="346" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="126" y="346" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">d</text>
+<circle cx="70" cy="346" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="70" y="346" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">d</text>
+<circle cx="182" cy="346" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="182" y="346" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">d</text>
 <text x="300" y="288" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">试 b: word[1] = 'i', b.children = {a}</text>
 <text x="300" y="310" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">没有 'i' -&gt; return False (死路)</text>
 <line x1="40" y1="360" x2="640" y2="360" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 3"/>
@@ -85,13 +85,13 @@
 <line x1="140.0" y1="390" x2="70.0" y2="422" stroke="#898781" stroke-width="1"/>
 <line x1="140.0" y1="390" x2="126.0" y2="422" stroke="#898781" stroke-width="1"/>
 <line x1="126.0" y1="422" x2="126.0" y2="454" stroke="#898781" stroke-width="1"/>
-<line x1="70.0" y1="422" x2="70.0" y2="454" stroke="#898781" stroke-width="1"/>
-<line x1="210.0" y1="422" x2="238.0" y2="454" stroke="#898781" stroke-width="1"/>
 <line x1="210.0" y1="422" x2="182.0" y2="454" stroke="#898781" stroke-width="1"/>
+<line x1="210.0" y1="422" x2="238.0" y2="454" stroke="#898781" stroke-width="1"/>
+<line x1="70.0" y1="422" x2="70.0" y2="454" stroke="#898781" stroke-width="1"/>
 <line x1="238.0" y1="454" x2="238" y2="486" stroke="#898781" stroke-width="1"/>
-<line x1="182.0" y1="454" x2="182" y2="486" stroke="#898781" stroke-width="1"/>
-<line x1="70.0" y1="454" x2="70" y2="486" stroke="#898781" stroke-width="1"/>
 <line x1="126.0" y1="454" x2="126" y2="486" stroke="#898781" stroke-width="1"/>
+<line x1="70.0" y1="454" x2="70" y2="486" stroke="#898781" stroke-width="1"/>
+<line x1="182.0" y1="454" x2="182" y2="486" stroke="#898781" stroke-width="1"/>
 <rect x="121.0" y="380" width="38" height="20" rx="10" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="140.0" y="390" font-size="12" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">root</text>
 <circle cx="210.0" cy="422" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
@@ -102,20 +102,20 @@
 <text x="126.0" y="422" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">d</text>
 <circle cx="126.0" cy="454" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="126.0" y="454" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">a</text>
-<circle cx="70.0" cy="454" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="70.0" y="454" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">a</text>
-<circle cx="238.0" cy="454" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="238.0" y="454" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">i</text>
 <circle cx="182.0" cy="454" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="182.0" y="454" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">a</text>
+<circle cx="238.0" cy="454" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="238.0" y="454" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">i</text>
+<circle cx="70.0" cy="454" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="70.0" y="454" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">a</text>
 <circle cx="238" cy="486" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="238" y="486" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">d</text>
-<circle cx="182" cy="486" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="182" y="486" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">d</text>
-<circle cx="70" cy="486" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="70" y="486" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">d</text>
 <circle cx="126" cy="486" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="126" y="486" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">d</text>
+<circle cx="70" cy="486" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="70" y="486" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">d</text>
+<circle cx="182" cy="486" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="182" y="486" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">d</text>
 <text x="300" y="428" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">试 d: word[1] = 'i', d.children = {a}</text>
 <text x="300" y="450" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">没有 'i' -&gt; return False (死路)</text>
 <line x1="40" y1="500" x2="640" y2="500" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 3"/>
@@ -123,13 +123,13 @@
 <line x1="140.0" y1="530" x2="70.0" y2="562" stroke="#898781" stroke-width="1"/>
 <line x1="140.0" y1="530" x2="126.0" y2="562" stroke="#898781" stroke-width="1"/>
 <line x1="126.0" y1="562" x2="126.0" y2="594" stroke="#898781" stroke-width="1"/>
-<line x1="70.0" y1="562" x2="70.0" y2="594" stroke="#898781" stroke-width="1"/>
-<line x1="210.0" y1="562" x2="238.0" y2="594" stroke="#898781" stroke-width="1"/>
 <line x1="210.0" y1="562" x2="182.0" y2="594" stroke="#898781" stroke-width="1"/>
+<line x1="210.0" y1="562" x2="238.0" y2="594" stroke="#898781" stroke-width="1"/>
+<line x1="70.0" y1="562" x2="70.0" y2="594" stroke="#898781" stroke-width="1"/>
 <line x1="238.0" y1="594" x2="238" y2="626" stroke="#898781" stroke-width="1"/>
-<line x1="182.0" y1="594" x2="182" y2="626" stroke="#898781" stroke-width="1"/>
-<line x1="70.0" y1="594" x2="70" y2="626" stroke="#898781" stroke-width="1"/>
 <line x1="126.0" y1="594" x2="126" y2="626" stroke="#898781" stroke-width="1"/>
+<line x1="70.0" y1="594" x2="70" y2="626" stroke="#898781" stroke-width="1"/>
+<line x1="182.0" y1="594" x2="182" y2="626" stroke="#898781" stroke-width="1"/>
 <rect x="121.0" y="520" width="38" height="20" rx="10" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="140.0" y="530" font-size="12" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">root</text>
 <circle cx="210.0" cy="562" r="11" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
@@ -140,20 +140,20 @@
 <text x="126.0" y="562" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">d</text>
 <circle cx="126.0" cy="594" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="126.0" y="594" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">a</text>
-<circle cx="70.0" cy="594" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="70.0" y="594" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">a</text>
-<circle cx="238.0" cy="594" r="11" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="238.0" y="594" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i</text>
 <circle cx="182.0" cy="594" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="182.0" y="594" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">a</text>
+<circle cx="238.0" cy="594" r="11" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="238.0" y="594" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i</text>
+<circle cx="70.0" cy="594" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="70.0" y="594" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">a</text>
 <circle cx="238" cy="626" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="238" y="626" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">d</text>
-<circle cx="182" cy="626" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="182" y="626" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">d</text>
-<circle cx="70" cy="626" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="70" y="626" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">d</text>
 <circle cx="126" cy="626" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="126" y="626" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">d</text>
+<circle cx="70" cy="626" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="70" y="626" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">d</text>
+<circle cx="182" cy="626" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="182" y="626" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">d</text>
 <text x="300" y="568" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">试 m: word[1] = 'i', m.children = {a, i}</text>
 <text x="300" y="590" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">有 'i' -&gt; 走进去, i = 2</text>
 <line x1="40" y1="640" x2="640" y2="640" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 3"/>
@@ -161,13 +161,13 @@
 <line x1="140.0" y1="670" x2="70.0" y2="702" stroke="#898781" stroke-width="1"/>
 <line x1="140.0" y1="670" x2="126.0" y2="702" stroke="#898781" stroke-width="1"/>
 <line x1="126.0" y1="702" x2="126.0" y2="734" stroke="#898781" stroke-width="1"/>
-<line x1="70.0" y1="702" x2="70.0" y2="734" stroke="#898781" stroke-width="1"/>
-<line x1="210.0" y1="702" x2="238.0" y2="734" stroke="#898781" stroke-width="1"/>
 <line x1="210.0" y1="702" x2="182.0" y2="734" stroke="#898781" stroke-width="1"/>
+<line x1="210.0" y1="702" x2="238.0" y2="734" stroke="#898781" stroke-width="1"/>
+<line x1="70.0" y1="702" x2="70.0" y2="734" stroke="#898781" stroke-width="1"/>
 <line x1="238.0" y1="734" x2="238" y2="766" stroke="#898781" stroke-width="1"/>
-<line x1="182.0" y1="734" x2="182" y2="766" stroke="#898781" stroke-width="1"/>
-<line x1="70.0" y1="734" x2="70" y2="766" stroke="#898781" stroke-width="1"/>
 <line x1="126.0" y1="734" x2="126" y2="766" stroke="#898781" stroke-width="1"/>
+<line x1="70.0" y1="734" x2="70" y2="766" stroke="#898781" stroke-width="1"/>
+<line x1="182.0" y1="734" x2="182" y2="766" stroke="#898781" stroke-width="1"/>
 <rect x="121.0" y="660" width="38" height="20" rx="10" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="140.0" y="670" font-size="12" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">root</text>
 <circle cx="210.0" cy="702" r="11" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
@@ -178,21 +178,21 @@
 <text x="126.0" y="702" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">d</text>
 <circle cx="126.0" cy="734" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="126.0" y="734" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">a</text>
-<circle cx="70.0" cy="734" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="70.0" y="734" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">a</text>
-<circle cx="238.0" cy="734" r="11" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="238.0" y="734" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i</text>
 <circle cx="182.0" cy="734" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="182.0" y="734" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">a</text>
+<circle cx="238.0" cy="734" r="11" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="238.0" y="734" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">i</text>
+<circle cx="70.0" cy="734" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="70.0" y="734" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">a</text>
 <circle cx="238" cy="766" r="11" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
 <circle cx="238" cy="766" r="14.5" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="238" y="766" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">d</text>
-<circle cx="182" cy="766" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="182" y="766" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">d</text>
-<circle cx="70" cy="766" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="70" y="766" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">d</text>
 <circle cx="126" cy="766" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
 <text x="126" y="766" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">d</text>
+<circle cx="70" cy="766" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="70" y="766" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">d</text>
+<circle cx="182" cy="766" r="11" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="182" y="766" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">d</text>
 <text x="300" y="708" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">word[2] = 'd' 有 -&gt; i = 3 = len(word)</text>
 <text x="300" y="730" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">node.is_end = True -&gt; return True</text>
 <line x1="40" y1="780" x2="640" y2="780" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 3"/>
