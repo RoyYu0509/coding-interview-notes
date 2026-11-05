@@ -1339,7 +1339,7 @@ def fig_uf_trace():
                 s.edge(pos[v], pos[par[v]], 11, 11, col, arrow="green" if v in changed else "gray", sw=1.4)
         for (x, oldp, newp) in st["comp"]:
             # 被压缩掉的旧边: 虚线 (旧 parent 仍在森林里)
-            s.edge(pos[x], pos[oldp], 11, 11, ARROW["red"], dash=True, sw=1.3, bend=-12)
+            s.edge(pos[x], pos[oldp], 11, 11, ARROW["red"], dash=True, sw=1.3, bend=-20)
         for v in range(UF_N):
             is_root = par[v] == v
             role = "oth"
@@ -1388,6 +1388,182 @@ def fig_uf_trace():
     s.h = y + 76
     return s.out("uf_trace.svg")
 
+# ------------------------------------------------------------ Dijkstra
+DJ_POS = {1: (60, 115), 2: (200, 62), 3: (200, 168), 4: (340, 115), 5: (480, 115)}
+INF = float("inf")
+
+
+def sim_dijkstra():
+    graph = defaultdict(list)
+    for u, v, w in DJ_TIMES:
+        graph[u].append((v, w))
+    n, k = 5, 1
+    dist = [INF] * (n + 1)
+    dist[k] = 0
+    heap = [(0, k)]
+    steps = [dict(pop=None, stale=False, relax=[], dist=dist[1:], heap=list(heap),
+                  changed=set())]
+    while heap:
+        d, u = heapq.heappop(heap)
+        if d > dist[u]:
+            steps.append(dict(pop=(d, u), stale=True, relax=[], dist=dist[1:],
+                              heap=list(heap), changed=set(), cur=dist[u]))
+            continue
+        relax, changed = [], set()
+        for v, w in graph[u]:
+            nd = d + w
+            old = dist[v]
+            if nd < dist[v]:
+                dist[v] = nd
+                heapq.heappush(heap, (nd, v))
+                relax.append((u, v, d, w, nd, old, True))
+                changed.add(v)
+            else:
+                relax.append((u, v, d, w, nd, old, False))
+        steps.append(dict(pop=(d, u), stale=False, relax=relax, dist=dist[1:],
+                          heap=list(heap), changed=changed))
+    for st in steps:
+        st["dist"] = list(st["dist"])
+    assert dist[1:] == [0, 3, 1, 4, 7] and max(dist[1:]) == 7
+    return steps
+
+
+def fmt_d(x):
+    return "∞" if x == INF else str(x)
+
+
+def edge_label(s, a, b, w, dx=0, dy=-12):
+    mx, my = (a[0] + b[0]) / 2 + dx, (a[1] + b[1]) / 2 + dy
+    s.b.append('<rect x="%s" y="%s" width="18" height="16" rx="3" fill="#fff"/>' % (mx - 9, my - 8))
+    s.text(mx, my, str(w), 12, INK, 500, "middle")
+
+
+def fig_dijkstra_core():
+    s = Svg(350, "Dijkstra 的 invariant")
+    head(s, "heap 的 top = 所有\"候选距离\"里最小的。它一弹出, dist 就是最终答案 (前提: 所有边权 ≥ 0)",
+         "例: 起点 1 · 已确定 {1, 3} · 待确定的候选在 heap 里")
+    # 已确定区域
+    s.b.append('<rect x="40" y="70" width="230" height="190" rx="16" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1" stroke-dasharray="4 3"/>')
+    s.text(56, 88, "已确定 (popped): dist 不会再变", 12, ROLE["oth"][2], 500)
+    P = {1: (100, 170), 3: (200, 170), 2: (400, 130), 4: (400, 230)}
+    s.edge(P[1], P[3], 16, 16, ARROW["gray"], arrow="gray")
+    s.node(*P[1], "1", "oth")
+    s.node(*P[3], "3", "oth")
+    s.text(100, 196, "dist = 0", 12, ROLE["oth"][2], 400, "middle")
+    s.text(200, 196, "dist = 1", 12, ROLE["oth"][2], 400, "middle")
+    edge_label(s, P[1], P[3], 1, 0, -12)
+    s.node(*P[2], "2", "new", key=True)
+    s.node(*P[4], "4", "plain")
+    # 跨界边 (候选)
+    s.edge(P[1], P[2], 16, 16, ARROW["gray"], arrow="gray", bend=-30)
+    s.edge(P[3], P[2], 16, 16, ARROW["green"], arrow="green")
+    s.edge(P[3], P[4], 16, 16, ARROW["gray"], arrow="gray")
+    s.text(290, 108, "0 + 4 = 4", 12, SUB, 400, "middle")
+    s.text(330, 166, "1 + 2 = 3", 12, ROLE["new"][2], 500, "middle")
+    s.text(318, 222, "1 + 5 = 6", 12, SUB, 400, "middle")
+    # heap
+    s.text(500, 78, "heap (候选)", 14, INK, 500)
+    s.box(500, 92, 100, 28, "(3, 2)", "new", 14, key=True)
+    s.box(500, 128, 100, 28, "(4, 2)", "plain", 14)
+    s.box(500, 164, 100, 28, "(6, 4)", "plain", 14)
+    s.text(500, 210, "(dist, node) · 最小的 (3, 2)", 12, SUB)
+    s.text(500, 228, "先弹出", 12, SUB)
+    s.text(40, 286, "为什么 dist[2] = 3 已经是最短: 要到 2 就必须从\"已确定\"区域走出来, 出来的第一步候选 ≥ 3 (heap 最小),", 12, INK)
+    s.text(40, 306, "之后每条边权 ≥ 0, 只会更长。所以不可能有比 3 更短的路。", 12, INK)
+    s.text(40, 328, "有负边: 先花 6 走到 4, 再走一条 -5 的边到 2 → 1 < 3, 这个论证就破了 → 改用 Bellman-Ford。", 12, SUB)
+    return s.out("dijkstra_core.svg")
+
+
+def heap_tree(s, cx, y0, heap, key=True):
+    P = {}
+    for i, (d_, v) in enumerate(heap):
+        lvl = 0
+        while (1 << (lvl + 1)) - 1 <= i:
+            lvl += 1
+        j = i - ((1 << lvl) - 1)
+        slots = 1 << lvl
+        x = cx + (j - (slots - 1) / 2) * (96 / slots) * (1 if lvl else 0) if lvl < 2 else cx + (j - 1.5) * 38
+        if lvl == 1:
+            x = cx + (j - 0.5) * 78
+        P[i] = (x, y0 + 16 + lvl * 34)
+    for i in P:
+        if i:
+            s.edge(P[(i - 1) // 2], P[i], 15, 15, "#B4B2A9", sw=1.2)
+    for i, (d_, v) in enumerate(heap):
+        s.node(round(P[i][0], 1), P[i][1], "%d,%d" % (d_, v), "new" if False else "oth", r=15, size=12,
+               key=(i == 0 and key))
+    return P
+
+
+def fig_dijkstra_trace():
+    steps = sim_dijkstra()
+    rh = 104
+    top = 232
+    H = top + rh * len(steps) + 110
+    s = Svg(H, "Network Delay Time (Dijkstra) 运行流程")
+    head(s, "k = 1 · heap 里存 (dist, node) · pop 最小的 → 过期就 skip → 否则对每条出边 relax: nd = d + w, nd < dist[v] 才更新并 push",
+         "图: u → v 边上的数字 = 耗时 w")
+    pos = DJ_POS
+    for u, v, w in DJ_TIMES:
+        s.edge((pos[u][0], pos[u][1] + 0), (pos[v][0], pos[v][1]), 16, 16, ARROW["gray"], arrow="gray")
+    for (u, v, w), (dx, dy) in zip(DJ_TIMES, [(-6, -10), (-6, 12), (-12, 0), (0, -12), (0, 12), (0, -12)]):
+        edge_label(s, pos[u], pos[v], w, dx, dy)
+    for k_, (x, y) in pos.items():
+        s.node(x, y + 0, str(k_), "oth")
+    s.text(540, 62, "n = 5, k = 1", 12, INK, 500)
+    s.text(540, 82, "times =", 12, SUB)
+    for i, t in enumerate(DJ_TIMES):
+        s.text(540 + (i % 2) * 52, 100 + (i // 2) * 18, str(t).replace(" ", ""), 12, SUB)
+    y0 = 196
+    s.text(40, y0, "pop (d, u)", 12, SUB)
+    s.text(160, y0, "dist 表 [1..5]", 12, SUB)
+    s.text(340, y0, "heap (tree, 顶 = 最小)", 12, SUB)
+    s.text(490, y0, "relax / 判断", 12, SUB)
+    for i in range(5):
+        s.text(160 + i * 32 + 16, y0 + 18, "[%d]" % (i + 1), 12, SUB, 400, "middle")
+    s.hsep(y0 + 28)
+    y = top - 14
+    prevdist = None
+    for st in steps:
+        dist = st["dist"]
+        if st["pop"] is None:
+            s.text(40, y + 14, "开始", 14, INK, 500)
+            s.text(40, y + 36, "push (0, 1)", 12, SUB)
+        else:
+            d_, u = st["pop"]
+            s.box(40, y, 62, 26, "(%d,%d)" % (d_, u), "rem", 14)
+            if st["stale"]:
+                s.text(40, y + 42, "%d > dist[%d]=%d" % (d_, u, st["cur"]), 12, ROLE["rem"][2], 500)
+                s.text(40, y + 58, "过期, skip", 12, ROLE["rem"][2])
+            else:
+                s.text(40, y + 42, "%d = dist[%d]" % (d_, u), 12, SUB)
+                s.text(40, y + 58, "有效, relax", 12, SUB)
+        for i, val in enumerate(dist):
+            role = "new" if (i + 1) in st["changed"] else "plain"
+            s.box(160 + i * 32, y, 32, 26, fmt_d(val), role, 14)
+        heap_tree(s, 392, y - 2, st["heap"])
+        if not st["heap"]:
+            s.text(392, y + 14, "空 → 结束", 12, SUB, 400, "middle")
+        if st["pop"] is None:
+            s.text(490, y + 14, "dist[1] = 0", 12, SUB)
+        elif st["stale"]:
+            s.text(490, y + 14, "不 relax, 直接 continue", 12, SUB)
+        else:
+            for j, (u, v, d_, w, nd, old, ok) in enumerate(st["relax"]):
+                if ok:
+                    s.text(490, y + 12 + j * 18, "%d→%d: %d+%d=%d < %s ✓ push" % (u, v, d_, w, nd, fmt_d(old)), 12, ROLE["new"][2], 500)
+                else:
+                    s.text(490, y + 12 + j * 18, "%d→%d: %d+%d=%d ≥ %s ✗" % (u, v, d_, w, nd, fmt_d(old)), 12, SUB)
+            if not st["relax"]:
+                s.text(490, y + 12, "没有出边", 12, SUB)
+        y += rh
+        s.hsep(y - 14)
+    s.text(40, y + 8, "答案: dist[1..5] = [0, 3, 1, 4, 7] → max = 7 (所有点都到得了, 最晚是 5)", 16, INK, 500)
+    s.text(40, y + 30, "(0,1) 先 push (4,2); 之后经 3 找到更短的 (3,2) → (4,2) 留在 heap 里变成过期记录, 弹出时被 skip", 12, SUB)
+    s.legend(y + 58, [("rem", "pop 取出"), ("new", "dist 刚更新"), ("oth", "heap 里的 (dist, node)"), ("key", "heap top")])
+    s.h = y + 76
+    return s.out("dijkstra_trace.svg")
+
 def build_figs():
     F = {}
     rs = sim_rotting()
@@ -1412,6 +1588,8 @@ def build_figs():
     F["cl_tr"] = fig_clone_trace()
     F["uf_core"] = fig_uf_core()
     F["uf_tr"] = fig_uf_trace()
+    F["dj_core"] = fig_dijkstra_core()
+    F["dj_tr"] = fig_dijkstra_trace()
     return F
 
 

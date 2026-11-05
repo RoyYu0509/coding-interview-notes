@@ -148,21 +148,22 @@ def range_sum(i, j):                         # nums[i..j] 闭区间
 '''
 
 CODE["hash_template"] = '''
-count = {0: 1}          # 空前缀 prefix = 0 出现过 1 次 (让 "从下标 0 开始" 的 subarray 也能被数到)
+# 空前缀 prefix = 0 出现过 1 次, 让 "从下标 0 开始" 的 subarray 也能被数到
+count = {0: 1}
 prefix = ans = 0
 for x in nums:
     prefix += x
     need = prefix - k                        # 要找的起点 prefix 值
     ans += count.get(need, 0)                # 以当前位置结尾, 有多少个起点
-    count[prefix] = count.get(prefix, 0) + 1 # 先查再放: 起点必须在当前位置之前
+    count[prefix] = count.get(prefix, 0) + 1   # 先查再放: 起点在当前位置之前
 '''
 
 CODE["pivot"] = '''
 def pivotIndex(nums):
     total = sum(nums)
-    left = 0                                 # left = nums[0..i-1] 之和, 即 prefix[i]
+    left = 0                                 # nums[0..i-1] 之和 = prefix[i]
     for i, x in enumerate(nums):
-        if left == total - left - x:         # right = total - prefix[i] - nums[i]
+        if left == total - left - x:         # right = total - left - nums[i]
             return i
         left += x                            # 处理完 i, left 变成 prefix[i+1]
     return -1
@@ -185,18 +186,20 @@ def subarraysDivByK(nums, k):
     count = {0: 1}
     prefix = ans = 0
     for x in nums:
-        prefix = (prefix + x) % k            # Python 的 % 对负数也返回 0..k-1, 不用额外处理
+        # Python 的 % 对负数也返回 0..k-1, 不用额外处理
+        prefix = (prefix + x) % k
         ans += count.get(prefix, 0)          # 余数相同的前缀两两配对
         count[prefix] = count.get(prefix, 0) + 1
     return ans
 
-def checkSubarraySum(nums, k):               # 长度 >= 2, 和是 k 的倍数: 求 "存在", 存最早下标
-    first = {0: -1}                          # 余数 0 出现在 "下标 -1" (空前缀)
+# Continuous Subarray Sum: 长度 >= 2, 和是 k 的倍数, 求 "存在"
+def checkSubarraySum(nums, k):
+    first = {0: -1}                          # 余数 0 出现在下标 -1 (空前缀)
     prefix = 0
     for i, x in enumerate(nums):
         prefix = (prefix + x) % k
         if prefix in first:
-            if i - first[prefix] >= 2:       # 长度 = i - first[prefix] 至少 2
+            if i - first[prefix] >= 2:       # 长度至少 2
                 return True
         else:
             first[prefix] = i                # 只记第一次: 越早越长, 不覆盖
@@ -205,10 +208,11 @@ def checkSubarraySum(nums, k):               # 长度 >= 2, 和是 k 的倍数: 
 
 CODE["contig"] = '''
 def findMaxLength(nums):
-    first = {0: -1}                          # first[s] = 前缀和 s 第一次出现的下标
+    first = {0: -1}                          # first[s] = s 第一次出现的下标
     s = best = 0
     for i, x in enumerate(nums):
-        s += 1 if x == 1 else -1             # 0 看成 -1: 0 和 1 一样多 <=> 区间和为 0
+        # 0 看成 -1: 0 和 1 一样多 <=> 区间和为 0
+        s += 1 if x == 1 else -1
         if s in first:
             best = max(best, i - first[s])   # 长度 = i - first[s]
         else:
@@ -217,7 +221,8 @@ def findMaxLength(nums):
 '''
 
 CODE["maxlen_k"] = '''
-def maxSubArrayLen(nums, k):                 # Maximum Size Subarray Sum Equals k
+# Maximum Size Subarray Sum Equals k
+def maxSubArrayLen(nums, k):
     first = {0: -1}
     prefix = best = 0
     for i, x in enumerate(nums):
@@ -235,30 +240,31 @@ def productExceptSelf(nums):
     out = [1] * n
     l = 1                                    # l = nums[0..i-1] 的乘积
     for i in range(n):
-        out[i] = l                           # out[i] 先存 "左边所有数的乘积"
+        out[i] = l                           # 先存 "左边所有数的乘积"
         l *= nums[i]
     r = 1                                    # r = nums[i+1..n-1] 的乘积
     for i in range(n - 1, -1, -1):
-        out[i] *= r                          # 再乘上 "右边所有数的乘积"
+        out[i] *= r                          # 再乘 "右边所有数的乘积"
         r *= nums[i]
-    return out                               # 额外空间 O(1) (out 是答案, 不算)
+    return out                               # 额外空间 O(1) (out 是答案)
 '''
 
 CODE["matrix"] = '''
 class NumMatrix:
     def __init__(self, matrix):
         m, n = len(matrix), len(matrix[0])
-        # P[i][j] = matrix 左上角 i 行 j 列 (不含第 i 行第 j 列) 的和
+        # P[i][j] = matrix 左上角 i 行 j 列的和
         self.P = [[0] * (n + 1) for _ in range(m + 1)]
         for i in range(m):
             for j in range(n):
+                # P[i][j] 和 P[i+1][j] 重叠的部分加了两次, 减一次
                 self.P[i + 1][j + 1] = (matrix[i][j] + self.P[i][j + 1]
-                                        + self.P[i + 1][j] - self.P[i][j])   # 重叠的加了两次, 减一次
+                                        + self.P[i + 1][j] - self.P[i][j])
 
     def sumRegion(self, r1, c1, r2, c2):
         P = self.P
         return (P[r2 + 1][c2 + 1] - P[r1][c2 + 1]
-                - P[r2 + 1][c1] + P[r1][c1])      # 左上角被减了两次, 加回来
+                - P[r2 + 1][c1] + P[r1][c1])   # 左上角被减了两次, 加回来
 '''
 
 CODE["flights"] = '''
@@ -269,7 +275,7 @@ def corpFlightBookings(bookings, n):
         diff[last] -= seats                  # 过了 last 就抵消掉
     ans, cur = [], 0
     for i in range(n):
-        cur += diff[i]                       # 对 diff 做 prefix sum = 还原每个位置的值
+        cur += diff[i]                       # 对 diff 做 prefix sum = 还原
         ans.append(cur)
     return ans
 
@@ -277,7 +283,7 @@ def carPooling(trips, capacity):
     diff = [0] * 1001
     for num, start, end in trips:
         diff[start] += num
-        diff[end] -= num                     # end 站乘客已下车: 区间是 [start, end)
+        diff[end] -= num                     # end 站已下车: 区间 [start, end)
     cur = 0
     for dx in diff:
         cur += dx
@@ -287,7 +293,8 @@ def carPooling(trips, capacity):
 '''
 
 CODE["window_pos"] = '''
-def minSubArrayLen(target, nums):            # 全是正数: sliding window
+# 全是正数: sliding window
+def minSubArrayLen(target, nums):
     left = total = 0
     best = len(nums) + 1
     for right, x in enumerate(nums):
@@ -306,7 +313,7 @@ def wrong(nums, k):
     for right, x in enumerate(nums):
         total += x
         while total > k and left <= right:   # 以为 "超过 k 就缩左边"
-            total -= nums[left]              # 但后面的负数可能把 total 拉回来
+            total -= nums[left]              # 但后面的负数会把 total 拉回来
             left += 1
         if total == k:
             ans += 1

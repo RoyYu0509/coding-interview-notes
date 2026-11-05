@@ -123,101 +123,101 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="520" y="266" font-size="12" fill="#993C1D" font-weight="400" text-anchor="start" dominant-baseline="central">多余闭括号 → False</text>
 <text x="40" y="304" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">走完以后: stack 非空 → 有开括号一直没被闭合 → False · 空 → True</text></svg>
 <figcaption>invariant: stack = 还没闭合的开括号。闭括号只和栈顶比, 四种情况各有固定动作。</figcaption></figure>
-<figure><svg width="100%" viewBox="0 0 680 1010" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif'><title>valid_trace</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">s = "{[()]}" · 每一步: 开括号 push → 闭括号 pop 栈顶并检查配对</text>
+<figure><svg width="100%" viewBox="0 0 680 878" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif'><title>valid_trace</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">s = "{[()]}" · 每一步: 开括号 push → 闭括号 pop 栈顶并检查配对</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">invariant: stack = 还没闭合的开括号, 栈顶 (橙色 ring) = 最内层</text>
 <text x="44" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">输入</text>
 <text x="112" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop 掉的</text>
 <text x="294" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">操作后的 stack</text>
 <text x="418" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">说明</text>
 <line x1="40" y1="76" x2="640" y2="76" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 112 L290 208 L394 208 L394 112" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="180" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<rect x="295" y="177" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="193.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">{</text>
-<rect x="40" y="171.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="193.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">{</text>
-<path d="M98 193.0 L296 193.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
-<text x="414" y="137.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">开括号 { → push</text>
-<text x="414" y="156.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里现在 1 个没闭合的, 栈顶是最内层的</text>
-<line x1="40" y1="214" x2="640" y2="214" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 254 L290 350 L394 350 L394 254" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="322" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="342.0" y="335.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">{</text>
-<rect x="298" y="292" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<rect x="295" y="289" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="305.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">[</text>
-<rect x="40" y="283.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="305.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">[</text>
-<path d="M98 305.0 L296 305.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
-<text x="414" y="279.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">开括号 [ → push</text>
-<text x="414" y="298.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里现在 2 个没闭合的, 栈顶是最内层的</text>
-<line x1="40" y1="356" x2="640" y2="356" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 396 L290 492 L394 492 L394 396" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="464" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="342.0" y="477.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">{</text>
-<rect x="298" y="434" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="342.0" y="447.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">[</text>
-<rect x="298" y="404" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<rect x="295" y="401" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="417.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">(</text>
-<rect x="40" y="395.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="417.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">(</text>
-<path d="M98 417.0 L296 417.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
-<text x="414" y="421.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">开括号 ( → push</text>
-<text x="414" y="440.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里现在 3 个没闭合的, 栈顶是最内层的</text>
-<line x1="40" y1="498" x2="640" y2="498" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 538 L290 634 L394 634 L394 538" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="606" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="342.0" y="619.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">{</text>
-<rect x="298" y="576" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<rect x="295" y="573" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="589.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">[</text>
-<rect x="108" y="546" width="72" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
-<text x="144.0" y="559.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">(</text>
-<path d="M298 559.0 L184 559.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrR)"/>
-<text x="108" y="584" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">配对: ) 对 (</text>
-<rect x="40" y="551.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="573.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">)</text>
-<text x="414" y="554.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">闭括号 ) → 只能和栈顶配对</text>
-<text x="414" y="573.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">pop 出 ( == pair[')'] = (</text>
-<text x="414" y="592.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里还剩 2 个没闭合的</text>
-<line x1="40" y1="640" x2="640" y2="640" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 680 L290 776 L394 776 L394 680" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="748" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<rect x="295" y="745" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="761.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">{</text>
-<rect x="108" y="718" width="72" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
-<text x="144.0" y="731.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">[</text>
-<path d="M298 731.0 L184 731.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrR)"/>
-<text x="108" y="756" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">配对: ] 对 [</text>
-<rect x="40" y="693.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="715.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">]</text>
-<text x="414" y="696.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">闭括号 ] → 只能和栈顶配对</text>
-<text x="414" y="715.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">pop 出 [ == pair[']'] = [</text>
-<text x="414" y="734.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里还剩 1 个没闭合的</text>
-<line x1="40" y1="782" x2="640" y2="782" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 822 L290 918 L394 918 L394 822" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<text x="342.0" y="904" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">空</text>
-<rect x="108" y="890" width="72" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
-<text x="144.0" y="903.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">{</text>
-<path d="M298 903.0 L184 903.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrR)"/>
-<text x="108" y="928" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">配对: } 对 {</text>
-<rect x="40" y="835.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="857.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">}</text>
-<text x="414" y="838.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">闭括号 } → 只能和栈顶配对</text>
-<text x="414" y="857.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">pop 出 { == pair['}'] = {</text>
-<text x="414" y="876.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里还剩 0 个没闭合的</text>
-<line x1="40" y1="924" x2="640" y2="924" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<text x="40" y="942" font-size="16" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">结束: stack 为空 → return True</text>
-<text x="40" y="966" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">反例 "([)]": 读到 ')' 时栈顶是 '[' , pop 出 '[' ≠ '(' → False</text>
-<rect x="40" y="983" width="14" height="14" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="62" y="990" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">新 push / 刚被修改</text>
-<rect x="195.68" y="983" width="14" height="14" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
-<text x="217.68" y="990" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop 掉 (虚线扔到左边)</text>
-<rect x="368.4" y="983" width="14" height="14" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="390.4" y="990" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里其他的</text>
-<rect x="471.4" y="986" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="468.4" y="980" width="20" height="20" rx="5" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="496.4" y="990" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶</text></svg>
+<path d="M290 90 L290 186 L394 186 L394 90" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="158" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="295" y="155" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="171.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">{</text>
+<rect x="40" y="149.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="171.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">{</text>
+<path d="M98 171.0 L296 171.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="414" y="126.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">开括号 { → push</text>
+<text x="414" y="145.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里现在 1 个没闭合的, 栈顶是最内层的</text>
+<line x1="40" y1="192" x2="640" y2="192" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 210 L290 306 L394 306 L394 210" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="278" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="342.0" y="291.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">{</text>
+<rect x="298" y="248" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="295" y="245" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="261.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">[</text>
+<rect x="40" y="239.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="261.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">[</text>
+<path d="M98 261.0 L296 261.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="414" y="246.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">开括号 [ → push</text>
+<text x="414" y="265.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里现在 2 个没闭合的, 栈顶是最内层的</text>
+<line x1="40" y1="312" x2="640" y2="312" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 330 L290 426 L394 426 L394 330" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="398" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="342.0" y="411.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">{</text>
+<rect x="298" y="368" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="342.0" y="381.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">[</text>
+<rect x="298" y="338" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="295" y="335" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="351.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">(</text>
+<rect x="40" y="329.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="351.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">(</text>
+<path d="M98 351.0 L296 351.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="414" y="366.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">开括号 ( → push</text>
+<text x="414" y="385.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里现在 3 个没闭合的, 栈顶是最内层的</text>
+<line x1="40" y1="432" x2="640" y2="432" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 450 L290 546 L394 546 L394 450" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="518" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="342.0" y="531.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">{</text>
+<rect x="298" y="488" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="295" y="485" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="501.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">[</text>
+<rect x="108" y="458" width="72" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="144.0" y="471.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">(</text>
+<path d="M298 471.0 L184 471.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrR)"/>
+<text x="108" y="496" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">配对: ) 对 (</text>
+<rect x="40" y="474.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="496.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">)</text>
+<text x="414" y="477.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">闭括号 ) → 只能和栈顶配对</text>
+<text x="414" y="496.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">pop 出 ( == pair[')'] = (</text>
+<text x="414" y="515.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里还剩 2 个没闭合的</text>
+<line x1="40" y1="552" x2="640" y2="552" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 570 L290 666 L394 666 L394 570" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="638" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="295" y="635" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="651.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">{</text>
+<rect x="108" y="608" width="72" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="144.0" y="621.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">[</text>
+<path d="M298 621.0 L184 621.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrR)"/>
+<text x="108" y="646" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">配对: ] 对 [</text>
+<rect x="40" y="594.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="616.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">]</text>
+<text x="414" y="597.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">闭括号 ] → 只能和栈顶配对</text>
+<text x="414" y="616.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">pop 出 [ == pair[']'] = [</text>
+<text x="414" y="635.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里还剩 1 个没闭合的</text>
+<line x1="40" y1="672" x2="640" y2="672" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 690 L290 786 L394 786 L394 690" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<text x="342.0" y="772" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">空</text>
+<rect x="108" y="728" width="72" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="144.0" y="741.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">{</text>
+<path d="M298 741.0 L184 741.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrR)"/>
+<text x="108" y="766" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">配对: } 对 {</text>
+<rect x="40" y="714.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="736.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">}</text>
+<text x="414" y="717.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">闭括号 } → 只能和栈顶配对</text>
+<text x="414" y="736.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">pop 出 { == pair['}'] = {</text>
+<text x="414" y="755.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里还剩 0 个没闭合的</text>
+<line x1="40" y1="792" x2="640" y2="792" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="810" font-size="16" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">结束: stack 为空 → return True</text>
+<text x="40" y="834" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">反例 "([)]": 读到 ')' 时栈顶是 '[' , pop 出 '[' ≠ '(' → False</text>
+<rect x="40" y="851" width="14" height="14" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="62" y="858" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">新 push / 刚被修改</text>
+<rect x="195.68" y="851" width="14" height="14" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="217.68" y="858" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop 掉 (虚线扔到左边)</text>
+<rect x="368.4" y="851" width="14" height="14" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="390.4" y="858" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里其他的</text>
+<rect x="471.4" y="854" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="468.4" y="848" width="20" height="20" rx="5" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="496.4" y="858" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶</text></svg>
 <figcaption>trace: {[()]} 三层嵌套, 栈深到 3 再逐层 pop 回空。每个 pop 掉的开括号都在左边虚线处标明配对。</figcaption></figure>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">is_valid</span>(s):</span><span class="l">    pair = {<span class="s">&#x27;)&#x27;</span>: <span class="s">&#x27;(&#x27;</span>, <span class="s">&#x27;]&#x27;</span>: <span class="s">&#x27;[&#x27;</span>, <span class="s">&#x27;}&#x27;</span>: <span class="s">&#x27;{&#x27;</span>}</span><span class="l">    <span class="c"># invariant: 从底到顶 = 还没闭合的开括号, 栈顶是最内层的</span></span><span class="l">    stack = []</span><span class="l">    <span class="k">for</span> ch <span class="k">in</span> s:</span><span class="l">        <span class="c"># 闭括号: 只能和&quot;最近一个没闭合的开括号&quot;配对</span></span><span class="l">        <span class="k">if</span> ch <span class="k">in</span> pair:</span><span class="l">            <span class="c"># 栈空 = 多余的闭括号; pop 出来不对 = 交叉</span></span><span class="l">            <span class="k">if</span> <span class="k">not</span> stack <span class="k">or</span> stack.<span class="f">pop</span>() != pair[ch]:</span><span class="l">                <span class="r">return</span> <span class="k">False</span></span><span class="l">        <span class="k">else</span>:</span><span class="l">            stack.<span class="f">append</span>(ch)             <span class="c"># 开括号: 先存着, 等后面的闭括号来找它</span></span><span class="l">    <span class="r">return</span> <span class="k">not</span> stack                     <span class="c"># 结尾栈非空 = 有开括号一直没被闭合</span></span></div>
 <p><b>时间 O(n):</b>每个字符 push / pop 最多一次。<b>空间 O(n):</b>全是开括号时栈里有 n 个。</p>
@@ -413,106 +413,106 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="210" y="330" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">读到 ']' → pop ('a', 2):</text>
 <text x="210" y="352" font-size="14" fill="#0F6E56" font-weight="500" text-anchor="start" dominant-baseline="central">cur = prev_str + cur × k = 'a' + 'c' × 2 = 'acc'</text></svg>
 <figcaption>每个 '[' 开一层: stack 存 (prev_str, k); 读到 ']' 时 pop 最近的一层, 把内层的 cur 重复 k 次接到 prev_str 后面。</figcaption></figure>
-<figure><svg width="100%" viewBox="0 0 680 1034" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif'><title>decode_trace</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">s = "3[a2[c]]" · '[' 把 (cur, num) push 进 stack, 然后重新开始; ']' pop 回来</text>
+<figure><svg width="100%" viewBox="0 0 680 858" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif'><title>decode_trace</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">s = "3[a2[c]]" · '[' 把 (cur, num) push 进 stack, 然后重新开始; ']' pop 回来</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">cur = 当前这层拼出的字符串 · num = 正在读的数字 · stack 元素 = (prev_str, k)</text>
 <text x="44" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">输入</text>
 <text x="112" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop 掉的</text>
 <text x="294" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">操作后的 stack</text>
 <text x="418" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">说明</text>
 <line x1="40" y1="76" x2="640" y2="76" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 112 L290 178 L394 178 L394 112" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<text x="342.0" y="164" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">空</text>
-<rect x="40" y="110.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="132.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">3</text>
-<text x="414" y="122.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">读数字: num = 0×10 + 3 = 3</text>
-<text x="414" y="141.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">num = 3 · cur = ''</text>
-<line x1="40" y1="184" x2="640" y2="184" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 224 L290 290 L394 290 L394 224" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="262" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<rect x="295" y="259" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="275.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">('', 3)</text>
-<rect x="40" y="253.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="275.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">[</text>
-<path d="M98 275.0 L296 275.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
-<text x="414" y="234.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">push (cur, num) = ('', 3)</text>
-<text x="414" y="253.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">num = 0 · cur = ''</text>
-<line x1="40" y1="296" x2="640" y2="296" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 336 L290 402 L394 402 L394 336" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="374" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<rect x="295" y="371" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="387.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">('', 3)</text>
-<rect x="40" y="334.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="356.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">a</text>
-<text x="414" y="346.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">字母: cur += 'a'</text>
-<text x="414" y="365.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">num = 0 · cur = 'a'</text>
-<line x1="40" y1="408" x2="640" y2="408" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 448 L290 514 L394 514 L394 448" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="486" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<rect x="295" y="483" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="499.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">('', 3)</text>
-<rect x="40" y="446.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="468.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text>
-<text x="414" y="458.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">读数字: num = 0×10 + 2 = 2</text>
-<text x="414" y="477.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">num = 2 · cur = 'a'</text>
-<line x1="40" y1="520" x2="640" y2="520" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 560 L290 626 L394 626 L394 560" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="598" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="342.0" y="611.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">('', 3)</text>
-<rect x="298" y="568" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<rect x="295" y="565" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="581.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">('a', 2)</text>
-<rect x="40" y="559.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="581.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">[</text>
-<path d="M98 581.0 L296 581.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
-<text x="414" y="570.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">push (cur, num) = ('a', 2)</text>
-<text x="414" y="589.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">num = 0 · cur = ''</text>
-<line x1="40" y1="632" x2="640" y2="632" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 672 L290 738 L394 738 L394 672" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="710" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="342.0" y="723.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">('', 3)</text>
-<rect x="298" y="680" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<rect x="295" y="677" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="693.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">('a', 2)</text>
-<rect x="40" y="670.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="692.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">c</text>
-<text x="414" y="682.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">字母: cur += 'c'</text>
-<text x="414" y="701.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">num = 0 · cur = 'c'</text>
-<line x1="40" y1="744" x2="640" y2="744" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 784 L290 850 L394 850 L394 784" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="822" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<rect x="295" y="819" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="835.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">('', 3)</text>
-<rect x="108" y="792" width="72" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
-<text x="144.0" y="805.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">('a', 2)</text>
-<path d="M298 805.0 L184 805.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrR)"/>
-<text x="108" y="830" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">回到外层</text>
-<rect x="40" y="782.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="804.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">]</text>
-<text x="414" y="785.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop → prev_str = 'a', k = 2</text>
-<text x="414" y="804.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">cur = 'a' + 'c' × 2</text>
-<text x="414" y="823.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">= 'acc'</text>
-<line x1="40" y1="856" x2="640" y2="856" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 896 L290 962 L394 962 L394 896" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<text x="342.0" y="948" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">空</text>
-<rect x="108" y="934" width="72" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
-<text x="144.0" y="947.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">('', 3)</text>
-<path d="M298 947.0 L184 947.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrR)"/>
-<text x="108" y="972" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">回到外层</text>
-<rect x="40" y="894.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="916.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">]</text>
-<text x="414" y="897.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop → prev_str = '', k = 3</text>
-<text x="414" y="916.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">cur = '' + 'acc' × 3</text>
-<text x="414" y="935.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">= 'accaccacc'</text>
-<line x1="40" y1="968" x2="640" y2="968" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<text x="40" y="986" font-size="16" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">结果: cur = 'accaccacc' (= 'a' + 'c'×2 = 'acc', 再 '' + 'acc'×3)</text>
-<rect x="40" y="1007" width="14" height="14" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="62" y="1014" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">新 push / 刚被修改</text>
-<rect x="195.68" y="1007" width="14" height="14" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
-<text x="217.68" y="1014" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop 掉 (虚线扔到左边)</text>
-<rect x="368.4" y="1007" width="14" height="14" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="390.4" y="1014" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里其他的</text>
-<rect x="471.4" y="1010" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="468.4" y="1004" width="20" height="20" rx="5" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="496.4" y="1014" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶</text></svg>
+<path d="M290 90 L290 156 L394 156 L394 90" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<text x="342.0" y="142" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">空</text>
+<rect x="40" y="99.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="121.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">3</text>
+<text x="414" y="111.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">读数字: num = 0×10 + 3 = 3</text>
+<text x="414" y="130.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">num = 3 · cur = ''</text>
+<line x1="40" y1="162" x2="640" y2="162" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 180 L290 246 L394 246 L394 180" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="218" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="295" y="215" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="231.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">('', 3)</text>
+<rect x="40" y="209.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="231.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">[</text>
+<path d="M98 231.0 L296 231.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="414" y="201.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">push (cur, num) = ('', 3)</text>
+<text x="414" y="220.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">num = 0 · cur = ''</text>
+<line x1="40" y1="252" x2="640" y2="252" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 270 L290 336 L394 336 L394 270" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="308" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="295" y="305" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="321.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">('', 3)</text>
+<rect x="40" y="279.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="301.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">a</text>
+<text x="414" y="291.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">字母: cur += 'a'</text>
+<text x="414" y="310.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">num = 0 · cur = 'a'</text>
+<line x1="40" y1="342" x2="640" y2="342" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 360 L290 426 L394 426 L394 360" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="398" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="295" y="395" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="411.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">('', 3)</text>
+<rect x="40" y="369.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="391.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text>
+<text x="414" y="381.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">读数字: num = 0×10 + 2 = 2</text>
+<text x="414" y="400.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">num = 2 · cur = 'a'</text>
+<line x1="40" y1="432" x2="640" y2="432" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 450 L290 516 L394 516 L394 450" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="488" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="342.0" y="501.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">('', 3)</text>
+<rect x="298" y="458" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="295" y="455" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="471.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">('a', 2)</text>
+<rect x="40" y="449.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="471.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">[</text>
+<path d="M98 471.0 L296 471.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="414" y="471.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">push (cur, num) = ('a', 2)</text>
+<text x="414" y="490.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">num = 0 · cur = ''</text>
+<line x1="40" y1="522" x2="640" y2="522" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 540 L290 606 L394 606 L394 540" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="578" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="342.0" y="591.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">('', 3)</text>
+<rect x="298" y="548" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="295" y="545" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="561.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">('a', 2)</text>
+<rect x="40" y="549.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="571.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">c</text>
+<text x="414" y="561.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">字母: cur += 'c'</text>
+<text x="414" y="580.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">num = 0 · cur = 'c'</text>
+<line x1="40" y1="612" x2="640" y2="612" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 630 L290 696 L394 696 L394 630" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="668" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="295" y="665" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="681.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">('', 3)</text>
+<rect x="108" y="638" width="72" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="144.0" y="651.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">('a', 2)</text>
+<path d="M298 651.0 L184 651.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrR)"/>
+<text x="108" y="676" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">回到外层</text>
+<rect x="40" y="639.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="661.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">]</text>
+<text x="414" y="642.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop → prev_str = 'a', k = 2</text>
+<text x="414" y="661.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">cur = 'a' + 'c' × 2</text>
+<text x="414" y="680.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">= 'acc'</text>
+<line x1="40" y1="702" x2="640" y2="702" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 720 L290 786 L394 786 L394 720" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<text x="342.0" y="772" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">空</text>
+<rect x="108" y="728" width="72" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="144.0" y="741.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">('', 3)</text>
+<path d="M298 741.0 L184 741.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrR)"/>
+<text x="108" y="766" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">回到外层</text>
+<rect x="40" y="729.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="751.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">]</text>
+<text x="414" y="732.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop → prev_str = '', k = 3</text>
+<text x="414" y="751.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">cur = '' + 'acc' × 3</text>
+<text x="414" y="770.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">= 'accaccacc'</text>
+<line x1="40" y1="792" x2="640" y2="792" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="810" font-size="16" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">结果: cur = 'accaccacc' (= 'a' + 'c'×2 = 'acc', 再 '' + 'acc'×3)</text>
+<rect x="40" y="831" width="14" height="14" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="62" y="838" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">新 push / 刚被修改</text>
+<rect x="195.68" y="831" width="14" height="14" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="217.68" y="838" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop 掉 (虚线扔到左边)</text>
+<rect x="368.4" y="831" width="14" height="14" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="390.4" y="838" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里其他的</text>
+<rect x="471.4" y="834" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="468.4" y="828" width="20" height="20" rx="5" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="496.4" y="838" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶</text></svg>
 <figcaption>trace: 3[a2[c]] —— stack 深度最多 2, 每个 ']' pop 回一层, cur 从 'c' → 'acc' → 'accaccacc'。</figcaption></figure>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">decode_string</span>(s):</span><span class="l">    <span class="c"># 每层存 (prev_str, k): 进入 &#x27;[&#x27; 之前外层拼好的字符串, 和这个 &#x27;[&#x27; 的重复次数</span></span><span class="l">    stack = []</span><span class="l">    <span class="c"># cur = 当前这层 [] 里已经拼出的字符串; num = 正在读的数字</span></span><span class="l">    cur, num = <span class="s">&quot;&quot;</span>, 0</span><span class="l">    <span class="k">for</span> ch <span class="k">in</span> s:</span><span class="l">        <span class="k">if</span> ch.<span class="f">isdigit</span>():</span><span class="l">            num = num * 10 + <span class="t">int</span>(ch)     <span class="c"># 多位数 &quot;12[a]&quot;</span></span><span class="l">        <span class="k">elif</span> ch == <span class="s">&#x27;[&#x27;</span>:</span><span class="l">            stack.<span class="f">append</span>((cur, num))     <span class="c"># 保存外层现场</span></span><span class="l">            cur, num = <span class="s">&quot;&quot;</span>, 0             <span class="c"># 进入内层: 从空字符串重新拼</span></span><span class="l">        <span class="k">elif</span> ch == <span class="s">&#x27;]&#x27;</span>:</span><span class="l">            prev_str, k = stack.<span class="f">pop</span>()    <span class="c"># 回到外层</span></span><span class="l">            <span class="c"># 内层拼好的 cur 重复 k 次, 接在外层字符串后面</span></span><span class="l">            cur = prev_str + cur * k</span><span class="l">        <span class="k">else</span>:</span><span class="l">            cur += ch</span><span class="l">    <span class="r">return</span> cur</span></div>
 <p><b>时间:</b>每个字符处理一次,加上每个 <code>]</code> 构造一次新字符串,长度之和约为输出长度 (嵌套层数不多时看作 O(输出长度))。<b>空间:</b>栈深 = 嵌套层数,加上 cur。</p>
@@ -538,8 +538,8 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <path d="M172 189 L236 189" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrR)"/>
 <text x="204" y="100" font-size="12" fill="#712B13" font-weight="400" text-anchor="middle" dominant-baseline="central">先 pop 的是 b (右)</text>
 <text x="204" y="120" font-size="12" fill="#712B13" font-weight="400" text-anchor="middle" dominant-baseline="central">再 pop 的是 a (左)</text>
-<path d="M318 188 L400 188 L400 214" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
-<text x="330" y="170" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">a + b = 2 + 1 = 3</text>
+<path d="M318 188 L418 214" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="240" y="258" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">a + b = 2 + 1 = 3</text>
 <path d="M430 144 L430 240 L534 240 L534 144" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
 <rect x="438" y="212" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
 <rect x="435" y="209" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
@@ -815,128 +815,126 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <p><b>题目:</b>字符串含非负整数、<code>+ -</code>、括号和空格,求值。例:<code>"1-(2+(3-1))"</code> = 1 - (2 + 2) = -3。</p>
 <p><b>Brute force:</b>反复找最内层括号,算出值,替换回字符串,O(n·d)(d 为嵌套深度,最坏 O(n²))。浪费:"最内层括号" 又是 "最近开的、还没关的 '('"。</p>
 <p><b>关键观察:</b>只有 <code>+ -</code>,没有优先级问题,所以不需要 "项" 的栈,一个累加器 <code>result</code> 加一个 <code>sign</code> 就够。括号的作用是:<b>括号整体是一个数,前面带着符号</b>。读到 <code>(</code>:把外层现场 <code>(result, sign)</code> push 进栈,内层从 0 重新算(和 Decode String 同一招)。读到 <code>)</code>:先把括号内最后一个数并进来,pop 现场,<code>result = prev_result + prev_sign * result</code>。和上一题相比,栈里放的不再是 "项",而是 "外层的现场"。</p>
-<figure><svg width="100%" viewBox="0 0 680 364" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif'><title>calc_core</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">s = 1 - (2 + 3) · 括号 = 一个新的子问题: 进括号时 push 外层现场, 出括号时 pop 回来</text>
+<figure><svg width="100%" viewBox="0 0 680 345" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif'><title>calc_core</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">s = 1 - (2 + 3) · 括号 = 一个新的子问题: 进括号时 push 外层现场, 出括号时 pop 回来</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">现场 = (result, sign): 外层累加到哪, 以及 '(' 前面的符号</text>
 <text x="40" y="70" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">① 读完 '1 -', 还没读 '('</text>
 <text x="250" y="70" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">② 读到 '('</text>
 <text x="460" y="70" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">③ 括号内算完, 读到 ')'</text>
-<path d="M50 154 L50 220 L150 220 L150 154" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<text x="100.0" y="206" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">空</text>
-<text x="170" y="120" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">result = 1</text>
-<text x="170" y="144" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">sign = -1</text>
-<text x="170" y="168" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">(要减的是整个括号)</text>
-<path d="M260 154 L260 220 L360 220 L360 154" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="268" y="192" width="84" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<rect x="265" y="189" width="90" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="310.0" y="205.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">(1, -1)</text>
-<text x="380" y="120" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">result = 0</text>
-<text x="380" y="144" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">sign = +1</text>
-<text x="380" y="168" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">括号内重新算</text>
-<text x="260" y="244" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">括号内: 2 + 3 → result = 5</text>
-<path d="M470 154 L470 220 L570 220 L570 154" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<text x="520.0" y="206" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">空</text>
-<rect x="586" y="156" width="54" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
-<text x="613.0" y="169.0" font-size="12" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">(1, -1)</text>
-<path d="M574 169 L584 169" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrR)"/>
-<text x="470" y="244" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">result = 5 (括号内)</text>
-<text x="40" y="290" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">pop (prev_result, prev_sign) = (1, -1)</text>
-<text x="40" y="316" font-size="14" fill="#0F6E56" font-weight="500" text-anchor="start" dominant-baseline="central">result = prev_result + prev_sign × result = 1 + (-1) × 5 = -4</text>
-<text x="40" y="342" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">整个括号 = 一个数, 带上 '(' 前面的符号 · 嵌套多深, 栈就有多深</text></svg>
+<text x="40" y="100" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">result = 1 · sign = -1</text>
+<path d="M40 139 L40 205 L140 205 L140 139" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<text x="90.0" y="191" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">空</text>
+<text x="40" y="229" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">stack 空 · 要减的是整个括号</text>
+<text x="250" y="100" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">result = 0 · sign = +1</text>
+<path d="M250 139 L250 205 L350 205 L350 139" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="258" y="177" width="84" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="255" y="174" width="90" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="300.0" y="190.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">(1, -1)</text>
+<text x="250" y="229" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">push 现场, 括号内重新算</text>
+<text x="460" y="100" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">result = 5 (括号内)</text>
+<path d="M460 139 L460 205 L560 205 L560 139" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<text x="510.0" y="191" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">空</text>
+<rect x="578" y="141" width="60" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="608.0" y="154.0" font-size="12" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">(1, -1)</text>
+<path d="M568 154 L576 154" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrR)"/>
+<text x="460" y="229" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop 回外层现场</text>
+<text x="40" y="271" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">pop (prev_result, prev_sign) = (1, -1)</text>
+<text x="40" y="297" font-size="14" fill="#0F6E56" font-weight="500" text-anchor="start" dominant-baseline="central">result = prev_result + prev_sign × result = 1 + (-1) × 5 = -4</text>
+<text x="40" y="323" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">整个括号 = 一个数, 带上 '(' 前面的符号 · 嵌套多深, 栈就有多深</text></svg>
 <figcaption>1-(2+3): 读 '(' 时 push (1,-1) 并清零; 括号内算出 5; 读 ')' 时 pop, 1 + (-1)×5 = -4。</figcaption></figure>
-<figure><svg width="100%" viewBox="0 0 680 922" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif'><title>calc_trace</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">s = "1-(2+(3-1))" · stack 元素 = (result, sign) = '(' 之前的现场</text>
+<figure><svg width="100%" viewBox="0 0 680 768" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif'><title>calc_trace</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">s = "1-(2+(3-1))" · stack 元素 = (result, sign) = '(' 之前的现场</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">'(' push 现场并清零 · ')' 先并入 num, 再 pop 现场: result = prev_result + prev_sign × result</text>
 <text x="44" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">读到</text>
 <text x="112" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop 掉的</text>
 <text x="294" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">操作后的 stack</text>
 <text x="418" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">说明</text>
 <line x1="40" y1="76" x2="640" y2="76" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 112 L290 178 L394 178 L394 112" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<text x="342.0" y="164" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">空</text>
-<rect x="40" y="110.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="132.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">1-</text>
-<text x="414" y="113.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">result = 0 + (1)×1 = 1</text>
-<text x="414" y="132.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">sign = -1</text>
-<text x="414" y="151.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">stack 不动</text>
-<line x1="40" y1="184" x2="640" y2="184" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 224 L290 290 L394 290 L394 224" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="262" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<rect x="295" y="259" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="275.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">(1, -1)</text>
-<rect x="40" y="253.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="275.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">(</text>
-<path d="M98 275.0 L296 275.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
-<text x="414" y="234.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">push (result, sign) = (1, -1)</text>
-<text x="414" y="253.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">result = 0, sign = +1 (括号内重新算)</text>
-<line x1="40" y1="296" x2="640" y2="296" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 336 L290 402 L394 402 L394 336" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="374" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<rect x="295" y="371" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="387.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">(1, -1)</text>
-<rect x="40" y="334.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="356.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">2+</text>
-<text x="414" y="337.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">result = 0 + (1)×2 = 2</text>
-<text x="414" y="356.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">sign = +1</text>
-<text x="414" y="375.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">stack 不动</text>
-<line x1="40" y1="408" x2="640" y2="408" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 448 L290 514 L394 514 L394 448" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="486" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="342.0" y="499.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">(1, -1)</text>
-<rect x="298" y="456" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<rect x="295" y="453" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="469.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">(2, 1)</text>
-<rect x="40" y="447.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="469.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">(</text>
-<path d="M98 469.0 L296 469.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
-<text x="414" y="458.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">push (result, sign) = (2, 1)</text>
-<text x="414" y="477.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">result = 0, sign = +1 (括号内重新算)</text>
-<line x1="40" y1="520" x2="640" y2="520" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 560 L290 626 L394 626 L394 560" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="598" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="342.0" y="611.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">(1, -1)</text>
-<rect x="298" y="568" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<rect x="295" y="565" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="581.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">(2, 1)</text>
-<rect x="40" y="558.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="580.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">3-</text>
-<text x="414" y="561.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">result = 0 + (1)×3 = 3</text>
-<text x="414" y="580.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">sign = -1</text>
-<text x="414" y="599.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">stack 不动</text>
-<line x1="40" y1="632" x2="640" y2="632" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 672 L290 738 L394 738 L394 672" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="710" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<rect x="295" y="707" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="723.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">(1, -1)</text>
-<rect x="108" y="680" width="72" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
-<text x="144.0" y="693.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">(2, 1)</text>
-<path d="M298 693.0 L184 693.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrR)"/>
-<text x="108" y="718" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">回到外层</text>
-<rect x="40" y="670.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="692.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">1)</text>
-<text x="414" y="673.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">括号内并入 num: result = 3 + (-1)×1 = 2</text>
-<text x="414" y="692.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop (prev_result, prev_sign) = (2, 1)</text>
-<text x="414" y="711.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">result = 2 + (1)×2 = 4</text>
-<line x1="40" y1="744" x2="640" y2="744" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 784 L290 850 L394 850 L394 784" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<text x="342.0" y="836" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">空</text>
-<rect x="108" y="822" width="72" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
-<text x="144.0" y="835.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">(1, -1)</text>
-<path d="M298 835.0 L184 835.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrR)"/>
-<text x="108" y="860" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">回到外层</text>
-<rect x="40" y="782.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="804.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">)</text>
-<text x="414" y="785.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">括号内并入 num: result = 4 + (-1)×0 = 4</text>
-<text x="414" y="804.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop (prev_result, prev_sign) = (1, -1)</text>
-<text x="414" y="823.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">result = 1 + (-1)×4 = -3</text>
-<line x1="40" y1="856" x2="640" y2="856" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<text x="40" y="874" font-size="16" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">结束: result + sign × num = -3 + (-1)×0 = -3</text>
-<rect x="40" y="895" width="14" height="14" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="62" y="902" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">新 push / 刚被修改</text>
-<rect x="195.68" y="895" width="14" height="14" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
-<text x="217.68" y="902" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop 掉 (虚线扔到左边)</text>
-<rect x="368.4" y="895" width="14" height="14" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="390.4" y="902" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里其他的</text>
-<rect x="471.4" y="898" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="468.4" y="892" width="20" height="20" rx="5" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="496.4" y="902" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶</text></svg>
+<path d="M290 90 L290 156 L394 156 L394 90" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<text x="342.0" y="142" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">空</text>
+<rect x="40" y="99.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="121.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">1-</text>
+<text x="414" y="102.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">result = 0 + (1)×1 = 1</text>
+<text x="414" y="121.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">sign = -1</text>
+<text x="414" y="140.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">stack 不动</text>
+<line x1="40" y1="162" x2="640" y2="162" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 180 L290 246 L394 246 L394 180" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="218" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="295" y="215" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="231.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">(1, -1)</text>
+<rect x="40" y="209.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="231.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">(</text>
+<path d="M98 231.0 L296 231.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="414" y="201.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">push (result, sign) = (1, -1)</text>
+<text x="414" y="220.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">result = 0, sign = +1 (括号内重新算)</text>
+<line x1="40" y1="252" x2="640" y2="252" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 270 L290 336 L394 336 L394 270" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="308" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="295" y="305" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="321.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">(1, -1)</text>
+<rect x="40" y="279.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="301.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">2+</text>
+<text x="414" y="282.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">result = 0 + (1)×2 = 2</text>
+<text x="414" y="301.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">sign = +1</text>
+<text x="414" y="320.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">stack 不动</text>
+<line x1="40" y1="342" x2="640" y2="342" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 360 L290 426 L394 426 L394 360" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="398" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="342.0" y="411.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">(1, -1)</text>
+<rect x="298" y="368" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="295" y="365" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="381.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">(2, 1)</text>
+<rect x="40" y="359.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="381.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">(</text>
+<path d="M98 381.0 L296 381.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="414" y="381.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">push (result, sign) = (2, 1)</text>
+<text x="414" y="400.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">result = 0, sign = +1 (括号内重新算)</text>
+<line x1="40" y1="432" x2="640" y2="432" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 450 L290 516 L394 516 L394 450" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="488" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="342.0" y="501.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">(1, -1)</text>
+<rect x="298" y="458" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="295" y="455" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="471.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">(2, 1)</text>
+<rect x="40" y="459.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="481.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">3-</text>
+<text x="414" y="462.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">result = 0 + (1)×3 = 3</text>
+<text x="414" y="481.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">sign = -1</text>
+<text x="414" y="500.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">stack 不动</text>
+<line x1="40" y1="522" x2="640" y2="522" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 540 L290 606 L394 606 L394 540" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="578" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="295" y="575" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="591.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">(1, -1)</text>
+<rect x="108" y="548" width="72" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="144.0" y="561.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">(2, 1)</text>
+<path d="M298 561.0 L184 561.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrR)"/>
+<text x="108" y="586" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">回到外层</text>
+<rect x="40" y="549.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="571.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">1)</text>
+<text x="414" y="552.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">括号内并入 num: result = 3 + (-1)×1 = 2</text>
+<text x="414" y="571.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop (prev_result, prev_sign) = (2, 1)</text>
+<text x="414" y="590.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">result = 2 + (1)×2 = 4</text>
+<line x1="40" y1="612" x2="640" y2="612" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 630 L290 696 L394 696 L394 630" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<text x="342.0" y="682" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">空</text>
+<rect x="108" y="638" width="72" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="144.0" y="651.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">(1, -1)</text>
+<path d="M298 651.0 L184 651.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrR)"/>
+<text x="108" y="676" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">回到外层</text>
+<rect x="40" y="639.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="661.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">)</text>
+<text x="414" y="642.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">括号内并入 num: result = 4 + (-1)×0 = 4</text>
+<text x="414" y="661.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop (prev_result, prev_sign) = (1, -1)</text>
+<text x="414" y="680.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">result = 1 + (-1)×4 = -3</text>
+<line x1="40" y1="702" x2="640" y2="702" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="720" font-size="16" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">结束: result + sign × num = -3 + (-1)×0 = -3</text>
+<rect x="40" y="741" width="14" height="14" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="62" y="748" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">新 push / 刚被修改</text>
+<rect x="195.68" y="741" width="14" height="14" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="217.68" y="748" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop 掉 (虚线扔到左边)</text>
+<rect x="368.4" y="741" width="14" height="14" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="390.4" y="748" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里其他的</text>
+<rect x="471.4" y="744" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="468.4" y="738" width="20" height="20" rx="5" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="496.4" y="748" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶</text></svg>
 <figcaption>trace: 1-(2+(3-1)) 嵌套两层, 栈深到 2。每个 ')' 先并入 num 再 pop 现场合并。</figcaption></figure>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">calculate</span>(s):</span><span class="l">    stack = []</span><span class="l">    <span class="c"># result = 当前括号层已累加的值; sign = num 前面的符号 (+1 / -1)</span></span><span class="l">    result, num, sign = 0, 0, 1</span><span class="l">    <span class="k">for</span> ch <span class="k">in</span> s:</span><span class="l">        <span class="k">if</span> ch.<span class="f">isdigit</span>():</span><span class="l">            num = num * 10 + <span class="t">int</span>(ch)</span><span class="l">        <span class="k">elif</span> ch <span class="k">in</span> <span class="s">&#x27;+-&#x27;</span>:</span><span class="l">            result += sign * num         <span class="c"># 把刚读完的 num 并进 result</span></span><span class="l">            num, sign = 0, (1 <span class="k">if</span> ch == <span class="s">&#x27;+&#x27;</span> <span class="k">else</span> -1)</span><span class="l">        <span class="k">elif</span> ch == <span class="s">&#x27;(&#x27;</span>:</span><span class="l">            <span class="c"># 保存外层: 外层累加到哪了, 以及 &#x27;(&#x27; 前面的符号</span></span><span class="l">            stack.<span class="f">append</span>((result, sign))</span><span class="l">            result, sign = 0, 1          <span class="c"># 括号内部从 0 重新算</span></span><span class="l">        <span class="k">elif</span> ch == <span class="s">&#x27;)&#x27;</span>:</span><span class="l">            result += sign * num         <span class="c"># 先把括号内最后一个 num 并进来</span></span><span class="l">            num = 0</span><span class="l">            prev_result, prev_sign = stack.<span class="f">pop</span>()</span><span class="l">            <span class="c"># 整个括号当成一个数, 乘上 &#x27;(&#x27; 前面的符号</span></span><span class="l">            result = prev_result + prev_sign * result</span><span class="l">    <span class="r">return</span> result + sign * num</span></div>
 <p><b>时间 O(n):</b>每个字符一次。<b>空间 O(d):</b>栈深 = 括号嵌套深度。</p>
@@ -996,99 +994,99 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="40" y="326" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">while 的条件: alive and x &lt; 0 and stack and stack[-1] &gt; 0</text>
 <text x="40" y="350" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">x 之所以能反复和新的栈顶比, 是因为栈顶炸掉后, 露出来的就是 '下一个最近的'</text></svg>
 <figcaption>只有 '栈顶向右 + 新来的向左' 会撞; 撞的时候三种结果, 对应 pop / 同归于尽 / 新的消失。</figcaption></figure>
-<figure><svg width="100%" viewBox="0 0 680 740" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif'><title>asteroid_trace</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">asteroids = [5, 10, -8, -12, 3] · 正数向右, 负数向左</text>
+<figure><svg width="100%" viewBox="0 0 680 698" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif'><title>asteroid_trace</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">asteroids = [5, 10, -8, -12, 3] · 正数向右, 负数向左</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">只有 '栈顶 &gt; 0 且 新来的 &lt; 0' 才撞 · 撞完谁小谁炸, 一样大都炸</text>
 <text x="44" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">输入</text>
 <text x="112" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop 掉的</text>
 <text x="294" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">操作后的 stack</text>
 <text x="418" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">说明</text>
 <line x1="40" y1="76" x2="640" y2="76" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 97 L290 163 L394 163 L394 97" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="135" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<rect x="295" y="132" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="148.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">5</text>
-<rect x="40" y="126.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="148.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">5</text>
-<path d="M98 148.0 L296 148.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
-<text x="414" y="115.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈空 → push 5</text>
-<text x="414" y="134.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">push 5</text>
-<line x1="40" y1="169" x2="640" y2="169" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 194 L290 260 L394 260 L394 194" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="232" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="342.0" y="245.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">5</text>
-<rect x="298" y="202" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<rect x="295" y="199" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="215.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">10</text>
-<rect x="40" y="193.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="215.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">10</text>
-<path d="M98 215.0 L296 215.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
-<text x="414" y="212.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">10 和栈顶不会相撞</text>
-<text x="414" y="231.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">push 10</text>
-<line x1="40" y1="266" x2="640" y2="266" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 291 L290 357 L394 357 L394 291" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="329" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="342.0" y="342.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">5</text>
-<rect x="298" y="299" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<rect x="295" y="296" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="312.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">10</text>
-<rect x="40" y="296.5" width="56" height="44" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
-<text x="68" y="318.5" font-size="16" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">-8</text>
-<text x="414" y="299.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶 10 &gt; 0, -8 &lt; 0 → 相撞</text>
-<text x="414" y="318.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">10 &gt; 8: -8 被炸掉</text>
-<text x="414" y="337.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">不 push, stack 不变</text>
-<line x1="40" y1="363" x2="640" y2="363" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 388 L290 454 L394 454 L394 388" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="426" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<rect x="295" y="423" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="439.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">5</text>
-<rect x="108" y="396" width="72" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
-<text x="144.0" y="409.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">10</text>
-<path d="M298 409.0 L184 409.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrR)"/>
-<text x="108" y="434" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">10 &lt; |-12| = 12</text>
-<text x="108" y="449" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶炸掉</text>
-<rect x="40" y="393.5" width="56" height="44" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="68" y="415.5" font-size="16" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">-12</text>
-<text x="414" y="396.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶 10 &gt; 0, -12 &lt; 0 → 相撞</text>
-<text x="414" y="415.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">10 &lt; 12: pop 10</text>
-<text x="414" y="434.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">-12 还活着, 继续撞下一个</text>
-<line x1="40" y1="460" x2="640" y2="460" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 485 L290 551 L394 551 L394 485" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="523" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<rect x="295" y="520" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="536.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">-12</text>
-<rect x="108" y="493" width="72" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
-<text x="144.0" y="506.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">5</text>
-<path d="M298 506.0 L184 506.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrR)"/>
-<text x="108" y="531" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">5 &lt; |-12| = 12</text>
-<text x="108" y="546" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶炸掉</text>
-<rect x="40" y="490.5" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="512.5" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">-12</text>
-<text x="414" y="493.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶 5 &gt; 0, -12 &lt; 0 → 相撞</text>
-<text x="414" y="512.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">5 &lt; 12: pop 5</text>
-<text x="414" y="531.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈空 → 不再相撞, push -12</text>
-<line x1="40" y1="557" x2="640" y2="557" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 582 L290 648 L394 648 L394 582" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="620" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="342.0" y="633.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">-12</text>
-<rect x="298" y="590" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<rect x="295" y="587" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="603.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">3</text>
-<rect x="40" y="581.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="603.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">3</text>
-<path d="M98 603.0 L296 603.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
-<text x="414" y="600.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">3 和栈顶不会相撞</text>
-<text x="414" y="619.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">push 3</text>
-<line x1="40" y1="654" x2="640" y2="654" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<text x="40" y="672" font-size="16" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">结果: stack = [-12, 3]</text>
-<text x="40" y="696" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">-8 撞不过 10 (被炸); -12 炸掉 10 和 5, 自己活下来; 3 在 -12 右边, 方向相背, 不撞</text>
-<rect x="40" y="713" width="14" height="14" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="62" y="720" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">新 push / 刚被修改</text>
-<rect x="195.68" y="713" width="14" height="14" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
-<text x="217.68" y="720" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop 掉 (虚线扔到左边)</text>
-<rect x="368.4" y="713" width="14" height="14" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="390.4" y="720" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里其他的</text>
-<rect x="471.4" y="716" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="468.4" y="710" width="20" height="20" rx="5" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="496.4" y="720" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶</text></svg>
+<path d="M290 90 L290 156 L394 156 L394 90" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="128" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="295" y="125" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="141.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">5</text>
+<rect x="40" y="119.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="141.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">5</text>
+<path d="M98 141.0 L296 141.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="414" y="111.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈空 → push 5</text>
+<text x="414" y="130.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">push 5</text>
+<line x1="40" y1="162" x2="640" y2="162" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 180 L290 246 L394 246 L394 180" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="218" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="342.0" y="231.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">5</text>
+<rect x="298" y="188" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="295" y="185" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="201.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">10</text>
+<rect x="40" y="179.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="201.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">10</text>
+<path d="M98 201.0 L296 201.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="414" y="201.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">10 和栈顶不会相撞</text>
+<text x="414" y="220.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">push 10</text>
+<line x1="40" y1="252" x2="640" y2="252" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 270 L290 336 L394 336 L394 270" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="308" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="342.0" y="321.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">5</text>
+<rect x="298" y="278" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="295" y="275" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="291.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">10</text>
+<rect x="40" y="279.0" width="56" height="44" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="68" y="301.0" font-size="16" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">-8</text>
+<text x="414" y="282.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶 10 &gt; 0, -8 &lt; 0 → 相撞</text>
+<text x="414" y="301.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">10 &gt; 8: -8 被炸掉</text>
+<text x="414" y="320.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">不 push, stack 不变</text>
+<line x1="40" y1="342" x2="640" y2="342" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 360 L290 426 L394 426 L394 360" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="398" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="295" y="395" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="411.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">5</text>
+<rect x="108" y="368" width="72" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="144.0" y="381.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">10</text>
+<path d="M298 381.0 L184 381.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrR)"/>
+<text x="108" y="406" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">10 &lt; |-12| = 12</text>
+<text x="108" y="421" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶炸掉</text>
+<rect x="40" y="369.0" width="56" height="44" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="68" y="391.0" font-size="16" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">-12</text>
+<text x="414" y="372.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶 10 &gt; 0, -12 &lt; 0 → 相撞</text>
+<text x="414" y="391.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">10 &lt; 12: pop 10</text>
+<text x="414" y="410.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">-12 还活着, 继续撞下一个</text>
+<line x1="40" y1="432" x2="640" y2="432" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 450 L290 516 L394 516 L394 450" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="488" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="295" y="485" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="501.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">-12</text>
+<rect x="108" y="458" width="72" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="144.0" y="471.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">5</text>
+<path d="M298 471.0 L184 471.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrR)"/>
+<text x="108" y="496" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">5 &lt; |-12| = 12</text>
+<text x="108" y="511" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶炸掉</text>
+<rect x="40" y="459.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="481.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">-12</text>
+<text x="414" y="462.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶 5 &gt; 0, -12 &lt; 0 → 相撞</text>
+<text x="414" y="481.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">5 &lt; 12: pop 5</text>
+<text x="414" y="500.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈空 → 不再相撞, push -12</text>
+<line x1="40" y1="522" x2="640" y2="522" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 540 L290 606 L394 606 L394 540" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="578" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="342.0" y="591.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">-12</text>
+<rect x="298" y="548" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="295" y="545" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="561.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">3</text>
+<rect x="40" y="539.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="561.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">3</text>
+<path d="M98 561.0 L296 561.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="414" y="561.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">3 和栈顶不会相撞</text>
+<text x="414" y="580.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">push 3</text>
+<line x1="40" y1="612" x2="640" y2="612" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="630" font-size="16" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">结果: stack = [-12, 3]</text>
+<text x="40" y="654" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">-8 撞不过 10 (被炸); -12 炸掉 10 和 5, 自己活下来; 3 在 -12 右边, 方向相背, 不撞</text>
+<rect x="40" y="671" width="14" height="14" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="62" y="678" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">新 push / 刚被修改</text>
+<rect x="195.68" y="671" width="14" height="14" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="217.68" y="678" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop 掉 (虚线扔到左边)</text>
+<rect x="368.4" y="671" width="14" height="14" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="390.4" y="678" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里其他的</text>
+<rect x="471.4" y="674" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="468.4" y="668" width="20" height="20" rx="5" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="496.4" y="678" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶</text></svg>
 <figcaption>trace: -8 撞不过 10 被炸; -12 连炸 10 和 5 (一个 while 里 pop 两次) 后 push; 3 与 -12 相背, 直接 push。</figcaption></figure>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">asteroid_collision</span>(asteroids):</span><span class="l">    <span class="c"># invariant: 栈里没有会相撞的一对 (栈顶向右 + 下一个向左)</span></span><span class="l">    stack = []</span><span class="l">    <span class="k">for</span> a <span class="k">in</span> asteroids:</span><span class="l">        alive = <span class="k">True</span></span><span class="l">        <span class="c"># 只有 &quot;栈顶向右 + 新来的向左&quot; 才会撞</span></span><span class="l">        <span class="k">while</span> alive <span class="k">and</span> a &lt; 0 <span class="k">and</span> stack <span class="k">and</span> stack[-1] &gt; 0:</span><span class="l">            <span class="c"># 栈顶更小: 栈顶炸掉, 新来的继续去撞下一个</span></span><span class="l">            <span class="k">if</span> stack[-1] &lt; -a:</span><span class="l">                stack.<span class="f">pop</span>()</span><span class="l">            <span class="k">elif</span> stack[-1] == -a:        <span class="c"># 一样大: 同归于尽</span></span><span class="l">                stack.<span class="f">pop</span>()</span><span class="l">                alive = <span class="k">False</span></span><span class="l">            <span class="k">else</span>:                        <span class="c"># 栈顶更大: 新来的炸掉</span></span><span class="l">                alive = <span class="k">False</span></span><span class="l">        <span class="k">if</span> alive:</span><span class="l">            stack.<span class="f">append</span>(a)</span><span class="l">    <span class="r">return</span> stack</span></div>
 <p><b>时间 O(n):</b>每颗行星最多 push 一次、pop 一次(while 的总迭代数被 pop 次数限制)。<b>空间 O(n)。</b></p>
@@ -1137,102 +1135,102 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="40" y="306" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">删掉一段 = pop 一个元素 · 左右两段自动相邻, 因为它们在栈里本来就上下挨着</text>
 <text x="40" y="330" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">额外状态 (count) 跟着元素存进栈 —— 和 Min Stack 的 (val, min) 是同一个套路</text></svg>
 <figcaption>只存 char 要回头数; 存 (char, count), count 到 k 就整段 pop, 下面的段自动接上。</figcaption></figure>
-<figure><svg width="100%" viewBox="0 0 680 1047" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif'><title>dup2_trace</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">s = "abbbaac", k = 3 · stack 元素 = (char, count)</text>
+<figure><svg width="100%" viewBox="0 0 680 788" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif'><title>dup2_trace</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">s = "abbbaac", k = 3 · stack 元素 = (char, count)</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">和栈顶同字符 → count += 1 · count == k → pop 整段 · 否则 push (ch, 1)</text>
 <text x="44" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">输入</text>
 <text x="112" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop 掉的</text>
 <text x="294" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">操作后的 stack</text>
 <text x="418" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">说明</text>
 <line x1="40" y1="76" x2="640" y2="76" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 127 L290 193 L394 193 L394 127" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="165" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<rect x="295" y="162" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="178.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">(a, 1)</text>
-<rect x="40" y="156.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="178.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">a</text>
-<path d="M98 178.0 L296 178.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
-<text x="414" y="139.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">栈空 → push (a, 1)</text>
-<line x1="40" y1="199" x2="640" y2="199" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 254 L290 320 L394 320 L394 254" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="292" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="342.0" y="305.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">(a, 1)</text>
-<rect x="298" y="262" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<rect x="295" y="259" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="275.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">(b, 1)</text>
-<rect x="40" y="253.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="275.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">b</text>
-<path d="M98 275.0 L296 275.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
-<text x="414" y="266.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">和栈顶不同 → push (b, 1)</text>
-<line x1="40" y1="326" x2="640" y2="326" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 381 L290 447 L394 447 L394 381" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="419" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="342.0" y="432.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">(a, 1)</text>
-<rect x="298" y="389" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<rect x="295" y="386" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="402.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">(b, 2)</text>
-<rect x="40" y="380.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="402.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">b</text>
-<path d="M98 402.0 L296 402.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
-<text x="414" y="384.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">和栈顶同字符 → count += 1</text>
-<text x="414" y="403.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">(b, 2), 2 &lt; k = 3</text>
-<line x1="40" y1="453" x2="640" y2="453" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 508 L290 574 L394 574 L394 508" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="546" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<rect x="295" y="543" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="559.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">(a, 1)</text>
-<rect x="108" y="516" width="72" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
-<text x="144.0" y="529.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">(b, 3)</text>
-<path d="M298 529.0 L184 529.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrR)"/>
-<text x="108" y="554" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">count = 3 = k</text>
-<text x="108" y="569" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">整段删掉</text>
-<rect x="40" y="498.5" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="520.5" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">b</text>
-<text x="414" y="501.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">和栈顶同字符 → count += 1 = 3</text>
-<text x="414" y="520.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">count == k = 3 → pop 整段</text>
-<text x="414" y="539.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">下面的段变成栈顶</text>
-<line x1="40" y1="580" x2="640" y2="580" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 635 L290 701 L394 701 L394 635" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="673" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<rect x="295" y="670" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="686.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">(a, 2)</text>
-<rect x="40" y="664.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="686.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">a</text>
-<path d="M98 686.0 L296 686.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
-<text x="414" y="638.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">和栈顶同字符 → count += 1</text>
-<text x="414" y="657.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">(a, 2), 2 &lt; k = 3</text>
-<line x1="40" y1="707" x2="640" y2="707" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 762 L290 828 L394 828 L394 762" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<text x="342.0" y="814" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">空</text>
-<rect x="108" y="800" width="72" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
-<text x="144.0" y="813.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">(a, 3)</text>
-<path d="M298 813.0 L184 813.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrR)"/>
-<text x="108" y="838" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">count = 3 = k</text>
-<text x="108" y="853" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">整段删掉</text>
-<rect x="40" y="752.5" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="774.5" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">a</text>
-<text x="414" y="755.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">和栈顶同字符 → count += 1 = 3</text>
-<text x="414" y="774.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">count == k = 3 → pop 整段</text>
-<text x="414" y="793.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">下面的段变成栈顶</text>
-<line x1="40" y1="834" x2="640" y2="834" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 889 L290 955 L394 955 L394 889" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="927" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<rect x="295" y="924" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="940.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">(c, 1)</text>
-<rect x="40" y="918.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="940.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">c</text>
-<path d="M98 940.0 L296 940.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
-<text x="414" y="901.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">栈空 → push (c, 1)</text>
-<line x1="40" y1="961" x2="640" y2="961" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<text x="40" y="979" font-size="16" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">结果: stack 只剩 (c, 1) → "c"</text>
-<text x="40" y="1003" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">bbb 被删后, a 和 aa 在栈里本来就上下挨着 → 继续合并成 aaa 被删</text>
-<rect x="40" y="1020" width="14" height="14" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="62" y="1027" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">新 push / 刚被修改</text>
-<rect x="195.68" y="1020" width="14" height="14" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
-<text x="217.68" y="1027" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop 掉 (虚线扔到左边)</text>
-<rect x="368.4" y="1020" width="14" height="14" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="390.4" y="1027" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里其他的</text>
-<rect x="471.4" y="1023" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="468.4" y="1017" width="20" height="20" rx="5" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="496.4" y="1027" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶</text></svg>
+<path d="M290 90 L290 156 L394 156 L394 90" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="128" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="295" y="125" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="141.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">(a, 1)</text>
+<rect x="40" y="119.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="141.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">a</text>
+<path d="M98 141.0 L296 141.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="414" y="121.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">栈空 → push (a, 1)</text>
+<line x1="40" y1="162" x2="640" y2="162" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 180 L290 246 L394 246 L394 180" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="218" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="342.0" y="231.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">(a, 1)</text>
+<rect x="298" y="188" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="295" y="185" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="201.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">(b, 1)</text>
+<rect x="40" y="179.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="201.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">b</text>
+<path d="M98 201.0 L296 201.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="414" y="211.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">和栈顶不同 → push (b, 1)</text>
+<line x1="40" y1="252" x2="640" y2="252" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 270 L290 336 L394 336 L394 270" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="308" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="342.0" y="321.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">(a, 1)</text>
+<rect x="298" y="278" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="295" y="275" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="291.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">(b, 2)</text>
+<rect x="40" y="269.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="291.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">b</text>
+<path d="M98 291.0 L296 291.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="414" y="291.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">和栈顶同字符 → count += 1</text>
+<text x="414" y="310.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">(b, 2), 2 &lt; k = 3</text>
+<line x1="40" y1="342" x2="640" y2="342" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 360 L290 426 L394 426 L394 360" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="398" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="295" y="395" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="411.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">(a, 1)</text>
+<rect x="108" y="368" width="72" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="144.0" y="381.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">(b, 3)</text>
+<path d="M298 381.0 L184 381.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrR)"/>
+<text x="108" y="406" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">count = 3 = k</text>
+<text x="108" y="421" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">整段删掉</text>
+<rect x="40" y="369.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="391.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">b</text>
+<text x="414" y="372.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">和栈顶同字符 → count += 1 = 3</text>
+<text x="414" y="391.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">count == k = 3 → pop 整段</text>
+<text x="414" y="410.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">下面的段变成栈顶</text>
+<line x1="40" y1="432" x2="640" y2="432" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 450 L290 516 L394 516 L394 450" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="488" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="295" y="485" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="501.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">(a, 2)</text>
+<rect x="40" y="479.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="501.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">a</text>
+<path d="M98 501.0 L296 501.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="414" y="471.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">和栈顶同字符 → count += 1</text>
+<text x="414" y="490.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">(a, 2), 2 &lt; k = 3</text>
+<line x1="40" y1="522" x2="640" y2="522" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 540 L290 606 L394 606 L394 540" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<text x="342.0" y="592" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">空</text>
+<rect x="108" y="548" width="72" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="144.0" y="561.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">(a, 3)</text>
+<path d="M298 561.0 L184 561.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrR)"/>
+<text x="108" y="586" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">count = 3 = k</text>
+<text x="108" y="601" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">整段删掉</text>
+<rect x="40" y="549.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="571.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">a</text>
+<text x="414" y="552.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">和栈顶同字符 → count += 1 = 3</text>
+<text x="414" y="571.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">count == k = 3 → pop 整段</text>
+<text x="414" y="590.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈空了</text>
+<line x1="40" y1="612" x2="640" y2="612" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 630 L290 696 L394 696 L394 630" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="668" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="295" y="665" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="681.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">(c, 1)</text>
+<rect x="40" y="659.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="681.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">c</text>
+<path d="M98 681.0 L296 681.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="414" y="661.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">栈空 → push (c, 1)</text>
+<line x1="40" y1="702" x2="640" y2="702" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="720" font-size="16" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">结果: stack 只剩 (c, 1) → "c"</text>
+<text x="40" y="744" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">bbb 被删后, a 和 aa 在栈里本来就上下挨着 → 继续合并成 aaa 被删</text>
+<rect x="40" y="761" width="14" height="14" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="62" y="768" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">新 push / 刚被修改</text>
+<rect x="195.68" y="761" width="14" height="14" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="217.68" y="768" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop 掉 (虚线扔到左边)</text>
+<rect x="368.4" y="761" width="14" height="14" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="390.4" y="768" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里其他的</text>
+<rect x="471.4" y="764" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="468.4" y="758" width="20" height="20" rx="5" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="496.4" y="768" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶</text></svg>
 <figcaption>trace: abbbaac, k=3。(b,3) 凑够被 pop, 露出 (a,1); 后面的 a 把它加到 (a,2) 再到 (a,3) 又被 pop。</figcaption></figure>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">remove_duplicates</span>(s, k):</span><span class="l">    <span class="c"># 每个元素 [char, count]: 栈顶这一段 char 已经连续出现 count 次</span></span><span class="l">    stack = []</span><span class="l">    <span class="k">for</span> ch <span class="k">in</span> s:</span><span class="l">        <span class="k">if</span> stack <span class="k">and</span> stack[-1][0] == ch:</span><span class="l">            stack[-1][1] += 1            <span class="c"># 和栈顶同字符: 这一段变长 (不用回头数)</span></span><span class="l">            <span class="c"># 凑够 k 个: 整段删掉, 它下面的段自然变成相邻</span></span><span class="l">            <span class="k">if</span> stack[-1][1] == k:</span><span class="l">                stack.<span class="f">pop</span>()</span><span class="l">        <span class="k">else</span>:</span><span class="l">            stack.<span class="f">append</span>([ch, 1])</span><span class="l">    <span class="r">return</span> <span class="s">&quot;&quot;</span>.<span class="f">join</span>(c * n <span class="k">for</span> c, n <span class="k">in</span> stack)</span></div>
 <p><b>时间 O(n):</b>每个字符处理一次,push / pop 各最多一次。<b>空间 O(n)。</b>(k = 2 就是 Remove All Adjacent Duplicates In String:栈里存字符,和栈顶相同就 pop。)</p>
@@ -1286,83 +1284,83 @@ td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
 <text x="40" y="258" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">返回 '/' + '/'.join(stack) · stack 为空时就是 '/'</text>
 <text x="40" y="282" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">Unix 路径 = 目录栈: 进目录 push, '..' pop · 和 '最近没处理的' 是同一个结构</text></svg>
 <figcaption>split('/') 后三类 part: 目录名 push, '..' pop, 空串/'.' 不动。栈就是当前所在的目录链。</figcaption></figure>
-<figure><svg width="100%" viewBox="0 0 680 810" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif'><title>path_trace</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">path = "/a/./b/../../c/" · split('/') 之后跳过空串, 逐个 part 处理</text>
+<figure><svg width="100%" viewBox="0 0 680 678" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif'><title>path_trace</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">path = "/a/./b/../../c/" · split('/') 之后跳过空串, 逐个 part 处理</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">目录名 → push · '..' → pop (栈空则忽略) · '.' → 不动</text>
 <text x="44" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">输入</text>
 <text x="112" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop 掉的</text>
 <text x="294" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">操作后的 stack</text>
 <text x="418" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">说明</text>
 <line x1="40" y1="76" x2="640" y2="76" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 112 L290 178 L394 178 L394 112" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="150" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<rect x="295" y="147" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="163.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">a</text>
-<rect x="40" y="141.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="163.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">a</text>
-<path d="M98 163.0 L296 163.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
-<text x="414" y="132.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">目录名 → push a</text>
-<line x1="40" y1="184" x2="640" y2="184" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 224 L290 290 L394 290 L394 224" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="262" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<rect x="295" y="259" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="275.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">a</text>
-<rect x="40" y="222.0" width="56" height="44" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="68" y="244.0" font-size="16" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">.</text>
-<text x="414" y="244.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">'.' = 当前目录 → 什么都不做</text>
-<line x1="40" y1="296" x2="640" y2="296" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 336 L290 402 L394 402 L394 336" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="374" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="342.0" y="387.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">a</text>
-<rect x="298" y="344" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<rect x="295" y="341" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="357.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">b</text>
-<rect x="40" y="335.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="357.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">b</text>
-<path d="M98 357.0 L296 357.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
-<text x="414" y="356.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">目录名 → push b</text>
-<line x1="40" y1="408" x2="640" y2="408" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 448 L290 514 L394 514 L394 448" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="486" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<rect x="295" y="483" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="499.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">a</text>
-<rect x="108" y="456" width="72" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
-<text x="144.0" y="469.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">b</text>
-<path d="M298 469.0 L184 469.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrR)"/>
-<text x="108" y="494" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">'..' 回上一层</text>
-<rect x="40" y="446.0" width="56" height="44" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="68" y="468.0" font-size="16" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">..</text>
-<text x="414" y="458.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">'..' → 回到上一层</text>
-<text x="414" y="477.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">pop b</text>
-<line x1="40" y1="520" x2="640" y2="520" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 560 L290 626 L394 626 L394 560" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<text x="342.0" y="612" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">空</text>
-<rect x="108" y="598" width="72" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
-<text x="144.0" y="611.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">a</text>
-<path d="M298 611.0 L184 611.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrR)"/>
-<text x="108" y="636" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">'..' 回上一层</text>
-<rect x="40" y="558.0" width="56" height="44" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="68" y="580.0" font-size="16" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">..</text>
-<text x="414" y="570.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">'..' → 回到上一层</text>
-<text x="414" y="589.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">pop a</text>
-<line x1="40" y1="632" x2="640" y2="632" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 672 L290 738 L394 738 L394 672" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="710" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<rect x="295" y="707" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="723.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">c</text>
-<rect x="40" y="701.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="723.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">c</text>
-<path d="M98 723.0 L296 723.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
-<text x="414" y="692.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">目录名 → push c</text>
-<line x1="40" y1="744" x2="640" y2="744" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<text x="40" y="762" font-size="16" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">结果: '/' + '/'.join(['c']) = "/c"</text>
-<rect x="40" y="783" width="14" height="14" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="62" y="790" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">新 push / 刚被修改</text>
-<rect x="195.68" y="783" width="14" height="14" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
-<text x="217.68" y="790" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop 掉 (虚线扔到左边)</text>
-<rect x="368.4" y="783" width="14" height="14" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="390.4" y="790" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里其他的</text>
-<rect x="471.4" y="786" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="468.4" y="780" width="20" height="20" rx="5" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="496.4" y="790" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶</text></svg>
+<path d="M290 90 L290 156 L394 156 L394 90" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="128" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="295" y="125" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="141.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">a</text>
+<rect x="40" y="119.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="141.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">a</text>
+<path d="M98 141.0 L296 141.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="414" y="121.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">目录名 → push a</text>
+<line x1="40" y1="162" x2="640" y2="162" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 180 L290 246 L394 246 L394 180" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="218" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="295" y="215" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="231.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">a</text>
+<rect x="40" y="189.0" width="56" height="44" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="68" y="211.0" font-size="16" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">.</text>
+<text x="414" y="211.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">'.' = 当前目录 → 什么都不做</text>
+<line x1="40" y1="252" x2="640" y2="252" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 270 L290 336 L394 336 L394 270" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="308" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="342.0" y="321.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">a</text>
+<rect x="298" y="278" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="295" y="275" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="291.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">b</text>
+<rect x="40" y="269.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="291.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">b</text>
+<path d="M98 291.0 L296 291.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="414" y="301.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">目录名 → push b</text>
+<line x1="40" y1="342" x2="640" y2="342" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 360 L290 426 L394 426 L394 360" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="398" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="295" y="395" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="411.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">a</text>
+<rect x="108" y="368" width="72" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="144.0" y="381.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">b</text>
+<path d="M298 381.0 L184 381.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrR)"/>
+<text x="108" y="406" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">'..' 回上一层</text>
+<rect x="40" y="369.0" width="56" height="44" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="68" y="391.0" font-size="16" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">..</text>
+<text x="414" y="381.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">'..' → 回到上一层</text>
+<text x="414" y="400.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">pop b</text>
+<line x1="40" y1="432" x2="640" y2="432" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 450 L290 516 L394 516 L394 450" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<text x="342.0" y="502" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">空</text>
+<rect x="108" y="458" width="72" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="144.0" y="471.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">a</text>
+<path d="M298 471.0 L184 471.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrR)"/>
+<text x="108" y="496" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">'..' 回上一层</text>
+<rect x="40" y="459.0" width="56" height="44" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="68" y="481.0" font-size="16" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">..</text>
+<text x="414" y="471.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">'..' → 回到上一层</text>
+<text x="414" y="490.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">pop a</text>
+<line x1="40" y1="522" x2="640" y2="522" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 540 L290 606 L394 606 L394 540" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="578" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="295" y="575" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="591.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">c</text>
+<rect x="40" y="569.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="591.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">c</text>
+<path d="M98 591.0 L296 591.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="414" y="571.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">目录名 → push c</text>
+<line x1="40" y1="612" x2="640" y2="612" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="630" font-size="16" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">结果: '/' + '/'.join(['c']) = "/c"</text>
+<rect x="40" y="651" width="14" height="14" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="62" y="658" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">新 push / 刚被修改</text>
+<rect x="195.68" y="651" width="14" height="14" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="217.68" y="658" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop 掉 (虚线扔到左边)</text>
+<rect x="368.4" y="651" width="14" height="14" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="390.4" y="658" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里其他的</text>
+<rect x="471.4" y="654" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="468.4" y="648" width="20" height="20" rx="5" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="496.4" y="658" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶</text></svg>
 <figcaption>trace: /a/./b/../../c/ —— 进 a, 进 b, 两次 '..' 回到根, 再进 c。</figcaption></figure>
 <div class="code"><span class="l"><span class="k">def</span> <span class="f">simplify_path</span>(path):</span><span class="l">    <span class="c"># invariant: 栈 = 当前目录从根到现在的每一层名字</span></span><span class="l">    stack = []</span><span class="l">    <span class="k">for</span> part <span class="k">in</span> path.<span class="f">split</span>(<span class="s">&#x27;/&#x27;</span>):         <span class="c"># &quot;//&quot; 会切出空串 &#x27;&#x27;</span></span><span class="l">        <span class="k">if</span> part == <span class="s">&#x27;..&#x27;</span>:</span><span class="l">            <span class="k">if</span> stack:</span><span class="l">                stack.<span class="f">pop</span>()              <span class="c"># 回上一层; 已经在根 &#x27;/&#x27; 就忽略</span></span><span class="l">        <span class="k">elif</span> part <span class="k">and</span> part != <span class="s">&#x27;.&#x27;</span>:       <span class="c"># &#x27;&#x27; 和 &#x27;.&#x27; 什么都不做; 其余是目录名</span></span><span class="l">            stack.<span class="f">append</span>(part)</span><span class="l">    <span class="r">return</span> <span class="s">&#x27;/&#x27;</span> + <span class="s">&#x27;/&#x27;</span>.<span class="f">join</span>(stack)</span></div>
 <p><b>时间 O(n):</b>split 和 join 各 O(n),每个 part 常数次栈操作。<b>空间 O(n)。</b></p>

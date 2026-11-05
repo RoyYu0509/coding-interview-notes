@@ -24,7 +24,7 @@ def next_greater_brute(nums):             # O(n^2)
 S_TEMPLATE = '''
 def next_greater(nums):                   # O(n)
     ans = [-1] * len(nums)
-    stack = []                            # 存 index; nums[stack[0]] >= nums[stack[1]] >= ... (递减栈)
+    stack = []                            # 存 index; 对应的值从底到顶递减
     for i, x in enumerate(nums):
         while stack and nums[stack[-1]] < x:   # x 比栈顶大: x 就是栈顶的 next greater
             ans[stack.pop()] = x          # pop 的这一刻结算; 弹出的元素以后再也用不到
@@ -62,7 +62,7 @@ def next_greater_elements(nums):
     n = len(nums)
     ans = [-1] * n
     stack = []
-    for i in range(2 * n):                # 走 2 圈: 第 2 圈让 "右边没有" 的元素绕回开头再找
+    for i in range(2 * n):                # 走 2 圈: 第 2 圈让右边没有的元素绕回去找
         x = nums[i % n]                   # 用 i % n 取值, 不拷贝数组
         while stack and nums[stack[-1]] < x:
             ans[stack.pop()] = x
@@ -79,7 +79,7 @@ def largest_rectangle_area(heights):
     for i, h in enumerate(heights):
         while stack and heights[stack[-1]] > h:   # h 比栈顶矮 -> 栈顶的右边界就是 i
             height = heights[stack.pop()]
-            left = stack[-1] if stack else -1     # pop 后的新栈顶 = 左边界 (空 = 左边没有更矮的)
+            left = stack[-1] if stack else -1     # pop 后的新栈顶 = 左边界 (空: -1)
             width = i - left - 1          # 左右边界之间 (不含边界) 的柱子数
             best = max(best, height * width)
         stack.append(i)                   # 相等的柱子不 pop: 后面那根会把宽度补全
@@ -94,7 +94,7 @@ def maximal_rectangle(matrix):            # 逐行套用 largest_rectangle_area
     best = 0
     for row in matrix:
         for j, c in enumerate(row):
-            heights[j] = heights[j] + 1 if c == "1" else 0   # 每列: 到这一行为止往上连续 1 的个数
+            heights[j] = heights[j] + 1 if c == "1" else 0   # 这一列往上连续 1 的个数
         best = max(best, largest_rectangle_area(heights))    # 这一行就是一个直方图
     return best
 '''
@@ -116,7 +116,7 @@ S_SWM = '''
 from collections import deque
 
 def max_sliding_window(nums, k):
-    dq = deque()                          # 存 index; nums[dq[0]] > nums[dq[1]] > ... , dq[0] = 窗口最大
+    dq = deque()                          # 存 index; 值从头到尾递减, dq[0] = 窗口最大
     ans = []
     for i, x in enumerate(nums):
         if dq and dq[0] <= i - k:         # 队头已滑出窗口 [i-k+1, i]: 过期, 从头部出队

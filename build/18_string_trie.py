@@ -976,19 +976,20 @@ def fig_add_core():
         s.arrow(500, 120, cx, 160)
         s.circ(cx, 176, 12, lab, "new")
     s.t(536, 140, "'.'", 14, BLACK, 500)
-    s.t(360, 214, "any(dfs(ch, i+1) for ch in node.children.values())", 12, BLACK, mono=True)
-    s.t(360, 236, "每个 child 都可能匹配, 最多 26 条路", 12)
-    s.sep(256)
-    s.t(40, 276, "pattern = 'b.d' 逐字符对应:", 14, BLACK, 500)
+    s.t(360, 208, "any(dfs(ch, i+1)", 12, BLACK, mono=True)
+    s.t(360, 224, "    for ch in node.children.values())", 12, BLACK, mono=True)
+    s.t(360, 246, "每个 child 都可能匹配, 最多 26 条路", 12)
+    s.sep(262)
+    s.t(40, 282, "pattern = 'b.d' 逐字符对应:", 14, BLACK, 500)
     for k, (ch, how) in enumerate([("b", "1 条路"), (".", "分叉"), ("d", "1 条路")]):
         x = 280 + k * 88
-        s.cell(x, 262, 40, 28, ch, "plain", ring=(ch == "."))
-        s.t(x + 20, 306, how, 12, GREY, 400, "middle")
-    s.t(40, 338, "没有 '.': 和普通 Trie.search 一样 O(L)", 14, BLACK, 500)
-    s.t(40, 362, "有 '.': 最坏会遍历整棵 trie, 上界 = trie 的 node 数 (≤ 所有 word 的总字符数)", 14, BLACK, 500)
-    s.t(40, 386, "暴力对照: 把所有 word 放 list, 每次 search 逐个比 -> O(N · L), 跟有没有 '.' 无关", 12)
-    s.legend(414, [("plain", "node"), ("new", "往下走的 child"), ("ring", "'.' 通配符")])
-    return s.save("add_core", 434)
+        s.cell(x, 268, 40, 28, ch, "plain", ring=(ch == "."))
+        s.t(x + 20, 312, how, 12, GREY, 400, "middle")
+    s.t(40, 344, "没有 '.': 和普通 Trie.search 一样 O(L)", 14, BLACK, 500)
+    s.t(40, 368, "有 '.': 最坏会遍历整棵 trie, 上界 = trie 的 node 数 (≤ 所有 word 的总字符数)", 14, BLACK, 500)
+    s.t(40, 392, "暴力对照: 把所有 word 放 list, 每次 search 逐个比 -> O(N · L), 跟有没有 '.' 无关", 12)
+    s.legend(420, [("plain", "node"), ("new", "往下走的 child"), ("ring", "'.' 通配符")])
+    return s.save("add_core", 440)
 
 
 def add_trace_steps():
@@ -1078,12 +1079,6 @@ def fig_ws2_core():
     s.sep(76)
     marks = {(0, 0): ("new", False), (0, 1): ("new", False), (1, 1): ("new", False), (2, 1): ("new", True)}
     draw_board(s, 40, 92, _BOARD, marks, cell=30)
-    # 路径箭头 (0,0)->(0,1)->(1,1)->(2,1)
-    ctr = lambda r, c: (40 + c * 32 + 15, 92 + r * 32 + 15)
-    for (a, b) in [((0, 0), (0, 1)), ((0, 1), (1, 1)), ((1, 1), (2, 1))]:
-        (xa, ya), (xb, yb) = ctr(*a), ctr(*b)
-        dx, dy = xb - xa, yb - ya
-        s.arrow(xa + dx * 0.4, ya + dy * 0.4, xa + dx * 0.9, ya + dy * 0.9, "#0F6E56", w=1.5) if False else None
     s.t(40, 232, "oath: (0,0) -> (0,1) -> (1,1) -> (2,1)", 12)
     pos = trie_layout(WS_WORDS, 330, 100, 64, 30)
     pres = prefixes(WS_WORDS)
@@ -1125,7 +1120,7 @@ def fig_ws2_trace():
     steps = [
         ("① 从 (0,0) 'o' 开始: o -> a -> t -> h, 每格的字符都在 trie 的下一层", None,
          {(0, 0): G, (0, 1): G, (1, 1): G, (2, 1): ("new", True)}, full, {p: "new" for p in pathO}, {"oath"},
-         "res = [oath]", "node.word = oath, 记下后清空", None),
+         "res = [oath]", "word = oath, 记下后清空", None),
         ("② 回溯: h 没有 child 且 word 已清空 -> 摘掉 h; t, a, o 也空了, 依次摘掉", "oath",
          {}, no_oath, {}, set(), "res = [oath]", "node 数 14 -> 10", None),
         ("③ (0,1) 'a': root.children = {p, e, r}, 没有 'a' -> 剪枝, 不进 dfs", None,
@@ -1135,7 +1130,7 @@ def fig_ws2_trace():
          {"e": "new"}, set(), "res = [oath]", "node 数 = 10", None),
         ("⑤ (1,3) 'e' -> (1,2) 'a' -> (1,1) 't': 走到 eat 的末尾, 找到", None,
          {(1, 3): G, (1, 2): G, (1, 1): ("new", True)}, no_oath, {p: "new" for p in pathE}, {"eat"},
-         "res = [oath, eat]", "node.word = eat, 记下后清空", None),
+         "res = [oath, eat]", "word = eat, 记下后清空", None),
         ("⑥ 回溯: t, a, e 依次变空 -> 整条 eat 分支摘掉; 剩下 pea, rain 没有对应路径", "eat",
          {}, no_eat, {}, set(), "res = [oath, eat]", "node 数 10 -> 7", None),
     ]

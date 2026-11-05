@@ -191,7 +191,7 @@ def solve(node):
         return BASE                    # None 的摘要: depth 0 / gain 0 / None
     L = solve(node.left)               # 假设: 左子树已经算好
     R = solve(node.right)              # 假设: 右子树已经算好
-    return merge(node.val, L, R)       # 当前 node 只做这一件事: 把 L、R 合并成自己的摘要
+    return merge(node.val, L, R)       # 当前 node 只做合并: L、R -> 自己的摘要
 
 # 模板 B: 自顶向下 (pre-order)。参数 = 祖先传下来的"约束"
 def check(node, constraint):
@@ -200,7 +200,7 @@ def check(node, constraint):
     if violates(node, constraint):     # 先用约束检查自己
         return False
     return (check(node.left,  tighten(constraint, node, "L")) and
-            check(node.right, tighten(constraint, node, "R")))   # 再把"更严的约束"传给孩子
+            check(node.right, tighten(constraint, node, "R")))   # 把更严的约束传给孩子
 '''
 
 CODE_DEPTH = '''
@@ -208,7 +208,7 @@ def maxDepth(root):
     if not root:
         return 0                                       # base: None 的深度是 0
     return 1 + max(maxDepth(root.left),                # 左子树已算好
-                   maxDepth(root.right))               # 右子树已算好; 加上自己这一层
+                   maxDepth(root.right))               # 右子树已算好; +1 = 自己这层
 '''
 
 CODE_DIAMETER = '''
@@ -220,7 +220,7 @@ def diameterOfBinaryTree(root):
             return 0
         L = height(node.left)
         R = height(node.right)
-        best = max(best, L + R)       # 拐点: 经过 node 的最长路径 = 左链 + 右链 (边数)
+        best = max(best, L + R)       # 拐点: 经过 node 的路径 = 左链 + 右链 (边数)
         return 1 + max(L, R)          # 给父亲: 路径不能分叉, 只能带一边上去
     height(root)
     return best
@@ -228,7 +228,7 @@ def diameterOfBinaryTree(root):
 
 CODE_MAXPATH = '''
 def maxPathSum(root):
-    best = float("-inf")              # 答案: 全局; 节点值可负, 所以初值是 -inf, 不是 0
+    best = float("-inf")              # 答案: 全局; 值可负, 初值是 -inf 不是 0
     def gain(node):                   # 返回值: 以 node 为顶、只往下走一条链的最大和
         nonlocal best
         if not node:
@@ -243,7 +243,7 @@ def maxPathSum(root):
 
 CODE_VALIDATE = '''
 def isValidBST(root):
-    def ok(node, low, high):                  # 参数: node 必须落在开区间 (low, high) 内
+    def ok(node, low, high):                  # 参数: node 必须在开区间 (low, high) 内
         if not node:
             return True
         if not (low < node.val < high):       # 违反祖先传下来的约束
@@ -263,7 +263,7 @@ def levelOrder(root):
     q = deque([root])
     while q:
         level = []
-        for _ in range(len(q)):          # len(q) 只在这里算一次 = 这一层的 node 数
+        for _ in range(len(q)):          # len(q) 只算一次 = 这一层的 node 数
             node = q.popleft()
             level.append(node.val)
             if node.left:  q.append(node.left)     # 孩子排在队尾 = 下一层
@@ -306,16 +306,16 @@ def zigzagLevelOrder(root):              # 变体 2: 奇数层反转
 
 CODE_LCA = '''
 def lowestCommonAncestor(root, p, q):
-    # 返回值语义: "root 这棵子树里, 找到的 p 或 q" (两个都在 -> 返回它们的 LCA; 都不在 -> None)
+    # 返回值语义: root 子树里"找到的 p 或 q"; 两个都在 -> 它们的 LCA; 都不在 -> None
     if not root or root is p or root is q:
-        return root                    # 遇到 p/q 就直接返回: 另一个要么在它下面 (它就是 LCA), 要么在别处
+        return root                    # 遇到 p/q 直接返回 (另一个在下面则它就是 LCA)
     L = lowestCommonAncestor(root.left, p, q)
     R = lowestCommonAncestor(root.right, p, q)
     if L and R:                        # p、q 分居两侧: root 就是拐点
         return root
     return L or R                      # 只有一侧有: 原样往上传; 都没有: None
 
-def lcaBST(root, p, q):                # BST 版: 不用递归返回值, 大小关系直接告诉你往哪走
+def lcaBST(root, p, q):                # BST 版: 大小关系直接告诉你往哪走
     while root:
         if p.val < root.val and q.val < root.val:
             root = root.left
@@ -333,7 +333,7 @@ def kthSmallest(root, k):
         while node:                    # 一路往左走到底, 路上的祖先全压栈
             stack.append(node)
             node = node.left
-        node = stack.pop()             # 弹出 = inorder 的下一个 (比所有已弹出的都大)
+        node = stack.pop()             # 弹出 = inorder 的下一个 (比已弹出的都大)
         k -= 1
         if k == 0:
             return node.val            # 数到第 k 个就停, 不用遍历完
@@ -355,7 +355,7 @@ class Codec:
         return ",".join(out)
 
     def deserialize(self, data):
-        it = iter(data.split(","))     # iterator: 每次 next() 消费一个 token, 共享同一个读指针
+        it = iter(data.split(","))     # iterator: next() 消费一个 token, 共享读指针
         def build():
             v = next(it)
             if v == "#":
@@ -532,7 +532,7 @@ run_trace("max_depth_trace.svg", "Maximum Depth 的 post-order trace",
           lines_draw(380),
           [("答案 = 根 node 3 的返回值 = 3", True, INK)],
           [(GREEN, True, "当前 node"), (DONE, False, "已返回"), (TODO, False, "还没访问")],
-          dx=34, dy=32, tree_x=100,
+          dx=34, dy=32, tree_x=122,
           label_fn=lambda row: {v: ("→%s" % r, GREEN[2] if v == row["cur"] else "#6B6A65", v == row["cur"])
                                 for v, r in row["ret"].items()})
 
@@ -796,7 +796,7 @@ run_trace("lca_trace.svg", "Lowest Common Ancestor 的 post-order trace",
           [("答案 = 5: node 5 是第一个左右都非 None 的 node", True, INK),
            ("之后 node 3 只是把 5 原样传到根: L = 5, R = None → return L or R = 5", False, SUB)],
           [(GREEN, True, "当前 node"), (DONE, False, "已返回"), (TODO, False, "还没访问")],
-          dx=40, dy=32, tree_x=94, tags={6: "p", 2: "q"}, min_rh=124,
+          dx=40, dy=32, tree_x=118, tags={6: "p", 2: "q"}, min_rh=124,
           label_fn=lambda row: {v: ("→%s" % r, GREEN[2] if v == row["cur"] else "#6B6A65", v == row["cur"])
                                 for v, r in row["ret"].items()})
 

@@ -497,18 +497,13 @@ def trace_svg(name, head, rows, footer, title_extra=None, hdr=("输入", "pop �
         s.text(x + 4, y, t, 12, SUB)
     y += 12
     s.line(40, y, 640, y)
-    cap = max(len(r["stack"]) + len(r.get("popped", [])) for r in rows)
-    cap = max(cap, 2)
-    H = cap * CELL_H + 30
-    # popped 的 reason 在格子下面: 槽位太低 (栈很矮) 时, 文字会掉出桶底, 要加高
-    extra = 0
-    for r in rows:
+    def slot0(r):
         pp = r.get("popped", [])
-        if len(pp) == 1 and pp[0][1]:
-            slot = len(r["stack"])
-            lines_n = len(pp[0][1].split("\n"))
-            extra = max(extra, 22 + 15 * (lines_n - 1) - slot * CELL_H)
-    H += max(0, extra)
+        reason = len(pp) == 1 and bool(pp[0][1])
+        return max(len(r["stack"]), 1 if reason else 0)
+    cap = max(slot0(r) + len(r.get("popped", [])) for r in rows)
+    cap = max(cap, max(len(r["stack"]) for r in rows), 2)
+    H = cap * CELL_H + 30
     top = y
     for r in rows:
         bottom = top + H - 10
@@ -519,7 +514,7 @@ def trace_svg(name, head, rows, footer, title_extra=None, hdr=("输入", "pop �
         # popped: 虚线扔到左边
         n = len(popped)
         for i, (lab, reason) in enumerate(popped):
-            slot = len(stack) + (n - 1 - i)
+            slot = slot0(r) + (n - 1 - i)
             cy = bottom - (slot + 1) * CELL_H + 2
             s.cell(X_POP, cy, 72, CELL_H - 4, lab, "gone", dashed=True)
             s.arrow(X_BKT + 8, cy + (CELL_H - 4) / 2, X_POP + 76, cy + (CELL_H - 4) / 2, "#D85A30", dashed=True)
@@ -862,7 +857,7 @@ def tr_dup():
                 t = stack.pop()
                 popped = [("(%s, %d)" % (t[0], t[1]), "count = %d = k\n整段删掉" % t[1])]
                 notes = [("和栈顶同字符 → count += 1 = %d" % k, "n"), ("count == k = %d → pop 整段" % k, "b"),
-                         ("下面的段变成栈顶", "n")]
+                         ("下面的段变成栈顶" if stack else "栈空了", "n")]
                 newtop = False
             else:
                 notes = [("和栈顶同字符 → count += 1", "n"), ("(%s, %d), %d < k = %d" % (ch, stack[-1][1], stack[-1][1], k), "b")]
@@ -1042,8 +1037,8 @@ def core_rpn():
     s.arrow(172, 240 - 2 * CELL_H - 6 + 15, 236, 240 - 2 * CELL_H - 6 + 15, "#D85A30", dashed=True)
     s.text(204, 100, "先 pop 的是 b (右)", 12, "#712B13", "middle")
     s.text(204, 120, "再 pop 的是 a (左)", 12, "#712B13", "middle")
-    s.path("M318 188 L400 188 L400 214", SUB)
-    s.text(330, 170, "a + b = 2 + 1 = 3", 14, INK, weight=500)
+    s.path("M318 188 L418 214", SUB)
+    s.text(240, 258, "a + b = 2 + 1 = 3", 14, INK, weight=500)
     s.bucket(430, 240, 104, [("3", "new")], 3)
     s.text(482, 258, "push 回去", 12, SUB, "middle")
     s.text(40, 292, "为什么是栈: 括号让表达式嵌套, 后缀式把嵌套摊平 —— 最近算好的结果马上被下一个运算符消耗", 12, SUB)
@@ -1089,27 +1084,22 @@ def core_calc():
     titles = ["① 读完 '1 -', 还没读 '('", "② 读到 '('", "③ 括号内算完, 读到 ')'"]
     for x, t in zip(xs, titles):
         s.text(x, 70, t, 14, INK, weight=500)
-    # A
-    s.bucket(50, 220, 100, [], 2)
-    s.text(170, 120, "result = 1", 14, INK, weight=500)
-    s.text(170, 144, "sign = -1", 14, INK, weight=500)
-    s.text(170, 168, "(要减的是整个括号)", 12, SUB)
-    s.arrow(200, 214, 244, 214) if False else None
-    # B
-    s.bucket(260, 220, 100, [("(1, -1)", "new")], 2)
-    s.text(380, 120, "result = 0", 14, INK, weight=500)
-    s.text(380, 144, "sign = +1", 14, INK, weight=500)
-    s.text(380, 168, "括号内重新算", 12, SUB)
-    s.text(260, 244, "括号内: 2 + 3 → result = 5", 12, SUB)
-    # C
-    s.bucket(470, 220, 100, [], 2)
-    s.cell(586, 220 - 2 * CELL_H - 6 + 2, 54, CELL_H - 4, "(1, -1)", "gone", size=12, dashed=True)
-    s.arrow(574, 220 - 2 * CELL_H - 6 + 15, 584, 220 - 2 * CELL_H - 6 + 15, "#D85A30", dashed=True)
-    s.text(470, 244, "result = 5 (括号内)", 12, SUB)
-    s.text(40, 290, "pop (prev_result, prev_sign) = (1, -1)", 14, INK, weight=500)
-    s.text(40, 316, "result = prev_result + prev_sign × result = 1 + (-1) × 5 = -4", 14, "#0F6E56", weight=500)
-    s.text(40, 342, "整个括号 = 一个数, 带上 '(' 前面的符号 · 嵌套多深, 栈就有多深", 12, SUB)
-    s.save(364)
+    s.text(40, 100, "result = 1 · sign = -1", 14, INK, weight=500)
+    s.bucket(40, 205, 100, [], 2)
+    s.text(40, 229, "stack 空 · 要减的是整个括号", 12, SUB)
+    s.text(250, 100, "result = 0 · sign = +1", 14, INK, weight=500)
+    s.bucket(250, 205, 100, [("(1, -1)", "new")], 2)
+    s.text(250, 229, "push 现场, 括号内重新算", 12, SUB)
+    s.text(460, 100, "result = 5 (括号内)", 14, INK, weight=500)
+    s.bucket(460, 205, 100, [], 2)
+    py = 205 - 2 * CELL_H - 6 + 2
+    s.cell(578, py, 60, CELL_H - 4, "(1, -1)", "gone", size=12, dashed=True)
+    s.arrow(568, py + 13, 576, py + 13, "#D85A30", dashed=True)
+    s.text(460, 229, "pop 回外层现场", 12, SUB)
+    s.text(40, 271, "pop (prev_result, prev_sign) = (1, -1)", 14, INK, weight=500)
+    s.text(40, 297, "result = prev_result + prev_sign × result = 1 + (-1) × 5 = -4", 14, "#0F6E56", weight=500)
+    s.text(40, 323, "整个括号 = 一个数, 带上 '(' 前面的符号 · 嵌套多深, 栈就有多深", 12, SUB)
+    s.save(345)
 
 
 def core_asteroid():

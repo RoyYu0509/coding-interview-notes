@@ -1,93 +1,93 @@
-<svg width="100%" viewBox="0 0 680 740" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif'><title>asteroid_trace</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">asteroids = [5, 10, -8, -12, 3] · 正数向右, 负数向左</text>
+<svg width="100%" viewBox="0 0 680 698" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif'><title>asteroid_trace</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">asteroids = [5, 10, -8, -12, 3] · 正数向右, 负数向左</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">只有 '栈顶 &gt; 0 且 新来的 &lt; 0' 才撞 · 撞完谁小谁炸, 一样大都炸</text>
 <text x="44" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">输入</text>
 <text x="112" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop 掉的</text>
 <text x="294" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">操作后的 stack</text>
 <text x="418" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">说明</text>
 <line x1="40" y1="76" x2="640" y2="76" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 97 L290 163 L394 163 L394 97" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="135" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<rect x="295" y="132" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="148.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">5</text>
-<rect x="40" y="126.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="148.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">5</text>
-<path d="M98 148.0 L296 148.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
-<text x="414" y="115.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈空 → push 5</text>
-<text x="414" y="134.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">push 5</text>
-<line x1="40" y1="169" x2="640" y2="169" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 194 L290 260 L394 260 L394 194" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="232" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="342.0" y="245.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">5</text>
-<rect x="298" y="202" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<rect x="295" y="199" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="215.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">10</text>
-<rect x="40" y="193.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="215.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">10</text>
-<path d="M98 215.0 L296 215.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
-<text x="414" y="212.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">10 和栈顶不会相撞</text>
-<text x="414" y="231.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">push 10</text>
-<line x1="40" y1="266" x2="640" y2="266" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 291 L290 357 L394 357 L394 291" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="329" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="342.0" y="342.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">5</text>
-<rect x="298" y="299" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<rect x="295" y="296" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="312.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">10</text>
-<rect x="40" y="296.5" width="56" height="44" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
-<text x="68" y="318.5" font-size="16" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">-8</text>
-<text x="414" y="299.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶 10 &gt; 0, -8 &lt; 0 → 相撞</text>
-<text x="414" y="318.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">10 &gt; 8: -8 被炸掉</text>
-<text x="414" y="337.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">不 push, stack 不变</text>
-<line x1="40" y1="363" x2="640" y2="363" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 388 L290 454 L394 454 L394 388" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="426" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<rect x="295" y="423" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="439.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">5</text>
-<rect x="108" y="396" width="72" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
-<text x="144.0" y="409.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">10</text>
-<path d="M298 409.0 L184 409.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrR)"/>
-<text x="108" y="434" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">10 &lt; |-12| = 12</text>
-<text x="108" y="449" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶炸掉</text>
-<rect x="40" y="393.5" width="56" height="44" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="68" y="415.5" font-size="16" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">-12</text>
-<text x="414" y="396.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶 10 &gt; 0, -12 &lt; 0 → 相撞</text>
-<text x="414" y="415.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">10 &lt; 12: pop 10</text>
-<text x="414" y="434.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">-12 还活着, 继续撞下一个</text>
-<line x1="40" y1="460" x2="640" y2="460" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 485 L290 551 L394 551 L394 485" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="523" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<rect x="295" y="520" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="536.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">-12</text>
-<rect x="108" y="493" width="72" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
-<text x="144.0" y="506.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">5</text>
-<path d="M298 506.0 L184 506.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrR)"/>
-<text x="108" y="531" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">5 &lt; |-12| = 12</text>
-<text x="108" y="546" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶炸掉</text>
-<rect x="40" y="490.5" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="512.5" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">-12</text>
-<text x="414" y="493.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶 5 &gt; 0, -12 &lt; 0 → 相撞</text>
-<text x="414" y="512.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">5 &lt; 12: pop 5</text>
-<text x="414" y="531.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈空 → 不再相撞, push -12</text>
-<line x1="40" y1="557" x2="640" y2="557" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 582 L290 648 L394 648 L394 582" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="620" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="342.0" y="633.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">-12</text>
-<rect x="298" y="590" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<rect x="295" y="587" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="603.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">3</text>
-<rect x="40" y="581.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="603.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">3</text>
-<path d="M98 603.0 L296 603.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
-<text x="414" y="600.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">3 和栈顶不会相撞</text>
-<text x="414" y="619.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">push 3</text>
-<line x1="40" y1="654" x2="640" y2="654" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<text x="40" y="672" font-size="16" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">结果: stack = [-12, 3]</text>
-<text x="40" y="696" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">-8 撞不过 10 (被炸); -12 炸掉 10 和 5, 自己活下来; 3 在 -12 右边, 方向相背, 不撞</text>
-<rect x="40" y="713" width="14" height="14" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="62" y="720" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">新 push / 刚被修改</text>
-<rect x="195.68" y="713" width="14" height="14" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
-<text x="217.68" y="720" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop 掉 (虚线扔到左边)</text>
-<rect x="368.4" y="713" width="14" height="14" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="390.4" y="720" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里其他的</text>
-<rect x="471.4" y="716" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="468.4" y="710" width="20" height="20" rx="5" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="496.4" y="720" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶</text></svg>
+<path d="M290 90 L290 156 L394 156 L394 90" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="128" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="295" y="125" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="141.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">5</text>
+<rect x="40" y="119.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="141.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">5</text>
+<path d="M98 141.0 L296 141.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="414" y="111.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈空 → push 5</text>
+<text x="414" y="130.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">push 5</text>
+<line x1="40" y1="162" x2="640" y2="162" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 180 L290 246 L394 246 L394 180" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="218" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="342.0" y="231.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">5</text>
+<rect x="298" y="188" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="295" y="185" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="201.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">10</text>
+<rect x="40" y="179.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="201.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">10</text>
+<path d="M98 201.0 L296 201.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="414" y="201.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">10 和栈顶不会相撞</text>
+<text x="414" y="220.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">push 10</text>
+<line x1="40" y1="252" x2="640" y2="252" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 270 L290 336 L394 336 L394 270" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="308" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="342.0" y="321.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">5</text>
+<rect x="298" y="278" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="295" y="275" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="291.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">10</text>
+<rect x="40" y="279.0" width="56" height="44" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="68" y="301.0" font-size="16" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">-8</text>
+<text x="414" y="282.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶 10 &gt; 0, -8 &lt; 0 → 相撞</text>
+<text x="414" y="301.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">10 &gt; 8: -8 被炸掉</text>
+<text x="414" y="320.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">不 push, stack 不变</text>
+<line x1="40" y1="342" x2="640" y2="342" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 360 L290 426 L394 426 L394 360" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="398" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="295" y="395" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="411.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">5</text>
+<rect x="108" y="368" width="72" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="144.0" y="381.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">10</text>
+<path d="M298 381.0 L184 381.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrR)"/>
+<text x="108" y="406" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">10 &lt; |-12| = 12</text>
+<text x="108" y="421" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶炸掉</text>
+<rect x="40" y="369.0" width="56" height="44" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="68" y="391.0" font-size="16" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">-12</text>
+<text x="414" y="372.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶 10 &gt; 0, -12 &lt; 0 → 相撞</text>
+<text x="414" y="391.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">10 &lt; 12: pop 10</text>
+<text x="414" y="410.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">-12 还活着, 继续撞下一个</text>
+<line x1="40" y1="432" x2="640" y2="432" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 450 L290 516 L394 516 L394 450" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="488" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="295" y="485" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="501.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">-12</text>
+<rect x="108" y="458" width="72" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="144.0" y="471.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">5</text>
+<path d="M298 471.0 L184 471.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrR)"/>
+<text x="108" y="496" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">5 &lt; |-12| = 12</text>
+<text x="108" y="511" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶炸掉</text>
+<rect x="40" y="459.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="481.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">-12</text>
+<text x="414" y="462.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶 5 &gt; 0, -12 &lt; 0 → 相撞</text>
+<text x="414" y="481.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">5 &lt; 12: pop 5</text>
+<text x="414" y="500.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈空 → 不再相撞, push -12</text>
+<line x1="40" y1="522" x2="640" y2="522" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 540 L290 606 L394 606 L394 540" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="578" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="342.0" y="591.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">-12</text>
+<rect x="298" y="548" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="295" y="545" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="561.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">3</text>
+<rect x="40" y="539.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="561.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">3</text>
+<path d="M98 561.0 L296 561.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="414" y="561.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">3 和栈顶不会相撞</text>
+<text x="414" y="580.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">push 3</text>
+<line x1="40" y1="612" x2="640" y2="612" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="630" font-size="16" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">结果: stack = [-12, 3]</text>
+<text x="40" y="654" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">-8 撞不过 10 (被炸); -12 炸掉 10 和 5, 自己活下来; 3 在 -12 右边, 方向相背, 不撞</text>
+<rect x="40" y="671" width="14" height="14" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="62" y="678" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">新 push / 刚被修改</text>
+<rect x="195.68" y="671" width="14" height="14" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="217.68" y="678" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop 掉 (虚线扔到左边)</text>
+<rect x="368.4" y="671" width="14" height="14" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="390.4" y="678" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里其他的</text>
+<rect x="471.4" y="674" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="468.4" y="668" width="20" height="20" rx="5" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="496.4" y="678" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶</text></svg>

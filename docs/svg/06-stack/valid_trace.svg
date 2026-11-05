@@ -1,95 +1,95 @@
-<svg width="100%" viewBox="0 0 680 1010" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif'><title>valid_trace</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">s = "{[()]}" · 每一步: 开括号 push → 闭括号 pop 栈顶并检查配对</text>
+<svg width="100%" viewBox="0 0 680 878" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, &quot;PingFang SC&quot;, sans-serif'><title>valid_trace</title><defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#52514E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><text x="40" y="18" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">s = "{[()]}" · 每一步: 开括号 push → 闭括号 pop 栈顶并检查配对</text>
 <text x="40" y="38" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">invariant: stack = 还没闭合的开括号, 栈顶 (橙色 ring) = 最内层</text>
 <text x="44" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">输入</text>
 <text x="112" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop 掉的</text>
 <text x="294" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">操作后的 stack</text>
 <text x="418" y="64" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">说明</text>
 <line x1="40" y1="76" x2="640" y2="76" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 112 L290 208 L394 208 L394 112" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="180" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<rect x="295" y="177" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="193.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">{</text>
-<rect x="40" y="171.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="193.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">{</text>
-<path d="M98 193.0 L296 193.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
-<text x="414" y="137.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">开括号 { → push</text>
-<text x="414" y="156.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里现在 1 个没闭合的, 栈顶是最内层的</text>
-<line x1="40" y1="214" x2="640" y2="214" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 254 L290 350 L394 350 L394 254" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="322" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="342.0" y="335.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">{</text>
-<rect x="298" y="292" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<rect x="295" y="289" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="305.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">[</text>
-<rect x="40" y="283.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="305.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">[</text>
-<path d="M98 305.0 L296 305.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
-<text x="414" y="279.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">开括号 [ → push</text>
-<text x="414" y="298.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里现在 2 个没闭合的, 栈顶是最内层的</text>
-<line x1="40" y1="356" x2="640" y2="356" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 396 L290 492 L394 492 L394 396" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="464" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="342.0" y="477.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">{</text>
-<rect x="298" y="434" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="342.0" y="447.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">[</text>
-<rect x="298" y="404" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<rect x="295" y="401" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="417.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">(</text>
-<rect x="40" y="395.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="417.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">(</text>
-<path d="M98 417.0 L296 417.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
-<text x="414" y="421.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">开括号 ( → push</text>
-<text x="414" y="440.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里现在 3 个没闭合的, 栈顶是最内层的</text>
-<line x1="40" y1="498" x2="640" y2="498" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 538 L290 634 L394 634 L394 538" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="606" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="342.0" y="619.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">{</text>
-<rect x="298" y="576" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<rect x="295" y="573" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="589.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">[</text>
-<rect x="108" y="546" width="72" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
-<text x="144.0" y="559.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">(</text>
-<path d="M298 559.0 L184 559.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrR)"/>
-<text x="108" y="584" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">配对: ) 对 (</text>
-<rect x="40" y="551.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="573.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">)</text>
-<text x="414" y="554.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">闭括号 ) → 只能和栈顶配对</text>
-<text x="414" y="573.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">pop 出 ( == pair[')'] = (</text>
-<text x="414" y="592.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里还剩 2 个没闭合的</text>
-<line x1="40" y1="640" x2="640" y2="640" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 680 L290 776 L394 776 L394 680" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<rect x="298" y="748" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<rect x="295" y="745" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="342.0" y="761.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">{</text>
-<rect x="108" y="718" width="72" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
-<text x="144.0" y="731.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">[</text>
-<path d="M298 731.0 L184 731.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrR)"/>
-<text x="108" y="756" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">配对: ] 对 [</text>
-<rect x="40" y="693.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="715.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">]</text>
-<text x="414" y="696.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">闭括号 ] → 只能和栈顶配对</text>
-<text x="414" y="715.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">pop 出 [ == pair[']'] = [</text>
-<text x="414" y="734.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里还剩 1 个没闭合的</text>
-<line x1="40" y1="782" x2="640" y2="782" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<path d="M290 822 L290 918 L394 918 L394 822" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
-<text x="342.0" y="904" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">空</text>
-<rect x="108" y="890" width="72" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
-<text x="144.0" y="903.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">{</text>
-<path d="M298 903.0 L184 903.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrR)"/>
-<text x="108" y="928" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">配对: } 对 {</text>
-<rect x="40" y="835.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="68" y="857.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">}</text>
-<text x="414" y="838.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">闭括号 } → 只能和栈顶配对</text>
-<text x="414" y="857.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">pop 出 { == pair['}'] = {</text>
-<text x="414" y="876.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里还剩 0 个没闭合的</text>
-<line x1="40" y1="924" x2="640" y2="924" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
-<text x="40" y="942" font-size="16" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">结束: stack 为空 → return True</text>
-<text x="40" y="966" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">反例 "([)]": 读到 ')' 时栈顶是 '[' , pop 出 '[' ≠ '(' → False</text>
-<rect x="40" y="983" width="14" height="14" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
-<text x="62" y="990" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">新 push / 刚被修改</text>
-<rect x="195.68" y="983" width="14" height="14" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
-<text x="217.68" y="990" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop 掉 (虚线扔到左边)</text>
-<rect x="368.4" y="983" width="14" height="14" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
-<text x="390.4" y="990" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里其他的</text>
-<rect x="471.4" y="986" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="468.4" y="980" width="20" height="20" rx="5" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
-<text x="496.4" y="990" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶</text></svg>
+<path d="M290 90 L290 186 L394 186 L394 90" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="158" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="295" y="155" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="171.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">{</text>
+<rect x="40" y="149.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="171.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">{</text>
+<path d="M98 171.0 L296 171.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="414" y="126.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">开括号 { → push</text>
+<text x="414" y="145.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里现在 1 个没闭合的, 栈顶是最内层的</text>
+<line x1="40" y1="192" x2="640" y2="192" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 210 L290 306 L394 306 L394 210" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="278" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="342.0" y="291.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">{</text>
+<rect x="298" y="248" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="295" y="245" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="261.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">[</text>
+<rect x="40" y="239.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="261.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">[</text>
+<path d="M98 261.0 L296 261.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="414" y="246.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">开括号 [ → push</text>
+<text x="414" y="265.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里现在 2 个没闭合的, 栈顶是最内层的</text>
+<line x1="40" y1="312" x2="640" y2="312" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 330 L290 426 L394 426 L394 330" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="398" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="342.0" y="411.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">{</text>
+<rect x="298" y="368" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="342.0" y="381.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">[</text>
+<rect x="298" y="338" width="88" height="26" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="295" y="335" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="351.0" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">(</text>
+<rect x="40" y="329.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="351.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">(</text>
+<path d="M98 351.0 L296 351.0" fill="none" stroke="#52514E" stroke-width="1.5" marker-end="url(#arr)"/>
+<text x="414" y="366.5" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">开括号 ( → push</text>
+<text x="414" y="385.5" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里现在 3 个没闭合的, 栈顶是最内层的</text>
+<line x1="40" y1="432" x2="640" y2="432" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 450 L290 546 L394 546 L394 450" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="518" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="342.0" y="531.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">{</text>
+<rect x="298" y="488" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="295" y="485" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="501.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">[</text>
+<rect x="108" y="458" width="72" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="144.0" y="471.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">(</text>
+<path d="M298 471.0 L184 471.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrR)"/>
+<text x="108" y="496" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">配对: ) 对 (</text>
+<rect x="40" y="474.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="496.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">)</text>
+<text x="414" y="477.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">闭括号 ) → 只能和栈顶配对</text>
+<text x="414" y="496.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">pop 出 ( == pair[')'] = (</text>
+<text x="414" y="515.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里还剩 2 个没闭合的</text>
+<line x1="40" y1="552" x2="640" y2="552" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 570 L290 666 L394 666 L394 570" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<rect x="298" y="638" width="88" height="26" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="295" y="635" width="94" height="32" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="342.0" y="651.0" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">{</text>
+<rect x="108" y="608" width="72" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="144.0" y="621.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">[</text>
+<path d="M298 621.0 L184 621.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrR)"/>
+<text x="108" y="646" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">配对: ] 对 [</text>
+<rect x="40" y="594.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="616.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">]</text>
+<text x="414" y="597.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">闭括号 ] → 只能和栈顶配对</text>
+<text x="414" y="616.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">pop 出 [ == pair[']'] = [</text>
+<text x="414" y="635.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里还剩 1 个没闭合的</text>
+<line x1="40" y1="672" x2="640" y2="672" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<path d="M290 690 L290 786 L394 786 L394 690" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linejoin="round"/>
+<text x="342.0" y="772" font-size="12" fill="#52514E" font-weight="400" text-anchor="middle" dominant-baseline="central">空</text>
+<rect x="108" y="728" width="72" height="26" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="144.0" y="741.0" font-size="14" fill="#712B13" font-weight="500" text-anchor="middle" dominant-baseline="central">{</text>
+<path d="M298 741.0 L184 741.0" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrR)"/>
+<text x="108" y="766" font-size="12" fill="#712B13" font-weight="400" text-anchor="start" dominant-baseline="central">配对: } 对 {</text>
+<rect x="40" y="714.0" width="56" height="44" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="68" y="736.0" font-size="16" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">}</text>
+<text x="414" y="717.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">闭括号 } → 只能和栈顶配对</text>
+<text x="414" y="736.0" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">pop 出 { == pair['}'] = {</text>
+<text x="414" y="755.0" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里还剩 0 个没闭合的</text>
+<line x1="40" y1="792" x2="640" y2="792" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="810" font-size="16" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">结束: stack 为空 → return True</text>
+<text x="40" y="834" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">反例 "([)]": 读到 ')' 时栈顶是 '[' , pop 出 '[' ≠ '(' → False</text>
+<rect x="40" y="851" width="14" height="14" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="62" y="858" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">新 push / 刚被修改</text>
+<rect x="195.68" y="851" width="14" height="14" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="217.68" y="858" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">pop 掉 (虚线扔到左边)</text>
+<rect x="368.4" y="851" width="14" height="14" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="390.4" y="858" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈里其他的</text>
+<rect x="471.4" y="854" width="14" height="14" rx="3" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><rect x="468.4" y="848" width="20" height="20" rx="5" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="496.4" y="858" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">栈顶</text></svg>

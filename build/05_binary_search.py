@@ -374,7 +374,9 @@ def space_trace(name, title, line1, line2, L, R, steps, final_lines, legend,
         for text, size, fill in st["lines"]:
             s.t(rx, ty, text, size, fill)
             ty += 19
-        y = top + st.get("h", 84)
+        if st.get("ans") is not None:
+            s.rect(X(st["ans"]), by, max(bw / (R - L), 3), 22, "#E1F5EE", "#0F6E56", 1.5, 3)
+        y = top + st.get("h", 84 if mid is not None else 76)
     s.sep(y)
     y += 30
     return s, finish_with_legend(s, y, legend, final_lines)
@@ -677,8 +679,8 @@ def fig_peak_core():
     ty = base + 52
     s.t(20, ty, "mid=5: nums[5]=6 < nums[6]=7, 上坡 → 往右走", 14, INK)
     s.t(20, ty + 20, "右边一定有 peak → lo = mid + 1", 12, DISCARD_TXT)
-    s.t(350, ty, "mid=8: nums[8]=8 > nums[9]=3, 下坡 → 往左走", 14, INK)
-    s.t(350, ty + 20, "mid 自己或左边一定有 peak → hi = mid", 12, DISCARD_TXT)
+    s.t(344, ty, "mid=8: nums[8]=8 > nums[9]=3, 下坡 → 往左", 14, INK)
+    s.t(344, ty + 20, "mid 自己或左边一定有 peak → hi = mid", 12, DISCARD_TXT)
     base2 = base + 34
     s.sep(base + 84)
     base = base + 48
@@ -767,7 +769,7 @@ def fig_koko_trace():
         else:
             lines.append(("lo = mid + 1 = %d (答案 > %d)" % (m + 1, m), 12, DISCARD_TXT))
         steps.append(dict(x, lines=lines))
-    steps.append(dict(lo=ans, hi=ans, mid=None, lines=[("lo == hi == 4", 14, OK_TXT), ("最小速度 = 4", 14, OK_TXT)], h=64))
+    steps.append(dict(lo=ans, hi=ans, mid=None, lines=[("lo == hi == 4", 14, OK_TXT), ("最小速度 = 4", 14, OK_TXT)], ans=ans))
     s, y = space_trace("", "koko trace", "piles = [3, 6, 7, 11], h = 8 · 搜 k ∈ [1, 11], 每步: 算 hours(mid) 和 h 比",
                        "hours 里每一项 = ceil(pile / mid), 灰色 = 还在 [lo, hi) 里, 红色 = 已排除",
                        1, 12, steps, [("min speed = 4", 16, INK)],
@@ -850,7 +852,7 @@ def fig_ship_trace():
         lines.append(("%d 天 %s days = 5 → %s" % (len(gs), "<=" if x["r"] else ">", x["r"]), 14, INK))
         lines.append(("hi = mid = %d" % m if x["r"] else "lo = mid + 1 = %d" % (m + 1), 12, DISCARD_TXT))
         steps.append(dict(x, lines=lines, h=max(84, 26 + 19 * len(lines) + 10)))
-    steps.append(dict(lo=ans, hi=ans, mid=None, lines=[("lo == hi == 15", 14, OK_TXT), ("最小载重 = 15", 14, OK_TXT)], h=64))
+    steps.append(dict(lo=ans, hi=ans, mid=None, lines=[("lo == hi == 15", 14, OK_TXT), ("最小载重 = 15", 14, OK_TXT)], ans=ans))
     s, y = space_trace("", "ship trace", "weights = [1..10], days = 5 · 搜 cap ∈ [10, 55] · 每步: 贪心分组, 数天数 (一个 | 是一天)",
                        "每组写出具体的相加: 1 + 2 + 3 = 6 表示这一天装了 1, 2, 3 三个包裹, 共 6",
                        lo0, hi0, steps, [("min capacity = 15", 16, INK)],
@@ -917,7 +919,7 @@ def fig_split_trace():
         lines.append(("%d 段 %s k = 2 → %s" % (len(gs), "<=" if x["r"] else ">", x["r"]), 14, INK))
         lines.append(("hi = mid = %d" % m if x["r"] else "lo = mid + 1 = %d" % (m + 1), 12, DISCARD_TXT))
         steps.append(dict(x, lines=lines))
-    steps.append(dict(lo=ans, hi=ans, mid=None, lines=[("lo == hi == 18", 14, OK_TXT), ("最小的最大段和 = 18", 14, OK_TXT)], h=64))
+    steps.append(dict(lo=ans, hi=ans, mid=None, lines=[("lo == hi == 18", 14, OK_TXT), ("最小的最大段和 = 18", 14, OK_TXT)], ans=ans))
     s, y = space_trace("", "split trace", "nums = [7, 2, 5, 10, 8], k = 2 · 搜 x ∈ [10, 32] · 每步: 贪心切段, 一个 | 是一段",
                        "每段写出具体的相加: 7 + 2 + 5 = 14 表示这一段是 7, 2, 5, 和为 14",
                        lo0, hi0, steps, [("min largest sum = 18", 16, INK)],
@@ -1046,7 +1048,7 @@ def fig_median_trace():
                      ("A[%d] = %d >= B[%d] = %d → %s" % (i, A[i], j - 1, B[j - 1], x["r"]), 14, INK),
                      (("hi = mid = %d" % i) if x["r"] else ("lo = mid + 1 = %d (A 取少了)" % (i + 1)), 12, DISCARD_TXT)]
         steps.append(dict(x, lines=lines))
-    steps.append(dict(lo=ans, hi=ans, mid=None, h=76,
+    steps.append(dict(lo=ans, hi=ans, mid=None, ans=ans,
                       lines=[("i = 4, j = 2", 14, OK_TXT),
                              ("左半 = 1, 3, 8, 9 + 7, 11 (6 个)", 12, OK_TXT),
                              ("max(9, 11) = 11", 14, OK_TXT)]))
