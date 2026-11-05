@@ -1161,6 +1161,203 @@ ALL_FIGS = [fig_s0_core, fig_lcp_core, fig_lcp_trace, fig_atoi_core, fig_atoi_tr
             fig_trie_core, fig_trie_trace, fig_sug_core, fig_sug_trace, fig_add_core, fig_add_trace,
             fig_ws2_core, fig_ws2_trace]
 
-if __name__ == "__main__" and "--figs-only" in sys.argv:
-    for f in ALL_FIGS:
-        print(f())
+# ================================================================ 文档
+def build():
+    figs = {f.__name__[4:]: f() for f in ALL_FIGS}
+    doc = d.Doc("18 · String 基本功 + Trie")
+    doc.main("主线: String 题的本质是一根只向右走的指针 (或一列一列地扫), 每个字符只看一次。"
+             "当很多 string 共享前缀时, 把前缀合并成一棵 Trie, 所有和 '前缀' 有关的操作都变成沿着一条路走。")
+    doc.main("概念链: str 不可变 (拼接用 list + join) → Longest Common Prefix (纵向逐列) → String to Integer "
+             "(parse 指针 i) → Reverse Words (同模板, 从右往左) → Implement Trie (children + is_end) → "
+             "Search Suggestions (node 里直接存答案) → Add and Search Words ('.' 分叉 DFS) → "
+             "Word Search II (Trie + backtracking + 摘枝)。")
+
+    # ---------------------------------------------------------- 0
+    doc.h2("0. 第一性原理: str 不可变, 所以拼接要用 list + join")
+    doc.p("<b>Brute force:</b> 在循环里写 <code>res += c</code>。看起来每次只加 1 个字符, 实际上 Python 的 str 不可变, "
+          "<code>+=</code> 是新建一个 string, 把旧内容整个复制过去再接上 c。第 i 次复制 i 个字符, "
+          "总共 1 + 2 + ... + n = n(n+1)/2, 是 O(n^2)。")
+    doc.p("<b>浪费在哪:</b> 每次都把已经拼好的部分重新复制一遍。CPython 有时会在引用计数为 1 时原地 realloc, "
+          "让 <code>+=</code> 看起来是线性的, 但这是实现细节, 换个写法 (或别的 Python 实现) 就失效, 面试里不能依赖。"
+          "同理 <code>s[i:j]</code> 也要复制 j - i 个字符, 在循环里到处 slice 会悄悄变成 O(n^2)。")
+    doc.p("<b>消掉浪费:</b> 先把小段放进 list (<code>append</code> 摊销 O(1), 旧元素不动), 最后 "
+          "<code>''.join</code> 一次性分配、一次性复制。")
+    doc.svg(figs["s0_core"], "图 1: n = 8 时, += 一共复制 36 个字符, append + join 一共 16 个。n 越大差距越大。")
+    doc.code(CODE_S0)
+    doc.p("下面是这份文档里反复会用的几个工具 (全部实际跑过):")
+    doc.code(CODE_S0_TOOLS)
+    assert "  a  b ".split() == ["a", "b"] and "  a  b ".split(" ") == ["", "", "a", "", "b", ""]
+    assert ord("d") - ord("a") == 3 and "ab"[::-1] == "ba"
+    doc.p("<b>Time:</b> join 版 O(n), +=  版 O(n^2)。<b>Space:</b> 都是 O(n)。")
+    doc.note("拼 string 用 list + join; 别在循环里 += 或 slice; 要去掉多余空格用不带参数的 split()。")
+
+    # ---------------------------------------------------------- 1 LCP
+    doc.h2("1. Longest Common Prefix: 纵向逐列比较, 第一列不同就停")
+    doc.p("<b>题目:</b> 求一组 string 的最长公共前缀。例: <code>[interview, internet, interval, intern]</code> → "
+          "<code>'inter'</code>。")
+    doc.p("<b>Brute force:</b> 从 first 的最长前缀开始试: 对每个长度 L (m 到 0), 检查所有 n 个 string 是否都以 "
+          "<code>first[:L]</code> 开头。每次 startswith 要比 L 个字符, 总共 O(n · m^2)。")
+    doc.p("<b>浪费在哪:</b> 试 L = 4 时已经确认过前 4 个字符全相同, 试 L = 5 又把这 4 个字符重新比一遍。")
+    doc.p("<b>关键观察:</b> 换个方向。不是按 '前缀长度' 横着试, 而是按 '列' 竖着比: 第 j 列所有 string 的字符都相同, "
+          "才有资格进第 j + 1 列。每个字符最多比 1 次, 第一个不同的列就是答案的终点。")
+    doc.svg(figs["lcp_core"], "图 2: 把 4 个 string 上下对齐, 一列一列检查; 前 5 列全相同, 第 5 列出现不同就停。")
+    doc.svg(figs["lcp_trace"], "图 3: 每一行 = 一列。strs[0][j] 是标准 c, 依次和其余 string 比; 第 5 列 internet 的 'n' ≠ 'v', "
+                              "interval 和 intern 根本没轮到检查。")
+    doc.code(CODE_LCP)
+    doc.p("<b>Time:</b> O(n · m), m 是最短 string 的长度, 也就是 O(所有字符数 S), 已经读不了更少了。"
+          "<b>Space:</b> O(1) (不算返回的 slice)。")
+    doc.p("<b>引出 Trie:</b> 这题只问 '全体' 的公共前缀, 一次扫描就够。但如果同一批 string 要反复被问 "
+          "'有哪些 string 以 xxx 开头', 每次都把所有 string 扫一遍就太慢了。很多 string 共享前缀 → "
+          "把共享的前缀只存一份 → Trie (第 4 节)。")
+    doc.note("多个 string 逐位对齐比较 → 纵向扫描, 一列一列走, 不回头; 越界也算不同。")
+
+    # ---------------------------------------------------------- 2 atoi
+    doc.h2("2. String to Integer (atoi): 一根 parse 指针 i, 每个阶段一个 while")
+    doc.p("<b>题目:</b> 实现 atoi: 先跳过前导空格, 再读一个可选的 +/-, 再读连续数字, 遇到非数字就停; "
+          "结果超出 32-bit 要 clamp 到 [-2^31, 2^31 - 1]。例: <code>'  -42x'</code> → <code>-42</code>。")
+    doc.p("<b>Brute force:</b> 先 <code>strip()</code> 再 slice 出符号、再 slice 出数字部分、再转 int: 多次 slice 产生多份拷贝, "
+          "各种 if/else 混在一起, 'words and 987'、'+-12'、'0-1' 这类边界很容易漏。")
+    doc.p("<b>关键观察:</b> 这是一个只会往前走的状态机: <b>空格 → 符号 → 数字 → 结束</b>, 不会倒回去。"
+          "用一根指针 i 表示 '已经处理到哪', 每个阶段写成一个 <code>while i &lt; n and 条件</code> (符号最多一个, 用 if)。"
+          "条件不满足时 i 就停在原地, 交给下一个阶段。这是所有 '逐字符解析' 题的通用模板。")
+    doc.svg(figs["atoi_core"], "图 4: '  -42x' 被 i 切成 4 段: 空格 (i: 0→2)、符号 (2→3)、数字 (3→5)、停下的 'x' (i = 5)。")
+    doc.svg(figs["atoi_trace"], "图 5: 每一行 = i 向右走一格。数字阶段 num = num*10 + d 的每一步都写出具体数字; "
+                               "最后一个例子展示溢出 clamp。")
+    doc.code(CODE_ATOI)
+    doc.p("<b>Time:</b> O(n), i 只向右走。<b>Space:</b> O(1)。Python 的 int 不会溢出, 在循环里提前 return 是为了和 "
+          "C++/Java 的写法一致, 也避免对超长数字串做无意义的大数运算。判断数字用 <code>'0' &lt;= c &lt;= '9'</code>, "
+          "不要用 <code>isdigit()</code> (对 '²' 之类的字符也是 True)。")
+    doc.note("逐字符解析 = 一根指针 i + 每个阶段一个 while; 条件不满足就把 i 留给下一阶段; 不要 slice。")
+
+    # ---------------------------------------------------------- 3 Reverse words
+    doc.h2("3. Reverse Words in a String: split → 倒序 → join, 或同一个模板从右往左")
+    doc.p("<b>题目:</b> 把句子里的单词倒序, 去掉多余空格。例: <code>'  the sky  is blue '</code> → "
+          "<code>'blue is sky the'</code>。")
+    doc.p("<b>Brute force:</b> 逐字符扫, 遇到非空格就 <code>word += c</code>, 遇到空格就把 word 放进 list; "
+          "空格的各种组合 (开头、结尾、连续) 全靠 if 补。<code>word += c</code> 在单词很长时又是第 0 节的 O(L^2)。")
+    doc.p("<b>关键观察:</b> '按空白切成单词' 是内置操作: <code>split()</code> (不带参数) 把连续空白当一个分隔符, "
+          "并丢掉空串。切完之后就是 list 倒序 + join。注意 <code>split(' ')</code> 会留下空串, 是这题最常见的 bug。")
+    doc.svg(figs["rev_core"], "图 6: 上面是正确做法; 下面是 split(' ') 留下 4 个空串, 之后 join 会多出多余空格。")
+    doc.p("面试官如果不让用 split, 就用第 2 节同一个 parse 指针模板, 只是从右往左: 跳空格 → 吃一个单词 → append, "
+          "这样 words 天然就是倒序。")
+    doc.svg(figs["rev_trace"], "图 7: 每一行吃进一个单词 (绿色)。j 是单词最后一格, i 吃完后停在单词前一格, 单词 = s[i+1 : j+1]。")
+    doc.code(CODE_REVERSE_ONE)
+    doc.code(CODE_REVERSE_SCAN)
+    doc.p("<b>Time:</b> O(n)。<b>Space:</b> O(n)。str 不可变, Python 里做不到 O(1) 额外空间; C++ 里可以先整体 reverse "
+          "再逐词 reverse, 这是语言差异, 不是新的 pattern。")
+    doc.note("按空白切词用 s.split() (不带参数); 手写就用 parse 指针模板, 方向反过来而已。")
+
+    # ---------------------------------------------------------- 4 Trie
+    doc.h2("4. Implement Trie: 每个字符一个 node, children 是 dict, is_end 标记 word 的末尾")
+    doc.p("<b>题目:</b> 实现 <code>insert(word)</code>, <code>search(word)</code>, <code>startsWith(prefix)</code>。"
+          "例: insert 'app', 'apple', 'apt', 'bat' 之后, <code>search('ap')</code> = False, "
+          "<code>startsWith('ap')</code> = True。")
+    doc.p("<b>Brute force:</b> 所有 word 放进 list 或 set。<code>search</code> 用 set 可以 O(L), 但 "
+          "<code>startsWith</code> 只能扫一遍所有 word: O(N · L)。")
+    doc.p("<b>浪费在哪:</b> 'app', 'apple', 'apt' 都以 'ap' 开头, 这个前缀存了 3 次, 查询时也被比较了 3 次。")
+    doc.p("<b>关键观察:</b> 把共享的前缀合并: 每个字符是一条边, 指向一个 node; 前缀相同的 word 走同一条路径, "
+          "在分叉的地方才分开。查询时只沿着字符往下走, 步数 = 前缀长度 L, 和 word 总数 N 无关。"
+          "<code>is_end</code> 回答 '这条路径的终点是不是一个完整的 word' (区分 'ap' 只是前缀, 'app' 是 word)。")
+    doc.svg(figs["trie_core"], "图 8: 同样 4 个 word, list 里 'ap' 存 3 次 (红), trie 里 a, p 只存 1 次 (绿); "
+                               "14 个字符变成 9 个 node。")
+    doc.svg(figs["trie_trace"], "图 9: 依次 insert 4 个 word, 每次新建的 node 是绿色; 复用的 node 是灰色。"
+                                "下半部分是在最终 trie 上的 4 个查询。")
+    doc.code(CODE_TRIE)
+    doc.p("<b>Time:</b> insert / search / startsWith 都是 O(L)。<b>Space:</b> O(所有 word 的总字符数) 最坏, "
+          "共享前缀越多越省。children 用 dict 最通用; 字母表固定 (小写字母) 时也可以用长度 26 的 list。")
+    doc.note("Trie = 每个字符一个 node + children dict + is_end。insert 时 '不存在才新建', 共享前缀自动实现; "
+             "search 要检查 is_end, startsWith 不用。")
+
+    # ---------------------------------------------------------- 5 Suggestions
+    doc.h2("5. Search Suggestions System: 在 Trie 的每个 node 里直接存答案 (top 3)")
+    doc.p("<b>题目:</b> 给 products 和 searchWord, 用户每敲一个字符, 返回以当前前缀开头、字典序最小的最多 3 个 product。"
+          "例: products = [mobile, mouse, moneypot, monitor, mousepad], searchWord = 'mouse' → "
+          "前两步 [mobile, moneypot, monitor], 后三步 [mouse, mousepad]。")
+    doc.p("<b>Brute force:</b> 对每个前缀 (L 个) 扫一遍所有 N 个 product, 过滤 startswith, 排序, 取 3 个: "
+          "O(L · N · L) 级别。")
+    doc.p("<b>浪费在哪:</b> 'mou' 的候选集一定是 'mo' 的候选集的子集, 却每次都从全部 product 重新筛。")
+    doc.p("<b>相比上一题多了什么:</b> node 里除了 children 还要存 <code>top3</code>。"
+          "技巧: 先把 products 排序, 再依次 insert; 这样沿路每个 node 先到的就是字典序最小的, "
+          "<code>len &lt; 3</code> 就 append, 满了就忽略, 不需要任何比较。查询时每敲一个字符往下走一步, 直接读答案。")
+    doc.svg(figs["sug_core"], "图 10: 排序后 mobile, moneypot, monitor 先到, 把 m 和 o 的 top3 填满; mouse, mousepad 到 m, o 时已满 "
+                              "(被忽略), 但它们是 u 这条分支的前 2 个。")
+    doc.svg(figs["sug_trace"], "图 11: 搜索 'mouse', 每一行多走一步 (绿色是当前 node), 右边是这个 node 里存的 top3。")
+    doc.code(CODE_SUGGEST)
+    doc.p("<b>Time:</b> 建树: 排序 O(N · L · log N) (比较两个 string 最多 L 步) + insert O(总字符数); "
+          "每次查询 O(L)。<b>Space:</b> O(总字符数 × 3)。")
+    doc.p("另一种常见写法: 排序后对每个前缀用 <code>bisect_left</code> 找到起点, 取后面 3 个检查前缀。"
+          "不需要 Trie, 也是 O(L log N); 思路是 '排序后同一前缀的 string 在一段连续区间里'。")
+    doc.note("autocomplete / top-k 前缀 → Trie, 答案直接存在 node 上; 先排序再 insert 就不用比较。")
+
+    # ---------------------------------------------------------- 6 Add and Search
+    doc.h2("6. Design Add and Search Words: 通配符 '.' = 在 Trie 上 DFS 分叉")
+    doc.p("<b>题目:</b> <code>addWord(word)</code> 和 <code>search(pattern)</code>, pattern 里的 '.' 可以匹配任意一个字母。"
+          "例: 加入 bad, dad, mad, mid 之后, <code>search('.id')</code> = True, <code>search('b..')</code> = True, "
+          "<code>search('....')</code> = False。")
+    doc.p("<b>Brute force:</b> 所有 word 放 list, search 时对每个长度相同的 word 逐字符匹配 (遇到 '.' 跳过比较): O(N · L)。")
+    doc.p("<b>浪费在哪:</b> 和第 4 节一样, 共享前缀被反复比较。而且 pattern 前面的普通字符其实已经能排除大多数 word。")
+    doc.p("<b>相比上一题多了什么:</b> addWord 和 insert 完全一样。只有 search 变了: 普通字符沿 1 条边走 (和 "
+          "<code>search</code> 一样), 遇到 '.' 就对所有 children 各试一次 → 写成递归 <code>dfs(node, i)</code>, "
+          "只要有一条分支返回 True 就成功。")
+    doc.svg(figs["add_core"], "图 12: 普通字符只有一条路; '.' 对每个 child 都要递归一次。")
+    doc.svg(figs["add_trace"], "图 13: search('.id'): 在 '.' 处分叉成 b, d, m 三条路; b 和 d 的 children 里没有 'i' 立刻死路, "
+                               "m → i → d 走通且 is_end = True。")
+    doc.code(CODE_ADDSEARCH)
+    doc.p("<b>Time:</b> addWord O(L); search 没有 '.' 时 O(L), 有 '.' 时最坏遍历整棵 trie, 上界是 node 数 "
+          "(≤ 总字符数)。<b>Space:</b> O(总字符数) + 递归深度 O(L)。")
+    doc.note("pattern 带通配符 → Trie + DFS: 普通字符一条路, '.' 对所有 child 分叉, any(...) 短路。")
+
+    # ---------------------------------------------------------- 7 Word Search II
+    doc.h2("7. Word Search II: Trie + backtracking, 所有 word 共享前缀一起搜")
+    doc.p("<b>题目:</b> 给一个字符 board 和一组 words, 找出所有能在 board 上沿相邻格子 (上下左右, 每格最多用一次) "
+          "拼出来的 word。例: 4×4 board, words = [oath, pea, eat, rain] → <code>['oath', 'eat']</code>。")
+    doc.p("<b>Brute force:</b> 对每个 word 单独跑一遍 Word Search I (backtracking): "
+          "O(W · M · N · 3^L), W 是 word 个数, L 是 word 长度。")
+    doc.p("<b>浪费在哪:</b> 每个 word 都从头搜一遍, 共享前缀的 word (oath / oat / oats ...) 把同样的路径重复走; "
+          "而且 board 上明明没有以 'z' 开头的格子, 也要为每个 word 各试一次。")
+    doc.p("<b>相比上一题多了什么:</b> 把 words 建成 Trie (node 里存 <code>word</code> 而不是 is_end), 对 board "
+          "<b>只跑一次</b> DFS: board 每走一格, trie 也往下走一层。三个关键点: "
+          "(1) 下一格的字符不在 <code>node.children</code> 里 → 不进 dfs (剪枝 1); "
+          "(2) 走到 <code>node.word</code> 非空 → 收集, 然后清空 (同一个 word 不会重复收); "
+          "(3) 回溯时 node 没有 children 且 word 为空 → 从 parent 里 del (摘枝), 这条路以后不会再被走。")
+    doc.svg(figs["ws2_core"], "图 14: board 上的路径 o→a→t→h 和 trie 里的 o→a→t→h 同步; trie 里没有的字符立刻剪枝。")
+    doc.svg(figs["ws2_trace"], "图 15: 6 步走完 4×4 board。摘掉的分支虚线扔到左边; trie 的 node 数 14 → 10 → 7 "
+                               "(这三个数字是真代码在每次 del 之后数出来的)。")
+    doc.code(CODE_WS2)
+    doc.p("<b>Time:</b> 最坏 O(M · N · 3^L) (每格出发, 第一步 4 个方向, 之后最多 3 个), 但 W 不再是乘数; "
+          "剪枝让实际远小于它。<b>Space:</b> trie O(所有 word 的总字符数) + 递归栈 O(L)。")
+    doc.note("多个 word 在 grid 上找 → 先建 Trie, 一次 DFS; 剪枝靠 children, 去重靠清空 word, 提速靠摘枝。")
+
+    # ---------------------------------------------------------- 识别信号
+    doc.h2("8. 识别信号: 看到什么 → 试什么")
+    rows = [
+        ("循环里要拼很多小段 string", "list.append + ''.join; 别 += / 别到处 slice", "O(n^2) → O(n)"),
+        ("逐字符解析, 带 '空格 / 符号 / 数字' 这类阶段", "parse 指针 i, 每个阶段一个 while, 不 slice", "多次扫描 + 拷贝 → 一次扫描 O(n), O(1) 空间"),
+        ("多个 string 共同前缀, 逐位对齐", "纵向一列一列扫, 第一个不同就停", "O(n · m^2) → O(n · m)"),
+        ("按单词反转 / 去多余空格", "s.split() 不带参数, 倒序, join (split(' ') 会留空串)", "手写 if 补空格 → 一行 O(n)"),
+        ("反复问 '有没有 word 以 p 开头' / 前缀 / 词典", "Trie: children dict + is_end", "每次查询 O(N · L) → O(L)"),
+        ("每敲一个字符给出候选 / autocomplete / top k", "Trie, 每个 node 存答案 (先排序再 insert, 满 k 个就忽略)", "每个前缀重筛 O(N · L) → 每步读 node, O(L)"),
+        ("pattern 带通配符 '.' / '?'", "Trie + DFS: 普通字符 1 条路, '.' 对所有 child 分叉", "list 逐个比 O(N · L) → 无 '.' 时 O(L)"),
+        ("grid 上一次找多个 word", "Trie + backtracking; 字符不在 children 就剪枝, 找到后清空 word 并摘枝", "W 次搜索 → 1 次搜索, W 不再是乘数"),
+        ("路径 / 文件系统 / 最长公共前缀 / 前缀替换", "同一棵 Trie, node 里换成要存的东西 (值 / 计数 / word)", "反复扫全部 → 沿一条路 O(L)"),
+        ("字符集固定 (小写字母)", "children 可以用长度 26 的 list 代替 dict, 计数用 [0] * 26", "常数更小"),
+    ]
+    tab = ["<table><tr><th>特征</th><th>做法</th><th>complexity</th></tr>"]
+    for a, b, c in rows:
+        tab.append("<tr><td>%s</td><td>%s</td><td>%s</td></tr>" % (html.escape(a), html.escape(b), html.escape(c)))
+    tab.append("</table>")
+    doc.raw("".join(tab))
+    doc.note("string 题先问: 是 '一根指针扫一遍' 还是 '很多 string 共享前缀'? 前者用 parse 指针 / split, 后者用 Trie。")
+
+    doc.h2("以后再学 (一行)")
+    doc.p("KMP / Z-function / Rabin-Karp (单 pattern 匹配), Manacher (回文), Aho-Corasick (多 pattern 匹配, 是 Trie + fail 指针) "
+          "—— 这些只对特定题有用, 面试优先级低, 这里不展开。")
+    doc.write("docs/18-string-trie.html")
+
+
+if __name__ == "__main__":
+    if "--figs-only" in sys.argv:
+        for f in ALL_FIGS:
+            print(f())
+    else:
+        build()

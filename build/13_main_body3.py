@@ -1,6 +1,7 @@
 
 # ===================================================================== SVG
 import os
+import json
 SVGDIR = os.path.join(ROOT_DIR, "docs", "svg", "13-backtracking")
 os.makedirs(SVGDIR, exist_ok=True)
 
@@ -15,7 +16,7 @@ def res_line(s, x, y, e):
     if e["kind"] == "record":
         txt = "res += %s (共 %d)" % (e["val"], e["nres"])
         w = tw(txt, 12) + 12
-        s.rect(x - 4, y - 10, w, 20, NEW)
+        s.rect(x - 4, y - 9, w, 18, NEW)
         s.t(x + 2, y, txt, 12, NEW[2], "start", 500, maxw=176)
     else:
         s.t(x, y, "res 共 %d 个" % e["nres"], 12, SUB)
@@ -29,8 +30,8 @@ def mk_ex_perm(nums):
     def fn(s, x, top, rh, e):
         used = e["extra"]["used"]
         for j, u in enumerate(used):
-            s.cell(x + j * 25, top + 6, 23, 20, str(nums[j]), NEW if u else OTH, size=12)
-        s.t(x + 3 * 25 + 4, top + 16, "← used", 12, SUB)
+            s.cell(x + j * 25, top + 4, 23, 20, str(nums[j]), NEW if u else OTH, size=12)
+        s.t(x + 3 * 25 + 4, top + 14, "← used", 12, SUB)
         res_line(s, x, top + rh - 12, e)
     return fn
 
@@ -141,8 +142,8 @@ def svg_core0():
     # 边上的 t 标签
     s.t(104, 128, "t1 push 1", 12, NEW[2], "end", 500)
     s.t(122, 150, "t4 pop 1", 12, REM[2], "start", 500)
-    s.t(206, 128, "t5 push 2", 12, NEW[2], "start", 500)
-    s.t(196, 150, "t6 pop 2", 12, REM[2], "start", 500)
+    s.t(196, 120, "t5 push 2", 12, NEW[2], "start", 500)
+    s.t(236, 150, "t6 pop 2", 12, REM[2], "start", 500)
     s.t(98, 202, "t2 push 2", 12, NEW[2], "start", 500)
     s.t(98, 224, "t3 pop 2", 12, REM[2], "start", 500)
     s.t(40, 296, "path 上每个节点都已是答案 (绿): 节点数 = 4 = 2^2", 12, SUB)
@@ -206,7 +207,7 @@ def svg_ws_core(board, word):
              ("t13: 找到 ABAD", R.ev[12]["extra"]["grid"], (1, 2))]
     caps = [["原始 board", "A B A / B B D"],
             ["(0,0) (1,0) 变成 #", "# 个数 = len(path) = 2"],
-            ["(1,0) 变回 B", "(0,0) 仍是 # (A 还在 path)"],
+            ["(1,0) 变回 B", "(0,0) 仍是 #"],
             ["4 个 # = ABAD", "return True 之前"]]
     s = Svg("word_search_core", 360, "Word Search: 用 board 本身当 used[]",
             "同一个 board 在 DFS 不同时刻的四个快照: 标记 # 和恢复。")
@@ -310,8 +311,10 @@ def svg_nq_core():
     s.t(rx, 296, "做选择: 三个 set 各 add 一个值 + path.append(c)", 12, SUB)
     s.t(rx, 316, "撤销: 三个 set 各 remove 同一个值 + path.pop()", 12, SUB)
     s.t(rx, 336, "漏掉一个 remove => 后面的分支会被 \"幽灵皇后\" 误剪", 12, SUB)
-    s.t(40, 270, "红色虚线 = 已有皇后的攻击线 (列 / 两条对角线)", 12, SUB)
-    s.t(40, 290, "第 2 行只有 c=0 不被攻击 => 只剩一个选择", 12, SUB)
+    s.t(40, 262, "红色虚线 = 已有皇后的", 12, SUB)
+    s.t(40, 280, "攻击线 (列 / 两条对角线)", 12, SUB)
+    s.t(40, 302, "第 2 行只有 c=0 安全", 12, SUB)
+    s.t(40, 320, "=> 只剩一个选择", 12, SUB)
     s.t(40, 380, "没有 set 的话: 每放一个皇后要扫已有皇后 O(n) 次 => 总共 O(n) × 节点数", 14, INK, "start", 500)
     s.t(40, 404, "有了 set: 每次检查 O(1), 同一个 decision tree 少一个 n 的因子", 12, SUB)
     s.legend(436, [(NEW, False, "皇后 / 可以放"), (REM, True, "被攻击 => 剪枝")])
@@ -357,7 +360,7 @@ def build_svgs():
                    "'used' 列: 绿色 = 在 path 里的数, 灰色 = 还能选的数"],
                   R.ev, 12, "used / res", mk_ex_perm([1, 2, 3]),
                   ["最终 res = %s" % str(res).replace(" ", ""),
-                   "共 %d 个 = 3!; 第 6、11、12 步 pop 之后 used 变回灰色, 兄弟分支才能选它" % len(res)])
+                   "共 %d 个 = 3!; 第 5、6 步 pop 之后 used 变回灰色, 第 7 步才能选 3" % len(res)])
     save(s)
 
     # 3 Combination Sum
@@ -365,7 +368,7 @@ def build_svgs():
     s = core_tree("combination_sum_core", "Combination Sum 的 decision tree",
                   "candidates=[2,3,5], target=6。",
                   ["candidates = [2, 3, 5] · target = 6 · 子节点 = 从 candidates[start:] 里选一个, 可以和父节点同值",
-                   "剪枝: c > remain => break (排序后后面更大, 都不行)"],
+                   "剪枝: c > remain => break (排序后, 后面更大的也不行, 所以不画 [2,2,5] 这类节点)"],
                   R, ["答案 %s · 节点数 %d (含 %d 个被剪掉的)" % (str(res).replace(" ", ""), count_nodes(R.root), R.nprune),
                       "dfs(i, ...) 传 i: [2,2] 的下一层仍可选 2; 如果传 i+1, 每个数只能用一次, [2,2,2] 和 [3,3] 都出不来"])
     save(s)
@@ -402,7 +405,7 @@ def build_svgs():
                   "n=2, 两个剪枝条件。",
                   ["n = 2 · 每个节点最多两个选择: 加 \"(\" (需要 open_ < n) 或 加 \")\" (需要 close < open_)",
                    "红色虚线 = 被两个条件挡住的选择; 剩下的每个叶子都合法"],
-                  R, ["答案 %s · 节点数 %d (含 %d 个被剪掉的)" % (str(res).replace(" ", ""), count_nodes(R.root), R.nprune),
+                  R, ["答案 %s · 节点数 %d (含 %d 个被剪掉的)" % (json.dumps(res).replace(" ", ""), count_nodes(R.root), R.nprune),
                       "没有剪枝要枚举 2^4 = 16 个串再检查; 剪枝后只展开了 %d 个节点, 叶子全是答案" % (count_nodes(R.root) - R.nprune)])
     save(s)
     s = trace_svg("generate_parentheses_trace", "Generate Parentheses 的 path 变化",
@@ -410,7 +413,7 @@ def build_svgs():
                   ["n = 2 · push \"(\" 要 open_ < n · push \")\" 要 close < open_ · path 的长度到 2n = 4 就收集",
                    "红色虚线格子 = 想加但被条件挡住 (原因写在左边)"],
                   R.ev, 12, "open_ / close / res", ex_parens,
-                  ["最终 res = %s" % str(res).replace(" ", ""),
+                  ["最终 res = %s" % json.dumps(res).replace(" ", ""),
                    "n = 3 时共 5 个答案 (Catalan 数: 1, 2, 5, 14, ...)"])
     save(s)
 
@@ -428,7 +431,7 @@ def build_svgs():
                   ["digits = \"23\" · idx = 正在决定第几个数字 · 到 idx == 2 收集",
                    "每个叶子 push 一次、收集一次、pop 一次; 第 11 步 pop a, 回到空 path 试 b"],
                   R.ev, 12, "idx / res", mk_ex_letters(2),
-                  ["最终 res = %s" % str(res).replace(" ", ""),
+                  ["最终 res = %s" % json.dumps(res).replace(" ", ""),
                    "共 %d 个 = 3 × 3" % len(res)])
     save(s)
 

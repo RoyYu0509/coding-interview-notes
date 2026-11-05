@@ -342,11 +342,11 @@ SRC["subsets"] = '''
 def subsets(nums):
     res, path = [], []
     def dfs(start):
-        res.append(path[:])                  # 每个节点本身就是一个答案; copy, 因为 path 之后还会变
-        for i in range(start, len(nums)):    # 只能选 start 之后的: [1,2] 会出现, [2,1] 不会
+        res.append(path[:])                  # 每个节点都是答案; 要 copy, path 之后还会变
+        for i in range(start, len(nums)):    # 只选 start 之后的: 有 [1,2], 没有 [2,1]
             path.append(nums[i])             # 做选择
             dfs(i + 1)                       # 递归: 下一层只能选 i 之后的
-            path.pop()                       # 撤销: 回到做选择之前, 兄弟分支才看到干净的 path
+            path.pop()                       # 撤销: 兄弟分支要看到干净的 path
     dfs(0)
     return res
 '''
@@ -369,7 +369,7 @@ def subsets(nums):                   # 另一种写法: 每个元素 "选 / 不�
 SRC["permute"] = '''
 def permute(nums):
     res, path = [], []
-    used = [False] * len(nums)               # used[i]: nums[i] 已经在 path 里 (比 "x in path" 的 O(n) 快)
+    used = [False] * len(nums)               # used[i]: nums[i] 已在 path 里, O(1) 判断
     def dfs():
         if len(path) == len(nums):           # 每个位置都填好了
             res.append(path[:])
@@ -415,7 +415,7 @@ def combination_sum2(candidates, target):
             return
         for i in range(start, len(candidates)):
             if i > start and candidates[i] == candidates[i - 1]:
-                continue                     # 同一层 (同一个 for 里) 已经试过这个值了, 子树会完全一样
+                continue                     # 同一层已试过这个值, 子树一样
             c = candidates[i]
             if c > remain:
                 break
@@ -452,11 +452,11 @@ def letter_combinations(digits):
     PHONE = {"2": "abc", "3": "def", "4": "ghi", "5": "jkl",
              "6": "mno", "7": "pqrs", "8": "tuv", "9": "wxyz"}
     res, path = [], []
-    def dfs(idx):                            # idx: 正在决定第几个数字; 层数 = len(digits), 固定
+    def dfs(idx):                            # idx: 正在决定第几位数字
         if idx == len(digits):
             res.append("".join(path))
             return
-        for ch in PHONE[digits[idx]]:        # choices 取决于层数, 不是 start index: 每层是独立的 "槽"
+        for ch in PHONE[digits[idx]]:        # choices 由层数 idx 决定, 不用 start
             path.append(ch)
             dfs(idx + 1)
             path.pop()
@@ -482,23 +482,50 @@ def exist(board, word):
 
 SRC["nqueens"] = '''
 def solve_n_queens(n):
-    res, path = [], []                       # path[r] = 第 r 行的皇后放在第几列
-    cols, diag, anti = set(), set(), set()   # 已占用的 列 / 主对角线 (r - c) / 副对角线 (r + c)
+    res, path = [], []                       # path[r] = 第 r 行皇后所在的列
+    # 三个 set: 已占用的 列 / r - c (\\ 对角线) / r + c (/ 对角线)
+    cols, diag, anti = set(), set(), set()
     def dfs(r):
         if r == n:                           # n 行都放好了
             res.append(["." * c + "Q" + "." * (n - c - 1) for c in path])
             return
         for c in range(n):
             if c in cols or (r - c) in diag or (r + c) in anti:
-                continue                     # 剪枝: 同列 / 同一条 \\ 对角线 / 同一条 / 对角线
-            cols.add(c); diag.add(r - c); anti.add(r + c)      # 做选择: 三个 set + path
+                continue                     # 剪枝: 同列或同一条对角线
+            # 做选择: 三个 set 各 add 一个值, path 也要 append
+            cols.add(c); diag.add(r - c); anti.add(r + c)
             path.append(c)
             dfs(r + 1)
-            path.pop()                                         # 撤销: 三个 set + path 全部还原
+            # 撤销: 三个 set 和 path 全部还原
+            path.pop()
             cols.remove(c); diag.remove(r - c); anti.remove(r + c)
     dfs(0)
     return res
 '''
+
+import re as _re
+
+
+def _tidy(code):
+    """把每行的注释对齐到该代码块里最长的代码行之后 (缩短横向宽度)。"""
+    lines = code.strip("\n").split("\n")
+    parts = []
+    for l in lines:
+        m = _re.search(r"\s{2,}# ", l)
+        if m:
+            parts.append((l[:m.start()].rstrip(), l[m.start():].strip()))
+        else:
+            parts.append((l, None))
+    width = max(len(c) for c, cm in parts if cm) + 2
+    out = []
+    for c, cm in parts:
+        out.append(c.ljust(width) + cm if cm else c)
+    return "\n" + "\n".join(out) + "\n"
+
+
+for _k in list(SRC):
+    if _k != "template":
+        SRC[_k] = _tidy(SRC[_k])
 
 NS = {}
 for _k, _v in SRC.items():
@@ -851,6 +878,7 @@ assert [["." * c + "Q" + "." * (3 - c) for c in sol] for sol in rec_nqueens(4)[1
 
 # ===================================================================== SVG
 import os
+import json
 SVGDIR = os.path.join(ROOT_DIR, "docs", "svg", "13-backtracking")
 os.makedirs(SVGDIR, exist_ok=True)
 
@@ -865,7 +893,7 @@ def res_line(s, x, y, e):
     if e["kind"] == "record":
         txt = "res += %s (共 %d)" % (e["val"], e["nres"])
         w = tw(txt, 12) + 12
-        s.rect(x - 4, y - 10, w, 20, NEW)
+        s.rect(x - 4, y - 9, w, 18, NEW)
         s.t(x + 2, y, txt, 12, NEW[2], "start", 500, maxw=176)
     else:
         s.t(x, y, "res 共 %d 个" % e["nres"], 12, SUB)
@@ -879,8 +907,8 @@ def mk_ex_perm(nums):
     def fn(s, x, top, rh, e):
         used = e["extra"]["used"]
         for j, u in enumerate(used):
-            s.cell(x + j * 25, top + 6, 23, 20, str(nums[j]), NEW if u else OTH, size=12)
-        s.t(x + 3 * 25 + 4, top + 16, "← used", 12, SUB)
+            s.cell(x + j * 25, top + 4, 23, 20, str(nums[j]), NEW if u else OTH, size=12)
+        s.t(x + 3 * 25 + 4, top + 14, "← used", 12, SUB)
         res_line(s, x, top + rh - 12, e)
     return fn
 
@@ -991,8 +1019,8 @@ def svg_core0():
     # 边上的 t 标签
     s.t(104, 128, "t1 push 1", 12, NEW[2], "end", 500)
     s.t(122, 150, "t4 pop 1", 12, REM[2], "start", 500)
-    s.t(206, 128, "t5 push 2", 12, NEW[2], "start", 500)
-    s.t(196, 150, "t6 pop 2", 12, REM[2], "start", 500)
+    s.t(196, 120, "t5 push 2", 12, NEW[2], "start", 500)
+    s.t(236, 150, "t6 pop 2", 12, REM[2], "start", 500)
     s.t(98, 202, "t2 push 2", 12, NEW[2], "start", 500)
     s.t(98, 224, "t3 pop 2", 12, REM[2], "start", 500)
     s.t(40, 296, "path 上每个节点都已是答案 (绿): 节点数 = 4 = 2^2", 12, SUB)
@@ -1056,7 +1084,7 @@ def svg_ws_core(board, word):
              ("t13: 找到 ABAD", R.ev[12]["extra"]["grid"], (1, 2))]
     caps = [["原始 board", "A B A / B B D"],
             ["(0,0) (1,0) 变成 #", "# 个数 = len(path) = 2"],
-            ["(1,0) 变回 B", "(0,0) 仍是 # (A 还在 path)"],
+            ["(1,0) 变回 B", "(0,0) 仍是 #"],
             ["4 个 # = ABAD", "return True 之前"]]
     s = Svg("word_search_core", 360, "Word Search: 用 board 本身当 used[]",
             "同一个 board 在 DFS 不同时刻的四个快照: 标记 # 和恢复。")
@@ -1160,8 +1188,10 @@ def svg_nq_core():
     s.t(rx, 296, "做选择: 三个 set 各 add 一个值 + path.append(c)", 12, SUB)
     s.t(rx, 316, "撤销: 三个 set 各 remove 同一个值 + path.pop()", 12, SUB)
     s.t(rx, 336, "漏掉一个 remove => 后面的分支会被 \"幽灵皇后\" 误剪", 12, SUB)
-    s.t(40, 270, "红色虚线 = 已有皇后的攻击线 (列 / 两条对角线)", 12, SUB)
-    s.t(40, 290, "第 2 行只有 c=0 不被攻击 => 只剩一个选择", 12, SUB)
+    s.t(40, 262, "红色虚线 = 已有皇后的", 12, SUB)
+    s.t(40, 280, "攻击线 (列 / 两条对角线)", 12, SUB)
+    s.t(40, 302, "第 2 行只有 c=0 安全", 12, SUB)
+    s.t(40, 320, "=> 只剩一个选择", 12, SUB)
     s.t(40, 380, "没有 set 的话: 每放一个皇后要扫已有皇后 O(n) 次 => 总共 O(n) × 节点数", 14, INK, "start", 500)
     s.t(40, 404, "有了 set: 每次检查 O(1), 同一个 decision tree 少一个 n 的因子", 12, SUB)
     s.legend(436, [(NEW, False, "皇后 / 可以放"), (REM, True, "被攻击 => 剪枝")])
@@ -1207,7 +1237,7 @@ def build_svgs():
                    "'used' 列: 绿色 = 在 path 里的数, 灰色 = 还能选的数"],
                   R.ev, 12, "used / res", mk_ex_perm([1, 2, 3]),
                   ["最终 res = %s" % str(res).replace(" ", ""),
-                   "共 %d 个 = 3!; 第 6、11、12 步 pop 之后 used 变回灰色, 兄弟分支才能选它" % len(res)])
+                   "共 %d 个 = 3!; 第 5、6 步 pop 之后 used 变回灰色, 第 7 步才能选 3" % len(res)])
     save(s)
 
     # 3 Combination Sum
@@ -1215,7 +1245,7 @@ def build_svgs():
     s = core_tree("combination_sum_core", "Combination Sum 的 decision tree",
                   "candidates=[2,3,5], target=6。",
                   ["candidates = [2, 3, 5] · target = 6 · 子节点 = 从 candidates[start:] 里选一个, 可以和父节点同值",
-                   "剪枝: c > remain => break (排序后后面更大, 都不行)"],
+                   "剪枝: c > remain => break (排序后, 后面更大的也不行, 所以不画 [2,2,5] 这类节点)"],
                   R, ["答案 %s · 节点数 %d (含 %d 个被剪掉的)" % (str(res).replace(" ", ""), count_nodes(R.root), R.nprune),
                       "dfs(i, ...) 传 i: [2,2] 的下一层仍可选 2; 如果传 i+1, 每个数只能用一次, [2,2,2] 和 [3,3] 都出不来"])
     save(s)
@@ -1252,7 +1282,7 @@ def build_svgs():
                   "n=2, 两个剪枝条件。",
                   ["n = 2 · 每个节点最多两个选择: 加 \"(\" (需要 open_ < n) 或 加 \")\" (需要 close < open_)",
                    "红色虚线 = 被两个条件挡住的选择; 剩下的每个叶子都合法"],
-                  R, ["答案 %s · 节点数 %d (含 %d 个被剪掉的)" % (str(res).replace(" ", ""), count_nodes(R.root), R.nprune),
+                  R, ["答案 %s · 节点数 %d (含 %d 个被剪掉的)" % (json.dumps(res).replace(" ", ""), count_nodes(R.root), R.nprune),
                       "没有剪枝要枚举 2^4 = 16 个串再检查; 剪枝后只展开了 %d 个节点, 叶子全是答案" % (count_nodes(R.root) - R.nprune)])
     save(s)
     s = trace_svg("generate_parentheses_trace", "Generate Parentheses 的 path 变化",
@@ -1260,7 +1290,7 @@ def build_svgs():
                   ["n = 2 · push \"(\" 要 open_ < n · push \")\" 要 close < open_ · path 的长度到 2n = 4 就收集",
                    "红色虚线格子 = 想加但被条件挡住 (原因写在左边)"],
                   R.ev, 12, "open_ / close / res", ex_parens,
-                  ["最终 res = %s" % str(res).replace(" ", ""),
+                  ["最终 res = %s" % json.dumps(res).replace(" ", ""),
                    "n = 3 时共 5 个答案 (Catalan 数: 1, 2, 5, 14, ...)"])
     save(s)
 
@@ -1278,7 +1308,7 @@ def build_svgs():
                   ["digits = \"23\" · idx = 正在决定第几个数字 · 到 idx == 2 收集",
                    "每个叶子 push 一次、收集一次、pop 一次; 第 11 步 pop a, 回到空 path 试 b"],
                   R.ev, 12, "idx / res", mk_ex_letters(2),
-                  ["最终 res = %s" % str(res).replace(" ", ""),
+                  ["最终 res = %s" % json.dumps(res).replace(" ", ""),
                    "共 %d 个 = 3 × 3" % len(res)])
     save(s)
 

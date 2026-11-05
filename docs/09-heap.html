@@ -1,0 +1,1579 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>09 · Heap / Top-K</title><style>
+:root{--bg:#fff;--fg:#1d1d1f;--sub:#6b6b70;--code:#f3f1ea;--note:#e8f0fe;--line:#4a7de0;
+--row:#f3f3f3;--gutter:#b9b9bd;--gnum:#8a8a90;--kw:#1b3de0;--ty:#2e8bc0;--fn:#7a5a2e;--cm:#2b7a2b;--st:#d12f2f;--rt:#7a1fb8;--box:#e2e2e5}
+@media(prefers-color-scheme:dark){:root{--bg:#16181d;--fg:#e8e8ea;--sub:#9a9aa2;--code:#262932;--note:#1c2a45;
+--row:#23262e;--gutter:#4a4d57;--gnum:#7c7f89;--kw:#6ea1ff;--ty:#4ec9c0;--fn:#d7ba7d;--cm:#6a9955;--st:#ff7b72;--rt:#c792ea;--box:#363a45}}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.8 -apple-system,"PingFang SC",sans-serif}
+article{max-width:820px;margin:0 auto;padding:24px 16px 64px}
+h1{font-size:26px;margin:8px 0 12px}
+h2{font-size:21px;margin:40px 0 8px;border-bottom:1px solid var(--box);padding-bottom:4px}
+h3{font-size:17px;margin:24px 0 6px}
+code{background:var(--code);padding:1px 5px;border-radius:4px;font:0.9em ui-monospace,Menlo,Consolas,monospace}
+.code{counter-reset:ln;border:1px solid var(--box);border-radius:6px;overflow-x:auto;margin:12px 0;padding:4px 0;
+font:14px/1.7 ui-monospace,Menlo,Consolas,monospace;background:var(--bg)}
+.code .l{display:block;position:relative;white-space:pre;min-height:1.7em;padding:0 14px 0 62px;counter-increment:ln;
+background-image:linear-gradient(to right,transparent 48px,var(--gutter) 48px,var(--gutter) 50px,transparent 50px)}
+.code .l:nth-child(odd){background-color:var(--row)}
+.code .l::before{content:counter(ln);position:absolute;left:0;width:38px;text-align:right;color:var(--gnum)}
+.k{color:var(--kw)}.t{color:var(--ty)}.f{color:var(--fn)}.c{color:var(--cm)}.s{color:var(--st)}.r{color:var(--rt)}
+.note{background:var(--note);border-left:4px solid var(--line);padding:6px 12px;border-radius:4px}
+.main{color:var(--sub)}
+figure{margin:14px 0;background:#fff;border:1px solid var(--box);border-radius:8px;padding:8px}
+figure svg{width:100%;height:auto;display:block}
+figcaption{color:#52514e;font-size:14px;padding:4px 6px 0}
+table{border-collapse:collapse;margin:10px 0;font-size:15px}
+td,th{border:1px solid var(--box);padding:4px 10px;text-align:left}
+</style></head><body><article contenteditable="true">
+<h1>09 · Heap / Top-K</h1>
+<p class="main">主线: heap 只保证 top 是最小 (或最大) 的那一个, push / pop 都是 O(log n)。只要 "反复拿最值" 或 "只要前 k 个", 就别全排序, 用 heap 把 O(n log n) 降到 O(n log k)。</p>
+<p class="main">概念链: Kth Largest (size-k min-heap) → Top K Frequent (key 换成 count) → K Closest Points (方向反过来: max-heap) → Merge k Sorted Lists (heap 里放 k 个 head) → Find Median (两个 heap) → Min Cost Hire K Workers (排序一维 + heap 管另一维) → Task Scheduler (greedy + heap + cooldown)</p>
+<h2>0. 第一性原理: 要最值, 不要全序</h2>
+<p>题目只问 "最大的 k 个" 或 "下一个最小的"。brute force 是 sort 一遍, $O(n \log n)$。浪费在哪: sort 把 <b>所有</b> 元素的相对顺序都排好了, 可是答案只用到最前面 k 个, 后面 n - k 个的顺序白排了。反过来, 如果每次都扫一遍找最小值, 是 $O(n)$ 一次, 反复找就是 $O(n^2)$。</p>
+<p>heap 的做法: 只维护一条规则 "parent ≤ children" (min-heap)。这条规则够把最小的顶到 top, 又足够松, 插入和删除只需要沿着一条路径往上或往下换, 路径长度是树高 log n。所以 heap 是 "拿最小" 和 "加一个数" 两头都不太差的结构。</p>
+<figure><svg width="100%" viewBox="0 0 680 564" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Heap core: parent &lt;= children, top is the minimum</title><desc>tree and array views of a min-heap, push/pop cost, and comparison with list</desc><defs><marker id="h0-ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="h0-ao" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="564" fill="#FFFFFF"/>
+<text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">min-heap: 每个 parent ≤ 它的两个 children → 最小的永远在 top (index 0)</text>
+<text x="40" y="38" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">tree 只是画法, 底层就是一个 list: index i 的 children = 2i+1, 2i+2</text>
+<line x1="170" y1="90" x2="108" y2="142" stroke="#898781" stroke-width="1.2"/>
+<line x1="170" y1="90" x2="232" y2="142" stroke="#898781" stroke-width="1.2"/>
+<line x1="108" y1="142" x2="78" y2="194" stroke="#898781" stroke-width="1.2"/>
+<line x1="108" y1="142" x2="138" y2="194" stroke="#898781" stroke-width="1.2"/>
+<line x1="232" y1="142" x2="202" y2="194" stroke="#898781" stroke-width="1.2"/>
+<line x1="232" y1="142" x2="262" y2="194" stroke="#898781" stroke-width="1.2"/>
+<circle cx="170" cy="90" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="170" y="90" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<circle cx="170" cy="90" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="108" cy="142" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="108" y="142" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<circle cx="232" cy="142" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="232" y="142" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<circle cx="78" cy="194" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="78" y="194" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">7</text>
+<circle cx="138" cy="194" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="138" y="194" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">4</text>
+<circle cx="202" cy="194" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="202" y="194" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">5</text>
+<circle cx="262" cy="194" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="262" y="194" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">6</text>
+<rect x="30" y="238" width="42" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="26" y="234" width="50" height="40" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="51.0" y="254.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<text x="51" y="286" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">0</text>
+<rect x="72" y="238" width="42" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="93.0" y="254.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<text x="93" y="286" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">1</text>
+<rect x="114" y="238" width="42" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="135.0" y="254.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<text x="135" y="286" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">2</text>
+<rect x="156" y="238" width="42" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="177.0" y="254.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">7</text>
+<text x="177" y="286" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">3</text>
+<rect x="198" y="238" width="42" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="219.0" y="254.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">4</text>
+<text x="219" y="286" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">4</text>
+<rect x="240" y="238" width="42" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="261.0" y="254.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">5</text>
+<text x="261" y="286" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">5</text>
+<rect x="282" y="238" width="42" height="32" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="303.0" y="254.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">6</text>
+<text x="303" y="286" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">6</text>
+<text x="30" y="306" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">list = [1, 3, 2, 7, 4, 5, 6]   (heapq 里就是这个 list)</text>
+<text x="360" y="78" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">保证的</text>
+<text x="360" y="100" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">parent ≤ children → top 最小, 看一眼 O(1)</text>
+<text x="360" y="140" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">不保证的</text>
+<text x="360" y="162" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">同一层谁大谁小 (3 vs 2) 没有顺序</text>
+<text x="360" y="184" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">→ 不是全序, 所以比 sort 便宜</text>
+<text x="360" y="218" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">push / pop</text>
+<text x="360" y="240" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">push: 放末尾, 比 parent 小就往上换</text>
+<text x="360" y="262" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">pop: 取走 top, 末尾补到 top, 往下换</text>
+<text x="360" y="284" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">树高 log n → 都是 O(log n)</text>
+<line x1="40" y1="334" x2="640" y2="334" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="358" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">要反复拿最小的, 用什么存?</text>
+<text x="40" y="384" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">结构</text>
+<text x="250" y="384" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">拿最小的</text>
+<text x="380" y="384" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">加一个数</text>
+<text x="40" y="408" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">无序 list</text>
+<text x="250" y="408" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">O(n) 要扫一遍</text>
+<text x="380" y="408" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">O(1)</text>
+<text x="40" y="432" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">有序 list (每次 sort)</text>
+<text x="250" y="432" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">O(1)</text>
+<text x="380" y="432" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">O(n) 要搬位置</text>
+<text x="40" y="456" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">heap</text>
+<text x="250" y="456" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">O(1)</text>
+<text x="380" y="456" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">O(log n)</text>
+<line x1="40" y1="490" x2="640" y2="490" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="512" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">heap 只要 "top", 不要全序: 取前 k 个 O(n log k), sort 是 O(n log n)</text>
+<text x="40" y="534" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">Python heapq 只有 min-heap; max-heap 存 -x, 图里一律画正数 (top = 最大)</text>
+</svg>
+<figcaption>heap 保证 top 最小, 不保证全序; push / pop 沿一条路径换位, O(log n)</figcaption></figure>
+<p>固定大小 k 的 heap 是本章 80% 的题: 数据一个个进来, heap 里永远只留 "最该留下的 k 个", 满了就踢 top。每个元素最多进出一次, 一次 $O(\log k)$, 总共 $O(n \log k)$。</p>
+<div class="code"><span class="l"><span class="k">import</span> <span class="t">heapq</span></span><span class="l"></span><span class="l">h = []</span><span class="l"><span class="t">heapq</span>.<span class="f">heappush</span>(h, x)           <span class="c"># O(log n)</span></span><span class="l">top = h[0]                     <span class="c"># O(1), 只看 top, 不拿走</span></span><span class="l">x = <span class="t">heapq</span>.<span class="f">heappop</span>(h)           <span class="c"># O(log n), 拿走最小的</span></span><span class="l"><span class="t">heapq</span>.<span class="f">heapify</span>(arr)             <span class="c"># O(n), 原地把 list 变成 heap</span></span><span class="l"></span><span class="l"><span class="c"># max-heap: heapq 只有 min-heap, 存 -x, 取出来再取负</span></span><span class="l"><span class="t">heapq</span>.<span class="f">heappush</span>(h, -x)</span><span class="l">biggest = -<span class="t">heapq</span>.<span class="f">heappop</span>(h)</span><span class="l"></span><span class="l"><span class="c"># tuple 从左到右比大小: (count, num) 先比 count, 再比 num</span></span><span class="l"><span class="t">heapq</span>.<span class="f">heappush</span>(h, (count, num))</span><span class="l"></span><span class="l"><span class="c"># 固定大小 k 的模板: heap 里永远只留 &quot;最该留下的 k 个&quot;</span></span><span class="l"><span class="k">for</span> x <span class="k">in</span> stream:</span><span class="l">    <span class="t">heapq</span>.<span class="f">heappush</span>(h, x)</span><span class="l">    <span class="k">if</span> <span class="t">len</span>(h) &gt; k:</span><span class="l">        <span class="t">heapq</span>.<span class="f">heappop</span>(h)       <span class="c"># 弹出的是 &quot;最该被踢掉的&quot;, 它在 top</span></span></div>
+<p class="note"><b>记:</b>heapq 是 min-heap。max-heap 存 -x。top 放的是 "最该被踢掉的", 不是 "最想要的"。(heapq.nlargest(k, nums) 是现成的, 内部就是这个 heap; 面试里要会手写。)</p>
+<h2>1. Kth Largest Element in an Array: 留下最大的 k 个, 用 min-heap</h2>
+<p>题目: 无序数组 <code>nums</code>, 返回第 k 大的数。例: <code>nums = [3,2,1,5,6,4], k = 2</code> → 5。</p>
+<p>Brute force: sort 后取 <code>nums[-k]</code>, $O(n \log n)$。浪费: 前 n - k 小的数的顺序没人用。</p>
+<p>关键观察: 只留 "目前最大的 k 个"。满了要踢一个, 踢的永远是这 k 个里最小的 → 要立刻拿到最小的 → <b>min-heap</b>。留下来的 k 个里最小的 (top) 恰好就是整体第 k 大。</p>
+<figure><svg width="100%" viewBox="0 0 680 440" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Kth Largest: why a min-heap of size k</title><desc>sorted nums with the top-k kept in the heap, top is the kth largest</desc><defs><marker id="kc0-ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="kc0-ao" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="440" fill="#FFFFFF"/>
+<text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">nums = [3, 2, 1, 5, 6, 4], k = 2 (下面按大小排好, 只为看清谁留下)</text>
+<rect x="40" y="56" width="46" height="36" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="63.0" y="74.0" font-size="14" text-anchor="middle" fill="#712B13" dominant-baseline="central">1</text>
+<rect x="94" y="56" width="46" height="36" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="117.0" y="74.0" font-size="14" text-anchor="middle" fill="#712B13" dominant-baseline="central">2</text>
+<rect x="148" y="56" width="46" height="36" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="171.0" y="74.0" font-size="14" text-anchor="middle" fill="#712B13" dominant-baseline="central">3</text>
+<rect x="202" y="56" width="46" height="36" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="225.0" y="74.0" font-size="14" text-anchor="middle" fill="#712B13" dominant-baseline="central">4</text>
+<rect x="256" y="56" width="46" height="36" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="252" y="52" width="54" height="44" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="279.0" y="74.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">5</text>
+<rect x="310" y="56" width="46" height="36" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="333.0" y="74.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">6</text>
+<text x="40" y="118" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">1, 2, 3, 4 : 已被 pop 掉</text>
+<text x="256" y="118" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">5, 6 : 最大的 k = 2 个, 留在 heap</text>
+<line x1="560" y1="80" x2="526" y2="120" stroke="#898781" stroke-width="1.2"/>
+<circle cx="560" cy="80" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="560" y="80" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">5</text>
+<circle cx="560" cy="80" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="526" cy="120" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="526" y="120" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">6</text>
+<path d="M364 74 L506 74" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#kc0-ag)"/>
+<text x="435" y="58" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">留下的 k 个 = min-heap</text>
+<text x="560" y="150" font-size="14" text-anchor="middle" fill="#0B0B0B" font-weight="600" dominant-baseline="central">top = 5 = 第 2 大</text>
+<line x1="40" y1="176" x2="640" y2="176" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="190" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">为什么是 min-heap, 不是 max-heap</text>
+<text x="40" y="214" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">1. heap 里装 "目前最大的 k 个", 满了要踢一个, 踢的永远是里面最小的</text>
+<text x="40" y="236" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">2. 要立刻拿到 "里面最小的" → 它放 top → min-heap</text>
+<text x="40" y="258" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">3. 留下来的 k 个里最小的 = 整体第 k 大 → 答案就是 h[0]</text>
+<line x1="40" y1="290" x2="640" y2="290" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="314" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">新来的 x 和 top 比</text>
+<text x="40" y="338" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">x &lt; top (例: x = 4 &lt; 5): 进不了前 2 大 → push 完马上被 pop, 什么都没变</text>
+<text x="40" y="360" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">x &gt; top: 挤掉 top, 新的 top 变大, 门槛抬高</text>
+<line x1="40" y1="396" x2="640" y2="396" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="418" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">brute force: sort 再取第 k 个 O(n log n) · min-heap 只留 k 个: O(n log k), 空间 O(k)</text>
+</svg>
+<figcaption>为什么是 min-heap: top = 留下的 k 个里最小的 = 第 k 大, 也是下一个要被踢的</figcaption></figure>
+<figure><svg width="100%" viewBox="0 0 680 1102" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Kth Largest Element: min-heap of size k trace</title><desc>nums=[3,2,1,5,6,4], k=2</desc><defs><marker id="kth-ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="kth-ao" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="1102" fill="#FFFFFF"/>
+<text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">k = 2 · min-heap · 每一步: push 进 heap → 超过 k 个就 pop 最小的</text>
+<text x="40" y="38" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">heap 里永远是 "目前最大的 k 个" · top = 其中最小的 = 目前的第 k 大</text>
+<text x="40" y="64" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">x</text>
+<text x="160" y="64" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">push 后</text>
+<text x="290" y="64" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">pop 后</text>
+<text x="440" y="64" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">计算</text>
+<line x1="40" y1="74" x2="640" y2="74" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="82" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="99" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">x = 3</text>
+<text x="72" y="116" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">i = 0</text>
+<circle cx="220" cy="146" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="220" y="146" font-size="16" text-anchor="middle" fill="#085041" dominant-baseline="central">3</text>
+<circle cx="220" cy="146" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<path d="M104 107 L220 107 L220 122" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#kth-ag)"/>
+<text x="300" y="140" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">len = 1 ≤ k = 2</text>
+<text x="300" y="156" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">不需要 pop</text>
+<text x="440" y="114" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">heap 里 (最大的 2 个):</text>
+<text x="440" y="134" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">3</text>
+<text x="440" y="154" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">len &lt; k, 还没有第 2 大</text>
+<line x1="40" y1="182" x2="640" y2="182" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="190" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="207" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">x = 2</text>
+<text x="72" y="224" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">i = 1</text>
+<line x1="220" y1="254" x2="188" y2="288" stroke="#898781" stroke-width="1.2"/>
+<circle cx="220" cy="254" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="220" y="254" font-size="16" text-anchor="middle" fill="#085041" dominant-baseline="central">2</text>
+<circle cx="220" cy="254" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="188" cy="288" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="188" y="288" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<path d="M104 215 L220 215 L220 230" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#kth-ag)"/>
+<text x="300" y="248" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">len = 2 ≤ k = 2</text>
+<text x="300" y="264" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">不需要 pop</text>
+<text x="440" y="222" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">heap 里 (最大的 2 个):</text>
+<text x="440" y="242" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">2, 3</text>
+<text x="440" y="262" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">第 2 大 = top = 2</text>
+<line x1="40" y1="324" x2="640" y2="324" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="332" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="349" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">x = 1</text>
+<text x="72" y="366" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">i = 2</text>
+<line x1="220" y1="396" x2="188" y2="430" stroke="#898781" stroke-width="1.2"/>
+<line x1="220" y1="396" x2="252" y2="430" stroke="#898781" stroke-width="1.2"/>
+<circle cx="220" cy="396" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="220" y="396" font-size="16" text-anchor="middle" fill="#085041" dominant-baseline="central">1</text>
+<circle cx="220" cy="396" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="188" cy="430" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="188" y="430" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<circle cx="252" cy="430" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="252" y="430" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<path d="M104 357 L220 357 L220 372" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#kth-ag)"/>
+<path d="M196 396 L66 396 L66 416" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#kth-ao)"/>
+<text x="137.0" y="386" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">pop</text>
+<circle cx="66" cy="436" r="19" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="66" y="436" font-size="16" text-anchor="middle" fill="#712B13" dominant-baseline="central">1</text>
+<text x="40" y="466" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">len = 3 &gt; k = 2</text>
+<text x="40" y="482" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">pop 最小的 1</text>
+<line x1="350" y1="396" x2="318" y2="430" stroke="#898781" stroke-width="1.2"/>
+<circle cx="350" cy="396" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="350" y="396" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<circle cx="350" cy="396" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="318" cy="430" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="318" y="430" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<text x="440" y="364" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">heap 里 (最大的 2 个):</text>
+<text x="440" y="384" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">2, 3</text>
+<text x="440" y="404" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">第 2 大 = top = 2</text>
+<line x1="40" y1="500" x2="640" y2="500" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="508" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="525" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">x = 5</text>
+<text x="72" y="542" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">i = 3</text>
+<line x1="220" y1="572" x2="188" y2="606" stroke="#898781" stroke-width="1.2"/>
+<line x1="220" y1="572" x2="252" y2="606" stroke="#898781" stroke-width="1.2"/>
+<circle cx="220" cy="572" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="220" y="572" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<circle cx="220" cy="572" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="188" cy="606" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="188" y="606" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<circle cx="252" cy="606" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="252" y="606" font-size="16" text-anchor="middle" fill="#085041" dominant-baseline="central">5</text>
+<path d="M104 533 L220 533 L220 548" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#kth-ag)"/>
+<path d="M196 572 L66 572 L66 592" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#kth-ao)"/>
+<text x="137.0" y="562" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">pop</text>
+<circle cx="66" cy="612" r="19" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="66" y="612" font-size="16" text-anchor="middle" fill="#712B13" dominant-baseline="central">2</text>
+<text x="40" y="642" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">len = 3 &gt; k = 2</text>
+<text x="40" y="658" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">pop 最小的 2</text>
+<line x1="350" y1="572" x2="318" y2="606" stroke="#898781" stroke-width="1.2"/>
+<circle cx="350" cy="572" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="350" y="572" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<circle cx="350" cy="572" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="318" cy="606" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="318" y="606" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">5</text>
+<text x="440" y="540" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">heap 里 (最大的 2 个):</text>
+<text x="440" y="560" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">3, 5</text>
+<text x="440" y="580" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">第 2 大 = top = 3</text>
+<line x1="40" y1="676" x2="640" y2="676" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="684" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="701" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">x = 6</text>
+<text x="72" y="718" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">i = 4</text>
+<line x1="220" y1="748" x2="188" y2="782" stroke="#898781" stroke-width="1.2"/>
+<line x1="220" y1="748" x2="252" y2="782" stroke="#898781" stroke-width="1.2"/>
+<circle cx="220" cy="748" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="220" y="748" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<circle cx="220" cy="748" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="188" cy="782" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="188" y="782" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">5</text>
+<circle cx="252" cy="782" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="252" y="782" font-size="16" text-anchor="middle" fill="#085041" dominant-baseline="central">6</text>
+<path d="M104 709 L220 709 L220 724" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#kth-ag)"/>
+<path d="M196 748 L66 748 L66 768" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#kth-ao)"/>
+<text x="137.0" y="738" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">pop</text>
+<circle cx="66" cy="788" r="19" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="66" y="788" font-size="16" text-anchor="middle" fill="#712B13" dominant-baseline="central">3</text>
+<text x="40" y="818" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">len = 3 &gt; k = 2</text>
+<text x="40" y="834" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">pop 最小的 3</text>
+<line x1="350" y1="748" x2="318" y2="782" stroke="#898781" stroke-width="1.2"/>
+<circle cx="350" cy="748" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="350" y="748" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">5</text>
+<circle cx="350" cy="748" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="318" cy="782" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="318" y="782" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">6</text>
+<text x="440" y="716" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">heap 里 (最大的 2 个):</text>
+<text x="440" y="736" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">5, 6</text>
+<text x="440" y="756" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">第 2 大 = top = 5</text>
+<line x1="40" y1="852" x2="640" y2="852" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="860" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="877" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">x = 4</text>
+<text x="72" y="894" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">i = 5</text>
+<line x1="220" y1="924" x2="188" y2="958" stroke="#898781" stroke-width="1.2"/>
+<line x1="220" y1="924" x2="252" y2="958" stroke="#898781" stroke-width="1.2"/>
+<circle cx="220" cy="924" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="220" y="924" font-size="16" text-anchor="middle" fill="#085041" dominant-baseline="central">4</text>
+<circle cx="220" cy="924" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="188" cy="958" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="188" y="958" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">6</text>
+<circle cx="252" cy="958" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="252" y="958" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">5</text>
+<path d="M104 885 L220 885 L220 900" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#kth-ag)"/>
+<path d="M196 924 L66 924 L66 944" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#kth-ao)"/>
+<text x="137.0" y="914" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">pop</text>
+<circle cx="66" cy="964" r="19" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="66" y="964" font-size="16" text-anchor="middle" fill="#712B13" dominant-baseline="central">4</text>
+<text x="40" y="994" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">len = 3 &gt; k = 2</text>
+<text x="40" y="1010" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">pop 最小的 4</text>
+<line x1="350" y1="924" x2="318" y2="958" stroke="#898781" stroke-width="1.2"/>
+<circle cx="350" cy="924" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="350" y="924" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">5</text>
+<circle cx="350" cy="924" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="318" cy="958" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="318" y="958" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">6</text>
+<text x="440" y="892" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">heap 里 (最大的 2 个):</text>
+<text x="440" y="912" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">5, 6</text>
+<text x="440" y="932" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">第 2 大 = top = 5</text>
+<line x1="40" y1="1028" x2="640" y2="1028" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="1050" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">答案: 最后 heap 的 top = 5   (排序验证: 6, 5, 4, 3, 2, 1 的第 2 个 = 5)</text>
+<circle cx="48" cy="1082" r="7" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="62" y="1082" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">新 push 进来的</text>
+<circle cx="168" cy="1082" r="7" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="182" y="1082" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">被 pop 的</text>
+<circle cx="268" cy="1082" r="7" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="282" y="1082" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">heap top (最小的)</text>
+<circle cx="408" cy="1082" r="7" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="422" y="1082" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">heap 里其他的</text>
+</svg>
+<figcaption>trace: k = 2, 每步 push, 超过 k 个就 pop 最小的, heap 里始终是最大的 2 个</figcaption></figure>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">findKthLargest</span>(nums, k):</span><span class="l">    h = []                          <span class="c"># min-heap, 永远只留 &quot;目前最大的 k 个&quot;</span></span><span class="l">    <span class="k">for</span> x <span class="k">in</span> nums:</span><span class="l">        <span class="t">heapq</span>.<span class="f">heappush</span>(h, x)</span><span class="l">        <span class="k">if</span> <span class="t">len</span>(h) &gt; k:</span><span class="l">            <span class="t">heapq</span>.<span class="f">heappop</span>(h)        <span class="c"># 弹掉最小的, 它一定不在前 k 大里</span></span><span class="l">    <span class="r">return</span> h[0]                     <span class="c"># k 个里最小的 = 第 k 大</span></span></div>
+<p>Time: 每个数一次 push + 至多一次 pop, 都是 $O(\log k)$, 共 $O(n \log k)$。Space: heap $O(k)$。另有 quickselect 平均 $O(n)$, 面试里一句话提一下即可。</p>
+<p class="note"><b>记:</b>留最大的 k 个 → min-heap, top 是门槛; 第 k 大 = h[0]。</p>
+<h2>2. Top K Frequent Elements: 同一个模板, 比较的 key 换成 count</h2>
+<p>题目: 返回出现次数最多的 k 个数。例: <code>nums = [1,1,1,2,2,3,4,4,4,4], k = 2</code> → [1, 4]。</p>
+<p>相比上一题多了什么: 要先数次数 (Counter), 然后 "按 count 找最大的 k 个"。改的只有 heap 里放什么: 放 <code>(count, num)</code>, 比较自然按 count。Brute force: 对所有不同的 num 按 count sort, $O(m \log m)$ (m = 不同数字个数)。heap 只留 k 个, $O(m \log k)$。</p>
+<figure><svg width="100%" viewBox="0 0 680 436" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Top K Frequent: Counter then size-k heap on count</title><desc>flow from nums to Counter to heap of (count, num)</desc><defs><marker id="tk0-ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="tk0-ao" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="436" fill="#FFFFFF"/>
+<text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">和 Kth Largest 是同一个模板: 比较的 key 从 "值" 换成 "count"</text>
+<rect x="40" y="70" width="176" height="64" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="128.0" y="94.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">nums =</text>
+<text x="128.0" y="110.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">[1,1,1,2,2,3,4,4,4,4]</text>
+<path d="M216 102 L270 102" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#tk0-ag)"/>
+<text x="243" y="84" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">Counter</text>
+<rect x="274" y="70" width="140" height="64" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="344.0" y="94.0" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">1 → 3 次   2 → 2 次</text>
+<text x="344.0" y="110.0" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">3 → 1 次   4 → 4 次</text>
+<path d="M414 102 L452 102" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#tk0-ag)"/>
+<line x1="556" y1="96" x2="520" y2="142" stroke="#898781" stroke-width="1.2"/>
+<circle cx="556" cy="96" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="556" y="90" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<text x="556" y="104" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">n=1</text>
+<circle cx="556" cy="96" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="520" cy="142" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="520" y="136" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">4</text>
+<text x="520" y="150" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">n=4</text>
+<text x="556" y="48" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">size k=2 的 min-heap</text>
+<text x="556" y="176" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">node = (count, num)</text>
+<text x="556" y="194" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">top = count 最小的 (门槛)</text>
+<line x1="40" y1="214" x2="640" y2="214" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="236" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">三种做法, 差别只在 "怎么挑 count 最大的 k 个"</text>
+<text x="40" y="260" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">(m = 不同数字的个数, m ≤ n)</text>
+<text x="40" y="290" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">全部按 count sort</text>
+<text x="250" y="290" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">O(m log m)</text>
+<text x="370" y="290" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">最直接</text>
+<text x="40" y="316" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">size-k min-heap</text>
+<text x="250" y="316" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">O(m log k)</text>
+<text x="370" y="316" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">本节, k 小的时候省</text>
+<text x="40" y="342" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">bucket: count 当 index</text>
+<text x="250" y="342" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">O(n)</text>
+<text x="370" y="342" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">count 最大 ≤ n, 不用比较</text>
+<line x1="40" y1="382" x2="640" y2="382" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="404" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">Top K Frequent Words: 同一个模板, 只是 count 相同时要按字典序, 把 key 换成 (count, word) 处理</text>
+</svg>
+<figcaption>Counter 把问题变成 "在 count 上找最大的 k 个", 和 Kth Largest 同构</figcaption></figure>
+<figure><svg width="100%" viewBox="0 0 680 750" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Top K Frequent Elements trace</title><desc>nums=[1,1,1,2,2,3,4,4,4,4], k=2</desc><defs><marker id="tkf-ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="tkf-ao" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="750" fill="#FFFFFF"/>
+<text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">k = 2 · Counter 之后 · min-heap 存 (count, num), 按 count 比大小</text>
+<text x="40" y="38" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">node 上面的数字 = count, 下面 n = num · 每一步: push → 超过 k 个就 pop count 最小的</text>
+<text x="40" y="64" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">num : count</text>
+<text x="160" y="64" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">push 后</text>
+<text x="290" y="64" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">pop 后</text>
+<text x="440" y="64" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">计算</text>
+<line x1="40" y1="74" x2="640" y2="74" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="82" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="99" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">num = 1</text>
+<text x="72" y="116" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">c = 3</text>
+<circle cx="220" cy="146" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="220" y="140" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">3</text>
+<text x="220" y="154" font-size="12" text-anchor="middle" fill="#085041" dominant-baseline="central">n=1</text>
+<circle cx="220" cy="146" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<path d="M104 107 L220 107 L220 122" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#tkf-ag)"/>
+<text x="300" y="140" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">len = 1 ≤ k = 2</text>
+<text x="300" y="156" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">不需要 pop</text>
+<text x="440" y="114" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">heap 里 (count, num):</text>
+<text x="440" y="134" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">(3,1)</text>
+<text x="440" y="154" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">len ≤ k, 都留着</text>
+<line x1="40" y1="182" x2="640" y2="182" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="190" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="207" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">num = 2</text>
+<text x="72" y="224" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">c = 2</text>
+<line x1="220" y1="254" x2="188" y2="288" stroke="#898781" stroke-width="1.2"/>
+<circle cx="220" cy="254" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="220" y="248" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">2</text>
+<text x="220" y="262" font-size="12" text-anchor="middle" fill="#085041" dominant-baseline="central">n=2</text>
+<circle cx="220" cy="254" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="188" cy="288" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="188" y="282" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<text x="188" y="296" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">n=1</text>
+<path d="M104 215 L220 215 L220 230" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#tkf-ag)"/>
+<text x="300" y="248" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">len = 2 ≤ k = 2</text>
+<text x="300" y="264" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">不需要 pop</text>
+<text x="440" y="222" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">heap 里 (count, num):</text>
+<text x="440" y="242" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">(3,1)  (2,2)</text>
+<text x="440" y="262" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">len ≤ k, 都留着</text>
+<line x1="40" y1="324" x2="640" y2="324" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="332" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="349" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">num = 3</text>
+<text x="72" y="366" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">c = 1</text>
+<line x1="220" y1="396" x2="188" y2="430" stroke="#898781" stroke-width="1.2"/>
+<line x1="220" y1="396" x2="252" y2="430" stroke="#898781" stroke-width="1.2"/>
+<circle cx="220" cy="396" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="220" y="390" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">1</text>
+<text x="220" y="404" font-size="12" text-anchor="middle" fill="#085041" dominant-baseline="central">n=3</text>
+<circle cx="220" cy="396" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="188" cy="430" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="188" y="424" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<text x="188" y="438" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">n=1</text>
+<circle cx="252" cy="430" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="252" y="424" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<text x="252" y="438" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">n=2</text>
+<path d="M104 357 L220 357 L220 372" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#tkf-ag)"/>
+<path d="M196 396 L66 396 L66 416" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#tkf-ao)"/>
+<text x="137.0" y="386" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">pop</text>
+<circle cx="66" cy="436" r="19" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="66" y="430" font-size="14" text-anchor="middle" fill="#712B13" dominant-baseline="central">1</text>
+<text x="66" y="444" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">n=3</text>
+<text x="40" y="466" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">len = 3 &gt; k = 2</text>
+<text x="40" y="482" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">pop count 最小的 1</text>
+<line x1="350" y1="396" x2="318" y2="430" stroke="#898781" stroke-width="1.2"/>
+<circle cx="350" cy="396" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="350" y="390" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<text x="350" y="404" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">n=2</text>
+<circle cx="350" cy="396" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="318" cy="430" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="318" y="424" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<text x="318" y="438" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">n=1</text>
+<text x="440" y="364" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">heap 里 (count, num):</text>
+<text x="440" y="384" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">(3,1)  (2,2)</text>
+<text x="440" y="404" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">count 最大的 2 个: num = 1, 2</text>
+<line x1="40" y1="500" x2="640" y2="500" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="508" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="525" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">num = 4</text>
+<text x="72" y="542" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">c = 4</text>
+<line x1="220" y1="572" x2="188" y2="606" stroke="#898781" stroke-width="1.2"/>
+<line x1="220" y1="572" x2="252" y2="606" stroke="#898781" stroke-width="1.2"/>
+<circle cx="220" cy="572" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="220" y="566" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<text x="220" y="580" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">n=2</text>
+<circle cx="220" cy="572" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="188" cy="606" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="188" y="600" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<text x="188" y="614" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">n=1</text>
+<circle cx="252" cy="606" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="252" y="600" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">4</text>
+<text x="252" y="614" font-size="12" text-anchor="middle" fill="#085041" dominant-baseline="central">n=4</text>
+<path d="M104 533 L220 533 L220 548" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#tkf-ag)"/>
+<path d="M196 572 L66 572 L66 592" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#tkf-ao)"/>
+<text x="137.0" y="562" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">pop</text>
+<circle cx="66" cy="612" r="19" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="66" y="606" font-size="14" text-anchor="middle" fill="#712B13" dominant-baseline="central">2</text>
+<text x="66" y="620" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">n=2</text>
+<text x="40" y="642" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">len = 3 &gt; k = 2</text>
+<text x="40" y="658" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">pop count 最小的 2</text>
+<line x1="350" y1="572" x2="318" y2="606" stroke="#898781" stroke-width="1.2"/>
+<circle cx="350" cy="572" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="350" y="566" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<text x="350" y="580" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">n=1</text>
+<circle cx="350" cy="572" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="318" cy="606" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="318" y="600" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">4</text>
+<text x="318" y="614" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">n=4</text>
+<text x="440" y="540" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">heap 里 (count, num):</text>
+<text x="440" y="560" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">(4,4)  (3,1)</text>
+<text x="440" y="580" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">count 最大的 2 个: num = 4, 1</text>
+<line x1="40" y1="676" x2="640" y2="676" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="698" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">答案: heap 里剩 (3, 1) 和 (4, 4) → num = [1, 4]</text>
+<circle cx="48" cy="730" r="7" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="62" y="730" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">新 push 进来的</text>
+<circle cx="168" cy="730" r="7" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="182" y="730" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">被 pop 的</text>
+<circle cx="268" cy="730" r="7" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="282" y="730" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">heap top (最小的 count)</text>
+<circle cx="438" cy="730" r="7" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="452" y="730" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">heap 里其他的</text>
+</svg>
+<figcaption>trace: 4 个不同的 num, k = 2, 每步 pop count 最小的</figcaption></figure>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">topKFrequent</span>(nums, k):</span><span class="l">    count = <span class="t">Counter</span>(nums)                 <span class="c"># O(n): num -&gt; 出现次数</span></span><span class="l">    h = []                                <span class="c"># min-heap of (count, num)</span></span><span class="l">    <span class="k">for</span> num, c <span class="k">in</span> count.<span class="f">items</span>():          <span class="c"># 只遍历不同的 num: m 个</span></span><span class="l">        <span class="t">heapq</span>.<span class="f">heappush</span>(h, (c, num))</span><span class="l">        <span class="k">if</span> <span class="t">len</span>(h) &gt; k:</span><span class="l">            <span class="t">heapq</span>.<span class="f">heappop</span>(h)              <span class="c"># count 最小的踢掉 (和上一题唯一的区别)</span></span><span class="l">    <span class="r">return</span> [num <span class="k">for</span> c, num <span class="k">in</span> h]          <span class="c"># 顺序不限</span></span></div>
+<p>Time: Counter $O(n)$ + heap $O(m \log k)$。Space: $O(m)$。bucket sort (count 当 index 的 list) 可以做到 $O(n)$, 记住有这个办法。Top K Frequent Words 一样, 只是 count 相同要按字典序, key 改成 <code>(count, word)</code> 并处理好大小顺序。</p>
+<p class="note"><b>记:</b>"按某个量找前 k" → size-k heap, heap 里放 (这个量, 本体)。</p>
+<h2>3. K Closest Points to Origin: 留最小的 k 个, 方向反过来, 用 max-heap</h2>
+<p>题目: 返回离原点最近的 k 个点。例: <code>points = [[3,3],[5,-1],[-2,4],[1,1],[0,2]], k = 2</code> → [[1,1],[0,2]]。</p>
+<p>相比第 1 题: 留下的是 <b>最小的</b> k 个 (d 最小), 要踢的是 d 最大的 → top 必须是最大值 → <b>max-heap</b>, Python 里存 <code>-d</code>。第 1 题是 min-heap 留最大, 这题是 max-heap 留最小, 判断规则只有一条: top 放 "最该被踢掉的"。Brute force: 按 d sort, $O(n \log n)$。</p>
+<figure><svg width="100%" viewBox="0 0 680 450" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>K Closest: keep-largest uses min-heap, keep-smallest uses max-heap</title><desc>rule: heap top is the element to evict</desc><defs><marker id="cc0-ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="cc0-ao" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="450" fill="#FFFFFF"/>
+<text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">规则: heap 里放 "留下的 k 个", top 放 "最该被踢掉的"</text>
+<rect x="40" y="36" width="290" height="196" rx="6" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="350" y="36" width="290" height="196" rx="6" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="185" y="56" font-size="14" text-anchor="middle" fill="#0B0B0B" font-weight="600" dominant-baseline="central">Kth Largest</text>
+<text x="185" y="76" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">留下最大的 k 个 → 踢最小的</text>
+<line x1="185" y1="118" x2="151" y2="164" stroke="#898781" stroke-width="1.2"/>
+<circle cx="185" cy="118" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="185" y="118" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">5</text>
+<circle cx="185" cy="118" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="151" cy="164" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="151" y="164" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">6</text>
+<text x="185" y="208" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">top = 最小 → min-heap</text>
+<text x="495" y="56" font-size="14" text-anchor="middle" fill="#0B0B0B" font-weight="600" dominant-baseline="central">K Closest Points</text>
+<text x="495" y="76" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">留下 d 最小的 k 个 → 踢 d 最大的</text>
+<line x1="495" y1="118" x2="461" y2="164" stroke="#898781" stroke-width="1.2"/>
+<circle cx="495" cy="118" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="495" y="118" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">4</text>
+<circle cx="495" cy="118" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="461" cy="164" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="461" y="164" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<text x="495" y="208" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">top = 最大 → max-heap</text>
+<line x1="40" y1="252" x2="640" y2="252" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="276" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">heapq 只有 min-heap, max-heap 的写法是存负数:</text>
+<text x="40" y="300" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">heappush(h, (-d, x, y))   # 存 -d, 所以 top 是 -d 最小 = d 最大</text>
+<text x="40" y="320" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">heappop(h)                 # 弹出 d 最大的</text>
+<text x="40" y="340" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">图里一律画正数 d, 右边那棵 top = 4 就是 -4 最小</text>
+<line x1="40" y1="376" x2="640" y2="376" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="398" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">d = x² + y², 不用开根号 (比大小等价)</text>
+<text x="40" y="420" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">sort 全部: O(n log n) · size-k heap: O(n log k)</text>
+</svg>
+<figcaption>同一条规则两个方向: 要留大的 → 踢最小的 → min-heap; 要留小的 → 踢最大的 → max-heap</figcaption></figure>
+<figure><svg width="100%" viewBox="0 0 680 926" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>K Closest Points to Origin trace</title><desc>points=[[3,3],[5,-1],[-2,4],[1,1],[0,2]], k=2</desc><defs><marker id="kc-ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="kc-ao" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="926" fill="#FFFFFF"/>
+<text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">k = 2 · max-heap (最大的 d 在 top) · 每一步: push → 超过 k 个就 pop 最大的 d</text>
+<text x="40" y="38" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">d = x² + y² (不开根号) · heap 里永远是 "目前离原点最近的 k 个"</text>
+<text x="40" y="64" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">point</text>
+<text x="160" y="64" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">push 后</text>
+<text x="290" y="64" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">pop 后</text>
+<text x="440" y="64" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">计算</text>
+<line x1="40" y1="74" x2="640" y2="74" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="82" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="93" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">P1</text>
+<text x="72" y="108" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">(3, 3)</text>
+<text x="72" y="123" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">d = 18</text>
+<circle cx="220" cy="146" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="220" y="140" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">18</text>
+<text x="220" y="154" font-size="12" text-anchor="middle" fill="#085041" dominant-baseline="central">P1</text>
+<circle cx="220" cy="146" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<path d="M104 107 L220 107 L220 122" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#kc-ag)"/>
+<text x="300" y="140" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">len = 1 ≤ k = 2</text>
+<text x="300" y="156" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">不需要 pop</text>
+<text x="440" y="114" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">d = 3² + 3² = 18</text>
+<text x="440" y="134" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">最近的 1 个: P1</text>
+<line x1="40" y1="182" x2="640" y2="182" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="190" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="201" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">P2</text>
+<text x="72" y="216" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">(5, -1)</text>
+<text x="72" y="231" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">d = 26</text>
+<line x1="220" y1="254" x2="188" y2="288" stroke="#898781" stroke-width="1.2"/>
+<circle cx="220" cy="254" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="220" y="248" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">26</text>
+<text x="220" y="262" font-size="12" text-anchor="middle" fill="#085041" dominant-baseline="central">P2</text>
+<circle cx="220" cy="254" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="188" cy="288" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="188" y="282" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">18</text>
+<text x="188" y="296" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">P1</text>
+<path d="M104 215 L220 215 L220 230" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#kc-ag)"/>
+<text x="300" y="248" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">len = 2 ≤ k = 2</text>
+<text x="300" y="264" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">不需要 pop</text>
+<text x="440" y="222" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">d = 5² + 1² = 26</text>
+<text x="440" y="242" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">最近的 2 个: P1, P2</text>
+<line x1="40" y1="324" x2="640" y2="324" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="332" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="343" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">P3</text>
+<text x="72" y="358" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">(-2, 4)</text>
+<text x="72" y="373" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">d = 20</text>
+<line x1="220" y1="396" x2="188" y2="430" stroke="#898781" stroke-width="1.2"/>
+<line x1="220" y1="396" x2="252" y2="430" stroke="#898781" stroke-width="1.2"/>
+<circle cx="220" cy="396" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="220" y="390" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">26</text>
+<text x="220" y="404" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">P2</text>
+<circle cx="220" cy="396" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="188" cy="430" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="188" y="424" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">18</text>
+<text x="188" y="438" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">P1</text>
+<circle cx="252" cy="430" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="252" y="424" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">20</text>
+<text x="252" y="438" font-size="12" text-anchor="middle" fill="#085041" dominant-baseline="central">P3</text>
+<path d="M104 357 L220 357 L220 372" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#kc-ag)"/>
+<path d="M196 396 L66 396 L66 416" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#kc-ao)"/>
+<text x="137.0" y="386" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">pop</text>
+<circle cx="66" cy="436" r="19" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="66" y="430" font-size="14" text-anchor="middle" fill="#712B13" dominant-baseline="central">26</text>
+<text x="66" y="444" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">P2</text>
+<text x="40" y="466" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">len = 3 &gt; k = 2</text>
+<text x="40" y="482" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">pop 最大的 d = 26</text>
+<line x1="350" y1="396" x2="318" y2="430" stroke="#898781" stroke-width="1.2"/>
+<circle cx="350" cy="396" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="350" y="390" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">20</text>
+<text x="350" y="404" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">P3</text>
+<circle cx="350" cy="396" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="318" cy="430" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="318" y="424" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">18</text>
+<text x="318" y="438" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">P1</text>
+<text x="440" y="364" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">d = 2² + 4² = 20</text>
+<text x="440" y="384" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">最近的 2 个: P1, P3</text>
+<line x1="40" y1="500" x2="640" y2="500" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="508" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="519" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">P4</text>
+<text x="72" y="534" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">(1, 1)</text>
+<text x="72" y="549" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">d = 2</text>
+<line x1="220" y1="572" x2="188" y2="606" stroke="#898781" stroke-width="1.2"/>
+<line x1="220" y1="572" x2="252" y2="606" stroke="#898781" stroke-width="1.2"/>
+<circle cx="220" cy="572" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="220" y="566" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">20</text>
+<text x="220" y="580" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">P3</text>
+<circle cx="220" cy="572" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="188" cy="606" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="188" y="600" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">18</text>
+<text x="188" y="614" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">P1</text>
+<circle cx="252" cy="606" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="252" y="600" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">2</text>
+<text x="252" y="614" font-size="12" text-anchor="middle" fill="#085041" dominant-baseline="central">P4</text>
+<path d="M104 533 L220 533 L220 548" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#kc-ag)"/>
+<path d="M196 572 L66 572 L66 592" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#kc-ao)"/>
+<text x="137.0" y="562" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">pop</text>
+<circle cx="66" cy="612" r="19" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="66" y="606" font-size="14" text-anchor="middle" fill="#712B13" dominant-baseline="central">20</text>
+<text x="66" y="620" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">P3</text>
+<text x="40" y="642" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">len = 3 &gt; k = 2</text>
+<text x="40" y="658" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">pop 最大的 d = 20</text>
+<line x1="350" y1="572" x2="318" y2="606" stroke="#898781" stroke-width="1.2"/>
+<circle cx="350" cy="572" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="350" y="566" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">18</text>
+<text x="350" y="580" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">P1</text>
+<circle cx="350" cy="572" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="318" cy="606" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="318" y="600" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<text x="318" y="614" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">P4</text>
+<text x="440" y="540" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">d = 1² + 1² = 2</text>
+<text x="440" y="560" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">最近的 2 个: P4, P1</text>
+<line x1="40" y1="676" x2="640" y2="676" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="684" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="695" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">P5</text>
+<text x="72" y="710" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">(0, 2)</text>
+<text x="72" y="725" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">d = 4</text>
+<line x1="220" y1="748" x2="188" y2="782" stroke="#898781" stroke-width="1.2"/>
+<line x1="220" y1="748" x2="252" y2="782" stroke="#898781" stroke-width="1.2"/>
+<circle cx="220" cy="748" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="220" y="742" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">18</text>
+<text x="220" y="756" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">P1</text>
+<circle cx="220" cy="748" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="188" cy="782" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="188" y="776" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<text x="188" y="790" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">P4</text>
+<circle cx="252" cy="782" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="252" y="776" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">4</text>
+<text x="252" y="790" font-size="12" text-anchor="middle" fill="#085041" dominant-baseline="central">P5</text>
+<path d="M104 709 L220 709 L220 724" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#kc-ag)"/>
+<path d="M196 748 L66 748 L66 768" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#kc-ao)"/>
+<text x="137.0" y="738" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">pop</text>
+<circle cx="66" cy="788" r="19" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="66" y="782" font-size="14" text-anchor="middle" fill="#712B13" dominant-baseline="central">18</text>
+<text x="66" y="796" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">P1</text>
+<text x="40" y="818" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">len = 3 &gt; k = 2</text>
+<text x="40" y="834" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">pop 最大的 d = 18</text>
+<line x1="350" y1="748" x2="318" y2="782" stroke="#898781" stroke-width="1.2"/>
+<circle cx="350" cy="748" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="350" y="742" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">4</text>
+<text x="350" y="756" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">P5</text>
+<circle cx="350" cy="748" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="318" cy="782" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="318" y="776" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<text x="318" y="790" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">P4</text>
+<text x="440" y="716" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">d = 0² + 2² = 4</text>
+<text x="440" y="736" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">最近的 2 个: P4, P5</text>
+<line x1="40" y1="852" x2="640" y2="852" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="874" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">答案: heap 里剩 P4 (d = 2), P5 (d = 4) → [[1, 1], [0, 2]]</text>
+<circle cx="48" cy="906" r="7" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="62" y="906" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">新 push 进来的</text>
+<circle cx="168" cy="906" r="7" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="182" y="906" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">被 pop 的</text>
+<circle cx="268" cy="906" r="7" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="282" y="906" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">heap top (最大的 d)</text>
+<circle cx="418" cy="906" r="7" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="432" y="906" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">heap 里其他的</text>
+</svg>
+<figcaption>trace: k = 2, heap 里画的是正数 d, top = 最大的 d (代码里存 -d)</figcaption></figure>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">kClosest</span>(points, k):</span><span class="l">    h = []                                 <span class="c"># max-heap (存 -d), 留 &quot;最近的 k 个&quot;</span></span><span class="l">    <span class="k">for</span> x, y <span class="k">in</span> points:</span><span class="l">        d = x * x + y * y                  <span class="c"># 不开根号, 比大小等价</span></span><span class="l">        <span class="t">heapq</span>.<span class="f">heappush</span>(h, (-d, x, y))      <span class="c"># -d 最小 = d 最大, 在 top</span></span><span class="l">        <span class="k">if</span> <span class="t">len</span>(h) &gt; k:</span><span class="l">            <span class="t">heapq</span>.<span class="f">heappop</span>(h)               <span class="c"># 踢掉 d 最大的 (最远的)</span></span><span class="l">    <span class="r">return</span> [[x, y] <span class="k">for</span> _, x, y <span class="k">in</span> h]</span></div>
+<p>Time: $O(n \log k)$。Space: $O(k)$。</p>
+<p class="note"><b>记:</b>留小的 → max-heap (存负数), 留大的 → min-heap。d = x² + y² 不用开根号。</p>
+<h2>4. Merge k Sorted Lists: heap 里只放 k 个 head</h2>
+<p>题目: 合并 k 条有序链表。例: <code>L0 = 1→4→5, L1 = 1→3→4, L2 = 2→6</code> → 1→1→2→3→4→4→5→6。</p>
+<p>Brute force: 所有 node 倒进一个 list 再 sort, $O(N \log N)$ (N = node 总数), 浪费: 每条 list 本来就有序, 这个信息被丢掉了。关键观察: 每条 list 有序 → 全局最小的一定是某条 list 的 <b>head</b>。所以 heap 里每条 list 只放当前的 head, 一共 k 个, pop 出最小的, 把它的 next 补进来。</p>
+<p>相比前几题: heap 不再是 "留下 k 个" 的筛子, 而是 "k 路里下一个该走谁" 的选择器; 元素是 <code>(val, i, node)</code>。</p>
+<figure><svg width="100%" viewBox="0 0 680 484" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Merge k Sorted Lists: heap holds one head per list</title><desc>three lists, heads in heap</desc><defs><marker id="mc0-ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="mc0-ao" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="484" fill="#FFFFFF"/>
+<text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">heap 里每条 list 只放 1 个: 它当前的 head</text>
+<text x="40" y="88" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">L0</text>
+<circle cx="100" cy="88" r="18" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="100" y="88" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<path d="M120 88 L142 88" fill="none" stroke="#898781" stroke-width="1.2" marker-end="url(#mc0-ag)"/>
+<circle cx="164" cy="88" r="18" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="164" y="88" font-size="16" text-anchor="middle" fill="#52514E" dominant-baseline="central">4</text>
+<path d="M184 88 L206 88" fill="none" stroke="#898781" stroke-width="1.2" marker-end="url(#mc0-ag)"/>
+<circle cx="228" cy="88" r="18" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="228" y="88" font-size="16" text-anchor="middle" fill="#52514E" dominant-baseline="central">5</text>
+<text x="40" y="138" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">L1</text>
+<circle cx="100" cy="138" r="18" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="100" y="138" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<path d="M120 138 L142 138" fill="none" stroke="#898781" stroke-width="1.2" marker-end="url(#mc0-ag)"/>
+<circle cx="164" cy="138" r="18" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="164" y="138" font-size="16" text-anchor="middle" fill="#52514E" dominant-baseline="central">3</text>
+<path d="M184 138 L206 138" fill="none" stroke="#898781" stroke-width="1.2" marker-end="url(#mc0-ag)"/>
+<circle cx="228" cy="138" r="18" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="228" y="138" font-size="16" text-anchor="middle" fill="#52514E" dominant-baseline="central">4</text>
+<text x="40" y="188" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">L2</text>
+<circle cx="100" cy="188" r="18" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="100" y="188" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<path d="M120 188 L142 188" fill="none" stroke="#898781" stroke-width="1.2" marker-end="url(#mc0-ag)"/>
+<circle cx="164" cy="188" r="18" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="164" y="188" font-size="16" text-anchor="middle" fill="#52514E" dominant-baseline="central">6</text>
+<text x="100" y="52" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">head</text>
+<path d="M300 138 L400 138" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#mc0-ag)"/>
+<text x="350" y="120" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">push head</text>
+<line x1="520" y1="96" x2="482" y2="146" stroke="#898781" stroke-width="1.2"/>
+<line x1="520" y1="96" x2="558" y2="146" stroke="#898781" stroke-width="1.2"/>
+<circle cx="520" cy="96" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="520" y="90" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<text x="520" y="104" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L0</text>
+<circle cx="520" cy="96" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="482" cy="146" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="482" y="140" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<text x="482" y="154" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L1</text>
+<circle cx="558" cy="146" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="558" y="140" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<text x="558" y="154" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L2</text>
+<text x="520" y="192" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">min-heap, 大小 = k = 3</text>
+<line x1="40" y1="222" x2="640" y2="222" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="246" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">为什么只要 head</text>
+<text x="40" y="270" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">每条 list 本身有序 → 全局最小的一定是某条 list 的 head</text>
+<text x="40" y="292" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">pop 出它 → 它的 next 成为这条 list 新的 head → push 回去</text>
+<text x="40" y="314" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">heap 里永远 ≤ k 个, 所以 pop / push 都是 O(log k)</text>
+<line x1="40" y1="346" x2="640" y2="346" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="368" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">N = 所有 node 总数</text>
+<text x="40" y="390" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">全部倒出来 sort: O(N log N)</text>
+<text x="40" y="412" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">heap 每个 node 进出各 1 次: O(N log k)</text>
+<text x="40" y="456" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">tuple 里放 i: val 相同时靠 i 决胜负, 不会去比较 ListNode (没有 &lt; )</text>
+</svg>
+<figcaption>heap 里只有每条 list 的 head, 每个 node 进出 heap 各一次</figcaption></figure>
+<figure><svg width="100%" viewBox="0 0 680 1170" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Merge k Sorted Lists trace</title><desc>L0=1,4,5  L1=1,3,4  L2=2,6</desc><defs><marker id="mk-ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="mk-ao" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="1170" fill="#FFFFFF"/>
+<text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">L0 = 1→4→5 · L1 = 1→3→4 · L2 = 2→6 · heap 存 (val, i, node), 按 val 比 · 最小的在 top</text>
+<text x="40" y="38" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">heap 里每条 list 只放 1 个 (当前的 head) · 每一步: pop 最小的 → 接到 output → push 它的 next</text>
+<text x="40" y="64" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">step</text>
+<text x="160" y="64" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">pop 前</text>
+<text x="290" y="64" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">push next 后</text>
+<text x="440" y="64" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">output</text>
+<line x1="40" y1="74" x2="640" y2="74" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="82" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="107" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">init</text>
+<line x1="350" y1="146" x2="318" y2="180" stroke="#898781" stroke-width="1.2"/>
+<line x1="350" y1="146" x2="382" y2="180" stroke="#898781" stroke-width="1.2"/>
+<circle cx="350" cy="146" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="350" y="140" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">1</text>
+<text x="350" y="154" font-size="12" text-anchor="middle" fill="#085041" dominant-baseline="central">L0</text>
+<circle cx="350" cy="146" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="318" cy="180" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="318" y="174" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">1</text>
+<text x="318" y="188" font-size="12" text-anchor="middle" fill="#085041" dominant-baseline="central">L1</text>
+<circle cx="382" cy="180" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="382" y="174" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">2</text>
+<text x="382" y="188" font-size="12" text-anchor="middle" fill="#085041" dominant-baseline="central">L2</text>
+<text x="440" y="114" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">每条 list 的 head</text>
+<text x="440" y="134" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">push 进 heap</text>
+<text x="440" y="154" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">heap 大小 = k = 3</text>
+<line x1="40" y1="216" x2="640" y2="216" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="224" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="249" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">step 1</text>
+<line x1="220" y1="288" x2="188" y2="322" stroke="#898781" stroke-width="1.2"/>
+<line x1="220" y1="288" x2="252" y2="322" stroke="#898781" stroke-width="1.2"/>
+<circle cx="220" cy="288" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="220" y="282" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<text x="220" y="296" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L0</text>
+<circle cx="220" cy="288" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="188" cy="322" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="188" y="316" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<text x="188" y="330" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L1</text>
+<circle cx="252" cy="322" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="252" y="316" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<text x="252" y="330" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L2</text>
+<path d="M196 288 L66 288 L66 308" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#mk-ao)"/>
+<text x="137.0" y="278" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">pop</text>
+<circle cx="66" cy="328" r="19" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="66" y="322" font-size="14" text-anchor="middle" fill="#712B13" dominant-baseline="central">1</text>
+<text x="66" y="336" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">L0</text>
+<text x="40" y="358" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">pop 最小的 1 (L0)</text>
+<text x="40" y="374" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">接到 output</text>
+<line x1="350" y1="288" x2="318" y2="322" stroke="#898781" stroke-width="1.2"/>
+<line x1="350" y1="288" x2="382" y2="322" stroke="#898781" stroke-width="1.2"/>
+<circle cx="350" cy="288" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="350" y="282" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<text x="350" y="296" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L1</text>
+<circle cx="350" cy="288" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="318" cy="322" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="318" y="316" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<text x="318" y="330" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L2</text>
+<circle cx="382" cy="322" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="382" y="316" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">4</text>
+<text x="382" y="330" font-size="12" text-anchor="middle" fill="#085041" dominant-baseline="central">L0</text>
+<text x="440" y="256" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">output: 1</text>
+<text x="440" y="276" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">push next: 4 (L0 的下一个)</text>
+<line x1="40" y1="392" x2="640" y2="392" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="400" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="425" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">step 2</text>
+<line x1="220" y1="464" x2="188" y2="498" stroke="#898781" stroke-width="1.2"/>
+<line x1="220" y1="464" x2="252" y2="498" stroke="#898781" stroke-width="1.2"/>
+<circle cx="220" cy="464" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="220" y="458" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<text x="220" y="472" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L1</text>
+<circle cx="220" cy="464" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="188" cy="498" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="188" y="492" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<text x="188" y="506" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L2</text>
+<circle cx="252" cy="498" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="252" y="492" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">4</text>
+<text x="252" y="506" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L0</text>
+<path d="M196 464 L66 464 L66 484" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#mk-ao)"/>
+<text x="137.0" y="454" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">pop</text>
+<circle cx="66" cy="504" r="19" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="66" y="498" font-size="14" text-anchor="middle" fill="#712B13" dominant-baseline="central">1</text>
+<text x="66" y="512" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">L1</text>
+<text x="40" y="534" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">pop 最小的 1 (L1)</text>
+<text x="40" y="550" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">接到 output</text>
+<line x1="350" y1="464" x2="318" y2="498" stroke="#898781" stroke-width="1.2"/>
+<line x1="350" y1="464" x2="382" y2="498" stroke="#898781" stroke-width="1.2"/>
+<circle cx="350" cy="464" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="350" y="458" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<text x="350" y="472" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L2</text>
+<circle cx="350" cy="464" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="318" cy="498" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="318" y="492" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">4</text>
+<text x="318" y="506" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L0</text>
+<circle cx="382" cy="498" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="382" y="492" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">3</text>
+<text x="382" y="506" font-size="12" text-anchor="middle" fill="#085041" dominant-baseline="central">L1</text>
+<text x="440" y="432" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">output: 1 → 1</text>
+<text x="440" y="452" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">push next: 3 (L1 的下一个)</text>
+<line x1="40" y1="568" x2="640" y2="568" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="576" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="601" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">step 3</text>
+<line x1="220" y1="640" x2="188" y2="674" stroke="#898781" stroke-width="1.2"/>
+<line x1="220" y1="640" x2="252" y2="674" stroke="#898781" stroke-width="1.2"/>
+<circle cx="220" cy="640" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="220" y="634" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<text x="220" y="648" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L2</text>
+<circle cx="220" cy="640" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="188" cy="674" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="188" y="668" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">4</text>
+<text x="188" y="682" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L0</text>
+<circle cx="252" cy="674" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="252" y="668" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<text x="252" y="682" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L1</text>
+<path d="M196 640 L66 640 L66 660" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#mk-ao)"/>
+<text x="137.0" y="630" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">pop</text>
+<circle cx="66" cy="680" r="19" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="66" y="674" font-size="14" text-anchor="middle" fill="#712B13" dominant-baseline="central">2</text>
+<text x="66" y="688" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">L2</text>
+<text x="40" y="710" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">pop 最小的 2 (L2)</text>
+<text x="40" y="726" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">接到 output</text>
+<line x1="350" y1="640" x2="318" y2="674" stroke="#898781" stroke-width="1.2"/>
+<line x1="350" y1="640" x2="382" y2="674" stroke="#898781" stroke-width="1.2"/>
+<circle cx="350" cy="640" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="350" y="634" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<text x="350" y="648" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L1</text>
+<circle cx="350" cy="640" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="318" cy="674" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="318" y="668" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">4</text>
+<text x="318" y="682" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L0</text>
+<circle cx="382" cy="674" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="382" y="668" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">6</text>
+<text x="382" y="682" font-size="12" text-anchor="middle" fill="#085041" dominant-baseline="central">L2</text>
+<text x="440" y="608" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">output: 1 → 1 → 2</text>
+<text x="440" y="628" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">push next: 6 (L2 的下一个)</text>
+<line x1="40" y1="744" x2="640" y2="744" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="752" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="777" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">step 4</text>
+<line x1="220" y1="816" x2="188" y2="850" stroke="#898781" stroke-width="1.2"/>
+<line x1="220" y1="816" x2="252" y2="850" stroke="#898781" stroke-width="1.2"/>
+<circle cx="220" cy="816" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="220" y="810" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<text x="220" y="824" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L1</text>
+<circle cx="220" cy="816" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="188" cy="850" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="188" y="844" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">4</text>
+<text x="188" y="858" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L0</text>
+<circle cx="252" cy="850" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="252" y="844" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">6</text>
+<text x="252" y="858" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L2</text>
+<path d="M196 816 L66 816 L66 836" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#mk-ao)"/>
+<text x="137.0" y="806" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">pop</text>
+<circle cx="66" cy="856" r="19" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="66" y="850" font-size="14" text-anchor="middle" fill="#712B13" dominant-baseline="central">3</text>
+<text x="66" y="864" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">L1</text>
+<text x="40" y="886" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">pop 最小的 3 (L1)</text>
+<text x="40" y="902" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">接到 output</text>
+<line x1="350" y1="816" x2="318" y2="850" stroke="#898781" stroke-width="1.2"/>
+<line x1="350" y1="816" x2="382" y2="850" stroke="#898781" stroke-width="1.2"/>
+<circle cx="350" cy="816" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="350" y="810" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">4</text>
+<text x="350" y="824" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L0</text>
+<circle cx="350" cy="816" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="318" cy="850" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="318" y="844" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">6</text>
+<text x="318" y="858" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L2</text>
+<circle cx="382" cy="850" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="382" y="844" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">4</text>
+<text x="382" y="858" font-size="12" text-anchor="middle" fill="#085041" dominant-baseline="central">L1</text>
+<text x="440" y="784" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">output: 1 → 1 → 2 → 3</text>
+<text x="440" y="804" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">push next: 4 (L1 的下一个)</text>
+<line x1="40" y1="920" x2="640" y2="920" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="928" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="953" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">step 5</text>
+<line x1="220" y1="992" x2="188" y2="1026" stroke="#898781" stroke-width="1.2"/>
+<line x1="220" y1="992" x2="252" y2="1026" stroke="#898781" stroke-width="1.2"/>
+<circle cx="220" cy="992" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="220" y="986" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">4</text>
+<text x="220" y="1000" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L0</text>
+<circle cx="220" cy="992" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="188" cy="1026" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="188" y="1020" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">6</text>
+<text x="188" y="1034" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L2</text>
+<circle cx="252" cy="1026" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="252" y="1020" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">4</text>
+<text x="252" y="1034" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L1</text>
+<path d="M196 992 L66 992 L66 1012" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#mk-ao)"/>
+<text x="137.0" y="982" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">pop</text>
+<circle cx="66" cy="1032" r="19" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="66" y="1026" font-size="14" text-anchor="middle" fill="#712B13" dominant-baseline="central">4</text>
+<text x="66" y="1040" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">L0</text>
+<text x="40" y="1062" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">pop 最小的 4 (L0)</text>
+<text x="40" y="1078" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">接到 output</text>
+<line x1="350" y1="992" x2="318" y2="1026" stroke="#898781" stroke-width="1.2"/>
+<line x1="350" y1="992" x2="382" y2="1026" stroke="#898781" stroke-width="1.2"/>
+<circle cx="350" cy="992" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="350" y="986" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">4</text>
+<text x="350" y="1000" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L1</text>
+<circle cx="350" cy="992" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="318" cy="1026" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="318" y="1020" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">6</text>
+<text x="318" y="1034" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">L2</text>
+<circle cx="382" cy="1026" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="382" y="1020" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">5</text>
+<text x="382" y="1034" font-size="12" text-anchor="middle" fill="#085041" dominant-baseline="central">L0</text>
+<text x="440" y="960" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">output: 1 → 1 → 2 → 3 → 4</text>
+<text x="440" y="980" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">push next: 5 (L0 的下一个)</text>
+<line x1="40" y1="1096" x2="640" y2="1096" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="1118" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">继续 pop 到 heap 空: output = 1→1→2→3→4→4→5→6 (8 个 node, 每个进出 heap 各 1 次)</text>
+<circle cx="48" cy="1150" r="7" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="62" y="1150" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">新 push 进来的</text>
+<circle cx="168" cy="1150" r="7" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="182" y="1150" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">被 pop 的</text>
+<circle cx="268" cy="1150" r="7" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="282" y="1150" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">heap top (最小的 val)</text>
+<circle cx="428" cy="1150" r="7" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="442" y="1150" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">heap 里其他的</text>
+</svg>
+<figcaption>trace: 先 push 3 个 head, 每步 pop 最小的接到 output, 再 push 它的 next</figcaption></figure>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">mergeKLists</span>(lists):</span><span class="l">    h = []</span><span class="l">    <span class="k">for</span> i, node <span class="k">in</span> <span class="t">enumerate</span>(lists):</span><span class="l">        <span class="k">if</span> node:</span><span class="l">            <span class="t">heapq</span>.<span class="f">heappush</span>(h, (node.val, i, node))   <span class="c"># (val, i, node)</span></span><span class="l">            <span class="c"># i 用来在 val 相同时决胜负, 否则会去比较 ListNode (不能比)</span></span><span class="l">    dummy = tail = <span class="t">ListNode</span>()</span><span class="l">    <span class="k">while</span> h:</span><span class="l">        val, i, node = <span class="t">heapq</span>.<span class="f">heappop</span>(h)    <span class="c"># 全局最小一定是某条 list 的 head</span></span><span class="l">        tail.next = node</span><span class="l">        tail = node</span><span class="l">        <span class="k">if</span> node.next:                      <span class="c"># 这条 list 的新 head 补进来</span></span><span class="l">            <span class="t">heapq</span>.<span class="f">heappush</span>(h, (node.next.val, i, node.next))</span><span class="l">    <span class="r">return</span> dummy.next</span></div>
+<p>Time: N 个 node 各进出一次, heap 大小 ≤ k, $O(N \log k)$。Space: 额外 $O(k)$ (node 是原地接起来的)。同一个套路: Kth Smallest in Sorted Matrix (每行是一条有序 list), Find K Pairs with Smallest Sums, Smallest Range Covering K Lists。</p>
+<p class="note"><b>记:</b>k 路有序 → heap 放每一路的当前头, pop 一个补一个; tuple 里加 i 防止比较 node。</p>
+<h2>5. Find Median from Data Stream: 两个 heap, 各管一半</h2>
+<p>题目: 数据流, 随时 addNum, 随时 findMedian。例: 依次加 5, 2, 8, 3, 9, 1 → median 依次 5, 3.5, 5, 4, 5, 4。</p>
+<p>Brute force: 每次 find 都 sort, $O(n \log n)$; 或者维护有序 list, 每次插入 $O(n)$ (搬位置)。关键观察: 中位数只看 "正中间那一两个数", 不需要整体有序。把排好序的数从中间切开, 左半 lo 要快速拿到最大, 右半 hi 要快速拿到最小。</p>
+<p>相比前几题: 一个 heap 不够, 要 <b>两个 heap</b>: lo 是 max-heap, hi 是 min-heap。两个 invariant: max(lo) ≤ min(hi); len(lo) = len(hi) 或 len(hi) + 1。每次 add 都用 "先进 lo, 再把 lo 的 top 交给 hi, 不平衡再还回来一个" 修好。</p>
+<figure><svg width="100%" viewBox="0 0 680 506" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Median: two heaps hold the two halves</title><desc>sorted numbers split into lo and hi, tops are the middle numbers</desc><defs><marker id="mdc-ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="mdc-ao" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="506" fill="#FFFFFF"/>
+<text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">把排好序的数从中间切开: 左半 lo, 右半 hi · 中位数只看切口两边的数</text>
+<rect x="170" y="56" width="46" height="34" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="193.0" y="73.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<rect x="222" y="56" width="46" height="34" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="245.0" y="73.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<rect x="274" y="56" width="46" height="34" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="270" y="52" width="54" height="42" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="297.0" y="73.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<rect x="366" y="56" width="46" height="34" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="362" y="52" width="54" height="42" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="389.0" y="73.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">5</text>
+<rect x="418" y="56" width="46" height="34" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="441.0" y="73.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">8</text>
+<rect x="470" y="56" width="46" height="34" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="493.0" y="73.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">9</text>
+<line x1="340" y1="50" x2="340" y2="98" stroke="#5F5E5A" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="248" y="40" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">lo: 较小的一半</text>
+<text x="441" y="40" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">hi: 较大的一半</text>
+<line x1="200" y1="190" x2="164" y2="234" stroke="#898781" stroke-width="1.2"/>
+<line x1="200" y1="190" x2="236" y2="234" stroke="#898781" stroke-width="1.2"/>
+<circle cx="200" cy="190" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="200" y="190" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<circle cx="200" cy="190" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="164" cy="234" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="164" y="234" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<circle cx="236" cy="234" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="236" y="234" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<line x1="480" y1="190" x2="444" y2="234" stroke="#898781" stroke-width="1.2"/>
+<line x1="480" y1="190" x2="516" y2="234" stroke="#898781" stroke-width="1.2"/>
+<circle cx="480" cy="190" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="480" y="190" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">5</text>
+<circle cx="480" cy="190" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="444" cy="234" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="444" y="234" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">9</text>
+<circle cx="516" cy="234" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="516" y="234" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">8</text>
+<path d="M297 94 L221 164" fill="none" stroke="#898781" stroke-width="1.2" marker-end="url(#mdc-ag)"/>
+<path d="M389 94 L465 164" fill="none" stroke="#898781" stroke-width="1.2" marker-end="url(#mdc-ag)"/>
+<text x="200" y="262" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">lo = max-heap</text>
+<text x="200" y="280" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">top = 3 (lo 里最大)</text>
+<text x="480" y="262" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">hi = min-heap</text>
+<text x="480" y="280" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">top = 5 (hi 里最小)</text>
+<line x1="40" y1="302" x2="640" y2="302" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="326" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">median = (lo.top + hi.top) / 2 = (3 + 5) / 2 = 4   (个数是奇数时 = lo.top)</text>
+<text x="40" y="358" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">两个 invariant (每次 add 后都要成立)</text>
+<text x="40" y="382" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">1. max(lo) ≤ min(hi)   → 两个 top 紧挨着切口</text>
+<text x="40" y="404" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">2. len(lo) = len(hi) 或 len(lo) = len(hi) + 1   → 切口在正中间</text>
+<line x1="40" y1="438" x2="640" y2="438" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="460" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">每个数 add: O(log n) · 找 median: O(1)</text>
+<text x="40" y="482" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">brute force: 每次 find 都 sort O(n log n), 或者插入有序 list O(n)</text>
+</svg>
+<figcaption>lo / hi 各管一半, 两个 top 就是正中间那两个数</figcaption></figure>
+<figure><svg width="100%" viewBox="0 0 680 928" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Find Median from Data Stream: two heaps trace</title><desc>stream 5,2,8,3,9,1</desc><defs><marker id="md-ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="md-ao" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="928" fill="#FFFFFF"/>
+<text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">lo = max-heap (较小的一半, top = 最大) · hi = min-heap (较大的一半, top = 最小)</text>
+<text x="40" y="38" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">每个 num: 先 push 进 lo → lo 的 top 移到 hi → hi 比 lo 多就把 hi 的 top 移回 lo</text>
+<text x="40" y="64" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">num</text>
+<text x="130" y="64" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">lo (max-heap)</text>
+<text x="270" y="64" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">hi (min-heap)</text>
+<text x="400" y="64" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">这一步发生了什么</text>
+<line x1="40" y1="74" x2="640" y2="74" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="82" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="99" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">num</text>
+<text x="72" y="116" font-size="16" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">5</text>
+<circle cx="190" cy="134" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="190" y="134" font-size="16" text-anchor="middle" fill="#085041" dominant-baseline="central">5</text>
+<circle cx="190" cy="134" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<path d="M104 107 L190 107 L190 110" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#md-ag)"/>
+<text x="330" y="134" font-size="14" text-anchor="middle" fill="#52514E" dominant-baseline="central">空</text>
+<text x="400" y="102" font-size="12" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">push 5 → lo, lo 最大的 5 → hi</text>
+<text x="400" y="122" font-size="12" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">len(hi) &gt; len(lo) → hi 最小的 5 → lo</text>
+<text x="400" y="152" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">median = lo.top = 5</text>
+<line x1="40" y1="204" x2="640" y2="204" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="212" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="229" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">num</text>
+<text x="72" y="246" font-size="16" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">2</text>
+<circle cx="190" cy="264" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="190" y="264" font-size="16" text-anchor="middle" fill="#085041" dominant-baseline="central">2</text>
+<circle cx="190" cy="264" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<path d="M104 237 L190 237 L190 240" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#md-ag)"/>
+<circle cx="330" cy="264" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="330" y="264" font-size="16" text-anchor="middle" fill="#085041" dominant-baseline="central">5</text>
+<circle cx="330" cy="264" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="400" y="232" font-size="12" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">push 2 → lo, lo 最大的 5 → hi</text>
+<text x="400" y="252" font-size="12" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">len(hi) ≤ len(lo), 不用再移</text>
+<text x="400" y="282" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">median = (2 + 5) / 2 = 3.5</text>
+<line x1="40" y1="334" x2="640" y2="334" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="342" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="359" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">num</text>
+<text x="72" y="376" font-size="16" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">8</text>
+<line x1="190" y1="394" x2="160" y2="428" stroke="#898781" stroke-width="1.2"/>
+<circle cx="190" cy="394" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="190" y="394" font-size="16" text-anchor="middle" fill="#085041" dominant-baseline="central">5</text>
+<circle cx="190" cy="394" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="160" cy="428" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="160" y="428" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<path d="M104 367 L190 367 L190 370" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#md-ag)"/>
+<circle cx="330" cy="394" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="330" y="394" font-size="16" text-anchor="middle" fill="#085041" dominant-baseline="central">8</text>
+<circle cx="330" cy="394" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="400" y="362" font-size="12" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">push 8 → lo, lo 最大的 8 → hi</text>
+<text x="400" y="382" font-size="12" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">len(hi) &gt; len(lo) → hi 最小的 5 → lo</text>
+<text x="400" y="412" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">median = lo.top = 5</text>
+<line x1="40" y1="464" x2="640" y2="464" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="472" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="489" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">num</text>
+<text x="72" y="506" font-size="16" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">3</text>
+<line x1="190" y1="524" x2="160" y2="558" stroke="#898781" stroke-width="1.2"/>
+<circle cx="190" cy="524" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="190" y="524" font-size="16" text-anchor="middle" fill="#085041" dominant-baseline="central">3</text>
+<circle cx="190" cy="524" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="160" cy="558" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="160" y="558" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<path d="M104 497 L190 497 L190 500" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#md-ag)"/>
+<line x1="330" y1="524" x2="300" y2="558" stroke="#898781" stroke-width="1.2"/>
+<circle cx="330" cy="524" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="330" y="524" font-size="16" text-anchor="middle" fill="#085041" dominant-baseline="central">5</text>
+<circle cx="330" cy="524" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="300" cy="558" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="300" y="558" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">8</text>
+<text x="400" y="492" font-size="12" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">push 3 → lo, lo 最大的 5 → hi</text>
+<text x="400" y="512" font-size="12" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">len(hi) ≤ len(lo), 不用再移</text>
+<text x="400" y="542" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">median = (3 + 5) / 2 = 4</text>
+<line x1="40" y1="594" x2="640" y2="594" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="602" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="619" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">num</text>
+<text x="72" y="636" font-size="16" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">9</text>
+<line x1="190" y1="654" x2="160" y2="688" stroke="#898781" stroke-width="1.2"/>
+<line x1="190" y1="654" x2="220" y2="688" stroke="#898781" stroke-width="1.2"/>
+<circle cx="190" cy="654" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="190" y="654" font-size="16" text-anchor="middle" fill="#085041" dominant-baseline="central">5</text>
+<circle cx="190" cy="654" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="160" cy="688" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="160" y="688" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<circle cx="220" cy="688" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="220" y="688" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<path d="M104 627 L190 627 L190 630" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#md-ag)"/>
+<line x1="330" y1="654" x2="300" y2="688" stroke="#898781" stroke-width="1.2"/>
+<circle cx="330" cy="654" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="330" y="654" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">8</text>
+<circle cx="330" cy="654" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="300" cy="688" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="300" y="688" font-size="16" text-anchor="middle" fill="#085041" dominant-baseline="central">9</text>
+<text x="400" y="622" font-size="12" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">push 9 → lo, lo 最大的 9 → hi</text>
+<text x="400" y="642" font-size="12" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">len(hi) &gt; len(lo) → hi 最小的 5 → lo</text>
+<text x="400" y="672" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">median = lo.top = 5</text>
+<line x1="40" y1="724" x2="640" y2="724" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="732" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="749" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">num</text>
+<text x="72" y="766" font-size="16" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">1</text>
+<line x1="190" y1="784" x2="160" y2="818" stroke="#898781" stroke-width="1.2"/>
+<line x1="190" y1="784" x2="220" y2="818" stroke="#898781" stroke-width="1.2"/>
+<circle cx="190" cy="784" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="190" y="784" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<circle cx="190" cy="784" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="160" cy="818" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="160" y="818" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<circle cx="220" cy="818" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="220" y="818" font-size="16" text-anchor="middle" fill="#085041" dominant-baseline="central">1</text>
+<path d="M104 757 L190 757 L190 760" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#md-ag)"/>
+<line x1="330" y1="784" x2="300" y2="818" stroke="#898781" stroke-width="1.2"/>
+<line x1="330" y1="784" x2="360" y2="818" stroke="#898781" stroke-width="1.2"/>
+<circle cx="330" cy="784" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="330" y="784" font-size="16" text-anchor="middle" fill="#085041" dominant-baseline="central">5</text>
+<circle cx="330" cy="784" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="300" cy="818" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="300" y="818" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">9</text>
+<circle cx="360" cy="818" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="360" y="818" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">8</text>
+<text x="400" y="752" font-size="12" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">push 1 → lo, lo 最大的 5 → hi</text>
+<text x="400" y="772" font-size="12" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">len(hi) ≤ len(lo), 不用再移</text>
+<text x="400" y="802" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">median = (3 + 5) / 2 = 4</text>
+<line x1="40" y1="854" x2="640" y2="854" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="876" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">median 依次 = 5, 3.5, 5, 4, 5, 4   (每步 O(log n), 不用排序)</text>
+<circle cx="48" cy="908" r="7" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="62" y="908" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">这一步移进来的</text>
+<circle cx="168" cy="908" r="7" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="182" y="908" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">heap top</text>
+<circle cx="248" cy="908" r="7" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="262" y="908" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">heap 里其他的</text>
+</svg>
+<figcaption>trace: 每步绿色节点 = 这一步换了 heap 的元素; 最后一列是当前 median</figcaption></figure>
+<div class="code"><span class="l"><span class="k">class</span> MedianFinder:</span><span class="l">    <span class="k">def</span> <span class="f">__init__</span>(<span class="t">self</span>):</span><span class="l">        <span class="t">self</span>.lo = []        <span class="c"># max-heap (存 -x): 较小的一半, top = 这一半最大</span></span><span class="l">        <span class="t">self</span>.hi = []        <span class="c"># min-heap:         较大的一半, top = 这一半最小</span></span><span class="l"></span><span class="l">    <span class="k">def</span> <span class="f">addNum</span>(<span class="t">self</span>, num):</span><span class="l">        <span class="t">heapq</span>.<span class="f">heappush</span>(<span class="t">self</span>.lo, -num)</span><span class="l">        <span class="c"># 先进 lo, 再把 lo 最大的交给 hi -&gt; 保证 max(lo) &lt;= min(hi)</span></span><span class="l">        <span class="t">heapq</span>.<span class="f">heappush</span>(<span class="t">self</span>.hi, -<span class="t">heapq</span>.<span class="f">heappop</span>(<span class="t">self</span>.lo))</span><span class="l">        <span class="k">if</span> <span class="t">len</span>(<span class="t">self</span>.hi) &gt; <span class="t">len</span>(<span class="t">self</span>.lo):    <span class="c"># lo 允许比 hi 多 1 个, hi 不许多</span></span><span class="l">            <span class="t">heapq</span>.<span class="f">heappush</span>(<span class="t">self</span>.lo, -<span class="t">heapq</span>.<span class="f">heappop</span>(<span class="t">self</span>.hi))</span><span class="l"></span><span class="l">    <span class="k">def</span> <span class="f">findMedian</span>(<span class="t">self</span>):</span><span class="l">        <span class="k">if</span> <span class="t">len</span>(<span class="t">self</span>.lo) &gt; <span class="t">len</span>(<span class="t">self</span>.hi):    <span class="c"># 总数奇数</span></span><span class="l">            <span class="r">return</span> -<span class="t">self</span>.lo[0]</span><span class="l">        <span class="r">return</span> (-<span class="t">self</span>.lo[0] + <span class="t">self</span>.hi[0]) / 2</span></div>
+<p>Time: add $O(\log n)$, find $O(1)$。Space: $O(n)$。Sliding Window Median 是它的加强版 (要删元素, 需要 lazy delete), 先把这题写熟。</p>
+<p class="note"><b>记:</b>中位数 = 两个 heap 的 top: 左半 max-heap, 右半 min-heap, 大小差 ≤ 1。</p>
+<h2>6. Minimum Cost to Hire K Workers: 排序一维, heap 管另一维</h2>
+<p>题目: 每个 worker 有 quality q 和最低 wage。雇 k 个, 工资必须和 q 成正比 (同一个 rate = wage / q), 每人工资不低于自己的最低 wage。求最小总工资。例: <code>quality = [10,20,5,8,9], wage = [20,60,20,40,63], k = 3</code> → 115 (雇 A, C, D)。</p>
+<p>Brute force: 枚举 C(n, k) 个 group, 对每个 group 取最大的 rate, cost = rate × total_q。浪费: 两个维度 (rate 和 q) 同时变, 没法剪。</p>
+<p>关键观察: 先把一个维度固定住。按 rate 升序排, 处理到某个 worker 时, 他的 rate 是 group 里最大的, 其他人 rate 更小, 按这个 rate 付工资大家都合法。rate 固定后 cost = rate × total_q, 只能压 total_q → 在已经见过的 worker 里留 q 最小的 k 个 → 满了就踢 q 最大的 (max-heap)。这是 "排序一维 + heap 管另一维" 的典型。</p>
+<figure><svg width="100%" viewBox="0 0 680 460" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Hire K Workers: sort by rate, heap drops the biggest q</title><desc>worker D is current, B has the biggest q and is dropped</desc><defs><marker id="hc0-ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="hc0-ao" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="460" fill="#FFFFFF"/>
+<text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">rate = wage / q · 每人 wage = rate × q · k = 3 · 现在处理到 D</text>
+<text x="40" y="38" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">先按 rate 升序排好, 从左往右处理 (rate 越来越大)</text>
+<rect x="40" y="60" width="66" height="54" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="73.0" y="71.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">A</text>
+<text x="73.0" y="87.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">q = 10</text>
+<text x="73.0" y="103.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">rate = 2</text>
+<rect x="120" y="60" width="66" height="54" rx="4" fill="#FAECE7" stroke="#993C1D" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="153.0" y="71.0" font-size="14" text-anchor="middle" fill="#712B13" dominant-baseline="central">B</text>
+<text x="153.0" y="87.0" font-size="14" text-anchor="middle" fill="#712B13" dominant-baseline="central">q = 20</text>
+<text x="153.0" y="103.0" font-size="14" text-anchor="middle" fill="#712B13" dominant-baseline="central">rate = 3</text>
+<rect x="200" y="60" width="66" height="54" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="233.0" y="71.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">C</text>
+<text x="233.0" y="87.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">q = 5</text>
+<text x="233.0" y="103.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">rate = 4</text>
+<rect x="280" y="60" width="66" height="54" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<rect x="276" y="56" width="74" height="62" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="313.0" y="71.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">D</text>
+<text x="313.0" y="87.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">q = 8</text>
+<text x="313.0" y="103.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">rate = 5</text>
+<rect x="360" y="60" width="66" height="54" rx="4" fill="#FFFFFF" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="393.0" y="71.0" font-size="14" text-anchor="middle" fill="#52514E" dominant-baseline="central">E</text>
+<text x="393.0" y="87.0" font-size="14" text-anchor="middle" fill="#52514E" dominant-baseline="central">q = 9</text>
+<text x="393.0" y="103.0" font-size="14" text-anchor="middle" fill="#52514E" dominant-baseline="central">rate = 7</text>
+<text x="393" y="130" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">还没处理</text>
+<text x="153" y="130" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">q 最大, 被踢</text>
+<line x1="560" y1="78" x2="522" y2="118" stroke="#898781" stroke-width="1.2"/>
+<line x1="560" y1="78" x2="598" y2="118" stroke="#898781" stroke-width="1.2"/>
+<circle cx="560" cy="78" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="560" y="78" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">10</text>
+<circle cx="560" cy="78" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="522" cy="118" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="522" y="118" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">8</text>
+<circle cx="598" cy="118" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="598" y="118" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">5</text>
+<text x="560" y="152" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">max-heap: group 的 q</text>
+<line x1="40" y1="172" x2="640" y2="172" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="194" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">1. 为什么 rate 取当前这个 (D 的 rate = 5)</text>
+<text x="40" y="216" font-size="12" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">group 里每个人 wage = 5 × q, 而其他人的 rate ≤ 5 → 5 × q ≥ 他们的最低 wage, 都合法</text>
+<text x="40" y="234" font-size="12" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">rate 取当前这个就是 group 里最大的 rate, 不能再小 (D 自己的最低 wage 就要 rate = 5)</text>
+<text x="40" y="270" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">2. rate 固定后, 只能压 total_q</text>
+<text x="40" y="292" font-size="12" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">cost = rate × total_q → 从 A, B, C, D 里选 k = 3 个 q 最小的 → 踢 q 最大的 B (20)</text>
+<text x="40" y="328" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">3. 具体数字</text>
+<text x="40" y="350" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">total_q = 10 + 8 + 5 = 23</text>
+<text x="40" y="372" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">cost = rate × total_q = 5 × 23 = 115</text>
+<line x1="40" y1="406" x2="640" y2="406" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="428" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">brute force: 枚举 C(n, k) 个 group · 排序一维 (rate) + heap 管另一维 (q): O(n log n)</text>
+</svg>
+<figcaption>按 rate 排序固定一维; heap 里留 q 最小的 k 个压低 total_q</figcaption></figure>
+<figure><svg width="100%" viewBox="0 0 680 892" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Minimum Cost to Hire K Workers: max-heap trace</title><desc>k=3 workers A..E sorted by rate</desc><defs><marker id="hw-ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="hw-ao" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="892" fill="#FFFFFF"/>
+<text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">k = 3 · 每一步: push 进 heap → 超过 k 个就 pop 最大的 q → 算 cost</text>
+<text x="40" y="38" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">total_q = 当前 group (heap 里所有节点) 的 q 全部相加 · cost = rate × total_q</text>
+<text x="40" y="64" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">worker</text>
+<text x="160" y="64" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">push 后</text>
+<text x="290" y="64" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">pop 后</text>
+<text x="440" y="64" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">计算</text>
+<line x1="40" y1="74" x2="640" y2="74" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="82" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="93" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">A</text>
+<text x="72" y="108" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">q = 10</text>
+<text x="72" y="123" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">rate = 2</text>
+<circle cx="220" cy="146" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="220" y="146" font-size="16" text-anchor="middle" fill="#085041" dominant-baseline="central">10</text>
+<circle cx="220" cy="146" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<path d="M104 107 L220 107 L220 122" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#hw-ag)"/>
+<text x="300" y="140" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">len = 1 ≤ k = 3</text>
+<text x="300" y="156" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">不需要 pop</text>
+<text x="440" y="114" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">total_q (group 里所有 q 相加):</text>
+<text x="440" y="134" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">10</text>
+<text x="440" y="154" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">len &lt; k, skip</text>
+<line x1="40" y1="182" x2="640" y2="182" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="190" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="201" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">B</text>
+<text x="72" y="216" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">q = 20</text>
+<text x="72" y="231" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">rate = 3</text>
+<line x1="220" y1="254" x2="188" y2="288" stroke="#898781" stroke-width="1.2"/>
+<circle cx="220" cy="254" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="220" y="254" font-size="16" text-anchor="middle" fill="#085041" dominant-baseline="central">20</text>
+<circle cx="220" cy="254" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="188" cy="288" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="188" y="288" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">10</text>
+<path d="M104 215 L220 215 L220 230" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#hw-ag)"/>
+<text x="300" y="248" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">len = 2 ≤ k = 3</text>
+<text x="300" y="264" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">不需要 pop</text>
+<text x="440" y="222" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">total_q (group 里所有 q 相加):</text>
+<text x="440" y="242" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">20 + 10 = 30</text>
+<text x="440" y="262" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">len &lt; k, skip</text>
+<line x1="40" y1="324" x2="640" y2="324" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="332" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="343" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">C</text>
+<text x="72" y="358" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">q = 5</text>
+<text x="72" y="373" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">rate = 4</text>
+<line x1="220" y1="396" x2="188" y2="430" stroke="#898781" stroke-width="1.2"/>
+<line x1="220" y1="396" x2="252" y2="430" stroke="#898781" stroke-width="1.2"/>
+<circle cx="220" cy="396" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="220" y="396" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">20</text>
+<circle cx="220" cy="396" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="188" cy="430" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="188" y="430" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">10</text>
+<circle cx="252" cy="430" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="252" y="430" font-size="16" text-anchor="middle" fill="#085041" dominant-baseline="central">5</text>
+<path d="M104 357 L220 357 L220 372" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#hw-ag)"/>
+<text x="300" y="390" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">len = 3 ≤ k = 3</text>
+<text x="300" y="406" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">不需要 pop</text>
+<text x="440" y="364" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">total_q (group 里所有 q 相加):</text>
+<text x="440" y="384" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">20 + 10 + 5 = 35</text>
+<text x="440" y="404" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">cost = rate × total_q</text>
+<text x="440" y="424" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">4 × 35 = 140</text>
+<line x1="40" y1="466" x2="640" y2="466" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="474" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="485" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">D</text>
+<text x="72" y="500" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">q = 8</text>
+<text x="72" y="515" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">rate = 5</text>
+<line x1="220" y1="538" x2="188" y2="572" stroke="#898781" stroke-width="1.2"/>
+<line x1="220" y1="538" x2="252" y2="572" stroke="#898781" stroke-width="1.2"/>
+<line x1="188" y1="572" x2="166" y2="606" stroke="#898781" stroke-width="1.2"/>
+<circle cx="220" cy="538" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="220" y="538" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">20</text>
+<circle cx="220" cy="538" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="188" cy="572" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="188" y="572" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">10</text>
+<circle cx="252" cy="572" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="252" y="572" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">5</text>
+<circle cx="166" cy="606" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="166" y="606" font-size="16" text-anchor="middle" fill="#085041" dominant-baseline="central">8</text>
+<path d="M104 499 L220 499 L220 514" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#hw-ag)"/>
+<path d="M196 538 L66 538 L66 558" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#hw-ao)"/>
+<text x="137.0" y="528" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">pop</text>
+<circle cx="66" cy="578" r="19" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="66" y="578" font-size="16" text-anchor="middle" fill="#712B13" dominant-baseline="central">20</text>
+<text x="40" y="608" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">len = 4 &gt; k = 3</text>
+<text x="40" y="624" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">pop 最大的 20</text>
+<line x1="350" y1="538" x2="318" y2="572" stroke="#898781" stroke-width="1.2"/>
+<line x1="350" y1="538" x2="382" y2="572" stroke="#898781" stroke-width="1.2"/>
+<circle cx="350" cy="538" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="350" y="538" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">10</text>
+<circle cx="350" cy="538" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="318" cy="572" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="318" y="572" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">8</text>
+<circle cx="382" cy="572" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="382" y="572" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">5</text>
+<text x="440" y="506" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">total_q (group 里所有 q 相加):</text>
+<text x="440" y="526" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">10 + 8 + 5 = 23</text>
+<text x="440" y="546" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">cost = rate × total_q</text>
+<text x="440" y="566" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">5 × 23 = 115</text>
+<line x1="40" y1="642" x2="640" y2="642" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="650" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="661" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">E</text>
+<text x="72" y="676" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">q = 9</text>
+<text x="72" y="691" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">rate = 7</text>
+<line x1="220" y1="714" x2="188" y2="748" stroke="#898781" stroke-width="1.2"/>
+<line x1="220" y1="714" x2="252" y2="748" stroke="#898781" stroke-width="1.2"/>
+<line x1="188" y1="748" x2="166" y2="782" stroke="#898781" stroke-width="1.2"/>
+<circle cx="220" cy="714" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="220" y="714" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">10</text>
+<circle cx="220" cy="714" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="188" cy="748" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="188" y="748" font-size="16" text-anchor="middle" fill="#085041" dominant-baseline="central">9</text>
+<circle cx="252" cy="748" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="252" y="748" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">5</text>
+<circle cx="166" cy="782" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="166" y="782" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">8</text>
+<path d="M104 675 L220 675 L220 690" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#hw-ag)"/>
+<path d="M196 714 L66 714 L66 734" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#hw-ao)"/>
+<text x="137.0" y="704" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">pop</text>
+<circle cx="66" cy="754" r="19" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="66" y="754" font-size="16" text-anchor="middle" fill="#712B13" dominant-baseline="central">10</text>
+<text x="40" y="784" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">len = 4 &gt; k = 3</text>
+<text x="40" y="800" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">pop 最大的 10</text>
+<line x1="350" y1="714" x2="318" y2="748" stroke="#898781" stroke-width="1.2"/>
+<line x1="350" y1="714" x2="382" y2="748" stroke="#898781" stroke-width="1.2"/>
+<circle cx="350" cy="714" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="350" y="714" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">9</text>
+<circle cx="350" cy="714" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="318" cy="748" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="318" y="748" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">8</text>
+<circle cx="382" cy="748" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="382" y="748" font-size="16" text-anchor="middle" fill="#444441" dominant-baseline="central">5</text>
+<text x="440" y="682" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">total_q (group 里所有 q 相加):</text>
+<text x="440" y="702" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">9 + 8 + 5 = 22</text>
+<text x="440" y="722" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">cost = rate × total_q</text>
+<text x="440" y="742" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">7 × 22 = 154</text>
+<line x1="40" y1="818" x2="640" y2="818" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="840" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">min_cost = min(140, 115, 154) = 115</text>
+<circle cx="48" cy="872" r="7" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="62" y="872" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">新 push 进来的</text>
+<circle cx="168" cy="872" r="7" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="182" y="872" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">被 pop 的</text>
+<circle cx="268" cy="872" r="7" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="282" y="872" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">heap top (最大的 q)</text>
+<circle cx="418" cy="872" r="7" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="432" y="872" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">heap 里其他的</text>
+</svg>
+<figcaption>trace: A–E 按 rate 升序, k = 3, heap 存 q, 每步 pop 最大的 q, total_q 为 heap 里所有 q 相加</figcaption></figure>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">mincostToHireWorkers</span>(quality, wage, k):</span><span class="l">    <span class="c"># rate = wage / q. 按 rate 升序排: 处理到某个 worker 时, 他的 rate 就是 group 里最大的</span></span><span class="l">    workers = <span class="t">sorted</span>(<span class="t">zip</span>(quality, wage), key=<span class="k">lambda</span> w: w[1] / w[0])</span><span class="l">    h = []                          <span class="c"># max-heap (存 -q): group 里 q 最大的在 top</span></span><span class="l">    total_q = 0                     <span class="c"># group 里所有 q 相加</span></span><span class="l">    best = <span class="t">float</span>(<span class="s">&quot;inf&quot;</span>)</span><span class="l">    <span class="k">for</span> q, w <span class="k">in</span> workers:</span><span class="l">        rate = w / q</span><span class="l">        <span class="t">heapq</span>.<span class="f">heappush</span>(h, -q)</span><span class="l">        total_q += q</span><span class="l">        <span class="k">if</span> <span class="t">len</span>(h) &gt; k:</span><span class="l">            total_q += <span class="t">heapq</span>.<span class="f">heappop</span>(h)     <span class="c"># 弹出的是 -q_max, 加上它 = 减去 q_max</span></span><span class="l">        <span class="k">if</span> <span class="t">len</span>(h) == k:</span><span class="l">            best = <span class="t">min</span>(best, rate * total_q)   <span class="c"># cost = rate x total_q</span></span><span class="l">    <span class="r">return</span> best</span></div>
+<p>Time: sort $O(n \log n)$ + heap $O(n \log k)$ = $O(n \log n)$。Space: $O(n)$。</p>
+<h3>同一个套路的两道变体</h3>
+<p>Maximum Number of Events: 排序 start, heap 存 end, 每天参加 end 最早的 (最急的)。IPO: 排序 capital, heap 存 profit, 做得起的项目里挑 profit 最大的 (max-heap)。形状一样: 按一个量排序, 往前推进时把 "现在可选的" 放进 heap, heap 的 top 决定选谁。</p>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">maxEvents</span>(events):                      <span class="c"># events[i] = [start, end]</span></span><span class="l">    events.<span class="f">sort</span>()                           <span class="c"># 排序一维: start</span></span><span class="l">    h = []                                  <span class="c"># min-heap of end: 今天能参加的活动</span></span><span class="l">    day = i = res = 0</span><span class="l">    <span class="k">while</span> i &lt; <span class="t">len</span>(events) <span class="k">or</span> h:</span><span class="l">        <span class="k">if</span> <span class="k">not</span> h:</span><span class="l">            day = <span class="t">max</span>(day, events[i][0])    <span class="c"># 没得参加, 跳到下一个 start</span></span><span class="l">        <span class="k">while</span> i &lt; <span class="t">len</span>(events) <span class="k">and</span> events[i][0] &lt;= day:</span><span class="l">            <span class="t">heapq</span>.<span class="f">heappush</span>(h, events[i][1]) <span class="c"># start 到了的活动, 记下 end</span></span><span class="l">            i += 1</span><span class="l">        <span class="k">while</span> h <span class="k">and</span> h[0] &lt; day:</span><span class="l">            <span class="t">heapq</span>.<span class="f">heappop</span>(h)                <span class="c"># end 已过, 参加不了</span></span><span class="l">        <span class="k">if</span> h:</span><span class="l">            <span class="t">heapq</span>.<span class="f">heappop</span>(h)                <span class="c"># 今天参加 end 最早的 (最急的)</span></span><span class="l">            res += 1</span><span class="l">        day += 1</span><span class="l">    <span class="r">return</span> res</span></div>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">findMaximizedCapital</span>(k, w, profits, capital):</span><span class="l">    projects = <span class="t">sorted</span>(<span class="t">zip</span>(capital, profits))   <span class="c"># 排序一维: capital</span></span><span class="l">    h = []                                     <span class="c"># max-heap (存 -profit): 做得起的</span></span><span class="l">    i = 0</span><span class="l">    <span class="k">for</span> _ <span class="k">in</span> <span class="t">range</span>(k):</span><span class="l">        <span class="k">while</span> i &lt; <span class="t">len</span>(projects) <span class="k">and</span> projects[i][0] &lt;= w:</span><span class="l">            <span class="t">heapq</span>.<span class="f">heappush</span>(h, -projects[i][1]) <span class="c"># capital &lt;= w 的都进 heap</span></span><span class="l">            i += 1</span><span class="l">        <span class="k">if</span> <span class="k">not</span> h:</span><span class="l">            <span class="k">break</span></span><span class="l">        w -= <span class="t">heapq</span>.<span class="f">heappop</span>(h)                  <span class="c"># 做 profit 最大的, w 变大</span></span><span class="l">    <span class="r">return</span> w</span></div>
+<p class="note"><b>记:</b>两个维度互相牵制 → 排序一维, heap 管另一维; total_q 就是 heap 里所有 q 相加。</p>
+<h2>7. Task Scheduler: greedy + heap, 加一个 cooldown 队列</h2>
+<p>题目: 一串 task (字母), 同一种 task 两次执行之间至少隔 n 个 slot, 可以 idle。求最少需要多少 slot。例: <code>tasks = AAABBC, n = 2</code> → 7 (A B C A B idle A)。</p>
+<p>Brute force: 枚举所有执行顺序, 指数级。关键观察 (greedy): 剩余次数最多的 task 间隔要求最紧, 每个 slot 都做 "当前能做的里剩余最多的", 不会被迫在最后只剩它一个而 idle。"当前能做的里剩余最多" 就是 max-heap 的 top。刚做过的 task 不能马上再做, 先放进 cooldown 队列, 过了 n 个 slot 再 push 回 heap。</p>
+<p>相比前几题: heap 里元素会 <b>回来</b> (不是 pop 就扔掉), 要配一个 FIFO 队列管冷却时间。heap 为空但 cooldown 非空 → 这个 slot 是 idle。</p>
+<figure><svg width="100%" viewBox="0 0 680 470" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Task Scheduler: ready heap and cooldown queue</title><desc>pop the most frequent ready task, it waits in cooldown, then returns to heap</desc><defs><marker id="tc0-ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="tc0-ao" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="470" fill="#FFFFFF"/>
+<text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">heap = 现在能做的 task (剩余次数最多的在 top) · cooldown = 刚做过, 还要等</text>
+<line x1="110" y1="90" x2="70" y2="136" stroke="#898781" stroke-width="1.2"/>
+<line x1="110" y1="90" x2="150" y2="136" stroke="#898781" stroke-width="1.2"/>
+<circle cx="110" cy="90" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="110" y="84" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<text x="110" y="98" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">A</text>
+<circle cx="110" cy="90" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="70" cy="136" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="70" y="130" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<text x="70" y="144" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">B</text>
+<circle cx="150" cy="136" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="150" y="130" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<text x="150" y="144" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">C</text>
+<text x="110" y="36" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">heap (max-heap)</text>
+<rect x="440" y="78" width="84" height="44" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="482.0" y="100.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">A 剩 2</text>
+<rect x="540" y="78" width="84" height="44" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="582.0" y="100.0" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">B 剩 1</text>
+<text x="530" y="62" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">cooldown 队列 (先进先出)</text>
+<path d="M170 96 L432 96" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#tc0-ag)"/>
+<text x="300" y="78" font-size="12" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">pop 一个 = 这个 slot 执行 1 次</text>
+<text x="300" y="114" font-size="12" text-anchor="middle" fill="#52514E" dominant-baseline="central">剩余 &gt; 0 → 进 cooldown</text>
+<path d="M490 122 L490 190 L110 190 L110 150" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#tc0-ag)"/>
+<text x="300" y="176" font-size="12" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">过了 n 个 slot → push 回 heap</text>
+<line x1="40" y1="214" x2="640" y2="214" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="238" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">为什么每次 pop 剩余最多的 (greedy)</text>
+<text x="40" y="260" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">次数最多的 task 间隔要求最紧, 先做它, 才不会最后只剩它一个而被迫 idle</text>
+<text x="40" y="282" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">heap 空但 cooldown 非空 → 这个 slot idle, time 照样 +1</text>
+<line x1="40" y1="318" x2="640" y2="318" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="342" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">只要答案时的公式 (不用模拟)</text>
+<text x="40" y="364" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">max(len(tasks), (max_count - 1) × (n + 1) + 有几种 task 达到 max_count)</text>
+<text x="40" y="386" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">例: max(6, (3 - 1) × (2 + 1) + 1) = max(6, 7) = 7</text>
+<line x1="40" y1="420" x2="640" y2="420" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="442" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">Reorganize String 同构: n = 1, 每次 pop 剩余最多的, 刚用过的先放一边, 下一步再 push 回来</text>
+</svg>
+<figcaption>heap = 现在能做的; cooldown = 刚做过; 每个 slot 做 heap 里剩余最多的</figcaption></figure>
+<figure><svg width="100%" viewBox="0 0 680 1312" role="img" xmlns="http://www.w3.org/2000/svg" font-family='ui-sans-serif, system-ui, -apple-system, "PingFang SC", sans-serif'><title>Task Scheduler: heap + cooldown queue trace</title><desc>tasks=AAABBC, n=2</desc><defs><marker id="ts-ag" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#898781" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="ts-ao" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect x="0" y="0" width="680" height="1312" fill="#FFFFFF"/>
+<text x="40" y="18" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">tasks = A,A,A,B,B,C · n = 2 · max-heap 存 (剩余次数, 任务) · 每个 slot 执行 1 次 (pop)</text>
+<text x="40" y="38" font-size="14" text-anchor="start" fill="#52514E" dominant-baseline="central">执行完还有剩 → 进 cooldown, 过 n 个 slot 才能回 heap · heap 空但 cooldown 非空 → idle</text>
+<text x="40" y="64" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">slot</text>
+<text x="160" y="64" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">slot 开始</text>
+<text x="290" y="64" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">执行 + 回来后</text>
+<text x="440" y="64" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">cooldown 队列</text>
+<line x1="40" y1="74" x2="640" y2="74" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="82" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="107" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">slot 1</text>
+<line x1="220" y1="146" x2="188" y2="180" stroke="#898781" stroke-width="1.2"/>
+<line x1="220" y1="146" x2="252" y2="180" stroke="#898781" stroke-width="1.2"/>
+<circle cx="220" cy="146" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="220" y="140" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">3</text>
+<text x="220" y="154" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">A</text>
+<circle cx="220" cy="146" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="188" cy="180" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="188" y="174" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<text x="188" y="188" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">B</text>
+<circle cx="252" cy="180" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="252" y="174" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<text x="252" y="188" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">C</text>
+<path d="M104 107 L220 107 L220 122" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#ts-ag)"/>
+<path d="M196 146 L66 146 L66 166" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#ts-ao)"/>
+<text x="137.0" y="136" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">pop</text>
+<circle cx="66" cy="186" r="19" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="66" y="180" font-size="14" text-anchor="middle" fill="#712B13" dominant-baseline="central">3</text>
+<text x="66" y="194" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">A</text>
+<text x="40" y="216" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">执行 A: 剩 3 → 2</text>
+<text x="40" y="232" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">进 cooldown, slot 3 后回来</text>
+<line x1="350" y1="146" x2="318" y2="180" stroke="#898781" stroke-width="1.2"/>
+<circle cx="350" cy="146" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="350" y="140" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<text x="350" y="154" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">B</text>
+<circle cx="350" cy="146" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="318" cy="180" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="318" y="174" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<text x="318" y="188" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">C</text>
+<text x="440" y="114" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">cooldown: </text>
+<text x="440" y="134" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">A 剩 2, slot 3 后回来</text>
+<line x1="40" y1="250" x2="640" y2="250" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="258" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="283" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">slot 2</text>
+<line x1="220" y1="322" x2="188" y2="356" stroke="#898781" stroke-width="1.2"/>
+<circle cx="220" cy="322" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="220" y="316" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<text x="220" y="330" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">B</text>
+<circle cx="220" cy="322" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<circle cx="188" cy="356" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="188" y="350" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<text x="188" y="364" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">C</text>
+<path d="M104 283 L220 283 L220 298" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#ts-ag)"/>
+<path d="M196 322 L66 322 L66 342" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#ts-ao)"/>
+<text x="137.0" y="312" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">pop</text>
+<circle cx="66" cy="362" r="19" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="66" y="356" font-size="14" text-anchor="middle" fill="#712B13" dominant-baseline="central">2</text>
+<text x="66" y="370" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">B</text>
+<text x="40" y="392" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">执行 B: 剩 2 → 1</text>
+<text x="40" y="408" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">进 cooldown, slot 4 后回来</text>
+<circle cx="350" cy="322" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="350" y="316" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<text x="350" y="330" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">C</text>
+<circle cx="350" cy="322" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="440" y="290" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">cooldown: </text>
+<text x="440" y="310" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">A 剩 2, slot 3 后回来</text>
+<text x="440" y="330" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">B 剩 1, slot 4 后回来</text>
+<line x1="40" y1="426" x2="640" y2="426" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="434" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="459" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">slot 3</text>
+<circle cx="220" cy="498" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="220" y="492" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<text x="220" y="506" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">C</text>
+<circle cx="220" cy="498" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<path d="M104 459 L220 459 L220 474" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#ts-ag)"/>
+<path d="M196 498 L66 498 L66 518" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#ts-ao)"/>
+<text x="137.0" y="488" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">pop</text>
+<circle cx="66" cy="538" r="19" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="66" y="532" font-size="14" text-anchor="middle" fill="#712B13" dominant-baseline="central">1</text>
+<text x="66" y="546" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">C</text>
+<text x="40" y="568" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">执行 C: 剩 1 → 0</text>
+<text x="40" y="584" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">做完了, 不进 cooldown</text>
+<circle cx="350" cy="498" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="350" y="492" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">2</text>
+<text x="350" y="506" font-size="12" text-anchor="middle" fill="#085041" dominant-baseline="central">A</text>
+<circle cx="350" cy="498" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="440" y="466" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">cooldown: </text>
+<text x="440" y="486" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">B 剩 1, slot 4 后回来</text>
+<text x="440" y="506" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">回来: A 剩 2 → push 进 heap</text>
+<line x1="40" y1="602" x2="640" y2="602" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="610" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="635" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">slot 4</text>
+<circle cx="220" cy="674" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="220" y="668" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">2</text>
+<text x="220" y="682" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">A</text>
+<circle cx="220" cy="674" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<path d="M104 635 L220 635 L220 650" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#ts-ag)"/>
+<path d="M196 674 L66 674 L66 694" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#ts-ao)"/>
+<text x="137.0" y="664" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">pop</text>
+<circle cx="66" cy="714" r="19" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="66" y="708" font-size="14" text-anchor="middle" fill="#712B13" dominant-baseline="central">2</text>
+<text x="66" y="722" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">A</text>
+<text x="40" y="744" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">执行 A: 剩 2 → 1</text>
+<text x="40" y="760" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">进 cooldown, slot 6 后回来</text>
+<circle cx="350" cy="674" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="350" y="668" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">1</text>
+<text x="350" y="682" font-size="12" text-anchor="middle" fill="#085041" dominant-baseline="central">B</text>
+<circle cx="350" cy="674" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="440" y="642" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">cooldown: </text>
+<text x="440" y="662" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">A 剩 1, slot 6 后回来</text>
+<text x="440" y="682" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">回来: B 剩 1 → push 进 heap</text>
+<line x1="40" y1="778" x2="640" y2="778" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="786" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="811" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">slot 5</text>
+<circle cx="220" cy="850" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="220" y="844" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<text x="220" y="858" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">B</text>
+<circle cx="220" cy="850" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<path d="M104 811 L220 811 L220 826" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#ts-ag)"/>
+<path d="M196 850 L66 850 L66 870" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#ts-ao)"/>
+<text x="137.0" y="840" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">pop</text>
+<circle cx="66" cy="890" r="19" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="66" y="884" font-size="14" text-anchor="middle" fill="#712B13" dominant-baseline="central">1</text>
+<text x="66" y="898" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">B</text>
+<text x="40" y="920" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">执行 B: 剩 1 → 0</text>
+<text x="40" y="936" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">做完了, 不进 cooldown</text>
+<text x="350" y="850" font-size="14" text-anchor="middle" fill="#52514E" dominant-baseline="central">空</text>
+<text x="440" y="818" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">cooldown: </text>
+<text x="440" y="838" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">A 剩 1, slot 6 后回来</text>
+<line x1="40" y1="954" x2="640" y2="954" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="962" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="987" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">slot 6</text>
+<text x="220" y="1026" font-size="14" text-anchor="middle" fill="#52514E" dominant-baseline="central">heap 空 → idle</text>
+<circle cx="350" cy="1026" r="19" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="350" y="1020" font-size="14" text-anchor="middle" fill="#085041" dominant-baseline="central">1</text>
+<text x="350" y="1034" font-size="12" text-anchor="middle" fill="#085041" dominant-baseline="central">A</text>
+<circle cx="350" cy="1026" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="440" y="994" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">cooldown: 空</text>
+<text x="440" y="1014" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">回来: A 剩 1 → push 进 heap</text>
+<line x1="40" y1="1062" x2="640" y2="1062" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<rect x="40" y="1070" width="64" height="50" rx="4" fill="#FFFFFF" stroke="#5F5E5A" stroke-width="1"/>
+<text x="72" y="1095" font-size="14" text-anchor="middle" fill="#0B0B0B" dominant-baseline="central">slot 7</text>
+<circle cx="220" cy="1134" r="19" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="220" y="1128" font-size="14" text-anchor="middle" fill="#444441" dominant-baseline="central">1</text>
+<text x="220" y="1142" font-size="12" text-anchor="middle" fill="#444441" dominant-baseline="central">A</text>
+<circle cx="220" cy="1134" r="23" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<path d="M104 1095 L220 1095 L220 1110" fill="none" stroke="#898781" stroke-width="1.5" marker-end="url(#ts-ag)"/>
+<path d="M196 1134 L66 1134 L66 1154" fill="none" stroke="#D85A30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#ts-ao)"/>
+<text x="137.0" y="1124" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">pop</text>
+<circle cx="66" cy="1174" r="19" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="66" y="1168" font-size="14" text-anchor="middle" fill="#712B13" dominant-baseline="central">1</text>
+<text x="66" y="1182" font-size="12" text-anchor="middle" fill="#712B13" dominant-baseline="central">A</text>
+<text x="40" y="1204" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">执行 A: 剩 1 → 0</text>
+<text x="40" y="1220" font-size="12" text-anchor="start" fill="#712B13" dominant-baseline="central">做完了, 不进 cooldown</text>
+<text x="350" y="1134" font-size="14" text-anchor="middle" fill="#52514E" dominant-baseline="central">空</text>
+<text x="440" y="1102" font-size="14" text-anchor="start" fill="#0B0B0B" dominant-baseline="central">cooldown: 空</text>
+<line x1="40" y1="1238" x2="640" y2="1238" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="40" y="1260" font-size="14" text-anchor="start" fill="#0B0B0B" font-weight="600" dominant-baseline="central">总时间 = 7 slots (A B C A B idle A, 中间有 1 个 idle)</text>
+<circle cx="48" cy="1292" r="7" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="62" y="1292" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">从 cooldown 回来的</text>
+<circle cx="208" cy="1292" r="7" fill="#FAECE7" stroke="#993C1D" stroke-width="1"/>
+<text x="222" y="1292" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">本 slot 执行的</text>
+<circle cx="318" cy="1292" r="7" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
+<text x="332" y="1292" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">heap top (剩余最多)</text>
+<circle cx="468" cy="1292" r="7" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="482" y="1292" font-size="12" text-anchor="start" fill="#52514E" dominant-baseline="central">heap 里其他的</text>
+</svg>
+<figcaption>trace: slot 6 heap 空, 只能 idle 等 A 回来, 总共 7 个 slot</figcaption></figure>
+<div class="code"><span class="l"><span class="k">def</span> <span class="f">leastInterval</span>(tasks, n):</span><span class="l">    heap = [(-c, t) <span class="k">for</span> t, c <span class="k">in</span> <span class="t">Counter</span>(tasks).<span class="f">items</span>()]   <span class="c"># max-heap: 剩余次数</span></span><span class="l">    <span class="t">heapq</span>.<span class="f">heapify</span>(heap)</span><span class="l">    cooldown = <span class="t">deque</span>()          <span class="c"># (回来的 slot, -剩余次数, task), 回来时间递增</span></span><span class="l">    time = 0</span><span class="l">    <span class="k">while</span> heap <span class="k">or</span> cooldown:</span><span class="l">        time += 1               <span class="c"># 每个 slot 无论做不做事, time 都 +1</span></span><span class="l">        <span class="k">if</span> heap:</span><span class="l">            c, t = <span class="t">heapq</span>.<span class="f">heappop</span>(heap)      <span class="c"># 剩余最多的, 这个 slot 做它</span></span><span class="l">            <span class="k">if</span> c + 1:                       <span class="c"># c 是负数, c + 1 != 0 说明还有剩</span></span><span class="l">                cooldown.<span class="f">append</span>((time + n, c + 1, t))</span><span class="l">        <span class="k">if</span> cooldown <span class="k">and</span> cooldown[0][0] == time:   <span class="c"># 冷却完了, 下个 slot 可以做</span></span><span class="l">            _, c, t = cooldown.<span class="f">popleft</span>()</span><span class="l">            <span class="t">heapq</span>.<span class="f">heappush</span>(heap, (c, t))</span><span class="l">    <span class="r">return</span> time</span></div>
+<p>Time: 每个 slot $O(\log m)$ (m = task 种类数, 至多 26), slot 总数 T, 共 $O(T \log m)$。Space: $O(m)$。只要答案有公式: <code>max(len(tasks), (max_count - 1) * (n + 1) + 达到 max_count 的 task 种类数)</code>。Reorganize String 是同一个结构 (n = 1): 每次 pop 剩余最多的字符, 上一个用过的先放一边, 下一步再 push 回来。</p>
+<p class="note"><b>记:</b>"每步选当前最优" + 候选会变化 → greedy + heap; 用过要等一阵 → 再加 cooldown 队列。</p>
+<h2>8. 识别信号: 看到什么 → 试什么</h2>
+<table>
+<tr><th>题目特征</th><th>做法</th><th>complexity</th></tr>
+<tr><td>第 k 大 / 前 k 大 / 前 k 个出现最多</td><td>size-k min-heap, top 是门槛</td><td>O(n log n) → O(n log k)</td></tr>
+<tr><td>前 k 小 / 离某点最近的 k 个</td><td>size-k max-heap (存负数), 踢最大的</td><td>O(n log n) → O(n log k)</td></tr>
+<tr><td>k 条有序 list / 矩阵每行有序, 要合并或第 k 小</td><td>heap 放每条的当前头, pop 一个补一个</td><td>O(N log N) → O(N log k)</td></tr>
+<tr><td>数据流, 随时要中位数</td><td>两个 heap: lo (max) + hi (min), 大小差 ≤ 1</td><td>每次 O(n) 或 O(n log n) → add O(log n), find O(1)</td></tr>
+<tr><td>两个维度互相牵制, 求最小/最大 cost 或个数</td><td>排序一维, heap 管另一维 (Hire Workers, Events, IPO)</td><td>O(n^k) 枚举 → O(n log n)</td></tr>
+<tr><td>每步选 "当前最优", 候选会变, 用过要冷却</td><td>greedy + heap, 加 cooldown 队列 (Task Scheduler, Reorganize String)</td><td>指数 → O(T log m)</td></tr>
+<tr><td>反复取最大再放回 (Last Stone Weight)</td><td>max-heap, pop 两个, 差值 push 回</td><td>每轮 O(n) 找最大 → O(log n)</td></tr>
+<tr><td>只要一个 top, 不要全序</td><td>先问自己: 是不是不用 sort 全部</td><td>O(n log n) → O(n log k)</td></tr>
+</table>
+<p>选 min 还是 max 的一条规则: top 放 "最该被踢掉的"。留大的 → 踢小的 → min-heap; 留小的 → 踢大的 → max-heap。</p>
+<h2>以后再学</h2>
+<p>quickselect (平均 O(n) 的第 k 大)、lazy delete (Sliding Window Median 里删元素)、indexed heap / decrease-key (Dijkstra 的变体)、Skyline / Car Pooling 的 sweep line + heap。</p>
+</article></body></html>

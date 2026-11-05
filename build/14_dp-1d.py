@@ -188,6 +188,26 @@ def lengthOfLIS_fast(nums):
 '''
 
 
+def _wrap_comments(code, limit=74):
+    """行太长 (代码 + 行尾注释) 时, 把行尾注释挪到上一行, 避免横向滚动"""
+    out = []
+    for line in code.split("\n"):
+        if "  # " in line and not line.strip().startswith("#"):
+            body, _, cm = line.partition("  # ")
+            w = sum(1.67 if ord(c) > 0x2E80 else 1 for c in line)
+            if w > limit:
+                indent = len(body) - len(body.lstrip())
+                out.append(" " * indent + "# " + cm.strip())
+                out.append(body.rstrip())
+                continue
+        out.append(line)
+    return "\n".join(out)
+
+
+for _k in list(CODE):
+    CODE[_k] = _wrap_comments(CODE[_k])
+
+
 # ====================================================================
 # 二、selftest: 文档里的代码 vs brute force
 # ====================================================================

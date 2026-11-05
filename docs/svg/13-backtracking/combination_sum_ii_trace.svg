@@ -50,7 +50,7 @@
 <text x="351" y="258" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">2</text>
 <rect x="331" y="241" width="40" height="34" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="468" y="245" font-size="12" fill="#0B0B0B" font-weight="400" text-anchor="start" dominant-baseline="central">remain = 5 - (1+2+2) = 0</text>
-<rect x="464" y="258" width="129.84" height="20" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<rect x="464" y="259" width="129.84" height="18" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
 <text x="470" y="268" font-size="12" fill="#085041" font-weight="500" text-anchor="start" dominant-baseline="central">res += [1,2,2] (共 1)</text>
 <line x1="40" y1="280" x2="640" y2="280" stroke="#B4B2A9" stroke-width="1" stroke-dasharray="4 4"/>
 <text x="40" y="306" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">5</text>

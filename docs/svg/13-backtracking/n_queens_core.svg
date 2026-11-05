@@ -63,8 +63,10 @@
 <text x="262" y="296" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">做选择: 三个 set 各 add 一个值 + path.append(c)</text>
 <text x="262" y="316" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">撤销: 三个 set 各 remove 同一个值 + path.pop()</text>
 <text x="262" y="336" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">漏掉一个 remove =&gt; 后面的分支会被 "幽灵皇后" 误剪</text>
-<text x="40" y="270" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">红色虚线 = 已有皇后的攻击线 (列 / 两条对角线)</text>
-<text x="40" y="290" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">第 2 行只有 c=0 不被攻击 =&gt; 只剩一个选择</text>
+<text x="40" y="262" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">红色虚线 = 已有皇后的</text>
+<text x="40" y="280" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">攻击线 (列 / 两条对角线)</text>
+<text x="40" y="302" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">第 2 行只有 c=0 安全</text>
+<text x="40" y="320" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">=&gt; 只剩一个选择</text>
 <text x="40" y="380" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">没有 set 的话: 每放一个皇后要扫已有皇后 O(n) 次 =&gt; 总共 O(n) × 节点数</text>
 <text x="40" y="404" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">有了 set: 每次检查 O(1), 同一个 decision tree 少一个 n 的因子</text>
 <rect x="40" y="429" width="18" height="14" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>

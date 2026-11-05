@@ -49,7 +49,7 @@
 <text x="358" y="138" font-size="14" fill="#444441" font-weight="500" text-anchor="middle" dominant-baseline="central">B</text>
 <rect x="337" y="117" width="42" height="42" rx="6" fill="none" stroke="#EF9F27" stroke-width="2.5"/>
 <text x="340" y="172" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">(1,0) 变回 B</text>
-<text x="340" y="188" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">(0,0) 仍是 # (A 还在 path)</text>
+<text x="340" y="188" font-size="12" fill="#52514E" font-weight="400" text-anchor="start" dominant-baseline="central">(0,0) 仍是 #</text>
 <text x="490" y="66" font-size="14" fill="#0B0B0B" font-weight="500" text-anchor="start" dominant-baseline="central">t13: 找到 ABAD</text>
 <rect x="490" y="82" width="36" height="36" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
 <text x="508" y="100" font-size="14" fill="#085041" font-weight="500" text-anchor="middle" dominant-baseline="central">#</text>
